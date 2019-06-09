@@ -15,7 +15,7 @@ namespace MonoAudio
         /// <value>
         /// The audio encoding.
         /// </value>
-        public uint AudioEncoding { get; }
+        public AudioEncoding AudioEncoding { get; }
 
         /// <summary>
         /// Gets the channels.
@@ -50,12 +50,12 @@ namespace MonoAudio
         public short BlockAlign { get; }
 
         /// <summary>
-        /// Gets the bit rate.
+        /// Gets the bit depth of samples.
         /// </summary>
         /// <value>
-        /// The bit rate.
+        /// The bit depth of samples.
         /// </value>
-        public short BitRate { get; }
+        public short BitsPerSample { get; }
 
         /// <summary>
         /// Gets the length of the footer.
