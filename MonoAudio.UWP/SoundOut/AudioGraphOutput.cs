@@ -112,12 +112,20 @@ namespace MonoAudio.SoundOut
             return new AudioGraphOutput(result.Graph);
         }
 
+        /// <summary>
+        /// Initializes the <see cref="T:MonoAudio.SoundOut.ISoundOut" /> for playing a <paramref name="source" />.
+        /// </summary>
+        /// <param name="source">The source to play.</param>
+        /// <exception cref="System.ArgumentException">Only 32-bit IEEEFloat format is supported! - source</exception>
         public void Initialize(IWaveSource source)
         {
-            if (source.Format.AudioEncoding != AudioEncoding.IeeeFloat || source.Format.BitsPerSample != 32) throw new ArgumentException("Only 32-bit IEEEFloat format is supported!", nameof(source));
+            if (source.Format.WaveFormatTag != AudioEncoding.IeeeFloat || source.Format.BitsPerSample != 32) throw new ArgumentException("Only 32-bit IEEEFloat format is supported!", nameof(source));
             Source = source;
         }
 
+        /// <summary>
+        /// Pauses the audio playback.
+        /// </summary>
         public void Pause()
         {
             frameInputNode.Stop();
@@ -125,6 +133,9 @@ namespace MonoAudio.SoundOut
             PlaybackState = PlaybackState.Paused;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void Play()
         {
             AudioGraph.Start();
@@ -132,6 +143,9 @@ namespace MonoAudio.SoundOut
             PlaybackState = PlaybackState.Playing;
         }
 
+        /// <summary>
+        /// Resumes the audio playback.
+        /// </summary>
         public void Resume()
         {
             AudioGraph.Start();
@@ -139,6 +153,9 @@ namespace MonoAudio.SoundOut
             PlaybackState = PlaybackState.Playing;
         }
 
+        /// <summary>
+        /// Stops the audio playback.
+        /// </summary>
         public void Stop()
         {
             frameInputNode.Stop();
@@ -148,39 +165,33 @@ namespace MonoAudio.SoundOut
 
         #region IDisposable Support
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                    // Release managed objects.
                     Stop();
                     AudioGraph.Dispose();
                     frameInputNode.Dispose();
                 }
 
-                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
-                // TODO: 大きなフィールドを null に設定します。
-
                 disposedValue = true;
             }
         }
 
-        // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
-        // ~AudioGraphOutput()
-        // {
-        //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-        //   Dispose(false);
-        // }
-
-        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
-            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
             Dispose(true);
-            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
 
         #endregion IDisposable Support

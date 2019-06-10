@@ -12,10 +12,10 @@ namespace MonoAudio
     public interface IReadableAudioSource<T> : IAudioSource
     {
         /// <summary>
-        /// Reads the audio using the specified buffer.
+        /// Reads the audio to the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
-        /// <returns></returns>
+        /// <returns>The length of the data written.</returns>
         int Read(Span<T> buffer);
     }
 }

@@ -25,7 +25,7 @@ namespace MonoAudio.Interop
         public MonoAudioWaveSourceWrapper(IWaveSource source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            WaveFormat = new CSCore.WaveFormat(Source.Format.SampleRate, Source.Format.BitsPerSample, Source.Format.Channels, (AudioEncoding)Source.Format.AudioEncoding, Source.Format.FooterLength);
+            WaveFormat = new CSCore.WaveFormat(Source.Format.SampleRate, Source.Format.BitsPerSample, Source.Format.Channels, (AudioEncoding)Source.Format.WaveFormatTag, Source.Format.ExtraSize);
         }
 
         #region IDisposable Support

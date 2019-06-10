@@ -7,7 +7,7 @@ namespace MonoAudio
     //Copied from CSCore
     /// <summary>
     ///     Defines all known encoding types. Primary used in the <see cref="WaveFormat" /> class. See
-    ///     <see cref="WaveFormat.AudioEncoding" />.
+    ///     <see cref="WaveFormat.WaveFormatTag" />.
     /// </summary>
     public enum AudioEncoding : short
     {
