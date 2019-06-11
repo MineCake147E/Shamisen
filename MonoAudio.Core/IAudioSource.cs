@@ -29,7 +29,7 @@ namespace MonoAudio
         long Position { get; set; }
 
         /// <summary>
-        /// Gets how long the <see cref="IAudioSource"/> lasts in Bytes.
+        /// Gets how long the <see cref="IAudioSource"/> lasts in specific types.
         /// -1 Means Infinity.
         /// </summary>
         long Length { get; }
