@@ -163,11 +163,11 @@ namespace MonoAudio
         public WaveFormat(int sampleRate, int bits, int channels, AudioEncoding encoding, int extraSize)
         {
             if (sampleRate < 1)
-                throw new ArgumentOutOfRangeException("sampleRate");
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
             if (bits < 0)
-                throw new ArgumentOutOfRangeException("bits");
+                throw new ArgumentOutOfRangeException(nameof(bits));
             if (channels < 1)
-                throw new ArgumentOutOfRangeException("channels", "Number of channels has to be bigger than 0.");
+                throw new ArgumentOutOfRangeException(nameof(channels), "Number of channels has to be bigger than 0.");
 
             _sampleRate = sampleRate;
             _bitsPerSample = (short)bits;

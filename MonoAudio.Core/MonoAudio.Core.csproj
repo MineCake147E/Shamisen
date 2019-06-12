@@ -7,10 +7,14 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>C:\Visual Studio 2019\Repos\MonoAudio\MonoAudio.Core\MonoAudio.Core.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Visual Studio 2019\Repos\MonoAudio\MonoAudio.Core\MonoAudio.Core.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\C:\Visual Studio 2019\Repos\MonoAudio\MonoAudio.Core\MonoAudio.Core.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +23,11 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.9.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Conversion\Resampling\" />
+    <Folder Include="Conversion\Resampling\SampleResampler\" />
+    <Folder Include="Utils\" />
+    <Folder Include="Math\" />
   </ItemGroup>
 </Project>
