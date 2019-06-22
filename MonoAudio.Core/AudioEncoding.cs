@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio
 {
     //Copied from CSCore
     /// <summary>
     ///     Defines all known encoding types. Primary used in the <see cref="WaveFormat" /> class. See
-    ///     <see cref="WaveFormat.WaveFormatTag" />.
+    ///     <see cref="WaveFormat.Encoding" />.
     /// </summary>
     public enum AudioEncoding : short
     {

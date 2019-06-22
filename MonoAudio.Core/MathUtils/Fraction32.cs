@@ -2,7 +2,8 @@
 
 using SignedIntType = System.Int32;
 using UnsignedIntType = System.UInt32;
-namespace MonoAudio.Math
+
+namespace MonoAudio.MathUtils
 {
     /// <summary>
     /// Represents a 32bit/32bit fractions.
@@ -11,10 +12,14 @@ namespace MonoAudio.Math
     /// </summary>
     public readonly struct Fraction32
     {
-
+        /// <summary>
+        /// The numerator.
+        /// </summary>
         public readonly SignedIntType Numerator;
 
+        /// <summary>
+        /// The denominator.
+        /// </summary>
         public readonly UnsignedIntType Denominator;
-
     }
 }
