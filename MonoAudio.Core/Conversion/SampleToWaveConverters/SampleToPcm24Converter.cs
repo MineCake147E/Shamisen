@@ -1,4 +1,5 @@
 ﻿using MonoAudio.Extensions;
+using MonoAudio.Formats;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <param name="source">The source.</param>
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
-        public SampleToPcm24Converter(IReadableAudioSource<float> source, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
+        public SampleToPcm24Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
             : base(source, new WaveFormat(source.Format.SampleRate, 24, source.Format.Channels, AudioEncoding.Pcm))
         {
             if (accuracyNeeded)

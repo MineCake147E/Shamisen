@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio.Conversion.SampleToWaveConverters
 {
@@ -15,7 +16,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// Initializes a new instance of the <see cref="SampleToFloat32Converter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public SampleToFloat32Converter(IReadableAudioSource<float> source)
+        public SampleToFloat32Converter(IReadableAudioSource<float, SampleFormat> source)
             : base(source, new WaveFormat(source.Format.SampleRate, 32, source.Format.Channels, AudioEncoding.IeeeFloat))
         {
         }

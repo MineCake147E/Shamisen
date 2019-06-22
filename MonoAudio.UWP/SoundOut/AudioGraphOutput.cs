@@ -119,7 +119,7 @@ namespace MonoAudio.SoundOut
         /// <exception cref="System.ArgumentException">Only 32-bit IEEEFloat format is supported! - source</exception>
         public void Initialize(IWaveSource source)
         {
-            if (source.Format.WaveFormatTag != AudioEncoding.IeeeFloat || source.Format.BitsPerSample != 32) throw new ArgumentException("Only 32-bit IEEEFloat format is supported!", nameof(source));
+            if (source.Format.Encoding != AudioEncoding.IeeeFloat || source.Format.BitDepth != 32) throw new ArgumentException("Only 32-bit IEEEFloat format is supported!", nameof(source));
             Source = source;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio.Conversion.SampleToWaveConverters
 {
@@ -22,7 +23,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
-        public SampleToPCM8Converter(IReadableAudioSource<float> source, bool accuracyNeeded = true)
+        public SampleToPCM8Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true)
             : base(source, new WaveFormat(source.Format.SampleRate, 8, source.Format.Channels, AudioEncoding.Pcm))
         {
             if (accuracyNeeded)

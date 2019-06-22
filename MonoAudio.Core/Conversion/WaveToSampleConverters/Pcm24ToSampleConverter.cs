@@ -1,4 +1,5 @@
 ﻿using MonoAudio.Extensions;
+using MonoAudio.Formats;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -32,8 +33,8 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="endianness">The endianness of <paramref name="source"/>.</param>
-        public Pcm24ToSampleConverter(IReadableAudioSource<byte> source, Endianness endianness = Endianness.Little)
-            : base(source, new WaveFormat(source.Format.SampleRate, 32, source.Format.Channels, AudioEncoding.IeeeFloat))
+        public Pcm24ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, Endianness endianness = Endianness.Little)
+            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels))
         {
             Endianness = endianness;
         }
