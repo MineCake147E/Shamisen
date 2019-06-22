@@ -9,6 +9,7 @@
     <DocumentationFile>C:\Visual Studio 2019\Repos\MonoAudio\MonoAudio.Core\MonoAudio.Core.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,6 +29,6 @@
     <Folder Include="Conversion\Resampling\" />
     <Folder Include="Conversion\Resampling\SampleResampler\" />
     <Folder Include="Utils\" />
-    <Folder Include="Math\" />
+    <Folder Include="MathUtils\" />
   </ItemGroup>
 </Project>

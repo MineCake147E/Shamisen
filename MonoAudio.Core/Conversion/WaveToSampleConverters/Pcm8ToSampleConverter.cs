@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio.Conversion.WaveToSampleConverters
 {
@@ -18,8 +19,8 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// Initializes a new instance of the <see cref="Pcm8ToSampleConverter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public Pcm8ToSampleConverter(IReadableAudioSource<byte> source)
-            : base(source, new WaveFormat(source.Format.SampleRate, 32, source.Format.Channels, AudioEncoding.IeeeFloat))
+        public Pcm8ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source)
+            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels))
         {
         }
 

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio.Conversion.SampleToWaveConverters
 {
     /// <summary>
     /// Converts samples to wave data.
     /// </summary>
-    public abstract class SampleToWaveConverterBase : IAudioConverter<float, byte>, IWaveSource
+    public abstract class SampleToWaveConverterBase : IAudioConverter<float, SampleFormat, byte, IWaveFormat>, IWaveSource
     {
         /// <summary>
         /// Gets the source.
@@ -15,10 +16,10 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <value>
         /// The source.
         /// </value>
-        public IReadableAudioSource<float> Source { get; }
+        public IReadableAudioSource<float, SampleFormat> Source { get; }
 
         /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource" /> supports seeking or not.
+        /// Gets or sets whether the <see cref="IAudioSource{TSample, TFormat}" /> supports seeking or not.
         /// </summary>
         public bool CanSeek => Source.CanSeek;
 
@@ -28,7 +29,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <value>
         /// The format.
         /// </value>
-        public WaveFormat Format { get; }
+        public IWaveFormat Format { get; }
 
         /// <summary>
         /// Gets the bytes consumed per sample.
@@ -39,13 +40,13 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         protected abstract int BytesPerSample { get; }
 
         /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource" /> is.
+        /// Gets or sets where the <see cref="IAudioSource{TSample, TFormat}" /> is.
         /// Some implementation could not support this property.
         /// </summary>
         public long Position { get => Source.Position * BytesPerSample; set => Source.Position = value / BytesPerSample; }
 
         /// <summary>
-        /// Gets how long the <see cref="IAudioSource" /> lasts in samples.
+        /// Gets how long the <see cref="IAudioSource{TSample, TFormat}" /> lasts in samples.
         /// -1 Means Infinity.
         /// </summary>
         public long Length => Source.Length * BytesPerSample;
@@ -76,7 +77,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// or
         /// format
         /// </exception>
-        protected SampleToWaveConverterBase(IReadableAudioSource<float> source, WaveFormat format)
+        protected SampleToWaveConverterBase(IReadableAudioSource<float, SampleFormat> source, IWaveFormat format)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
             Format = format ?? throw new ArgumentNullException(nameof(format));
