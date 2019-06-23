@@ -9,6 +9,9 @@ A Cross-Platform Audio Library for .NET Standard.
 - UWP `AudioGraph` output
 
 ### Features under development
+- Cross-Platform Resampler
 - Xamarin.Android `AudioTrack` output
+
+### Planned Features
 - Xamarin.iOS `AudioUnit` output
 - OpenTK `AL` output
