@@ -15,3 +15,4 @@ A Cross-Platform Audio Library for .NET Standard.
 ### Planned Features
 - Xamarin.iOS `AudioUnit` output
 - OpenTK `AL` output
+- Original WASAPI output
