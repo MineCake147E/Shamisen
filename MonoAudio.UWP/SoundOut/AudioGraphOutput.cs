@@ -25,13 +25,13 @@ namespace MonoAudio.SoundOut
         private readonly uint sampleSize;
         private readonly int sampleCap;
 
-        private AudioGraphOutput(AudioGraph audioGraph)
+        private AudioGraphOutput(AudioGraph audioGraph, AudioDeviceOutputNode deviceOutputNode)
         {
             AudioGraph = audioGraph ?? throw new ArgumentNullException(nameof(audioGraph));
             AudioEncodingProperties nodeEncodingProperties = audioGraph.EncodingProperties;
-            nodeEncodingProperties.ChannelCount = 1;
+            //nodeEncodingProperties.ChannelCount = Channels;
             frameInputNode = audioGraph.CreateFrameInputNode(nodeEncodingProperties);
-
+            frameInputNode.AddOutgoingConnection(deviceOutputNode);
             // Initialize the Frame Input Node in the stopped state
             frameInputNode.Stop();
 
@@ -99,7 +99,8 @@ namespace MonoAudio.SoundOut
                 {
                     BitsPerSample = 32,
                     ChannelCount = ChannelCount,
-                    SampleRate = SampleRate
+                    SampleRate = SampleRate,
+                    Subtype = "Float"
                 }
             };
 
@@ -108,8 +109,10 @@ namespace MonoAudio.SoundOut
             {
                 throw new Exception("AudioGraph creation error: " + result.Status.ToString(), result.ExtendedError);
             }
+            CreateAudioDeviceOutputNodeResult deviceOutputNodeResult = await result.Graph.CreateDeviceOutputNodeAsync();
+            if (deviceOutputNodeResult.Status != AudioDeviceNodeCreationStatus.Success) throw new Exception("AudioGraph creation error: " + deviceOutputNodeResult.Status.ToString(), deviceOutputNodeResult.ExtendedError);
 
-            return new AudioGraphOutput(result.Graph);
+            return new AudioGraphOutput(result.Graph, deviceOutputNodeResult.DeviceOutputNode);
         }
 
         /// <summary>
