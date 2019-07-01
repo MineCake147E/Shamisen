@@ -38,7 +38,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// </returns>
         public override int Read(Span<byte> buffer)
         {
-            return 4 * Source.Read(MemoryMarshal.Cast<byte, float>(buffer.Slice(0, buffer.Length - (buffer.Length % 4))));
+            return sizeof(float) * Source.Read(MemoryMarshal.Cast<byte, float>(buffer));
         }
 
         /// <summary>

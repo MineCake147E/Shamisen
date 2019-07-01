@@ -8,6 +8,11 @@ namespace MonoAudio.MathUtils
     public static class MathHelper
     {
         /// <summary>
+        /// The double pi.
+        /// </summary>
+        public const double DoublePI = Math.PI * 2;
+
+        /// <summary>
         /// Minimizes the divisor.
         /// </summary>
         /// <param name="mul">The multiplier.</param>

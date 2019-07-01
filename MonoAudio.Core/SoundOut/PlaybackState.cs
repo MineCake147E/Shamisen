@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MonoAudio.SoundOut
+﻿namespace MonoAudio.SoundOut
 {
     /// <summary>
     /// Represents a state of playback.

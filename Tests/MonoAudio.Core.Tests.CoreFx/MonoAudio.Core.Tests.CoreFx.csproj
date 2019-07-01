@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <ApplicationIcon />
+
+    <OutputType>Library</OutputType>
+
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="nunit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoAudio.Core\MonoAudio.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CSCodec">
+      <HintPath>..\..\..\..\..\Visual Studio 2017\Projects\CSCodec\CSCodec\bin\Release\netstandard2.0\CSCodec.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,47 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<# var types = new string[]{"float","double","byte","ushort","uint","ulong","sbyte","short","int","long"};#>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Numerics;
+using System.Runtime.InteropServices;
+
+namespace System
+{
+    /// <summary>
+    /// Provides some extension functions.
+    /// </summary>
+    public static partial class SpanExtensions
+    {
+<#foreach(var item in types){#>
+		/// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to be filled.</param>
+        public static void FastFill(this Span<<#=item#>> span, <#=item#> value = default)
+        {
+            if(Vector<<#=item#>>.Count > span.Length)
+			{
+				span.Fill(value);
+			}
+			else
+			{
+				Vector<<#=item#>> filler = new Vector<<#=item#>>(value);
+				var spanV = MemoryMarshal.Cast<<#=item#>, Vector<<#=item#>>>(span);
+				for (int i = 0; i < spanV.Length; i++)
+				{
+				    spanV[i] = filler;
+				}
+				var spanR = span.Slice(spanV.Length * Vector<<#=item#>>.Count);
+				spanR.Fill(value);
+			}
+        }
+<#}#>
+    }
+}

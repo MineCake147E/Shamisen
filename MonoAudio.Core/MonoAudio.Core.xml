@@ -558,30 +558,22 @@
             The source.
             </value>
         </member>
-        <member name="T:MonoAudio.Conversion.Resampling.IResampler`2">
-            <summary>
-            Defines a base infrastructure of an resampler.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The format of the sample.</typeparam>
-            <seealso cref="T:MonoAudio.Conversion.IAudioConverter`4" />
-        </member>
-        <member name="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase">
+        <member name="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase">
             <summary>
             The base of resampler.
             </summary>
-            <seealso cref="T:MonoAudio.Conversion.Resampling.IResampler`2" />
+            <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Int32)">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Int32)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> class.
+            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase"/> class.
             </summary>
             <param name="source">The source.</param>
             <param name="destinationSampleRate">The destination sample rate.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">destinationSampleRate</exception>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Source">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Source">
             <summary>
             Gets the source.
             </summary>
@@ -589,7 +581,7 @@
             The source.
             </value>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.CanSeek">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.CanSeek">
             <summary>
             Gets a value indicating whether this instance can seek.
             </summary>
@@ -597,7 +589,7 @@
               <c>true</c> if this instance can seek; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Format">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Format">
             <summary>
             Gets the format.
             </summary>
@@ -605,7 +597,109 @@
             The format.
             </value>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Position">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMul">
+            <summary>
+            Gets the rate destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDiv">
+            <summary>
+            Gets the rate source sample rate.
+            </summary>
+            <value>
+            The number to divide with.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMulInverse">
+            <summary>
+            Gets the divisor destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDivInverse">
+            <summary>
+            Gets the divisor source sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels">
+            <summary>
+            Gets the channels of output.
+            </summary>
+            <value>
+            The channels of output.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int32)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int32)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int64)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int64)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Single)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Single)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetConversionGradient(System.Int32)">
+            <summary>
+            Calculates the conversion gradient a little precisely.
+            </summary>
+            <param name="outputPosition">The output position. Must not be multiplied by <see cref="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetCeiledInputPosition(System.Int32)">
+            <summary>
+            Gets the ceilinged input position.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Position">
             <summary>
             Gets or sets the position.
             </summary>
@@ -613,7 +707,7 @@
             The position.
             </value>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Length">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Length">
             <summary>
             Gets the length.
             </summary>
@@ -621,37 +715,64 @@
             The length.
             </value>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Read(System.Span{System.Single})">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Read(System.Span{System.Single})">
             <summary>
-            Reads the specified buffer.
+            Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Dispose(System.Boolean)">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.ActualDispose(System.Boolean)">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.ActualDispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Dispose">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose">
             <summary>
             Releases all resource used by the
             <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> object.
             </summary>
-            <remarks>Call <see cref="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Dispose"/> when you are finished using the
-            <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>. The <see cref="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Dispose"/>
+            <remarks>Call <see cref="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose"/> when you are finished using the
+            <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>. The <see cref="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose"/>
             method leaves the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> in an
-            unusable state. After calling <see cref="M:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase.Dispose"/>, you must release all references to the
+            unusable state. After calling <see cref="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose"/>, you must release all references to the
             <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> so the garbage collector can
             reclaim the memory that the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>
             was occupying.</remarks>
+        </member>
+        <member name="T:MonoAudio.Conversion.Resampling.Sample.SplineResampler">
+             <summary>
+             Performs up-sampling using Catmull-Rom Spline interpolation.
+            
+             </summary>
+             <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.SplineResampler"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="destinationSampleRate">The destination sample rate.</param>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ActualDispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter">
             <summary>
@@ -1287,6 +1408,273 @@
             The environment endianness.
             </value>
         </member>
+        <member name="T:MonoAudio.Filters.BiQuadFilter">
+            <summary>
+            Provides a function of filtering with Digital BiQuad Filter.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadFilter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},MonoAudio.Filters.BiQuadParameter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.BiQuadFilter"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="parameter">The parameter.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.Parameter">
+            <summary>
+            Gets the parameter.
+            </summary>
+            <value>
+            The parameter.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.CanSeek">
+            <summary>
+            Gets a value indicating whether this instance can seek.
+            </summary>
+            <value>
+              <c>true</c> if this instance can seek; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.Position">
+            <summary>
+            Gets or sets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.BiQuadFilter.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadFilter.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadFilter.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadFilter.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Filters.BiQuadFilter"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadFilter.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Filters.BiQuadParameter">
+            <summary>
+            Represents a BiQuad filter parameters.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.BiQuadParameter"/> struct.
+            </summary>
+            <param name="b0">The b0.</param>
+            <param name="b1">The b1.</param>
+            <param name="b2">The b2.</param>
+            <param name="a0">The a0.</param>
+            <param name="a1">The a1.</param>
+            <param name="a2">The a2.</param>
+        </member>
+        <member name="F:MonoAudio.Filters.BiQuadParameter.B">
+            <summary>
+            The normalized B parameters.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Filters.BiQuadParameter.A">
+            <summary>
+            The normalized A parameters.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Filters.BiQuadParameter.HalfLn2">
+            <summary>
+            The half Math.Log10(2)/Math.Log10(Math.E) with Bit-Exact representation.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateLPFParameter(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the LPF parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="cutOffFrequency">The cut off frequency.</param>
+            <param name="quality">The quality of LPF.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateHPFParameter(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the HPF parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="cutOffFrequency">The cut off frequency.</param>
+            <param name="quality">The quality of LPF.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateAPFParameter(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the APF parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="cutOffFrequency">The cut off frequency.</param>
+            <param name="quality">The quality of LPF.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateBPFParameterFromQuality(System.Double,System.Double,System.Double,MonoAudio.Filters.BpfGainKind)">
+            <summary>
+            Creates the BPF parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="quality">The quality.</param>
+            <param name="gainKind">Kind of the gain.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">The kind of gain is invalid! - gainKind</exception>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateBPFParameterFromBandWidth(System.Double,System.Double,System.Double,MonoAudio.Filters.BpfGainKind)">
+            <summary>
+            Creates the BPF parameter from specified bandwidth.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="bandWidth">The bandwidth.</param>
+            <param name="gainKind">Kind of the gain.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">The kind of gain is invalid! - gainKind</exception>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateNotchFilterParameterFromQuality(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the notch filter parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="quality">The quality.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateNotchFilterParameterFromBandWidth(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the notch filter parameter from specified bandwidth.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="bandWidth">The bandwidth.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreatePeakingEqualizerParameterFromQuality(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the peaking equalizer parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="quality">The quality.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreatePeakingEqualizerParameterFromBandWidth(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the peaking equalizer parameter from specified bandwidth.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="bandWidth">The bandwidth.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateLowShelfFilterParameterFromQuality(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the low shelf filter parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="quality">The quality.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateLowShelfFilterParameterFromBandWidth(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the low shelf filter parameter from specified slope.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="cutOffFrequency">The cut off frequency.</param>
+            <param name="slope">The slope in dB/Oct.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateHighShelfFilterParameterFromQuality(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the High shelf filter parameter from specified quality.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="centerFrequency">The center frequency.</param>
+            <param name="quality">The quality.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateHighShelfFilterParameterFromBandWidth(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates the High shelf filter parameter from specified slope.
+            </summary>
+            <param name="samplingFrequency">The sampling frequency.</param>
+            <param name="cutOffFrequency">The cut off frequency.</param>
+            <param name="slope">The slope in dB/Oct.</param>
+            <param name="dBGain">The peak gain in dB.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Filters.BpfGainKind">
+            <summary>
+            Represents a BPF gain kind.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Filters.BpfGainKind.ConstSkirt">
+            <summary>
+            Constant skirt gain.
+            Peak gain = Q
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Filters.BpfGainKind.ZeroDBPeakGain">
+            <summary>
+            Constant 0 dB peak gain.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Filters.IAudioFilter`2">
+            <summary>
+            Defines a base infrastructure of an audio filter.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The format of the sample.</typeparam>
+            <seealso cref="T:MonoAudio.Conversion.IAudioConverter`4" />
+        </member>
         <member name="T:MonoAudio.Formats.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.
@@ -1669,6 +2057,11 @@
             Helps some calculations.
             </summary>
         </member>
+        <member name="F:MonoAudio.MathUtils.MathHelper.DoublePI">
+            <summary>
+            The double pi.
+            </summary>
+        </member>
         <member name="M:MonoAudio.MathUtils.MathHelper.MinimizeDivisor(System.Int32,System.Int32)">
             <summary>
             Minimizes the divisor.
@@ -1765,6 +2158,169 @@
             <summary>
             The playback is paused.
             </summary>
+        </member>
+        <member name="T:MonoAudio.Synthesis.SinusoidSource">
+            <summary>
+            Generates a sinusoid wave with specified frequency.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.Formats.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SinusoidSource"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Frequency">
+            <summary>
+            Gets or sets the frequency.
+            </summary>
+            <value>
+            The frequency.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Read(System.Span{System.Single})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Utils.ResizableBufferWrapper`1">
+            <summary>
+            Provides a Buffer wrapper.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Utils.ResizableBufferWrapper`1"/> class.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Utils.ResizableBufferWrapper`1.CurrentSizeInBytes">
+            <summary>
+            Gets the current size in bytes.
+            </summary>
+            <value>
+            The current size in bytes.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Utils.ResizableBufferWrapper`1.ActualBuffer">
+            <summary>
+            Gets the buffer.
+            </summary>
+            <value>
+            The buffer.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Utils.ResizableBufferWrapper`1.Buffer">
+            <summary>
+            Gets the buffer.
+            </summary>
+            <value>
+            The buffer.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.Resize(System.Int32)">
+            <summary>
+            Resizes the buffer to the specified new size.
+            </summary>
+            <param name="newSize">The new size in <typeparamref name="T"/>.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.ResizeInternal(System.Int32)">
+            <summary>
+            Resizes the buffer to the specified new size.
+            </summary>
+            <param name="newSize">The new size in bytes.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Utils.ResizableBufferWrapper`1"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizableBufferWrapper`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Utils.ResizablePooledBufferWrapper`1">
+            <summary>
+            Provides a Buffer wrapper.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <seealso cref="T:MonoAudio.Utils.ResizableBufferWrapper`1" />
+        </member>
+        <member name="M:MonoAudio.Utils.ResizablePooledBufferWrapper`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Utils.ResizablePooledBufferWrapper`1"/> class.
+            </summary>
+            <param name="initialSize">The initial size.</param>
+        </member>
+        <member name="P:MonoAudio.Utils.ResizablePooledBufferWrapper`1.ActualBuffer">
+            <summary>
+            Gets the buffer.
+            </summary>
+            <value>
+            The buffer.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizablePooledBufferWrapper`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ResizablePooledBufferWrapper`1.ResizeInternal(System.Int32)">
+            <summary>
+            Resizes the buffer to the specified new size.
+            </summary>
+            <param name="newSize">The new size in bytes.</param>
         </member>
         <member name="T:System.ThrowHelper">
             <summary>
@@ -1944,6 +2500,106 @@
             <returns>
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
+        </member>
+        <member name="T:System.MathI">
+            <summary>
+            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
+            </summary>
+        </member>
+        <member name="M:System.MathI.FloorStep(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="T:System.SpanExtensions">
+            <summary>
+            Provides some extension functions.
+            </summary>
+            <summary>
+            Provides some extension functions.
+            </summary>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with <paramref name="Align"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="Align">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
+        </member>
+        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to be filled.</param>
         </member>
     </members>
 </doc>
