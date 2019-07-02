@@ -38,34 +38,6 @@ namespace MonoAudio.Conversion.Resampling.Sample
             }
         }
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
-        public override int Read(Span<float> buffer)
-        {
-            int channels = Channels;
-
-            #region Initialize and Read
-
-            //Align the length of the buffer.
-            buffer = buffer.SliceAlign(Format.Channels);
-
-            int SampleLengthOut = buffer.Length / channels;
-            int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
-
-            //Resampling start
-            Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
-            Source.Read(srcBuffer.Slice(channels * 3));
-
-            #endregion Initialize and Read
-
-            Resample(buffer, channels, srcBuffer);
-            srcBuffer.Slice(srcBuffer.Length - channels * 3, channels * 3).CopyTo(srcBuffer);
-            return buffer.Length;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int CheckBuffer(int channels, int SampleLengthOut)
         {

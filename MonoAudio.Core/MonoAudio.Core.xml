@@ -766,27 +766,18 @@
             <param name="source">The source.</param>
             <param name="destinationSampleRate">The destination sample rate.</param>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ActualDispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.Resample(System.Span{System.Single},System.Int32,System.Span{System.Single})">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
-            Resamples the specified buffer.
-            AUTOGEN:Partially unrolled SIMD-ready resampling
+            Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
-            <param name="channels">The channels.</param>
-            <param name="srcBuffer">The source buffer.</param>
+            <returns>The length of the data written.</returns>
         </member>
         <member name="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter">
             <summary>
