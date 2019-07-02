@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using MonoAudio.Filters;
 using MonoAudio.Formats;
 using MonoAudio.Utils;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace MonoAudio.Conversion.Resampling.Sample
 {
@@ -11,10 +14,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
     /// Performs up-sampling using Catmull-Rom Spline interpolation.
     ///
     /// </summary>
-    /// <seealso cref="MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
-    public sealed class SplineResampler : ResamplerBase
+    /// <seealso cref="ResamplerBase" />
+    public sealed partial class SplineResampler : ResamplerBase
     {
         private ResizableBufferWrapper<float> bufferWrapper;
+        private float[][] SampleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SplineResampler"/> class.
@@ -27,6 +31,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
                 : source, destinationSampleRate)
         {
             bufferWrapper = new ResizablePooledBufferWrapper<float>(1);
+            SampleCache = new float[3][];
+            for (int i = 0; i < SampleCache.Length; i++)
+            {
+                SampleCache[i] = new float[Channels];
+            }
         }
 
         /// <summary>
@@ -36,11 +45,30 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <returns>The length of the data written.</returns>
         public override int Read(Span<float> buffer)
         {
+            int channels = Channels;
+
+            #region Initialize and Read
+
             //Align the length of the buffer.
             buffer = buffer.SliceAlign(Format.Channels);
-            int channels = Channels;
-            int SampleLengthOut = buffer.Length / channels;
 
+            int SampleLengthOut = buffer.Length / channels;
+            int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
+
+            //Resampling start
+            Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            Source.Read(srcBuffer.Slice(channels * 3));
+
+            #endregion Initialize and Read
+
+            Resample(buffer, channels, srcBuffer);
+            srcBuffer.Slice(srcBuffer.Length - channels * 3, channels * 3).CopyTo(srcBuffer);
+            return buffer.Length;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int CheckBuffer(int channels, int SampleLengthOut)
+        {
             //Internal buffer length check and some boundary-sample copies
             //Reserving some samples ahead
             //Row 1: #=to read $=not to read %=read and copied to $s
@@ -53,45 +81,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
                 ExpandBuffer(internalBufferLengthRequired);
             }
 
-            //Resampling start
-            Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
-            Source.Read(srcBuffer.Slice(channels * 3));
-            int outputSamplePosition = 0;
-            // Use formula from http://www.mvps.org/directx/articles/catmull/
-            //TODO: Unroll for SIMD usage
-            for (int i = 0; i < buffer.Length; i += channels)
-            {
-                (var inputSamplePosition, var amount) = GetConversionGradient(outputSamplePosition);
-                int inputSampleIndex = inputSamplePosition * channels;
-                if (amount == 0)
-                {
-                    srcBuffer.Slice(inputSampleIndex + channels, channels).CopyTo(buffer.Slice(i));
-                }
-                else
-                {
-                    float amountP2 = amount * amount;
-                    float amountP3 = amountP2 * amount;
-                    for (int ch = 0; ch < channels; ch++)
-                    {
-                        ref var destSample = ref buffer[i + ch];    //Persist the reference in order to eliminate boundary checks.
-                        int posIn = inputSampleIndex + ch;
-                        var value1 = srcBuffer[posIn];   //The control point 1.
-                        var value2 = srcBuffer[posIn + channels];   //The control point 2.
-                        var value3 = srcBuffer[posIn + 2 * channels];   //The control point 3.
-                        var value4 = srcBuffer[posIn + 3 * channels];   //The control point 4.
-
-                        // Use formula from http://www.mvps.org/directx/articles/catmull/
-                        destSample = 0.5f * (
-                            2.0f * value2 +
-                            (value3 - value1) * amount +
-                            (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * amountP2 +
-                            (3.0f * value2 - value1 - 3.0f * value3 + value4) * amountP3);
-                    }
-                }
-                outputSamplePosition++;
-            }
-            srcBuffer.Slice(srcBuffer.Length - channels * 3, channels * 3).CopyTo(srcBuffer);
-            return buffer.Length;
+            return internalBufferLengthRequired;
         }
 
         private void ExpandBuffer(int internalBufferLengthRequired)
@@ -113,6 +103,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
             }
             Source.Dispose();
             bufferWrapper.Dispose();
+            SampleCache = null;
         }
     }
 }

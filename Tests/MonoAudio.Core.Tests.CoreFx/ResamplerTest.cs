@@ -83,13 +83,23 @@ namespace MonoAudio.Core.Tests.CoreFx
             Assert.Pass();
         }
 
-        [Test]
-        public void UpSamplingLoadTest()
+        [TestCase(1)]   //Monaural
+        [TestCase(2)]   //Stereo
+        [TestCase(3)]   //2.1ch / 3ch Surround
+        [TestCase(4)]   //3.1ch / 4ch Surround
+        [TestCase(5)]   //4.1ch / 5ch Surround
+        [TestCase(6)]   //5.1ch Surround
+        [TestCase(7)]   //5.2ch Surround
+        [TestCase(8)]   //7.1ch Surround
+        [TestCase(9)]   //7.2ch Surround
+        [TestCase(10)]   //9.1ch Surround
+        public void UpSamplingLoadTest(int Channels)
         {
             const int SourceSampleRate = 44100;
             const int DestinationSampleRate = 192000;
-            const double destinationSampleRateD = (double)DestinationSampleRate;
-            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = 6000 };
+            const double destinationSampleRateD = DestinationSampleRate;
+            double channelsInverse = 1.0 / Channels;
+            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 6000 };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[2048];
             //Warm up
@@ -101,8 +111,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 200);
             sw.Stop();
-            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples} samples(about {samples / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples / sw.Elapsed.TotalSeconds}[samples/s](about {samples / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
             samples = 0;
             sw.Reset();
             sw.Start();
@@ -111,8 +121,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 1000);
             sw.Stop();
-            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples} samples(about {samples / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples / sw.Elapsed.TotalSeconds}[samples/s](about {samples / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
             Assert.Greater(samples, DestinationSampleRate);
         }
     }
