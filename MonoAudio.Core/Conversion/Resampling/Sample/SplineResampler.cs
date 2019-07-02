@@ -42,8 +42,10 @@ namespace MonoAudio.Conversion.Resampling.Sample
             int SampleLengthOut = buffer.Length / channels;
 
             //Internal buffer length check and some boundary-sample copies
-            //Reserving 1 sample ahead #=to read $=not to read %=read and copied to $s
-            //$$$########%%%
+            //Reserving some samples ahead
+            //Row 1: #=to read $=not to read %=read and copied to $s
+            //$$$############################%%%
+            // ^ process head                 ^process tail
             int internalBufferLengthRequired = (GetCeiledInputPosition(SampleLengthOut) + 3) * channels;
 
             if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
@@ -55,6 +57,8 @@ namespace MonoAudio.Conversion.Resampling.Sample
             Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
             Source.Read(srcBuffer.Slice(channels * 3));
             int outputSamplePosition = 0;
+            // Use formula from http://www.mvps.org/directx/articles/catmull/
+            //TODO: Unroll for SIMD usage
             for (int i = 0; i < buffer.Length; i += channels)
             {
                 (var inputSamplePosition, var amount) = GetConversionGradient(outputSamplePosition);
@@ -77,7 +81,9 @@ namespace MonoAudio.Conversion.Resampling.Sample
                         var value4 = srcBuffer[posIn + 3 * channels];   //The control point 4.
 
                         // Use formula from http://www.mvps.org/directx/articles/catmull/
-                        destSample = 0.5f * (2.0f * value2 + (value3 - value1) * amount +
+                        destSample = 0.5f * (
+                            2.0f * value2 +
+                            (value3 - value1) * amount +
                             (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * amountP2 +
                             (3.0f * value2 - value1 - 3.0f * value3 + value4) * amountP3);
                     }

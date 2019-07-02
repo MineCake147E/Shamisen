@@ -24,12 +24,8 @@ namespace System
 			}
 			else
 			{
-				Vector<float> filler = new Vector<float>(value);
 				var spanV = MemoryMarshal.Cast<float, Vector<float>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<float>(value));
 				var spanR = span.Slice(spanV.Length * Vector<float>.Count);
 				spanR.Fill(value);
 			}
@@ -47,12 +43,8 @@ namespace System
 			}
 			else
 			{
-				Vector<double> filler = new Vector<double>(value);
 				var spanV = MemoryMarshal.Cast<double, Vector<double>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<double>(value));
 				var spanR = span.Slice(spanV.Length * Vector<double>.Count);
 				spanR.Fill(value);
 			}
@@ -70,12 +62,8 @@ namespace System
 			}
 			else
 			{
-				Vector<byte> filler = new Vector<byte>(value);
 				var spanV = MemoryMarshal.Cast<byte, Vector<byte>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<byte>(value));
 				var spanR = span.Slice(spanV.Length * Vector<byte>.Count);
 				spanR.Fill(value);
 			}
@@ -93,12 +81,8 @@ namespace System
 			}
 			else
 			{
-				Vector<ushort> filler = new Vector<ushort>(value);
 				var spanV = MemoryMarshal.Cast<ushort, Vector<ushort>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<ushort>(value));
 				var spanR = span.Slice(spanV.Length * Vector<ushort>.Count);
 				spanR.Fill(value);
 			}
@@ -116,12 +100,8 @@ namespace System
 			}
 			else
 			{
-				Vector<uint> filler = new Vector<uint>(value);
 				var spanV = MemoryMarshal.Cast<uint, Vector<uint>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<uint>(value));
 				var spanR = span.Slice(spanV.Length * Vector<uint>.Count);
 				spanR.Fill(value);
 			}
@@ -139,12 +119,8 @@ namespace System
 			}
 			else
 			{
-				Vector<ulong> filler = new Vector<ulong>(value);
 				var spanV = MemoryMarshal.Cast<ulong, Vector<ulong>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<ulong>(value));
 				var spanR = span.Slice(spanV.Length * Vector<ulong>.Count);
 				spanR.Fill(value);
 			}
@@ -162,12 +138,8 @@ namespace System
 			}
 			else
 			{
-				Vector<sbyte> filler = new Vector<sbyte>(value);
 				var spanV = MemoryMarshal.Cast<sbyte, Vector<sbyte>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<sbyte>(value));
 				var spanR = span.Slice(spanV.Length * Vector<sbyte>.Count);
 				spanR.Fill(value);
 			}
@@ -185,12 +157,8 @@ namespace System
 			}
 			else
 			{
-				Vector<short> filler = new Vector<short>(value);
 				var spanV = MemoryMarshal.Cast<short, Vector<short>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<short>(value));
 				var spanR = span.Slice(spanV.Length * Vector<short>.Count);
 				spanR.Fill(value);
 			}
@@ -208,12 +176,8 @@ namespace System
 			}
 			else
 			{
-				Vector<int> filler = new Vector<int>(value);
 				var spanV = MemoryMarshal.Cast<int, Vector<int>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<int>(value));
 				var spanR = span.Slice(spanV.Length * Vector<int>.Count);
 				spanR.Fill(value);
 			}
@@ -231,12 +195,8 @@ namespace System
 			}
 			else
 			{
-				Vector<long> filler = new Vector<long>(value);
 				var spanV = MemoryMarshal.Cast<long, Vector<long>>(span);
-				for (int i = 0; i < spanV.Length; i++)
-				{
-				    spanV[i] = filler;
-				}
+				spanV.Fill(new Vector<long>(value));
 				var spanR = span.Slice(spanV.Length * Vector<long>.Count);
 				spanR.Fill(value);
 			}

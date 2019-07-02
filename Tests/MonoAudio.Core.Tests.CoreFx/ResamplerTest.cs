@@ -7,6 +7,7 @@ using MonoAudio.Synthesis;
 using NUnit.Framework;
 using CSCodec.Filters.Transformation;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace MonoAudio.Core.Tests.CoreFx
 {
@@ -80,6 +81,39 @@ namespace MonoAudio.Core.Tests.CoreFx
                 Console.WriteLine(item);
             }
             Assert.Pass();
+        }
+
+        [Test]
+        public void UpSamplingLoadTest()
+        {
+            const int SourceSampleRate = 44100;
+            const int DestinationSampleRate = 192000;
+            const double destinationSampleRateD = (double)DestinationSampleRate;
+            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = 6000 };
+            var resampler = new SplineResampler(src, DestinationSampleRate);
+            var buffer = new float[2048];
+            //Warm up
+            var sw = new Stopwatch();
+            ulong samples = 0;
+            sw.Start();
+            do
+            {
+                samples += (ulong)resampler.Read(buffer);
+            } while (sw.ElapsedMilliseconds < 200);
+            sw.Stop();
+            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples} samples(about {samples / destinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples / sw.Elapsed.TotalSeconds}[samples/s](about {samples / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            samples = 0;
+            sw.Reset();
+            sw.Start();
+            do
+            {
+                samples += (ulong)resampler.Read(buffer);
+            } while (sw.ElapsedMilliseconds < 1000);
+            sw.Stop();
+            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples} samples(about {samples / destinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples / sw.Elapsed.TotalSeconds}[samples/s](about {samples / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Assert.Greater(samples, DestinationSampleRate);
         }
     }
 }
