@@ -2910,6 +2910,412 @@
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
         </member>
+        <member name="T:System.Numerics.Vector7">
+            <summary>
+            Represents a vector that has 7 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector7.Front">
+            <summary>
+            The front 3 values
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector7.Back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Numerics.Vector3,System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="front">The front three values.</param>
+            <param name="back">The back four values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_UnaryNegation(System.Numerics.Vector7)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Addition(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Subtraction(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Single,System.Numerics.Vector7)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Equality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Inequality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Numerics.Vector7)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector8">
+            <summary>
+            Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value8">
+            <summary>
+            The eighth value
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector8.Front">
+            <summary>
+            The front 4 values
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector8.Back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+            <param name="v8">The v8.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Numerics.Vector4,System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back four values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_UnaryNegation(System.Numerics.Vector8)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Addition(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
         <member name="T:System.SpanExtensions">
             <summary>
             Provides some extension functions.

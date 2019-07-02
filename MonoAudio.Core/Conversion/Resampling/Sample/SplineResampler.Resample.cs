@@ -256,6 +256,71 @@ namespace MonoAudio.Conversion.Resampling.Sample
                             }
                         }
                         break;
+					case 7:
+                        {
+                            var vBuffer = Cast<float, Vector7>(buffer);
+                            var vSrcBuffer = Cast<float, Vector7>(srcBuffer);
+                            for (int i = 0; i < vBuffer.Length; i++)
+                            {
+                                (var inputSamplePosition, var x) = GetConversionGradient(outputSamplePosition);
+                                int inputSampleIndex = inputSamplePosition;
+                                if (x == 0)
+                                {
+                                    //srcBuffer.Slice(inputSampleIndex + channels, channels).CopyTo(buffer.Slice(i));
+                                    vBuffer[i] = vSrcBuffer[inputSampleIndex + 1];
+                                }
+                                else
+                                {
+                                    float xP2 = x * x;
+                                    float xP3 = xP2 * x;
+                                    var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
+                                    var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
+                                    var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
+                                    var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+
+                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    vBuffer[i] = 0.5f * (
+                                        2.0f * value2 +
+                                        (value3 - value1) * x +
+                                        (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
+                                        (-value1 + 3.0f * value2 - 3.0f * value3 + value4) * xP3);
+                                }
+                            }
+                        }
+                        break;
+					case 8:
+                        {
+                            var vBuffer = Cast<float, Vector8>(buffer);
+                            var vSrcBuffer = Cast<float, Vector8>(srcBuffer);
+                            for (int i = 0; i < vBuffer.Length; i++)
+                            {
+                                (var inputSamplePosition, var x) = GetConversionGradient(outputSamplePosition);
+                                int inputSampleIndex = inputSamplePosition;
+                                if (x == 0)
+                                {
+                                    //srcBuffer.Slice(inputSampleIndex + channels, channels).CopyTo(buffer.Slice(i));
+                                    vBuffer[i] = vSrcBuffer[inputSampleIndex + 1];
+                                }
+                                else
+                                {
+                                    float xP2 = x * x;
+                                    float xP3 = xP2 * x;
+                                    var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
+                                    var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
+                                    var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
+                                    var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+
+                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    vBuffer[i] = 0.5f * (
+                                        2.0f * value2 +
+                                        (value3 - value1) * x +
+                                        (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
+                                        (-value1 + 3.0f * value2 - 3.0f * value3 + value4) * xP3);
+                                }
+                            }
+                        }
+                        break;
+
                     #endregion SIMD Optimized Multi-Channel Audio Resampling
 
                     default:

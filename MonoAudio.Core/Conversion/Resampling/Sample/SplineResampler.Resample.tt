@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<#var channelsAndTypes = new[]{(2,"Vector2"),(3,"Vector3"),(4,"Vector4"),(5,"Vector5"),(6,"Vector6")};#>
+<#var channelsAndTypes = new[]{(2,"Vector2"),(3,"Vector3"),(4,"Vector4"),(5,"Vector5"),(6,"Vector6"),(7,"Vector7"),(8,"Vector8")};#>
 
 using System;
 using System.Collections.Generic;
@@ -137,6 +137,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
                         }
                         break;
 <#}#>
+
                     #endregion SIMD Optimized Multi-Channel Audio Resampling
 
                     default:
