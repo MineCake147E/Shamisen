@@ -10,7 +10,7 @@
 
 ### Feature Request(WIP)
 - Make sure your proposal doesn't collide any existing features.
-  - Feel free to write some syntax sugar like fatures.
+  - Feel free to suggest some syntax sugar like fatures.
 - Create a new Issue with [Feature Request](https://github.com/MineCake147E/MonoAudio/issues/new?assignees=&labels=&template=feature_request.md&title=) Template.
 
 ## Coding(WIP)
@@ -25,7 +25,8 @@
   -  Don't forget that `Span<T>` can wrap any pointers thoguh.
 - Consider Latencies of filters.
   - Don't forget to seal your filter classes if not needed to be `abstract` or `virtual`.
-- ~~Manage memories yourself if possible and appropriate.~~(After implementing a WIP feature: A wrapper of `Marshal.AllocHGlobal` with `IDisposable` interface.)
+- Manage memories yourself if possible and appropriate.
+
 #### Comments
 - Write XML comments at **EVERY** public members.
 - The comments should be written in English except for automatically-generated comments like `IDisposable` patterns.
