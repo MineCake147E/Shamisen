@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoAudio.SoundOut
+namespace MonoAudio.IO.SoundOut
 {
     /// <summary>
     /// Defines a base infrastructure of a sound output.
     /// </summary>
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IDisposable" />
     public interface ISoundOut : IDisposable
     {
         /// <summary>
