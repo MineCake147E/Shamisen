@@ -93,18 +93,53 @@ namespace System
             unsafe
             {
                 (int newLength, int remainder) = MathI.FloorStepRem(samplesToAdd.Length, Vector<float>.Count);
-                var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToAdd);
-                var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
-                for (int i = 0; i < src.Length; i++)
+                if (newLength != 0)
                 {
-                    dst[i] += src[i];
+                    var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToAdd);
+                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
+                    for (int i = 0; i < src.Length; i++)
+                    {
+                        dst[i] += src[i];
+                    }
                 }
-                if (remainder == 0) return;
-                var srcRem = samplesToAdd.Slice(newLength);
-                var dstRem = buffer.Slice(newLength);
-                for (int i = 0; i < srcRem.Length; i++)
+                if (remainder != 0)
                 {
-                    dstRem[i] += srcRem[i];
+                    var srcRem = samplesToAdd.Slice(newLength);
+                    var dstRem = buffer.Slice(newLength);
+                    for (int i = 0; i < srcRem.Length; i++)
+                    {
+                        dstRem[i] += srcRem[i];
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+        /// </summary>
+        /// <param name="span">The span to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        public static void FastScalarMultiply(this Span<float> span, float scale = default)
+        {
+            if (Vector<float>.Count > span.Length)
+            {
+                for (int i = 0; i < span.Length; i++)
+                {
+                    span[i] *= scale;
+                }
+            }
+            else
+            {
+                var spanV = MemoryMarshal.Cast<float, Vector<float>>(span);
+                var scaleV = new Vector<float>(scale);
+                for (int i = 0; i < spanV.Length; i++)
+                {
+                    spanV[i] *= scaleV;
+                }
+                var spanR = span.Slice(spanV.Length * Vector<float>.Count);
+                for (int i = 0; i < spanR.Length; i++)
+                {
+                    spanR[i] *= scale;
                 }
             }
         }

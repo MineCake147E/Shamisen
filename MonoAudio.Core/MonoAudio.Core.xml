@@ -2738,6 +2738,13 @@
             <param name="buffer">The buffer.</param>
             <exception cref="T:System.ArgumentException">samplesToAdd</exception>
         </member>
+        <member name="M:System.SpanExtensions.FastScalarMultiply(System.Span{System.Single},System.Single)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+            </summary>
+            <param name="span">The span to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+        </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.

@@ -11,21 +11,32 @@ namespace MonoAudio.Core.Tests.CoreFx
     [TestFixture]
     public class SpanExtensionsTest
     {
-        [TestCase(4783)]    //Prime number
+        [Test]
+        public void FastFillFillsCorrectly()
+        {
+            Span<float> span = stackalloc float[32];
+            const int Value = 1;
+            span.FastFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [TestCase(2459)]    //Prime number
         [TestCase(2048)]    //2^11
-        [TestCase(4096)]    //2^12
-        [TestCase(8192)]    //2^13
-        public void FastFillTest(int length)
+        public void FastFillFasterThanNormalFill(int length)
         {
             var sw = new Stopwatch();
-            Span<float> source = stackalloc float[length];
+            Span<float> span = stackalloc float[length];
             long cntFast = 0;
             long cntStandard = 0;
             Thread.Sleep(50);
             sw.Start();
             do
             {
-                source.FastFill(cntFast);
+                span.FastFill(cntFast);
                 cntFast++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
@@ -35,19 +46,35 @@ namespace MonoAudio.Core.Tests.CoreFx
             sw.Start();
             do
             {
-                source.Fill(cntStandard);
+                span.Fill(cntStandard);
                 cntStandard++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
             Console.WriteLine(cntStandard);
-            Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}");
+            Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}.");
             Assert.Greater(cntFast, cntStandard);
         }
 
-        [TestCase(4783)]    //Prime number
+        [Test]
+        public void FastAddAddsCorrectly()
+        {
+            Span<float> source = stackalloc float[32];
+            Span<float> destination = stackalloc float[48];
+            const int Value = 1;
+            source.FastFill(Value);
+            destination.FastFill(-1);
+
+            SpanExtensions.FastAdd(source, destination);
+            for (int i = 0; i < source.Length; i++)
+            {
+                if (destination[i] != 0) Assert.Fail("The FastAdd doesn't add correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [TestCase(2459)]    //Prime number
         [TestCase(2048)]    //2^11
-        [TestCase(4096)]    //2^12
-        public void FastAddTest(int length)
+        public void FastAddFasterThanUnsafeAdd(int length)
         {
             var sw = new Stopwatch();
             Span<float> source = stackalloc float[length];
@@ -87,7 +114,63 @@ namespace MonoAudio.Core.Tests.CoreFx
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
             Console.WriteLine(cntStandard);
-            Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop");
+            Console.WriteLine($"{nameof(SpanExtensions.FastAdd)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
+            Assert.Greater(cntFast, cntStandard);
+        }
+
+        [Test]
+        public void FastScalarMultiplyScalesCorrectly()
+        {
+            Span<float> span = stackalloc float[32];
+            span.FastFill(1);
+            const float Value = MathF.PI;
+            span.FastScalarMultiply(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastScalarMultiply doesn't scale correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [TestCase(2459)]    //Prime number
+        [TestCase(2048)]    //2^11
+        public void FastScalarMultiplyFasterThanUnsafe(int length)
+        {
+            var sw = new Stopwatch();
+            Span<float> span = stackalloc float[length];
+            span.FastFill(1);
+            long cntFast = 0;
+            long cntStandard = 0;
+            Thread.Sleep(50);
+            sw.Start();
+            do
+            {
+                span.FastScalarMultiply(cntFast);
+                cntFast++;
+            } while (sw.ElapsedMilliseconds < length);
+            sw.Stop();
+            Console.WriteLine(cntFast);
+            sw.Reset();
+            Thread.Sleep(50);
+            sw.Start();
+            do
+            {
+                unsafe
+                {
+                    fixed (float* srcFx = span)
+                    {
+                        var src = srcFx;
+                        do
+                        {
+                            *src *= cntStandard;
+                        } while (++src < srcFx + span.Length);
+                    }
+                }
+                cntStandard++;
+            } while (sw.ElapsedMilliseconds < length);
+            sw.Stop();
+            Console.WriteLine(cntStandard);
+            Console.WriteLine($"{nameof(SpanExtensions.FastScalarMultiply)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
     }
