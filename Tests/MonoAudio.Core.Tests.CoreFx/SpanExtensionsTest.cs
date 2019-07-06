@@ -40,7 +40,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntFast++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntFast);
+            Console.WriteLine($"FastFill: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -50,7 +50,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntStandard++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntStandard);
+            Console.WriteLine($"Fill: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -91,7 +91,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntFast++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntFast);
+            Console.WriteLine($"FastAdd: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -113,7 +113,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntStandard++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntStandard);
+            Console.WriteLine($"UnsafeAdd: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastAdd)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -149,7 +149,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntFast++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntFast);
+            Console.WriteLine($"FastScalarMultiply: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -169,7 +169,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntStandard++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntStandard);
+            Console.WriteLine($"UnsafeScalarMultiply: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastScalarMultiply)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -210,7 +210,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntFast++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntFast);
+            Console.WriteLine($"FastMix: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -233,7 +233,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 cntStandard++;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine(cntStandard);
+            Console.WriteLine($"UnsafeMix: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastAdd)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
