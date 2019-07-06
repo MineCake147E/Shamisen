@@ -18,5 +18,18 @@ namespace System
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int FloorStep(int value, int step) => value - (value % step);
+
+        /// <summary>
+        /// Aligns the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (int newLength, int remainder) FloorStepRem(int value, int step)
+        {
+            var m = value % step;
+            return (value - m, m);
+        }
     }
 }

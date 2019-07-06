@@ -5,6 +5,8 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <# var types = new string[]{"float","double","byte","ushort","uint","ulong","sbyte","short","int","long"};#>
+<# var typesMemoryReadable = new string[]{"Span","Memory","ReadOnlySpan","ReadOnlyMemory"};#>
+<# var typesMemoryWritable = new string[]{"Span","Memory"};#>
 using System;
 using System.Collections.Generic;
 using System.Text;

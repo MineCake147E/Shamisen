@@ -10,6 +10,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,7 +36,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
     </None>
-    <None Include="SystemExtensions\SpanExtensionsTemplate.cs">
+    <None Include="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
@@ -46,7 +47,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
     </None>
-    <None Update="SystemExtensions\SpanExtensionsTemplate.tt">
+    <None Update="SystemExtensions\Memory\SpanExtensionsTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
     </None>
@@ -60,7 +61,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
     </Compile>
-    <Compile Update="SystemExtensions\SpanExtensionsTemplate.cs">
+    <Compile Update="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>

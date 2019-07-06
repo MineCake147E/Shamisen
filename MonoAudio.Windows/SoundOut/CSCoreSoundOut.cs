@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using CSCore.SoundOut;
 using MonoAudio.Interop;
 using MonoAudio.IO;
+using ISoundOut = MonoAudio.IO.ISoundOut;
+using PlaybackState = MonoAudio.IO.PlaybackState;
 
 namespace MonoAudio.SoundOut
 {
