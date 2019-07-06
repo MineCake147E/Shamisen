@@ -87,10 +87,7 @@ namespace MonoAudio.Utils
         /// <summary>
         /// Finalizes an instance of the <see cref="ResizableBufferWrapper{T}"/> class.
         /// </summary>
-        ~ResizableBufferWrapper()
-        {
-            DisposeInternal(false);
-        }
+        ~ResizableBufferWrapper() => DisposeInternal(false);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

@@ -1,29 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Text;
 using MonoAudio.Formats;
 
 namespace MonoAudio.Filters
 {
     /// <summary>
-    /// Provides a function of filtering with Digital BiQuad Filter.
+    /// Modifies the velocity of <see cref="Source"/>
     /// </summary>
-    public sealed class BiQuadFilter : IAudioFilter<float, SampleFormat>
+    /// <seealso cref="Filters.IAudioFilter{TSample, TFormat}" />
+    public sealed class Attenuator : IAudioFilter<float, SampleFormat>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BiQuadFilter"/> class.
+        /// Initializes a new instance of the <see cref="Attenuator"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="parameter">The parameter.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter)
-        {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            Parameter = parameter;
-            internalStates = new Vector2[Format.Channels];
-            internalStates.AsSpan().Fill(new Vector2(0, 0));
-        }
+        public Attenuator(IReadableAudioSource<float, SampleFormat> source) => Source = source ?? throw new ArgumentNullException(nameof(source));
 
         /// <summary>
         /// Gets the source.
@@ -34,12 +27,12 @@ namespace MonoAudio.Filters
         public IReadableAudioSource<float, SampleFormat> Source { get; }
 
         /// <summary>
-        /// Gets the parameter.
+        /// Gets or sets the scale.
         /// </summary>
         /// <value>
-        /// The parameter.
+        /// The scale.
         /// </value>
-        public BiQuadParameter Parameter { get; }
+        public float Scale { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance can seek.
@@ -73,36 +66,16 @@ namespace MonoAudio.Filters
         /// </value>
         public long Length => Source.Length;
 
-        private Vector2[] internalStates;
-
         /// <summary>
-        /// Reads the audio to the specified buffer.
+        /// Reads the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public int Read(Span<float> buffer)
         {
-            var len = Source.Read(buffer);
-            buffer = buffer.Slice(0, len);
-            unsafe
-            {
-                for (int i = 0; i < buffer.Length; i += Format.Channels)
-                {
-                    for (int ch = 0; ch < internalStates.Length; ch++)
-                    {
-                        //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
-                        //Transformed for SIMD awareness.
-                        ref var a = ref internalStates[ch]; //Persist reference in order to decrease number of times of range check.
-                        ref float v = ref buffer[i + ch];
-                        var feedForward = v * Parameter.B; //Multiply in one go
-                        var sum1 = v = feedForward.X + a.X;
-                        var feedBack = sum1 * Parameter.A;  //Multiply in one go
-                        a = new Vector2(feedForward.Y + feedBack.X + a.Y, feedForward.Z + feedBack.Y);
-                    }
-                }
-            }
-            return len;
+            var r = Source.Read(buffer);
+            buffer.Slice(0, r).FastScalarMultiply(Scale);
+            return r;
         }
 
         #region IDisposable Support
@@ -121,15 +94,9 @@ namespace MonoAudio.Filters
                 {
                 }
                 Source.Dispose();
-                internalStates = null;
                 disposedValue = true;
             }
         }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="BiQuadFilter"/> class.
-        /// </summary>
-        ~BiQuadFilter() => Dispose(false);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

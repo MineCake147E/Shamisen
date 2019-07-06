@@ -165,7 +165,7 @@ namespace System
                     var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
                     for (int i = 0; i < src.Length; i++)
                     {
-                        dst[i] += src[i] * scaleV;
+                        dst[i] += scaleV * src[i];
                     }
                 }
                 if (remainder != 0)

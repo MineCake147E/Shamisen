@@ -35,10 +35,7 @@ namespace MonoAudio.Formats
         /// <param name="channels">The channels.</param>
         /// <param name="encoding">The encoding.</param>
         /// <param name="extraSize">Size of the extra.</param>
-        public WaveFormat(int sampleRate, int bitDepth, int channels, AudioEncoding encoding, int extraSize) : this(sampleRate, bitDepth, channels, encoding)
-        {
-            ExtraSize = extraSize;
-        }
+        public WaveFormat(int sampleRate, int bitDepth, int channels, AudioEncoding encoding, int extraSize) : this(sampleRate, bitDepth, channels, encoding) => ExtraSize = extraSize;
 
         /// <summary>
         /// Gets the value indicates how many bytes are required per whole sample.

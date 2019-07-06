@@ -35,10 +35,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// <param name="source">The source.</param>
         /// <param name="endianness">The endianness of <paramref name="source"/>.</param>
         public Pcm16ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, Endianness endianness = Endianness.Little)
-            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels))
-        {
-            Endianness = endianness;
-        }
+            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels)) => Endianness = endianness;
 
         /// <summary>
         /// Gets the bytes consumed per sample.

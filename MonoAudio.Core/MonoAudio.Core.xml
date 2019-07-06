@@ -1413,6 +1413,85 @@
             The environment endianness.
             </value>
         </member>
+        <member name="T:MonoAudio.Filters.Attenuator">
+            <summary>
+            Modifies the velocity of <see cref="P:MonoAudio.Filters.Attenuator.Source"/>
+            </summary>
+            <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
+        </member>
+        <member name="M:MonoAudio.Filters.Attenuator.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.Attenuator"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.Scale">
+            <summary>
+            Gets or sets the scale.
+            </summary>
+            <value>
+            The scale.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.CanSeek">
+            <summary>
+            Gets a value indicating whether this instance can seek.
+            </summary>
+            <value>
+              <c>true</c> if this instance can seek; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.Position">
+            <summary>
+            Gets or sets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Attenuator.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.Attenuator.Read(System.Span{System.Single})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Filters.Attenuator.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.Attenuator.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
         <member name="T:MonoAudio.Filters.BiQuadFilter">
             <summary>
             Provides a function of filtering with Digital BiQuad Filter.
@@ -1679,6 +1758,148 @@
             <typeparam name="TSample">The type of the sample.</typeparam>
             <typeparam name="TFormat">The format of the sample.</typeparam>
             <seealso cref="T:MonoAudio.Conversion.IAudioConverter`4" />
+        </member>
+        <member name="T:MonoAudio.Filters.SimpleMixer">
+            <summary>
+            Mixes the sound simply from some input nodes.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Filters.SimpleMixer.bufferWrapper">
+            <summary>
+            The buffer wrapper
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.#ctor(MonoAudio.Formats.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.SimpleMixer"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="P:MonoAudio.Filters.SimpleMixer.CanSeek">
+            <summary>
+            Gets a value indicating whether this instance supports seeking.
+            </summary>
+            <value>
+              <c>true</c> if this instance can seek; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.SimpleMixer.Format">
+            <summary>
+            Gets the output format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.SimpleMixer.Position">
+            <summary>
+            Gets or sets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+            <exception cref="T:System.NotSupportedException">
+            </exception>
+        </member>
+        <member name="P:MonoAudio.Filters.SimpleMixer.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.AddSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Single,System.Boolean)">
+            <summary>
+            Adds the source.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="volume">The volume.</param>
+            <param name="disposeSourceOnRemove">if set to <c>true</c> it disposes source on removal.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.RemoveSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat})">
+            <summary>
+            Removes the source.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentException">The Mixer doesn't contain the specified <paramref name="source"/>! - source</exception>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Filters.SimpleMixer"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.SimpleMixer.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Filters.MixerEntry">
+            <summary>
+            Represents a <see cref="T:MonoAudio.Filters.SimpleMixer"/>'s entry.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.MixerEntry.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Single,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.MixerEntry"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="volume">The volume.</param>
+            <param name="disposeSource">if set to <c>true</c> [dispose source].</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Filters.MixerEntry.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.MixerEntry.Volume">
+            <summary>
+            Gets or sets the volume.
+            </summary>
+            <value>
+            The volume.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.MixerEntry.DisposeSource">
+            <summary>
+            Gets a value indicating whether to dispose source in <see cref="M:MonoAudio.Filters.MixerEntry.Dispose"/>.
+            </summary>
+            <value>
+              <c>true</c> to dispose source in <see cref="M:MonoAudio.Filters.MixerEntry.Dispose"/>; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.MixerEntry.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.MixerEntry.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Filters.MixerEntry"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.MixerEntry.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
         </member>
         <member name="T:MonoAudio.Formats.IAudioFormat`1">
             <summary>

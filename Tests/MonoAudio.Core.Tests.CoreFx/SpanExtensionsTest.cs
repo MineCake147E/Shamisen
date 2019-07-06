@@ -14,7 +14,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         [Test]
         public void FastFillFillsCorrectly()
         {
-            Span<float> span = stackalloc float[32];
+            Span<float> span = new float[32];
             const int Value = 1;
             span.FastFill(Value);
             for (int i = 0; i < span.Length; i++)
@@ -29,7 +29,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         public void FastFillFasterThanNormalFill(int length)
         {
             var sw = new Stopwatch();
-            Span<float> span = stackalloc float[length];
+            Span<float> span = new float[length];
             long cntFast = 0;
             long cntStandard = 0;
             Thread.Sleep(50);
@@ -37,20 +37,20 @@ namespace MonoAudio.Core.Tests.CoreFx
             do
             {
                 span.FastFill(cntFast);
-                cntFast++;
-            } while (sw.ElapsedMilliseconds < length);
+                cntFast += span.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"FastFill: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"FastFill: {cntFast / sw.Elapsed.TotalSeconds} sample/s({cntFast / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
             do
             {
                 span.Fill(cntStandard);
-                cntStandard++;
-            } while (sw.ElapsedMilliseconds < length);
+                cntStandard += span.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"Fill: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"Fill: {cntStandard / sw.Elapsed.TotalSeconds} sample/s({cntStandard / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -58,8 +58,8 @@ namespace MonoAudio.Core.Tests.CoreFx
         [Test]
         public void FastAddAddsCorrectly()
         {
-            Span<float> source = stackalloc float[32];
-            Span<float> destination = stackalloc float[48];
+            Span<float> source = new float[32];
+            Span<float> destination = new float[48];
             const int Value = 1;
             source.FastFill(Value);
             destination.FastFill(-1);
@@ -77,8 +77,8 @@ namespace MonoAudio.Core.Tests.CoreFx
         public void FastAddFasterThanUnsafeAdd(int length)
         {
             var sw = new Stopwatch();
-            Span<float> source = stackalloc float[length];
-            Span<float> destination = stackalloc float[length + 1024];
+            Span<float> source = new float[length];
+            Span<float> destination = new float[length + 1024];
             source.FastFill(1);
             destination.FastFill(0);
             long cntFast = 0;
@@ -88,10 +88,10 @@ namespace MonoAudio.Core.Tests.CoreFx
             do
             {
                 SpanExtensions.FastAdd(source, destination);
-                cntFast++;
-            } while (sw.ElapsedMilliseconds < length);
+                cntFast += source.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"FastAdd: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"FastAdd: {cntFast / sw.Elapsed.TotalSeconds} sample/s({cntFast / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -110,10 +110,10 @@ namespace MonoAudio.Core.Tests.CoreFx
                         } while (src < srcFx + source.Length);
                     }
                 }
-                cntStandard++;
-            } while (sw.ElapsedMilliseconds < length);
+                cntStandard += source.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"UnsafeAdd: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"UnsafeAdd: {cntStandard / sw.Elapsed.TotalSeconds} sample/s({cntStandard / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastAdd)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -121,7 +121,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         [Test]
         public void FastScalarMultiplyScalesCorrectly()
         {
-            Span<float> span = stackalloc float[32];
+            Span<float> span = new float[32];
             span.FastFill(1);
             const float Value = MathF.PI;
             span.FastScalarMultiply(Value);
@@ -137,7 +137,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         public void FastScalarMultiplyFasterThanUnsafe(int length)
         {
             var sw = new Stopwatch();
-            Span<float> span = stackalloc float[length];
+            Span<float> span = new float[length];
             span.FastFill(1);
             long cntFast = 0;
             long cntStandard = 0;
@@ -146,10 +146,10 @@ namespace MonoAudio.Core.Tests.CoreFx
             do
             {
                 span.FastScalarMultiply(cntFast);
-                cntFast++;
+                cntFast += span.Length;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine($"FastScalarMultiply: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"FastScalarMultiply: {cntFast / sw.Elapsed.TotalSeconds} sample/s({cntFast / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
@@ -166,10 +166,10 @@ namespace MonoAudio.Core.Tests.CoreFx
                         } while (++src < srcFx + span.Length);
                     }
                 }
-                cntStandard++;
+                cntStandard += span.Length;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine($"UnsafeScalarMultiply: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"UnsafeScalarMultiply: {cntStandard / sw.Elapsed.TotalSeconds} sample/s({cntStandard / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             Console.WriteLine($"{nameof(SpanExtensions.FastScalarMultiply)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
@@ -206,17 +206,17 @@ namespace MonoAudio.Core.Tests.CoreFx
             sw.Start();
             do
             {
-                SpanExtensions.FastMix(source, destination, 1.0f / cntFast);
-                cntFast++;
+                SpanExtensions.FastMix(source, destination, 0.5f);
+                cntFast += source.Length;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine($"FastMix: {(double)cntFast / length} operations/s({cntFast / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"FastMix: {cntFast / sw.Elapsed.TotalSeconds} sample/s({cntFast / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
             sw.Reset();
             Thread.Sleep(50);
             sw.Start();
             do
             {
-                var u = 1.0f / cntStandard;
+                var u = 0.5f;
                 unsafe
                 {
                     fixed (float* srcFx = source)
@@ -230,11 +230,11 @@ namespace MonoAudio.Core.Tests.CoreFx
                         } while (src < srcFx + source.Length);
                     }
                 }
-                cntStandard++;
+                cntStandard += source.Length;
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
-            Console.WriteLine($"UnsafeMix: {(double)cntStandard / length} operations/s({cntStandard / 384000.0} times faster than real time in 192kHz Stereo)");
-            Console.WriteLine($"{nameof(SpanExtensions.FastAdd)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
+            Console.WriteLine($"UnsafeMix: {cntStandard / sw.Elapsed.TotalSeconds} sample/s({cntStandard / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"{nameof(SpanExtensions.FastMix)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop.");
             Assert.Greater(cntFast, cntStandard);
         }
     }
