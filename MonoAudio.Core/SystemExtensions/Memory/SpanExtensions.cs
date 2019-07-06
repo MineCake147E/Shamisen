@@ -143,5 +143,41 @@ namespace System
                 }
             }
         }
+
+        /// <summary>
+        /// Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="samplesToMix">The samples to add.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
+        /// <exception cref="ArgumentException">samplesToMix</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void FastMix(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
+        {
+            if (samplesToMix.Length > buffer.Length) throw new ArgumentException("", nameof(samplesToMix));
+            unsafe
+            {
+                (int newLength, int remainder) = MathI.FloorStepRem(samplesToMix.Length, Vector<float>.Count);
+                if (newLength != 0)
+                {
+                    var scaleV = new Vector<float>(scale);
+                    var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToMix);
+                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
+                    for (int i = 0; i < src.Length; i++)
+                    {
+                        dst[i] += src[i] * scaleV;
+                    }
+                }
+                if (remainder != 0)
+                {
+                    var srcRem = samplesToMix.Slice(newLength);
+                    var dstRem = buffer.Slice(newLength);
+                    for (int i = 0; i < srcRem.Length; i++)
+                    {
+                        dstRem[i] += srcRem[i] * scale;
+                    }
+                }
+            }
+        }
     }
 }

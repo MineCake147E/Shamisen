@@ -2745,6 +2745,15 @@
             <param name="span">The span to multiply.</param>
             <param name="scale">The value to be multiplied.</param>
         </member>
+        <member name="M:System.SpanExtensions.FastMix(System.ReadOnlySpan{System.Single},System.Span{System.Single},System.Single)">
+            <summary>
+            Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesToMix">The samples to add.</param>
+            <param name="buffer">The buffer.</param>
+            <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
+            <exception cref="T:System.ArgumentException">samplesToMix</exception>
+        </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
