@@ -17,7 +17,7 @@ using MonoAudio.Synthesis;
 using MonoAudio.Formats;
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Conversion.SampleToWaveConverters;
-using MonoAudio.IO.SoundOut;
+using MonoAudio.IO;
 
 // 空白ページの項目テンプレートについては、https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x411 を参照してください
 

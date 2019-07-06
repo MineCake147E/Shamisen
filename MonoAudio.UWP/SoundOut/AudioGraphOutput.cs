@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MonoAudio.IO.SoundOut;
+using MonoAudio.IO;
 using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Audio;

@@ -1,4 +1,4 @@
-﻿namespace MonoAudio.IO.SoundOut
+﻿namespace MonoAudio.IO
 {
     /// <summary>
     /// Represents a state of playback.

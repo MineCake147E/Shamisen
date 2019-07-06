@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSCore.SoundOut;
 using MonoAudio.Interop;
-using MonoAudio.IO.SoundOut;
+using MonoAudio.IO;
 
 namespace MonoAudio.SoundOut
 {

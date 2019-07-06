@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoAudio.IO.SoundOut
+namespace MonoAudio.IO
 {
     /// <summary>
     /// Defines a base infrastructure of a sound output.
