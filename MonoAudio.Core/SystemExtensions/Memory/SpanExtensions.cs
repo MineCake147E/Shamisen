@@ -100,8 +100,8 @@ namespace System
                     dst[i] += src[i];
                 }
                 if (remainder == 0) return;
-                var srcRem = src.Slice(newLength);
-                var dstRem = dst.Slice(newLength);
+                var srcRem = samplesToAdd.Slice(newLength);
+                var dstRem = buffer.Slice(newLength);
                 for (int i = 0; i < srcRem.Length; i++)
                 {
                     dstRem[i] += srcRem[i];

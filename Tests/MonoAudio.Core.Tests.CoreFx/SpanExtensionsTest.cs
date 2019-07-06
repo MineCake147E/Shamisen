@@ -87,7 +87,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             } while (sw.ElapsedMilliseconds < length);
             sw.Stop();
             Console.WriteLine(cntStandard);
-            Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}");
+            Console.WriteLine($"{nameof(SpanExtensions.FastFill)} seems to be {(double)cntFast / cntStandard} times faster than unsafe loop");
             Assert.Greater(cntFast, cntStandard);
         }
     }
