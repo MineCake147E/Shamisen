@@ -19,11 +19,11 @@ A Cross-Platform Audio Library for .NET Standard.
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.
 
 ### Dependencies and system requirements
-- **Unity IS NOT SUPPORTED AT ALL!**
+- Currently, ***Unity IS NOT SUPPORTED AT ALL!***
   - Because Unity uses older version of `Mono`.
 - Faster resampling requires `.NET Core` or later version of `Mono`.
   - Unfortunately, `.NET Framework` does not support Fast `Span<T>`s.
-- The whole processing in this library fully depends on SINGLE core.
+- The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
 ### Useful external library for MonoAudio
