@@ -109,7 +109,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             do
             {
                 samples += (ulong)resampler.Read(buffer);
-            } while (sw.ElapsedMilliseconds < 200);
+            } while (sw.ElapsedMilliseconds < 1000);
             sw.Stop();
             Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
             Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
@@ -119,7 +119,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             do
             {
                 samples += (ulong)resampler.Read(buffer);
-            } while (sw.ElapsedMilliseconds < 1000);
+            } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
             Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
             Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");

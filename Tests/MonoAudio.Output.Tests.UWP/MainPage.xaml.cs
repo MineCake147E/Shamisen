@@ -18,6 +18,9 @@ using MonoAudio.Formats;
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Conversion.SampleToWaveConverters;
 using MonoAudio.IO;
+using Windows.Media.Devices;
+using Windows.Devices.Enumeration;
+using System.Text;
 
 // 空白ページの項目テンプレートについては、https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x411 を参照してください
 
@@ -40,16 +43,30 @@ namespace MonoAudio.Output.Tests.UWP
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            soundOut = await AudioGraphOutput.CreateAudioGraphOutput(2, SampleRate);
-            source = new SinusoidSource(new SampleFormat(2, 44100)) { Frequency = 436 };
-            resampler = new SplineResampler(source, SampleRate);
-            soundOut.Initialize(new SampleToFloat32Converter(resampler));
-            soundOut.Play();
+            //soundOut = await AudioGraphOutput.CreateAudioGraphOutput(2, SampleRate);
+            //source = new SinusoidSource(new SampleFormat(2, 44100)) { Frequency = 436 };
+            //resampler = new SplineResampler(source, SampleRate);
+            //soundOut.Initialize(new SampleToFloat32Converter(resampler));
+            //soundOut.Play();
+
+            //var str = MediaDevice.GetAudioRenderSelector();
+            var a = await DeviceInformation.FindAllAsync(DeviceClass.AudioRender);
+            var sb = new StringBuilder();
+            foreach (var item in a)
+            {
+                sb.AppendLine($"Defined properties in {item.Name}:");
+                foreach (var prop in item.Properties)
+                {
+                    sb.AppendLine($"{prop.Key} = {prop.Value}");
+                }
+                sb.AppendLine();
+            }
+            TextBlock1.Text = sb.ToString();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            soundOut.Dispose();
+            soundOut?.Dispose();
         }
     }
 }

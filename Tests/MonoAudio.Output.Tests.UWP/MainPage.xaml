@@ -10,5 +10,6 @@
 
     <Grid>
         <Button Content="Button" Height="90" Margin="162,164,0,0" VerticalAlignment="Top" Width="212" Click="Button_Click" />
+        <TextBlock x:Name="TextBlock1" Margin="392,10,10,10" Text="TextBlock" TextWrapping="Wrap" />
     </Grid>
 </Page>

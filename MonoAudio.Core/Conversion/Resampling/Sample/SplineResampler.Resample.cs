@@ -61,10 +61,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
                     {
                         float xP2 = x * x;
                         float xP3 = xP2 * x;
-                        var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
-                        var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
-                        var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
-                        var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+                        ref var values = ref Unsafe.As<Vector<float>, (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W)>(ref vSrcBuffer[inputSampleIndex]);
+                        var value1 = values.X;   //The control point 1.
+                        var value2 = values.Y;   //The control point 2.
+                        var value3 = values.Z;   //The control point 3.
+                        var value4 = values.W;   //The control point 4.
 
                         // Use formula from http://www.mvps.org/directx/articles/catmull/
                         vBuffer[i] = 0.5f * (
@@ -93,17 +94,18 @@ namespace MonoAudio.Conversion.Resampling.Sample
                             {
                                 float xP2 = x * x;
                                 float xP3 = xP2 * x;
-                                var value1 = srcBuffer[inputSampleIndex];   //The control point 1.
-                                var value2 = srcBuffer[inputSampleIndex + 1];   //The control point 2.
-                                var value3 = srcBuffer[inputSampleIndex + 2];   //The control point 3.
-                                var value4 = srcBuffer[inputSampleIndex + 3];   //The control point 4.
+                                var values = Unsafe.As<float, Vector4>(ref srcBuffer[inputSampleIndex]);
+                                var value1 = values.X;   //The control point 1.
+                                var value2 = values.Y;   //The control point 2.
+                                var value3 = values.Z;   //The control point 3.
+                                var value4 = values.W;   //The control point 4.
 
                                 // Use formula from http://www.mvps.org/directx/articles/catmull/
                                 buffer[i] = 0.5f * (
-											2.0f * value2 +
-											(-value1 + value3) * x +
-											(2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-											(3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
+                                            2.0f * value2 +
+                                            (-value1 + value3) * x +
+                                            (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
+                                            (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
                             }
                         }
                         break;
@@ -126,10 +128,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
                                 {
                                     float xP2 = x * x;
                                     float xP3 = xP2 * x;
-                                    var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
-                                    var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
-                                    var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
-                                    var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+									ref var values = ref Unsafe.As<Vector2,(Vector2 X, Vector2 Y, Vector2 Z, Vector2 W)>(ref vSrcBuffer[inputSampleIndex]);
+                                    var value1 = values.X;   //The control point 1.
+									var value2 = values.Y;   //The control point 2.
+									var value3 = values.Z;   //The control point 3.
+									var value4 = values.W;   //The control point 4.
 
                                     // Use formula from http://www.mvps.org/directx/articles/catmull/
                                     vBuffer[i] = 0.5f * (
@@ -158,10 +161,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
                                 {
                                     float xP2 = x * x;
                                     float xP3 = xP2 * x;
-                                    var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
-                                    var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
-                                    var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
-                                    var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+									ref var values = ref Unsafe.As<Vector3,(Vector3 X, Vector3 Y, Vector3 Z, Vector3 W)>(ref vSrcBuffer[inputSampleIndex]);
+                                    var value1 = values.X;   //The control point 1.
+									var value2 = values.Y;   //The control point 2.
+									var value3 = values.Z;   //The control point 3.
+									var value4 = values.W;   //The control point 4.
 
                                     // Use formula from http://www.mvps.org/directx/articles/catmull/
                                     vBuffer[i] = 0.5f * (
@@ -190,10 +194,11 @@ namespace MonoAudio.Conversion.Resampling.Sample
                                 {
                                     float xP2 = x * x;
                                     float xP3 = xP2 * x;
-                                    var value1 = vSrcBuffer[inputSampleIndex];   //The control point 1.
-                                    var value2 = vSrcBuffer[inputSampleIndex + 1];   //The control point 2.
-                                    var value3 = vSrcBuffer[inputSampleIndex + 2];   //The control point 3.
-                                    var value4 = vSrcBuffer[inputSampleIndex + 3];   //The control point 4.
+									ref var values = ref Unsafe.As<Vector4,(Vector4 X, Vector4 Y, Vector4 Z, Vector4 W)>(ref vSrcBuffer[inputSampleIndex]);
+                                    var value1 = values.X;   //The control point 1.
+									var value2 = values.Y;   //The control point 2.
+									var value3 = values.Z;   //The control point 3.
+									var value4 = values.W;   //The control point 4.
 
                                     // Use formula from http://www.mvps.org/directx/articles/catmull/
                                     vBuffer[i] = 0.5f * (
