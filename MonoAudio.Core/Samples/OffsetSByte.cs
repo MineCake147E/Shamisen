@@ -1,11 +1,10 @@
-﻿using System;
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MonoAudio.Samples
+namespace System
 {
     /// <summary>
     /// Represents a value that is offset 128 inside 8-bit PCM.
@@ -32,7 +31,7 @@ namespace MonoAudio.Samples
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="OffsetSByte"/> to <see cref="System.SByte"/>.
+        /// Performs an implicit conversion from <see cref="OffsetSByte"/> to <see cref="sbyte"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
