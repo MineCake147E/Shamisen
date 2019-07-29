@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using MonoAudio.Filters;
-using MonoAudio.Formats;
 using MonoAudio.MathUtils;
 
 namespace MonoAudio.Conversion.Resampling.Sample

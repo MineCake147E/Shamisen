@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using MonoAudio.Formats;
 
 namespace MonoAudio.Filters
 {
@@ -89,12 +88,13 @@ namespace MonoAudio.Filters
             {
                 for (int i = 0; i < buffer.Length; i += Format.Channels)
                 {
+                    var span = buffer.Slice(i, internalStates.Length);
                     for (int ch = 0; ch < internalStates.Length; ch++)
                     {
                         //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                         //Transformed for SIMD awareness.
                         ref var a = ref internalStates[ch]; //Persist reference in order to decrease number of times of range check.
-                        ref float v = ref buffer[i + ch];
+                        ref float v = ref span[ch];
                         var feedForward = v * Parameter.B; //Multiply in one go
                         var sum1 = v = feedForward.X + a.X;
                         var feedBack = sum1 * Parameter.A;  //Multiply in one go

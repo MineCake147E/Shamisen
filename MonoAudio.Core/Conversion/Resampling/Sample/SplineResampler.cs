@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
 using MonoAudio.Filters;
-using MonoAudio.Formats;
 using MonoAudio.Utils;
 using System.Numerics;
 using System.Runtime.CompilerServices;

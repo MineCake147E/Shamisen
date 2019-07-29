@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using MonoAudio.Formats;
 
-namespace MonoAudio.Formats
+namespace MonoAudio
 {
     /// <summary>
     /// Represents a wave format.

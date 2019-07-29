@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using MonoAudio.Conversion.Resampling.Sample;
-using MonoAudio.Formats;
 using MonoAudio.Synthesis;
 using NUnit.Framework;
 using CSCodec.Filters.Transformation;

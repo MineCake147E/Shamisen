@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using MonoAudio.Formats;
 using MonoAudio.MathUtils;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
