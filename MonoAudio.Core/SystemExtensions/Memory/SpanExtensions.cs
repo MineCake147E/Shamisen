@@ -96,7 +96,7 @@ namespace System
                 if (newLength != 0)
                 {
                     var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToAdd);
-                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
+                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer).Slice(0, src.Length);
                     for (int i = 0; i < src.Length; i++)
                     {
                         dst[i] += src[i];
@@ -105,7 +105,7 @@ namespace System
                 if (remainder != 0)
                 {
                     var srcRem = samplesToAdd.Slice(newLength);
-                    var dstRem = buffer.Slice(newLength);
+                    var dstRem = buffer.Slice(newLength).Slice(0, srcRem.Length);
                     for (int i = 0; i < srcRem.Length; i++)
                     {
                         dstRem[i] += srcRem[i];
@@ -162,7 +162,7 @@ namespace System
                 {
                     var scaleV = new Vector<float>(scale);
                     var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToMix);
-                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer);
+                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer).Slice(0, src.Length);
                     for (int i = 0; i < src.Length; i++)
                     {
                         dst[i] += scaleV * src[i];
@@ -171,10 +171,69 @@ namespace System
                 if (remainder != 0)
                 {
                     var srcRem = samplesToMix.Slice(newLength);
-                    var dstRem = buffer.Slice(newLength);
+                    var dstRem = buffer.Slice(newLength).Slice(0, srcRem.Length);
                     for (int i = 0; i < srcRem.Length; i++)
                     {
                         dstRem[i] += srcRem[i] * scale;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="buffer">The output buffer.</param>
+        /// <param name="samplesA">The samples a.</param>
+        /// <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
+        /// <param name="samplesB">The samples b.</param>
+        /// <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
+        /// <exception cref="ArgumentException">
+        /// buffer must not be shorter than samplesA or samplesB! - buffer
+        /// or
+        /// samplesA must be as long as samplesB! - samplesA
+        /// </exception>
+        public static void FastMix(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        {
+            // Validation
+            if (buffer.Length < samplesA.Length || buffer.Length < samplesB.Length)
+                throw new ArgumentException("buffer must not be shorter than samplesA or samplesB!", nameof(buffer));
+            if (samplesA.Length != samplesB.Length) throw new ArgumentException("samplesA must be as long as samplesB!", nameof(samplesA));
+
+            // Preparation
+            buffer = buffer.Slice(0, samplesA.Length);
+            samplesB = samplesB.Slice(0, samplesA.Length);
+            unsafe
+            {
+                (int newLength, int remainder) = MathI.FloorStepRem(samplesA.Length, Vector<float>.Count);
+                if (newLength != 0)
+                {
+                    var scaleVA = new Vector<float>(volumeA);
+                    var scaleVB = new Vector<float>(volumeB);
+                    var srcA = MemoryMarshal.Cast<float, Vector<float>>(samplesA);
+                    var srcB = MemoryMarshal.Cast<float, Vector<float>>(samplesB).Slice(0, srcA.Length);
+                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer).Slice(0, srcA.Length);
+                    for (int i = 0; i < srcA.Length; i++)
+                    {
+                        var sA = srcA[i];
+                        var sB = srcB[i];
+                        sA *= scaleVA;
+                        sB *= scaleVB;
+                        dst[i] += sA + sB;
+                    }
+                }
+                if (remainder != 0)
+                {
+                    var srcARem = samplesA.Slice(newLength);
+                    var srcBRem = samplesB.Slice(newLength).Slice(0, srcARem.Length);
+                    var dstRem = buffer.Slice(newLength).Slice(0, srcARem.Length);
+                    for (int i = 0; i < srcARem.Length; i++)
+                    {
+                        float sA = srcARem[i];
+                        float sB = srcBRem[i];
+                        sA *= volumeA;
+                        sB *= volumeB;
+                        dstRem[i] += sA + sB;
                     }
                 }
             }

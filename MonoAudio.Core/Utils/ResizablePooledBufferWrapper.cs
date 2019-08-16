@@ -17,7 +17,7 @@ namespace MonoAudio.Utils
         /// <summary>
         /// Initializes a new instance of the <see cref="ResizablePooledBufferWrapper{T}"/> class.
         /// </summary>
-        /// <param name="initialSize">The initial size.</param>
+        /// <param name="initialSize">The initial size in <typeparamref name="T"/>.</param>
         public ResizablePooledBufferWrapper(int initialSize)
         {
             unsafe
