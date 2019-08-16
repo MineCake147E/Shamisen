@@ -8,7 +8,7 @@ A Cross-Platform Audio Library for .NET Standard.
 - Audio outputs
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
-- Fast Resampling using Catmull-Rom Spline
+- Fast and smooth Upsampling using Catmull-Rom Spline
   - About 80 times faster than real time in 192kHz 2ch on .NET Core, Intel Core i7 4790
   - Uses `MemoryMarshal.Cast<float,Vector2>(Span<float>)` so it doesn't copy while casting.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
