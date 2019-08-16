@@ -1,6 +1,5 @@
 ﻿using System;
 using MonoAudio.Conversion;
-using MonoAudio.Formats;
 
 namespace MonoAudio.Filters
 {

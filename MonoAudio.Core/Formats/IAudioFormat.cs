@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonoAudio.Formats
+namespace MonoAudio
 {
     /// <summary>
     /// Defines a base structure of audio formats.

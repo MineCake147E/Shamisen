@@ -10,7 +10,7 @@ namespace MonoAudio
     /// <summary>
     /// Represents a wave format.
     /// </summary>
-    /// <seealso cref="Formats.IAudioFormat{TSample}" />
+    /// <seealso cref="MonoAudio.IAudioFormat{TSample}" />
     public readonly struct WaveFormat : IWaveFormat, IEquatable<WaveFormat>
     {
         /// <summary>
