@@ -12,73 +12,7 @@ namespace System
     /// </summary>
     public static partial class SpanExtensions
     {
-        #region SliceAlign
-
-        /// <summary>
-        /// Slices the <paramref name="span"/> aligned with <paramref name="Align"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="span">The span.</param>
-        /// <param name="Align">The align width.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<T> SliceAlign<T>(this Span<T> span, int Align) => span.Slice(0, MathI.FloorStep(span.Length, Align));
-
-        /// <summary>
-        /// Slices the <paramref name="span"/> aligned with <paramref name="Align"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="span">The span.</param>
-        /// <param name="Align">The align width.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> span, int Align) => span.Slice(0, MathI.FloorStep(span.Length, Align));
-
-        /// <summary>
-        /// Slices the <paramref name="memory"/> aligned with <paramref name="Align"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="memory">The memory.</param>
-        /// <param name="Align">The align width.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Memory<T> SliceAlign<T>(this Memory<T> memory, int Align) => memory.Slice(0, MathI.FloorStep(memory.Length, Align));
-
-        /// <summary>
-        /// Slices the <paramref name="memory"/> aligned with <paramref name="Align"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="memory">The memory.</param>
-        /// <param name="Align">The align width.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> memory, int Align) => memory.Slice(0, MathI.FloorStep(memory.Length, Align));
-
-        #endregion SliceAlign
-
-        #region SliceWhile
-
-        /// <summary>
-        /// Slices the <paramref name="span"/> with the specified length.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="span">The span to slice.</param>
-        /// <param name="length">The length to read.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<T> SliceWhile<T>(this Span<T> span, int length) => span.Slice(0, length);
-
-        /// <summary>
-        /// Slices the <paramref name="span"/> with the specified length.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="span">The span to slice.</param>
-        /// <param name="length">The length to read.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<T> SliceWhile<T>(this ReadOnlySpan<T> span, int length) => span.Slice(0, length);
-
-        #endregion SliceWhile
+        #region SIMD-Related Functions
 
         /// <summary>
         /// Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
@@ -238,5 +172,7 @@ namespace System
                 }
             }
         }
+
+        #endregion SIMD-Related Functions
     }
 }
