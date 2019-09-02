@@ -6,539 +6,521 @@
     <members>
         <member name="T:MonoAudio.AudioEncoding">
             <summary>
-                Defines all known encoding types. Primary used in the <see cref="T:MonoAudio.Formats.WaveFormat" /> class. See
-                <see cref="P:MonoAudio.Formats.WaveFormat.Encoding" />.
+            Defines known encoding types.
             </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Unknown">
-            <summary>WAVE_FORMAT_UNKNOWN,	Microsoft Corporation</summary>
+            <summary>
+            Unknown format
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Pcm">
-            <summary>WAVE_FORMAT_PCM		Microsoft Corporation</summary>
+            <summary>
+            Microsoft PCM Format
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.Adpcm">
-            <summary>WAVE_FORMAT_ADPCM		Microsoft Corporation</summary>
+        <member name="F:MonoAudio.AudioEncoding.MsAdpcm">
+            <summary>
+            Microsoft ADPCM Format
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.IeeeFloat">
-            <summary>WAVE_FORMAT_IEEE_FLOAT Microsoft Corporation</summary>
+            <summary>
+            IEEE 754 Single Precision Floating-Point Number
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Vselp">
-            <summary>WAVE_FORMAT_VSELP		Compaq Computer Corp.</summary>
+            <summary>
+            Vector sum excited linear prediction Compaq Computer Corporation
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.IbmCvsd">
-            <summary>WAVE_FORMAT_IBM_CVSD	IBM Corporation</summary>
+            <summary>
+            IBM Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.ALaw">
-            <summary>WAVE_FORMAT_ALAW		Microsoft Corporation</summary>
+        <member name="F:MonoAudio.AudioEncoding.Alaw">
+            <summary>
+            A-law format by Microsoft Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.MuLaw">
-            <summary>WAVE_FORMAT_MULAW		Microsoft Corporation</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Dts">
-            <summary>WAVE_FORMAT_DTS		Microsoft Corporation</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Drm">
-            <summary>WAVE_FORMAT_DRM		Microsoft Corporation</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WmaVoice9">
-            <summary>WAVE_FORMAT_WMAVOICE9 </summary>
+        <member name="F:MonoAudio.AudioEncoding.Mulaw">
+            <summary>
+            μ-law format by Microsoft Corporation
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.OkiAdpcm">
-            <summary>WAVE_FORMAT_OKI_ADPCM	OKI</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.DviAdpcm">
-            <summary>WAVE_FORMAT_DVI_ADPCM	Intel Corporation</summary>
+            <summary>
+            OKI ADPCM
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.ImaAdpcm">
-            <summary>WAVE_FORMAT_IMA_ADPCM  Intel Corporation</summary>
+            <summary>
+            Intel Corporation ADPCM
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.MediaspaceAdpcm">
-            <summary>WAVE_FORMAT_MEDIASPACE_ADPCM Videologic</summary>
+            <summary>
+            Videologic ADPCM
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.SierraAdpcm">
-            <summary>WAVE_FORMAT_SIERRA_ADPCM Sierra Semiconductor Corp </summary>
+            <summary>
+            Sierra Semiconductor Corp
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.G723Adpcm">
-            <summary>WAVE_FORMAT_G723_ADPCM Antex Electronics Corporation </summary>
+            <summary>
+            Antex Electronics Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.DigiStd">
-            <summary>WAVE_FORMAT_DIGISTD DSP Solutions, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.Digistd">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.DigiFix">
-            <summary>WAVE_FORMAT_DIGIFIX DSP Solutions, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.Digifix">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.DialogicOkiAdpcm">
-            <summary>WAVE_FORMAT_DIALOGIC_OKI_ADPCM Dialogic Corporation</summary>
+            <summary>
+            Dialogic Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.MediaVisionAdpcm">
-            <summary>WAVE_FORMAT_MEDIAVISION_ADPCM Media Vision, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.MediavisionAdpcm">
+            <summary>
+            Media Vision, Inc.
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.CUCodec">
-            <summary>WAVE_FORMAT_CU_CODEC Hewlett-Packard Company </summary>
+        <member name="F:MonoAudio.AudioEncoding.CuCodec">
+            <summary>
+            Hewlett-Packard Company
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.YamahaAdpcm">
-            <summary>WAVE_FORMAT_YAMAHA_ADPCM Yamaha Corporation of America</summary>
+            <summary>
+            Yamaha Corporation of America
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.SonarC">
-            <summary>WAVE_FORMAT_SONARC Speech Compression</summary>
+        <member name="F:MonoAudio.AudioEncoding.Sonarc">
+            <summary>
+            Speech Compression
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.DspGroupTrueSpeech">
-            <summary>WAVE_FORMAT_DSPGROUP_TRUESPEECH DSP Group, Inc </summary>
+        <member name="F:MonoAudio.AudioEncoding.DspgroupTruespeech">
+            <summary>
+            DSP Group, Inc
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.EchoSpeechCorporation1">
-            <summary>WAVE_FORMAT_ECHOSC1 Echo Speech Corporation</summary>
+        <member name="F:MonoAudio.AudioEncoding.Echosc1">
+            <summary>
+            Echo Speech Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.AudioFileAf36">
-            <summary>WAVE_FORMAT_AUDIOFILE_AF36, Virtual Music, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.AudiofileAf36">
+            <summary>
+            Audiofile, Inc.
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Aptx">
-            <summary>WAVE_FORMAT_APTX Audio Processing Technology</summary>
+            <summary>
+            Audio Processing Technology
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.AudioFileAf10">
-            <summary>WAVE_FORMAT_AUDIOFILE_AF10, Virtual Music, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.AudiofileAf10">
+            <summary>
+            Audiofile, Inc.
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Prosody1612">
-            <summary>WAVE_FORMAT_PROSODY_1612, Aculab plc</summary>
+            <summary>
+            Aculab plc
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Lrc">
-            <summary>WAVE_FORMAT_LRC, Merging Technologies S.A. </summary>
+            <summary>
+            Merging Technologies S.A.
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.DolbyAc2">
-            <summary>WAVE_FORMAT_DOLBY_AC2, Dolby Laboratories</summary>
+            <summary>
+            Dolby Laboratories
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Gsm610">
-            <summary>WAVE_FORMAT_GSM610, Microsoft Corporation</summary>
+            <summary>
+            Microsoft Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.MsnAudio">
-            <summary>WAVE_FORMAT_MSNAUDIO, Microsoft Corporation</summary>
+        <member name="F:MonoAudio.AudioEncoding.Msnaudio">
+            <summary>
+            Microsoft Corporation
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.AntexAdpcme">
-            <summary>WAVE_FORMAT_ANTEX_ADPCME, Antex Electronics Corporation</summary>
+            <summary>
+            Antex Electronics Corporation
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.ControlResVqlpc">
-            <summary>WAVE_FORMAT_CONTROL_RES_VQLPC, Control Resources Limited </summary>
+            <summary>
+            Control Resources Limited
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.DigiReal">
-            <summary>WAVE_FORMAT_DIGIREAL, DSP Solutions, Inc. </summary>
+        <member name="F:MonoAudio.AudioEncoding.Digireal">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.DigiAdpcm">
-            <summary>WAVE_FORMAT_DIGIADPCM, DSP Solutions, Inc.</summary>
+        <member name="F:MonoAudio.AudioEncoding.Digiadpcm">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.ControlResCr10">
-            <summary>WAVE_FORMAT_CONTROL_RES_CR10, Control Resources Limited</summary>
+            <summary>
+            Control Resources Limited
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_NMS_VBXADPCM">
-            <summary>WAVE_FORMAT_NMS_VBXADPCM</summary>
+        <member name="F:MonoAudio.AudioEncoding.NmsVbxadpcm">
+            <summary>
+            Natural MicroSystems
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CS_IMAADPCM">
-            <summary>WAVE_FORMAT_CS_IMAADPCM</summary>
+        <member name="F:MonoAudio.AudioEncoding.RolandRdac">
+            <summary>
+            Roland
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ECHOSC3">
-            <summary>WAVE_FORMAT_ECHOSC3</summary>
+        <member name="F:MonoAudio.AudioEncoding.Echosc3">
+            <summary>
+            Echo Speech Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ROCKWELL_ADPCM">
-            <summary>WAVE_FORMAT_ROCKWELL_ADPCM</summary>
+        <member name="F:MonoAudio.AudioEncoding.RockwellAdpcm">
+            <summary>
+            Rockwell International
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ROCKWELL_DIGITALK">
-            <summary>WAVE_FORMAT_ROCKWELL_DIGITALK</summary>
+        <member name="F:MonoAudio.AudioEncoding.RockwellDigitalk">
+            <summary>
+            Rockwell International
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_XEBEC">
-            <summary>WAVE_FORMAT_XEBEC</summary>
+        <member name="F:MonoAudio.AudioEncoding.Xebec">
+            <summary>
+            Xebec Multimedia Solutions Limited
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G721_ADPCM">
-            <summary>WAVE_FORMAT_G721_ADPCM</summary>
+        <member name="F:MonoAudio.AudioEncoding.G721Adpcm">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G728_CELP">
-            <summary>WAVE_FORMAT_G728_CELP</summary>
+        <member name="F:MonoAudio.AudioEncoding.G728Celp">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MSG723">
-            <summary>WAVE_FORMAT_MSG723</summary>
+        <member name="F:MonoAudio.AudioEncoding.Msg723">
+            <summary>
+            Microsoft Corporation
+            </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Mpeg">
-            <summary>WAVE_FORMAT_MPEG, Microsoft Corporation </summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_RT24">
-            <summary>WAVE_FORMAT_RT24</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_PAC">
-            <summary>WAVE_FORMAT_PAC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.MpegLayer3">
-            <summary>WAVE_FORMAT_MPEGLAYER3, ISO/MPEG Layer3 Format Tag </summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_LUCENT_G723">
-            <summary>WAVE_FORMAT_LUCENT_G723</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CIRRUS">
-            <summary>WAVE_FORMAT_CIRRUS</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ESPCM">
-            <summary>WAVE_FORMAT_ESPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE">
-            <summary>WAVE_FORMAT_VOXWARE</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CANOPUS_ATRAC">
-            <summary>WAVE_FORMAT_CANOPUS_ATRAC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G726_ADPCM">
-            <summary>WAVE_FORMAT_G726_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G722_ADPCM">
-            <summary>WAVE_FORMAT_G722_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DSAT_DISPLAY">
-            <summary>WAVE_FORMAT_DSAT_DISPLAY</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_BYTE_ALIGNED">
-            <summary>WAVE_FORMAT_VOXWARE_BYTE_ALIGNED</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_AC8">
-            <summary>WAVE_FORMAT_VOXWARE_AC8</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_AC10">
-            <summary>WAVE_FORMAT_VOXWARE_AC10</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_AC16">
-            <summary>WAVE_FORMAT_VOXWARE_AC16</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_AC20">
-            <summary>WAVE_FORMAT_VOXWARE_AC20</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_RT24">
-            <summary>WAVE_FORMAT_VOXWARE_RT24</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_RT29">
-            <summary>WAVE_FORMAT_VOXWARE_RT29</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_RT29HW">
-            <summary>WAVE_FORMAT_VOXWARE_RT29HW</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_VR12">
-            <summary>WAVE_FORMAT_VOXWARE_VR12</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_VR18">
-            <summary>WAVE_FORMAT_VOXWARE_VR18</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_TQ40">
-            <summary>WAVE_FORMAT_VOXWARE_TQ40</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SOFTSOUND">
-            <summary>WAVE_FORMAT_SOFTSOUND</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VOXWARE_TQ60">
-            <summary>WAVE_FORMAT_VOXWARE_TQ60</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MSRT24">
-            <summary>WAVE_FORMAT_MSRT24</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G729A">
-            <summary>WAVE_FORMAT_G729A</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MVI_MVI2">
-            <summary>WAVE_FORMAT_MVI_MVI2</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DF_G726">
-            <summary>WAVE_FORMAT_DF_G726</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DF_GSM610">
-            <summary>WAVE_FORMAT_DF_GSM610</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ISIAUDIO">
-            <summary>WAVE_FORMAT_ISIAUDIO</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ONLIVE">
-            <summary>WAVE_FORMAT_ONLIVE</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SBC24">
-            <summary>WAVE_FORMAT_SBC24</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DOLBY_AC3_SPDIF">
-            <summary>WAVE_FORMAT_DOLBY_AC3_SPDIF</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MEDIASONIC_G723">
-            <summary>WAVE_FORMAT_MEDIASONIC_G723</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_PROSODY_8KBPS">
-            <summary>WAVE_FORMAT_PROSODY_8KBPS</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ZYXEL_ADPCM">
-            <summary>WAVE_FORMAT_ZYXEL_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_PHILIPS_LPCBB">
-            <summary>WAVE_FORMAT_PHILIPS_LPCBB</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_PACKED">
-            <summary>WAVE_FORMAT_PACKED</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MALDEN_PHONYTALK">
-            <summary>WAVE_FORMAT_MALDEN_PHONYTALK</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Gsm">
-            <summary>WAVE_FORMAT_GSM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.G729">
-            <summary>WAVE_FORMAT_G729</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.G723">
-            <summary>WAVE_FORMAT_G723</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Acelp">
-            <summary>WAVE_FORMAT_ACELP</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.RawAac">
             <summary>
-                WAVE_FORMAT_RAW_AAC1
+            Microsoft Corporation
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_RHETOREX_ADPCM">
-            <summary>WAVE_FORMAT_RHETOREX_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_IRAT">
-            <summary>WAVE_FORMAT_IRAT</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VIVO_G723">
-            <summary>WAVE_FORMAT_VIVO_G723</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VIVO_SIREN">
-            <summary>WAVE_FORMAT_VIVO_SIREN</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DIGITAL_G723">
-            <summary>WAVE_FORMAT_DIGITAL_G723</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SANYO_LD_ADPCM">
-            <summary>WAVE_FORMAT_SANYO_LD_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_ACEPLNET">
-            <summary>WAVE_FORMAT_SIPROLAB_ACEPLNET</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_ACELP4800">
-            <summary>WAVE_FORMAT_SIPROLAB_ACELP4800</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_ACELP8V3">
-            <summary>WAVE_FORMAT_SIPROLAB_ACELP8V3</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_G729">
-            <summary>WAVE_FORMAT_SIPROLAB_G729</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_G729A">
-            <summary>WAVE_FORMAT_SIPROLAB_G729A</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SIPROLAB_KELVIN">
-            <summary>WAVE_FORMAT_SIPROLAB_KELVIN</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_G726ADPCM">
-            <summary>WAVE_FORMAT_G726ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_QUALCOMM_PUREVOICE">
-            <summary>WAVE_FORMAT_QUALCOMM_PUREVOICE</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_QUALCOMM_HALFRATE">
-            <summary>WAVE_FORMAT_QUALCOMM_HALFRATE</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_TUBGSM">
-            <summary>WAVE_FORMAT_TUBGSM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_MSAUDIO1">
-            <summary>WAVE_FORMAT_MSAUDIO1</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WindowsMediaAudio">
+        <member name="F:MonoAudio.AudioEncoding.Rt24">
             <summary>
-                Windows Media Audio, WAVE_FORMAT_WMAUDIO2, Microsoft Corporation
+            InSoft Inc.
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WindowsMediaAudioProfessional">
+        <member name="F:MonoAudio.AudioEncoding.Pac">
             <summary>
-                Windows Media Audio Professional WAVE_FORMAT_WMAUDIO3, Microsoft Corporation
+            InSoft Inc.
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WindowsMediaAudioLosseless">
+        <member name="F:MonoAudio.AudioEncoding.Mpeglayer3">
             <summary>
-                Windows Media Audio Lossless, WAVE_FORMAT_WMAUDIO_LOSSLESS
+            MPEG 3 Layer 1
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WindowsMediaAudioSpdif">
+        <member name="F:MonoAudio.AudioEncoding.LucentG723">
             <summary>
-                Windows Media Audio Professional over SPDIF WAVE_FORMAT_WMASPDIF (0x0164)
+            Lucent Technologies
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_UNISYS_NAP_ADPCM">
-            <summary>WAVE_FORMAT_UNISYS_NAP_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_UNISYS_NAP_ULAW">
-            <summary>WAVE_FORMAT_UNISYS_NAP_ULAW</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_UNISYS_NAP_ALAW">
-            <summary>WAVE_FORMAT_UNISYS_NAP_ALAW</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_UNISYS_NAP_16K">
-            <summary>WAVE_FORMAT_UNISYS_NAP_16K</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CREATIVE_ADPCM">
-            <summary>WAVE_FORMAT_CREATIVE_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CREATIVE_FASTSPEECH8">
-            <summary>WAVE_FORMAT_CREATIVE_FASTSPEECH8</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CREATIVE_FASTSPEECH10">
-            <summary>WAVE_FORMAT_CREATIVE_FASTSPEECH10</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_UHER_ADPCM">
-            <summary>WAVE_FORMAT_UHER_ADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_QUARTERDECK">
-            <summary>WAVE_FORMAT_QUARTERDECK</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ILINK_VC">
-            <summary>WAVE_FORMAT_ILINK_VC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_RAW_SPORT">
-            <summary>WAVE_FORMAT_RAW_SPORT</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_ESST_AC3">
-            <summary>WAVE_FORMAT_ESST_AC3</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_IPI_HSX">
-            <summary>WAVE_FORMAT_IPI_HSX</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_IPI_RPELP">
-            <summary>WAVE_FORMAT_IPI_RPELP</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_CS2">
-            <summary>WAVE_FORMAT_CS2</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SONY_SCX">
-            <summary>WAVE_FORMAT_SONY_SCX</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_FM_TOWNS_SND">
-            <summary>WAVE_FORMAT_FM_TOWNS_SND</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_BTV_DIGITAL">
-            <summary>WAVE_FORMAT_BTV_DIGITAL</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_QDESIGN_MUSIC">
-            <summary>WAVE_FORMAT_QDESIGN_MUSIC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_VME_VMPCM">
-            <summary>WAVE_FORMAT_VME_VMPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_TPC">
-            <summary>WAVE_FORMAT_TPC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_OLIGSM">
-            <summary>WAVE_FORMAT_OLIGSM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_OLIADPCM">
-            <summary>WAVE_FORMAT_OLIADPCM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_OLICELP">
-            <summary>WAVE_FORMAT_OLICELP</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_OLISBC">
-            <summary>WAVE_FORMAT_OLISBC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_OLIOPR">
-            <summary>WAVE_FORMAT_OLIOPR</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_LH_CODEC">
-            <summary>WAVE_FORMAT_LH_CODEC</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_NORRIS">
-            <summary>WAVE_FORMAT_NORRIS</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS">
-            <summary>WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.MPEG_ADTS_AAC">
+        <member name="F:MonoAudio.AudioEncoding.Cirrus">
             <summary>
-                Advanced Audio Coding (AAC) audio in Audio Data Transport Stream (ADTS) format.
-                The format block is a WAVEFORMATEX structure with wFormatTag equal to WAVE_FORMAT_MPEG_ADTS_AAC.
-            </summary>
-            <remarks>
-                The WAVEFORMATEX structure specifies the core AAC-LC sample rate and number of channels,
-                prior to applying spectral band replication (SBR) or parametric stereo (PS) tools, if present.
-                No additional data is required after the WAVEFORMATEX structure.
-            </remarks>
-            <see>http://msdn.microsoft.com/en-us/library/dd317599%28VS.85%29.aspx</see>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.MPEG_RAW_AAC">
-            <summary>MPEG_RAW_AAC</summary>
-            <remarks>Source wmCodec.h</remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.MPEG_LOAS">
-            <summary>
-                MPEG-4 audio transport stream with a synchronization layer (LOAS) and a multiplex layer (LATM).
-                The format block is a WAVEFORMATEX structure with wFormatTag equal to WAVE_FORMAT_MPEG_LOAS.
-                See <see href="http://msdn.microsoft.com/en-us/library/dd317599%28VS.85%29.aspx"/>.
-            </summary>
-            <remarks>
-                The WAVEFORMATEX structure specifies the core AAC-LC sample rate and number of channels,
-                prior to applying spectral SBR or PS tools, if present.
-                No additional data is required after the WAVEFORMATEX structure.
-            </remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.NOKIA_MPEG_ADTS_AAC">
-            <summary>NOKIA_MPEG_ADTS_AAC</summary>
-            <remarks>Source wmCodec.h</remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.NOKIA_MPEG_RAW_AAC">
-            <summary>NOKIA_MPEG_RAW_AAC</summary>
-            <remarks>Source wmCodec.h</remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.VODAFONE_MPEG_ADTS_AAC">
-            <summary>VODAFONE_MPEG_ADTS_AAC</summary>
-            <remarks>Source wmCodec.h</remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.VODAFONE_MPEG_RAW_AAC">
-            <summary>VODAFONE_MPEG_RAW_AAC</summary>
-            <remarks>Source wmCodec.h</remarks>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.MPEG_HEAAC">
-            <summary>
-                High-Efficiency Advanced Audio Coding (HE-AAC) stream.
-                The format block is an HEAACWAVEFORMAT structure. See <see href="http://msdn.microsoft.com/en-us/library/dd317599%28VS.85%29.aspx"/>.
+            Cirrus Logic
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DVM">
-            <summary>WAVE_FORMAT_DVM</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis1">
-            <summary>WAVE_FORMAT_VORBIS1 "Og" Original stream compatible</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis2">
-            <summary>WAVE_FORMAT_VORBIS2 "Pg" Have independent header</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis3">
-            <summary>WAVE_FORMAT_VORBIS3 "Qg" Have no codebook header</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis1P">
-            <summary>WAVE_FORMAT_VORBIS1P "og" Original stream compatible</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis2P">
-            <summary>WAVE_FORMAT_VORBIS2P "pg" Have independent headere</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.Vorbis3P">
-            <summary>WAVE_FORMAT_VORBIS3P "qg" Have no codebook header</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_RAW_AAC1">
+        <member name="F:MonoAudio.AudioEncoding.Espcm">
             <summary>
-                Raw AAC1
+            ESS Technology
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_WMAVOICE9">
+        <member name="F:MonoAudio.AudioEncoding.Voxware">
             <summary>
-                Windows Media Audio Voice (WMA Voice)
+            Voxware Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.CanopusAtrac">
+            <summary>
+            Canopus, Co., Ltd.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.G726Adpcm">
+            <summary>
+            APICOM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.G722Adpcm">
+            <summary>
+            APICOM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Dsat">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.DsatDisplay">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareByteAligned">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareAc8">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareAc10">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareAc16">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareAc20">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareRt24">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareRt29">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareRt29hw">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareVr12">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareVr18">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxwareTq40">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Softsound">
+            <summary>
+            Softsound, Ltd.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VoxareTq60">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Msrt24">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.G729a" -->
+        <member name="F:MonoAudio.AudioEncoding.MviMv12">
+            <summary>
+            Motion Pixels
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.DfG726">
+            <summary>
+            DataFusion Systems (Pty) (Ltd)
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.DfGsm610">
+            <summary>
+            DataFusion Systems (Pty) (Ltd)
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Onlive">
+            <summary>
+            OnLive! Technologies, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Sbc24">
+            <summary>
+            Siemens Business Communications Systems
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.DolbyAc3Spdif">
+            <summary>
+            Sonic Foundry
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.ZyxelAdpcm">
+            <summary>
+            ZyXEL Communications, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.PhilipsLpcbb">
+            <summary>
+            Philips Speech Processing
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Packed">
+            <summary>
+            Studer Professional Audio AG
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.RhetorexAdpcm">
+            <summary>
+            Rhetorex, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.IbmMulaw">
+            <summary>
+            IBM mu-law format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.IbmAlaw">
+            <summary>
+            IBM a-law format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Adpcm">
+            <summary>
+            IBM AVC Adaptive Differential PCM format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VivoG723">
+            <summary>
+            Vivo Software
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.VivoSiren">
+            <summary>
+            Vivo Software
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.DigitalG723">
+            <summary>
+            Digital Equipment Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.CreativeAdpcm">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.CreativeFastspeech8">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.CreativeFastspeech10">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Quarterdeck">
+            <summary>
+            Quarterdeck Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.FmTownsSnd">
+            <summary>
+            Fujitsu Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.BzvDigital">
+            <summary>
+            Brooktree Corporation
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.VmeVmpcm" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oligsm" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oliadpcm" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Olicelp" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Olisbc" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oliopr" -->
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.LhCodec" -->
+        <member name="F:MonoAudio.AudioEncoding.Norris">
+            <summary>
+            Norris Communications, Inc.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.SoundspaceMusicompress" -->
+        <member name="F:MonoAudio.AudioEncoding.Dvm">
+            <summary>
+            FAST Multimedia AG
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.InterwavVsc112">
+            <summary>
+            ?????
             </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Extensible">
-            <summary>Extensible</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_DEVELOPMENT">
-            <summary>WAVE_FORMAT_DEVELOPMENT</summary>
-        </member>
-        <member name="F:MonoAudio.AudioEncoding.WAVE_FORMAT_FLAC">
             <summary>
-            FLAC
+            
+            </summary>
+        </member>
+        <member name="T:MonoAudio.AudioEncodingAttribute">
+            <summary>
+            Specifies the properties of audio encoding format.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.BitDepthAttribute">
+            <summary>
+            Specifies the Bit Depth of an audio encoding format.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.FixedBitDepthAttribute">
+            <summary>
+            Specifies the audio encoding format supports only fixed bit depth.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.FixedBitDepthAttribute.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.FixedBitDepthAttribute"/> class.
             </summary>
         </member>
         <member name="T:MonoAudio.Conversion.IAudioConverter`4">
@@ -564,7 +546,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Int32)">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase"/> class.
             </summary>
@@ -759,7 +741,7 @@
              </summary>
              <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Int32)">
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.SplineResampler"/> class.
             </summary>
@@ -785,7 +767,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat})">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat})">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter"/> class.
             </summary>
@@ -820,7 +802,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm16Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Boolean,MonoAudio.Endianness)">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm16Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Boolean,MonoAudio.Endianness)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm16Converter"/> class.
             </summary>
@@ -873,7 +855,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm24Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Boolean,MonoAudio.Endianness)">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm24Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Boolean,MonoAudio.Endianness)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm24Converter"/> class.
             </summary>
@@ -926,7 +908,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm32Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Boolean,MonoAudio.Endianness)">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm32Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Boolean,MonoAudio.Endianness)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToPcm32Converter"/> class.
             </summary>
@@ -979,7 +961,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase" />
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPCM8Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Boolean)">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToPCM8Converter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToPCM8Converter"/> class.
             </summary>
@@ -1077,7 +1059,7 @@
             The disposed value
             </summary>
         </member>
-        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},MonoAudio.Formats.IWaveFormat)">
+        <member name="M:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},MonoAudio.Formats.IWaveFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToWaveConverterBase"/> class.
             </summary>
@@ -1362,7 +1344,7 @@
             The disposed value
             </summary>
         </member>
-        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Byte,MonoAudio.Formats.IWaveFormat},MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Byte,MonoAudio.Formats.IWaveFormat},MonoAudio.SampleFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase"/> class.
             </summary>
@@ -1419,7 +1401,7 @@
             </summary>
             <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
         </member>
-        <member name="M:MonoAudio.Filters.Attenuator.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat})">
+        <member name="M:MonoAudio.Filters.Attenuator.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat})">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Filters.Attenuator"/> class.
             </summary>
@@ -1497,7 +1479,7 @@
             Provides a function of filtering with Digital BiQuad Filter.
             </summary>
         </member>
-        <member name="M:MonoAudio.Filters.BiQuadFilter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},MonoAudio.Filters.BiQuadParameter)">
+        <member name="M:MonoAudio.Filters.BiQuadFilter.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},MonoAudio.Filters.BiQuadParameter)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Filters.BiQuadFilter"/> class.
             </summary>
@@ -1769,7 +1751,7 @@
             The buffer wrapper
             </summary>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.#ctor(MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.Filters.SimpleMixer.#ctor(MonoAudio.SampleFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Filters.SimpleMixer"/> class.
             </summary>
@@ -1809,7 +1791,7 @@
             The length.
             </value>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.AddSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Single,System.Boolean)">
+        <member name="M:MonoAudio.Filters.SimpleMixer.AddSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Single,System.Boolean)">
             <summary>
             Adds the source.
             </summary>
@@ -1817,7 +1799,7 @@
             <param name="volume">The volume.</param>
             <param name="disposeSourceOnRemove">if set to <c>true</c> it disposes source on removal.</param>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.RemoveSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat})">
+        <member name="M:MonoAudio.Filters.SimpleMixer.RemoveSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat})">
             <summary>
             Removes the source.
             </summary>
@@ -1852,7 +1834,7 @@
             Represents a <see cref="T:MonoAudio.Filters.SimpleMixer"/>'s entry.
             </summary>
         </member>
-        <member name="M:MonoAudio.Filters.MixerEntry.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.Formats.SampleFormat},System.Single,System.Boolean)">
+        <member name="M:MonoAudio.Filters.MixerEntry.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Single,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Filters.MixerEntry"/> class.
             </summary>
@@ -1901,13 +1883,87 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:MonoAudio.Formats.IAudioFormat`1">
+        <member name="T:MonoAudio.Filters.StreamBuffer`2">
+            <summary>
+            Buffers the samples like YouTube does.<br/>
+            It reads a little more than required, and prevents waiting for IOs / decoding.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="initialBlockSize">
+            The 1/9 size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of 3 reading buffers.
+            </param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Read(System.Span{`0})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.
             </summary>
             <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="P:MonoAudio.Formats.IAudioFormat`1.Channels">
+        <member name="P:MonoAudio.IAudioFormat`1.Channels">
             <summary>
             Gets the number of channels.
             It does not describe how these loudspeakers of each channels are placed in the room.
@@ -1916,7 +1972,7 @@
             The number of channels.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.IAudioFormat`1.SampleRate">
+        <member name="P:MonoAudio.IAudioFormat`1.SampleRate">
             <summary>
             Gets the number indicates how many times the audio signal is sampled.
             </summary>
@@ -1924,10 +1980,10 @@
             The sample rate.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.IAudioFormat`1.BitDepth">
+        <member name="P:MonoAudio.IAudioFormat`1.BitDepth">
             <summary>
             Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:MonoAudio.Formats.IAudioFormat`1.Channels"/>.
+            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
             </summary>
             <value>
             The bit depth.
@@ -1941,7 +1997,7 @@
         <member name="P:MonoAudio.Formats.IWaveFormat.BlockSize">
             <summary>
             Gets the value indicates how many bytes are required per whole sample.
-            It depends on <see cref="P:MonoAudio.Formats.IAudioFormat`1.Channels"/>.
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
             </summary>
             <value>
             The size of block.
@@ -1963,19 +2019,19 @@
             The size of the extra information.
             </value>
         </member>
-        <member name="T:MonoAudio.Formats.SampleFormat">
+        <member name="T:MonoAudio.SampleFormat">
             <summary>
             Represents a format of an sample source.
             </summary>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.#ctor(System.Int32,System.Int32)">
+        <member name="M:MonoAudio.SampleFormat.#ctor(System.Int32,System.Int32)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Formats.SampleFormat"/> struct.
+            Initializes a new instance of the <see cref="T:MonoAudio.SampleFormat"/> struct.
             </summary>
             <param name="channels">The channels.</param>
             <param name="sampleRate">The sample rate.</param>
         </member>
-        <member name="P:MonoAudio.Formats.SampleFormat.Channels">
+        <member name="P:MonoAudio.SampleFormat.Channels">
             <summary>
             Gets the number of channels.
             It does not describe how these loudspeakers of each channels are placed in the room.
@@ -1984,7 +2040,7 @@
             The number of channels.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.SampleFormat.SampleRate">
+        <member name="P:MonoAudio.SampleFormat.SampleRate">
             <summary>
             Gets the number indicates how many times the audio signal is sampled.
             </summary>
@@ -1992,75 +2048,75 @@
             The sample rate.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.SampleFormat.BitDepth">
+        <member name="P:MonoAudio.SampleFormat.BitDepth">
             <summary>
             Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:MonoAudio.Formats.SampleFormat.Channels"/>.
+            Does not depend on the number of <see cref="P:MonoAudio.SampleFormat.Channels"/>.
             </summary>
             <value>
             The bit depth.
             </value>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.Equals(System.Object)">
+        <member name="M:MonoAudio.SampleFormat.Equals(System.Object)">
             <summary>Indicates whether the current object is equal to another object of the same type.</summary>
             <param name="obj">An object to compare with this object.</param>
             <returns>
               <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.Equals(MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.SampleFormat.Equals(MonoAudio.SampleFormat)">
             <summary>Indicates whether the current object is equal to another object of the same type.</summary>
             <param name="other">An object to compare with this object.</param>
             <returns>
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.Equals(MonoAudio.Formats.IAudioFormat{System.Single})">
+        <member name="M:MonoAudio.SampleFormat.Equals(MonoAudio.IAudioFormat{System.Single})">
             <summary>Indicates whether the current object is equal to another object of the same type.</summary>
             <param name="other">An object to compare with this object.</param>
             <returns>
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.GetHashCode">
+        <member name="M:MonoAudio.SampleFormat.GetHashCode">
             <summary>Returns a hash code for this instance.</summary>
             <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.op_Equality(MonoAudio.Formats.SampleFormat,MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.SampleFormat.op_Equality(MonoAudio.SampleFormat,MonoAudio.SampleFormat)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.SampleFormat"/> objects are equal.
+            Indicates whether the values of two specified <see cref="T:MonoAudio.SampleFormat"/> objects are equal.
             </summary>
-            <param name="left">The first <see cref="T:MonoAudio.Formats.SampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:MonoAudio.Formats.SampleFormat"/> to compare.</param>
+            <param name="left">The first <see cref="T:MonoAudio.SampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.SampleFormat"/> to compare.</param>
             <returns>
               <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.SampleFormat.op_Inequality(MonoAudio.Formats.SampleFormat,MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.SampleFormat.op_Inequality(MonoAudio.SampleFormat,MonoAudio.SampleFormat)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.SampleFormat"/> objects are different.
+            Indicates whether the values of two specified <see cref="T:MonoAudio.SampleFormat"/> objects are different.
             </summary>
-            <param name="left">The first <see cref="T:MonoAudio.Formats.SampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:MonoAudio.Formats.SampleFormat"/> to compare.</param>
+            <param name="left">The first <see cref="T:MonoAudio.SampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.SampleFormat"/> to compare.</param>
             <returns>
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="T:MonoAudio.Formats.WaveFormat">
+        <member name="T:MonoAudio.WaveFormat">
             <summary>
             Represents a wave format.
             </summary>
-            <seealso cref="T:MonoAudio.Formats.IAudioFormat`1" />
+            <seealso cref="T:MonoAudio.IAudioFormat`1" />
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.#ctor(System.Int32,System.Int32,System.Int32,MonoAudio.AudioEncoding)">
+        <member name="M:MonoAudio.WaveFormat.#ctor(System.Int32,System.Int32,System.Int32,MonoAudio.AudioEncoding)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Formats.WaveFormat"/> struct.
+            Initializes a new instance of the <see cref="T:MonoAudio.WaveFormat"/> struct.
             </summary>
             <param name="sampleRate">The sample rate.</param>
             <param name="bitDepth">The bit depth.</param>
             <param name="channels">The channels.</param>
             <param name="encoding">The encoding.</param>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.#ctor(System.Int32,System.Int32,System.Int32,MonoAudio.AudioEncoding,System.Int32)">
+        <member name="M:MonoAudio.WaveFormat.#ctor(System.Int32,System.Int32,System.Int32,MonoAudio.AudioEncoding,System.Int32)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Formats.WaveFormat"/> struct.
+            Initializes a new instance of the <see cref="T:MonoAudio.WaveFormat"/> struct.
             </summary>
             <param name="sampleRate">The sample rate.</param>
             <param name="bitDepth">The bit depth.</param>
@@ -2068,16 +2124,16 @@
             <param name="encoding">The encoding.</param>
             <param name="extraSize">Size of the extra.</param>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.BlockSize">
+        <member name="P:MonoAudio.WaveFormat.BlockSize">
             <summary>
             Gets the value indicates how many bytes are required per whole sample.
-            It depends on <see cref="P:MonoAudio.Formats.IAudioFormat`1.Channels"/>.
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
             </summary>
             <value>
             The size of block.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.Encoding">
+        <member name="P:MonoAudio.WaveFormat.Encoding">
             <summary>
             Gets the value indicates how the samples are encoded.
             </summary>
@@ -2085,7 +2141,7 @@
             The sample encoding.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.ExtraSize">
+        <member name="P:MonoAudio.WaveFormat.ExtraSize">
             <summary>
             Gets the size of the extra information.
             </summary>
@@ -2093,7 +2149,7 @@
             The size of the extra information.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.Channels">
+        <member name="P:MonoAudio.WaveFormat.Channels">
             <summary>
             Gets the number of channels.
             It does not describe how these loudspeakers of each channels are placed in the room.
@@ -2102,7 +2158,7 @@
             The number of channels.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.SampleRate">
+        <member name="P:MonoAudio.WaveFormat.SampleRate">
             <summary>
             Gets the number indicates how many times the audio signal is sampled.
             </summary>
@@ -2110,16 +2166,16 @@
             The sample rate.
             </value>
         </member>
-        <member name="P:MonoAudio.Formats.WaveFormat.BitDepth">
+        <member name="P:MonoAudio.WaveFormat.BitDepth">
             <summary>
             Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:MonoAudio.Formats.WaveFormat.Channels"/>.
+            Does not depend on the number of <see cref="P:MonoAudio.WaveFormat.Channels"/>.
             </summary>
             <value>
             The bit depth.
             </value>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.Equals(System.Object)">
+        <member name="M:MonoAudio.WaveFormat.Equals(System.Object)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -2128,7 +2184,7 @@
               <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.Equals(MonoAudio.Formats.WaveFormat)">
+        <member name="M:MonoAudio.WaveFormat.Equals(MonoAudio.WaveFormat)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -2137,7 +2193,7 @@
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.Equals(MonoAudio.Formats.IAudioFormat{System.Byte})">
+        <member name="M:MonoAudio.WaveFormat.Equals(MonoAudio.IAudioFormat{System.Byte})">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -2146,7 +2202,7 @@
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.GetHashCode">
+        <member name="M:MonoAudio.WaveFormat.GetHashCode">
             <summary>
             Returns a hash code for this instance.
             </summary>
@@ -2154,22 +2210,22 @@
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.op_Equality(MonoAudio.Formats.WaveFormat,MonoAudio.Formats.WaveFormat)">
+        <member name="M:MonoAudio.WaveFormat.op_Equality(MonoAudio.WaveFormat,MonoAudio.WaveFormat)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.WaveFormat"/> objects are equal.
+            Indicates whether the values of two specified <see cref="T:MonoAudio.WaveFormat"/> objects are equal.
             </summary>
-            <param name="left">The first <see cref="T:MonoAudio.Formats.WaveFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:MonoAudio.Formats.WaveFormat"/> to compare.</param>
+            <param name="left">The first <see cref="T:MonoAudio.WaveFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.WaveFormat"/> to compare.</param>
             <returns>
               <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Formats.WaveFormat.op_Inequality(MonoAudio.Formats.WaveFormat,MonoAudio.Formats.WaveFormat)">
+        <member name="M:MonoAudio.WaveFormat.op_Inequality(MonoAudio.WaveFormat,MonoAudio.WaveFormat)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.WaveFormat"/> objects are not equal.
+            Indicates whether the values of two specified <see cref="T:MonoAudio.WaveFormat"/> objects are not equal.
             </summary>
-            <param name="left">The first <see cref="T:MonoAudio.Formats.WaveFormat"/> to compare.</param>
-            <param name="right">The second  <see cref="T:MonoAudio.Formats.WaveFormat"/> to compare.</param>
+            <param name="left">The first <see cref="T:MonoAudio.WaveFormat"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.WaveFormat"/> to compare.</param>
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
@@ -2258,7 +2314,7 @@
             <b>CAUTION! REF STRUCT! IT CANNOT BE STORED ON HEAPS!</b>
             </summary>
         </member>
-        <member name="M:MonoAudio.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte},MonoAudio.Formats.WaveFormat)">
+        <member name="M:MonoAudio.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte},MonoAudio.WaveFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.IO.DataAvailableEventArgs" /> struct.
             </summary>
@@ -2513,20 +2569,187 @@
             <param name="b">The b.</param>
             <returns></returns>
         </member>
-        <member name="T:MonoAudio.Samples.OffsetSByte">
+        <member name="T:MonoAudio.Int24">
+            <summary>
+            An simple representation of 24bit signed integer.
+            </summary>
+            <seealso cref="T:System.IEquatable`1" />
+        </member>
+        <member name="F:MonoAudio.Int24.MaxValue">
+            <summary>
+            Represents the largest possible value of an System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Int24.MinValue">
+            <summary>
+            Represents the smallest possible value of System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Int24.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int24"/> struct.
+            </summary>
+            <param name="value">The source <see cref="T:System.Int32"/> value. Mask:0x807fffff</param>
+        </member>
+        <member name="M:MonoAudio.Int24.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int24"/> struct.
+            </summary>
+            <param name="head">The head.</param>
+            <param name="middle">The middle.</param>
+            <param name="tail">The tail.</param>
+        </member>
+        <member name="M:MonoAudio.Int24.op_Implicit(MonoAudio.Int24)~System.Int32">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.Int24"/> to <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_Explicit(System.Int32)~MonoAudio.Int24">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int32"/> to <see cref="T:MonoAudio.Int24"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_Equality(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int24"/> objects are equal.
+            </summary>
+            <param name="int1">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="int2">The second <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_UnaryNegation(MonoAudio.Int24)">
+            <summary>
+            Implements the operator -.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_Inequality(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int24"/> objects are not equal.
+            </summary>
+            <param name="int1">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="int2">The second <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if int1 and int2 are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_LessThan(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:MonoAudio.Int24"/> is less than another specified <see cref="T:MonoAudio.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_GreaterThan(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:MonoAudio.Int24"/> is greater than another specified <see cref="T:MonoAudio.Int24"/> value.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is greater than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_LessThanOrEqual(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Returns a value that indicates whether a specified <see cref="T:MonoAudio.Int24"/> is less than or equal to another specified <see cref="T:MonoAudio.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.op_GreaterThanOrEqual(MonoAudio.Int24,MonoAudio.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:MonoAudio.Int24"/> is greater than or equal to another specified <see cref="T:MonoAudio.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if <see cref="T:MonoAudio.Int24"/> is greater than or equal to <see cref="T:MonoAudio.Int24"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.ReverseEndianness(MonoAudio.Int24)">
+            <summary>
+            Reverses endianness of the given <see cref="T:MonoAudio.Int24"/> value.
+            </summary>
+            <param name="value">The value to reverse endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Int24.CompareTo(MonoAudio.Int24)">
+            <summary>
+            Compares the value of this instance to a specified <see cref="T:MonoAudio.Int24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="T:MonoAudio.Int24"/> value.
+            </summary>
+            <param name="other">The <see cref="T:MonoAudio.Int24"/> to compare to the current instance.</param>
+            <returns>
+            A signed number indicating the relative values of this instance and the other parameter.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" />, is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.Equals(MonoAudio.Int24)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.OffsetSByte">
             <summary>
             Represents a value that is offset 128 inside 8-bit PCM.
             </summary>
         </member>
-        <member name="M:MonoAudio.Samples.OffsetSByte.#ctor(System.SByte)">
+        <member name="M:MonoAudio.OffsetSByte.#ctor(System.SByte)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Samples.OffsetSByte"/> struct.
+            Initializes a new instance of the <see cref="T:MonoAudio.OffsetSByte"/> struct.
             </summary>
             <param name="value">The value.</param>
         </member>
-        <member name="M:MonoAudio.Samples.OffsetSByte.op_Implicit(MonoAudio.Samples.OffsetSByte)~System.SByte">
+        <member name="M:MonoAudio.OffsetSByte.op_Implicit(MonoAudio.OffsetSByte)~System.SByte">
             <summary>
-            Performs an implicit conversion from <see cref="T:MonoAudio.Samples.OffsetSByte"/> to <see cref="T:System.SByte"/>.
+            Performs an implicit conversion from <see cref="T:MonoAudio.OffsetSByte"/> to <see cref="T:System.SByte"/>.
             </summary>
             <param name="value">The value.</param>
             <returns>
@@ -2571,7 +2794,7 @@
             Generates a sinusoid wave with specified frequency.
             </summary>
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.Formats.SampleFormat)">
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.SampleFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SinusoidSource"/> class.
             </summary>
@@ -2707,7 +2930,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Utils.ResizablePooledBufferWrapper`1"/> class.
             </summary>
-            <param name="initialSize">The initial size.</param>
+            <param name="initialSize">The initial size in <typeparamref name="T"/>.</param>
         </member>
         <member name="P:MonoAudio.Utils.ResizablePooledBufferWrapper`1.ActualBuffer">
             <summary>
@@ -2741,174 +2964,10 @@
             <typeparam name="T">The type of exception.</typeparam>
             <param name="exception">The exception.</param>
         </member>
-        <member name="T:System.Int24">
-            <summary>
-            An simple representation of 24bit signed integer.
-            </summary>
-            <seealso cref="T:System.IEquatable`1" />
-        </member>
-        <member name="F:System.Int24.MaxValue">
-            <summary>
-            Represents the largest possible value of an System.Int24. This field is constant.
-            </summary>
-        </member>
-        <member name="F:System.Int24.MinValue">
-            <summary>
-            Represents the smallest possible value of System.Int24. This field is constant.
-            </summary>
-        </member>
-        <member name="M:System.Int24.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Int24"/> struct.
-            </summary>
-            <param name="value">The source <see cref="T:System.Int32"/> value. Mask:0x807fffff</param>
-        </member>
-        <member name="M:System.Int24.#ctor(System.Byte,System.Byte,System.Byte)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Int24"/> struct.
-            </summary>
-            <param name="head">The head.</param>
-            <param name="middle">The middle.</param>
-            <param name="tail">The tail.</param>
-        </member>
-        <member name="M:System.Int24.op_Implicit(System.Int24)~System.Int32">
-            <summary>
-            Performs an implicit conversion from <see cref="T:System.Int24"/> to <see cref="T:System.Int32"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_Explicit(System.Int32)~System.Int24">
-            <summary>
-            Performs an explicit conversion from <see cref="T:System.Int32"/> to <see cref="T:System.Int24"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_Equality(System.Int24,System.Int24)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:System.Int24"/> objects are equal.
-            </summary>
-            <param name="int1">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="int2">The second <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.ToString">
-            <summary>
-            Converts to string.
-            </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_UnaryNegation(System.Int24)">
-            <summary>
-            Implements the operator -.
-            </summary>
-            <param name="value">The value.</param>
-            <returns>
-            The result of the operator.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_Inequality(System.Int24,System.Int24)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:System.Int24"/> objects are not equal.
-            </summary>
-            <param name="int1">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="int2">The second <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if int1 and int2 are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_LessThan(System.Int24,System.Int24)">
-            <summary>
-            Determines whether one specified <see cref="T:System.Int24"/> is less than another specified <see cref="T:System.Int24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is less than right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_GreaterThan(System.Int24,System.Int24)">
-            <summary>
-            Determines whether one specified <see cref="T:System.Int24"/> is greater than another specified <see cref="T:System.Int24"/> value.
-            </summary>
-            <param name="left">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is greater than right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_LessThanOrEqual(System.Int24,System.Int24)">
-            <summary>
-            Returns a value that indicates whether a specified <see cref="T:System.Int24"/> is less than or equal to another specified <see cref="T:System.Int24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.op_GreaterThanOrEqual(System.Int24,System.Int24)">
-            <summary>
-            Determines whether one specified <see cref="T:System.Int24"/> is greater than or equal to another specified <see cref="T:System.Int24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:System.Int24"/> to compare.</param>
-            <param name="right">The second  <see cref="T:System.Int24"/> to compare.</param>
-            <returns>
-              <c>true</c> if <see cref="T:System.Int24"/> is greater than or equal to <see cref="T:System.Int24"/>; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.ReverseEndianness(System.Int24)">
-            <summary>
-            Reverses endianness of the given <see cref="T:System.Int24"/> value.
-            </summary>
-            <param name="value">The value to reverse endianness.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.Int24.CompareTo(System.Int24)">
-            <summary>
-            Compares the value of this instance to a specified <see cref="T:System.Int24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="T:System.Int24"/> value.
-            </summary>
-            <param name="other">The <see cref="T:System.Int24"/> to compare to the current instance.</param>
-            <returns>
-            A signed number indicating the relative values of this instance and the other parameter.
-            </returns>
-        </member>
-        <member name="M:System.Int24.Equals(System.Object)">
-            <summary>
-            Determines whether the specified <see cref="T:System.Object" />, is equal to this instance.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object" /> to compare with this instance.</param>
-            <returns>
-              <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Int24.Equals(System.Int24)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:System.Int24.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
         <member name="T:System.MathI">
+            <summary>
+            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
+            </summary>
             <summary>
             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
             </summary>
@@ -2937,60 +2996,6 @@
             Provides some extension functions.
             </summary>
         </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with <paramref name="Align"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="Align">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with <paramref name="Align"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="Align">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with <paramref name="Align"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The memory.</param>
-            <param name="Align">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with <paramref name="Align"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The memory.</param>
-            <param name="Align">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
         <member name="M:System.SpanExtensions.FastAdd(System.ReadOnlySpan{System.Single},System.Span{System.Single})">
             <summary>
             Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
@@ -3015,75 +3020,378 @@
             <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
             <exception cref="T:System.ArgumentException">samplesToMix</exception>
         </member>
+        <member name="M:System.SpanExtensions.FastMix(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The output buffer.</param>
+            <param name="samplesA">The samples a.</param>
+            <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
+            <param name="samplesB">The samples b.</param>
+            <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
+            <exception cref="T:System.ArgumentException">
+            buffer must not be shorter than samplesA or samplesB! - buffer
+            or
+            samplesA must be as long as samplesB! - samplesA
+            </exception>
+        </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
-            <param name="value">The value to be filled.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="memory"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.CopyTo``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.Memory`1"/> into a destination <see cref="T:System.Span`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.CopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.ReadOnlyMemory`1"/> into a destination <see cref="T:System.Span`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.CopyTo``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.CopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Attempts to copy the current <see cref="T:System.Memory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:System.SpanExtensions.TryCopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Attempts to copy the current <see cref="T:System.ReadOnlyMemory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:System.SpanExtensions.TryCopyTo``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of current <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.TryCopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of current <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns></returns>
         </member>
         <member name="T:System.Numerics.Vector5">
             <summary>

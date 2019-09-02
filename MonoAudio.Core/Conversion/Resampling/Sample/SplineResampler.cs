@@ -17,7 +17,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
     public sealed partial class SplineResampler : ResamplerBase
     {
         private ResizableBufferWrapper<float> bufferWrapper;
-        private float[][] SampleCache;
+        private float[][] sampleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SplineResampler"/> class.
@@ -30,10 +30,10 @@ namespace MonoAudio.Conversion.Resampling.Sample
                 : source, destinationSampleRate)
         {
             bufferWrapper = new ResizablePooledBufferWrapper<float>(1);
-            SampleCache = new float[3][];
-            for (int i = 0; i < SampleCache.Length; i++)
+            sampleCache = new float[3][];
+            for (int i = 0; i < sampleCache.Length; i++)
             {
-                SampleCache[i] = new float[Channels];
+                sampleCache[i] = new float[Channels];
             }
         }
 
@@ -74,7 +74,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
             }
             Source.Dispose();
             bufferWrapper.Dispose();
-            SampleCache = null;
+            sampleCache = null;
         }
     }
 }

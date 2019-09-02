@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace System
+namespace MonoAudio
 {
     /// <summary>
     /// Represents a value that is offset 128 inside 8-bit PCM.

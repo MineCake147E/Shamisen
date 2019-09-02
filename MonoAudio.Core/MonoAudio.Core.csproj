@@ -33,6 +33,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
     </None>
+    <None Include="SystemExtensions\MathITemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MathITemplate.tt</DependentUpon>
+    </None>
     <None Include="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -43,6 +48,10 @@
     <None Update="Conversion\Resampling\Sample\SplineResampler.Resample.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
+    </None>
+    <None Update="SystemExtensions\MathITemplate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MathITemplate.cs</LastGenOutput>
     </None>
     <None Update="SystemExtensions\Memory\SpanExtensionsTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
