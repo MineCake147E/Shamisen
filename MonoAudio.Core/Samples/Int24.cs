@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace System
+namespace MonoAudio
 {
     //Approximately same as CSCodec's one though, but it's re-written with concern of Marshaling.
     /// <summary>
