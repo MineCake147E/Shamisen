@@ -364,7 +364,11 @@
             Microsoft Corporation
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.G729a" -->
+        <member name="F:MonoAudio.AudioEncoding.G729a">
+            <summary>
+            AT&amp;T Laboratories
+            </summary>
+        </member>
         <member name="F:MonoAudio.AudioEncoding.MviMv12">
             <summary>
             Motion Pixels
@@ -475,19 +479,51 @@
             Brooktree Corporation
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.VmeVmpcm" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oligsm" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oliadpcm" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Olicelp" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Olisbc" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.Oliopr" -->
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.LhCodec" -->
+        <member name="F:MonoAudio.AudioEncoding.VmeVmpcm">
+            <summary>
+            AT&amp;T Labs, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Oligsm">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Oliadpcm">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Olicelp">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Olisbc">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.Oliopr">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.AudioEncoding.LhCodec">
+            <summary>
+            Lernout &amp; Hauspie
+            </summary>
+        </member>
         <member name="F:MonoAudio.AudioEncoding.Norris">
             <summary>
             Norris Communications, Inc.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:MonoAudio.AudioEncoding.SoundspaceMusicompress" -->
+        <member name="F:MonoAudio.AudioEncoding.SoundspaceMusicompress">
+            <summary>
+            AT&amp;T Labs, Inc.
+            </summary>
+        </member>
         <member name="F:MonoAudio.AudioEncoding.Dvm">
             <summary>
             FAST Multimedia AG
@@ -499,9 +535,9 @@
             </summary>
         </member>
         <member name="F:MonoAudio.AudioEncoding.Extensible">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="T:MonoAudio.AudioEncodingAttribute">
             <summary>
@@ -1634,7 +1670,7 @@
             </summary>
             <param name="samplingFrequency">The sampling frequency.</param>
             <param name="centerFrequency">The center frequency.</param>
-            <param name="bandWidth">The bandwidth.</param>
+            <param name="bandWidth">The bandwidth in Octaves.</param>
             <param name="gainKind">Kind of the gain.</param>
             <returns></returns>
             <exception cref="T:System.ArgumentException">The kind of gain is invalid! - gainKind</exception>
@@ -1673,7 +1709,7 @@
             </summary>
             <param name="samplingFrequency">The sampling frequency.</param>
             <param name="centerFrequency">The center frequency.</param>
-            <param name="bandWidth">The bandwidth.</param>
+            <param name="bandWidth">The bandwidth in Octaves.</param>
             <param name="dBGain">The peak gain in dB.</param>
             <returns></returns>
         </member>
@@ -1687,7 +1723,7 @@
             <param name="dBGain">The peak gain in dB.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateLowShelfFilterParameterFromBandWidth(System.Double,System.Double,System.Double,System.Double)">
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateLowShelfFilterParameterFromSlope(System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Creates the low shelf filter parameter from specified slope.
             </summary>
@@ -1707,7 +1743,7 @@
             <param name="dBGain">The peak gain in dB.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateHighShelfFilterParameterFromBandWidth(System.Double,System.Double,System.Double,System.Double)">
+        <member name="M:MonoAudio.Filters.BiQuadParameter.CreateHighShelfFilterParameterFromSlope(System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Creates the High shelf filter parameter from specified slope.
             </summary>
@@ -2789,23 +2825,24 @@
               <c>true</c> if this instance has error; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="T:MonoAudio.Synthesis.SinusoidSource">
+        <member name="T:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase">
             <summary>
-            Generates a sinusoid wave with specified frequency.
+            Defines a base infrastructure of the source generates a deterministic pseudo-monaural wave with specified frequency.
             </summary>
+            <seealso cref="T:MonoAudio.ISampleSource" />
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.SampleFormat)">
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.#ctor(MonoAudio.SampleFormat)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SinusoidSource"/> class.
             </summary>
             <param name="format">The output format.</param>
         </member>
-        <member name="P:MonoAudio.Synthesis.SinusoidSource.CanSeek">
+        <member name="P:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.CanSeek">
             <summary>
             Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
             </summary>
         </member>
-        <member name="P:MonoAudio.Synthesis.SinusoidSource.Format">
+        <member name="P:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Format">
             <summary>
             Gets the format of the audio data.
             </summary>
@@ -2813,7 +2850,7 @@
             The format of the audio data.
             </value>
         </member>
-        <member name="P:MonoAudio.Synthesis.SinusoidSource.Frequency">
+        <member name="P:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Frequency">
             <summary>
             Gets or sets the frequency.
             </summary>
@@ -2821,35 +2858,97 @@
             The frequency.
             </value>
         </member>
-        <member name="P:MonoAudio.Synthesis.SinusoidSource.Position">
+        <member name="P:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Position">
             <summary>
             Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
             Some implementation could not support this property.
             </summary>
         </member>
-        <member name="P:MonoAudio.Synthesis.SinusoidSource.Length">
+        <member name="P:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Length">
             <summary>
             Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
             -1 Means Infinity.
             </summary>
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.Read(System.Span{System.Single})">
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Read(System.Span{System.Single})">
             <summary>
             Reads the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose(System.Boolean)">
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.GenerateMonauralSample(System.Double)">
+            <summary>
+            Generates the monaural sample.
+            </summary>
+            <param name="theta">The theta(from -pi to pi).</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.DisposeInternal(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose">
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Synthesis.SinusoidSource">
+            <summary>
+            Generates a sinusoid wave with specified frequency.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SquareWaveSource"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.GenerateMonauralSample(System.Double)">
+            <summary>
+            Generates the monaural sample.
+            </summary>
+            <param name="theta">The theta(from 0 to 2*pi).</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Synthesis.SquareWaveSource">
+            <summary>
+            Generates a square wave with specified frequency.
+            </summary>
+            <seealso cref="T:MonoAudio.ISampleSource" />
+        </member>
+        <member name="M:MonoAudio.Synthesis.SquareWaveSource.#ctor(MonoAudio.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SquareWaveSource"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SquareWaveSource.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SquareWaveSource.GenerateMonauralSample(System.Double)">
+            <summary>
+            Generates the monaural sample.
+            </summary>
+            <param name="theta">The theta(from 0 to 2*pi).</param>
+            <returns></returns>
         </member>
         <member name="T:MonoAudio.Utils.ResizableBufferWrapper`1">
             <summary>

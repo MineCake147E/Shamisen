@@ -26,6 +26,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             {
                 resampler.Read(buffer);
             });
+            resampler.Dispose();
         }
 
         [Test]
@@ -41,6 +42,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             {
                 resampler.Read(buffer);
             });
+            resampler.Dispose();
         }
 
         [Test]
@@ -58,6 +60,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 Console.WriteLine(item);
             }
             Assert.Pass();
+            resampler.Dispose();
         }
 
         [Test]
@@ -80,6 +83,7 @@ namespace MonoAudio.Core.Tests.CoreFx
                 Console.WriteLine(item);
             }
             Assert.Pass();
+            resampler.Dispose();
         }
 
         [TestCase(1)]   //Monaural
@@ -123,6 +127,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
             Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
             Assert.Greater(samples, DestinationSampleRate);
+            resampler.Dispose();
         }
     }
 }

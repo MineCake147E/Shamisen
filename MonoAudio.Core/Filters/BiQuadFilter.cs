@@ -98,7 +98,8 @@ namespace MonoAudio.Filters
                         var feedForward = v * Parameter.B; //Multiply in one go
                         var sum1 = v = feedForward.X + a.X;
                         var feedBack = sum1 * Parameter.A;  //Multiply in one go
-                        a = new Vector2(feedForward.Y + feedBack.X + a.Y, feedForward.Z + feedBack.Y);
+                        var aY = a.Y;   //Needed backup
+                        a = new Vector2(feedForward.Y + feedBack.X + aY, feedForward.Z + feedBack.Y);
                     }
                 }
             }

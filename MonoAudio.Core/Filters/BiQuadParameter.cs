@@ -21,7 +21,7 @@ namespace MonoAudio.Filters
         /// <param name="a0">The a0.</param>
         /// <param name="a1">The a1.</param>
         /// <param name="a2">The a2.</param>
-        private BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2) => (B, A) = (new Vector3(b0, b1, b2) / a0, new Vector2(a1, a2) / a0);
+        private BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2) => (B, A) = (new Vector3(b0, b1, b2) / a0, new Vector2(a1, a2) / -a0);  //Invert in advance
 
         /// <summary>
         /// The normalized B parameters.
@@ -103,7 +103,7 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="samplingFrequency">The sampling frequency.</param>
         /// <param name="centerFrequency">The center frequency.</param>
-        /// <param name="bandWidth">The bandwidth.</param>
+        /// <param name="bandWidth">The bandwidth in Octaves.</param>
         /// <param name="gainKind">Kind of the gain.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">The kind of gain is invalid! - gainKind</exception>
@@ -163,7 +163,7 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="samplingFrequency">The sampling frequency.</param>
         /// <param name="centerFrequency">The center frequency.</param>
-        /// <param name="bandWidth">The bandwidth.</param>
+        /// <param name="bandWidth">The bandwidth in Octaves.</param>
         /// <param name="dBGain">The peak gain in dB.</param>
         /// <returns></returns>
         public static BiQuadParameter CreatePeakingEqualizerParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth, double dBGain)
@@ -198,7 +198,7 @@ namespace MonoAudio.Filters
         /// <param name="slope">The slope in dB/Oct.</param>
         /// <param name="dBGain">The peak gain in dB.</param>
         /// <returns></returns>
-        public static BiQuadParameter CreateLowShelfFilterParameterFromBandWidth(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
+        public static BiQuadParameter CreateLowShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
             var A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
@@ -230,7 +230,7 @@ namespace MonoAudio.Filters
         /// <param name="slope">The slope in dB/Oct.</param>
         /// <param name="dBGain">The peak gain in dB.</param>
         /// <returns></returns>
-        public static BiQuadParameter CreateHighShelfFilterParameterFromBandWidth(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
+        public static BiQuadParameter CreateHighShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
             var A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
@@ -366,17 +366,18 @@ namespace MonoAudio.Filters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BiQuadParameter CreateHighShelfCoefficients(double cosW0, double A, double alpha)
+        private static BiQuadParameter CreateHighShelfCoefficients(double cosW0, double a, double alpha)
         {
-            var TwomSqrtAmAlpha = 2 * Math.Sqrt(A) * alpha;
-            var Ap1 = A + 1;
-            var As1 = A - 1;
+            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            var Ap1 = a + 1;
+            var As1 = a - 1;
             double As1CosW0 = As1 * cosW0;
-            float b0 = (float)(A * (Ap1 + As1CosW0 + TwomSqrtAmAlpha));
-            float b1 = (float)(2 * A * (As1 + Ap1 * cosW0));
-            float b2 = (float)(A * (Ap1 + As1CosW0 - TwomSqrtAmAlpha));
+            double Ap1CosW0 = Ap1 * cosW0;
+            float b0 = (float)(a * (Ap1 + As1CosW0 + TwomSqrtAmAlpha));
+            float b1 = (float)(-2 * a * (As1 + Ap1CosW0));
+            float b2 = (float)(a * (Ap1 + As1CosW0 - TwomSqrtAmAlpha));
             float a0 = (float)(Ap1 - As1CosW0 + TwomSqrtAmAlpha);
-            float a1 = (float)(-2 * (As1 - Ap1 * cosW0));
+            float a1 = (float)(2 * (As1 - Ap1CosW0));
             float a2 = (float)(Ap1 - As1CosW0 - TwomSqrtAmAlpha);
             return new BiQuadParameter(b0, b1, b2, a0, a1, a2);
         }

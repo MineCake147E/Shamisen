@@ -8,15 +8,16 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace MonoAudio.Synthesis
 {
     /// <summary>
-    /// Generates a sinusoid wave with specified frequency.
+    /// Generates a square wave with specified frequency.
     /// </summary>
-    public sealed class SinusoidSource : PseudoMonauralSignalSourceBase
+    /// <seealso cref="MonoAudio.ISampleSource" />
+    public sealed class SquareWaveSource : PseudoMonauralSignalSourceBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SquareWaveSource"/> class.
         /// </summary>
         /// <param name="format">The output format.</param>
-        public SinusoidSource(SampleFormat format) : base(format)
+        public SquareWaveSource(SampleFormat format) : base(format)
         {
         }
 
@@ -31,6 +32,6 @@ namespace MonoAudio.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from 0 to 2*pi).</param>
         /// <returns></returns>
-        protected override float GenerateMonauralSample(double theta) => (float)Math.Sin(theta);
+        protected override float GenerateMonauralSample(double theta) => Math.Sign(Math.Sin(theta));
     }
 }
