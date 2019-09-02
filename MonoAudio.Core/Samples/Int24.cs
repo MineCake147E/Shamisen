@@ -6,7 +6,6 @@ using System.Text;
 
 namespace MonoAudio
 {
-    //Approximately same as CSCodec's one though, but it's re-written with concern of Marshaling.
     /// <summary>
 	/// An simple representation of 24bit signed integer.
 	/// </summary>
@@ -45,10 +44,13 @@ namespace MonoAudio
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int24(int value)
         {
-            var u = value & mask | (value > 0 ? 0 : negativeValueOrMask);
-            head = (byte)((u >> 16) & byte.MaxValue);
-            middle = (byte)((u >> 8) & byte.MaxValue);
-            tail = (byte)(u & byte.MaxValue);
+            value <<= 8;                        //shl edx, 0x8
+            value >>= 8;                        //sar edx, 0x8
+            tail = (byte)(value & 0xff);        //mov [rcx], dl
+            value >>= 8;                        //sar edx, 0x8
+            middle = (byte)(value & 0xff);      //mov [rcx+0x1], dl
+            value >>= 8;                        //sar edx, 0x8
+            head = (byte)(value & 0xff);        //mov [rcx+0x2], dl
         }
 
         /// <summary>
@@ -75,11 +77,16 @@ namespace MonoAudio
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator int(Int24 value)
         {
-            //Span<byte> u = stackalloc byte[4];
-            //u[0] = value.IsNegative ? byte.MaxValue : byte.MinValue;
-            //MemoryMarshal.Write(u.Slice(1), ref value);
-            //return MemoryMarshal.Read<int>(u);
-            return (value.IsNegative ? negativeValueOrMask : 0) | (value.head << 16) | (value.middle << 8) | value.tail;
+            unchecked
+            {
+                uint eax = value.head;
+                eax <<= 8;
+                eax |= value.middle;
+                eax <<= 8;
+                eax |= value.tail;
+                eax <<= 8;
+                return (int)eax >> 8;
+            }
         }
 
         /// <summary>
