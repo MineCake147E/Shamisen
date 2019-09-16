@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MonoAudio.IO;
 using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Audio;
 using Windows.Media.MediaProperties;
 using Windows.Media.Render;
 
-namespace MonoAudio.SoundOut
+namespace MonoAudio.IO
 {
     public sealed class AudioGraphOutput : ISoundOut
     {
@@ -58,7 +57,7 @@ namespace MonoAudio.SoundOut
         {
             uint samplesMCh = samples * AudioGraph.EncodingProperties.ChannelCount;
             uint bufferSize = sizeof(float) * samplesMCh;
-            AudioFrame frame = new AudioFrame(bufferSize);
+            var frame = new AudioFrame(bufferSize);
 
             using (AudioBuffer buffer = frame.LockBuffer(AudioBufferAccessMode.Write))
             using (IMemoryBufferReference reference = buffer.CreateReference())
@@ -87,40 +86,39 @@ namespace MonoAudio.SoundOut
         /// Creates the audio graph output.<br/>
         /// IMPORTANT: Only 32-bit IEEEFloat format is supported!
         /// </summary>
-        /// <param name="ChannelCount">The number of channels. Default: 2(Stereo)</param>
-        /// <param name="SampleRate">The sample rate. Default: 192000Hz</param>
+        /// <param name="channelCount">The number of channels. Default: 2(Stereo)</param>
+        /// <param name="sampleRate">The sample rate. Default: 192000Hz</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">AudioGraph creation error: " + result.Status.ToString()</exception>
-        public static async Task<AudioGraphOutput> CreateAudioGraphOutput(uint ChannelCount = 2, uint SampleRate = 192000)
+        /// <exception cref="Exception">AudioGraph creation error: " + result.Status.ToString()</exception>
+        public static async Task<AudioGraphOutput> CreateAudioGraphOutputAsync(uint channelCount = 2, uint sampleRate = 192000)
         {
-            AudioGraphSettings settings = new AudioGraphSettings(AudioRenderCategory.Media)
+            var settings = new AudioGraphSettings(AudioRenderCategory.Media)
             {
                 QuantumSizeSelectionMode = QuantumSizeSelectionMode.ClosestToDesired,
                 EncodingProperties = new AudioEncodingProperties()
                 {
                     BitsPerSample = 32,
-                    ChannelCount = ChannelCount,
-                    SampleRate = SampleRate,
+                    ChannelCount = channelCount,
+                    SampleRate = sampleRate,
                     Subtype = "Float"
                 }
             };
 
             CreateAudioGraphResult result = await AudioGraph.CreateAsync(settings);
             if (result.Status != AudioGraphCreationStatus.Success)
-            {
-                throw new Exception("AudioGraph creation error: " + result.Status.ToString(), result.ExtendedError);
-            }
+                throw new InvalidOperationException("AudioGraph creation error: " + result.Status.ToString(), result.ExtendedError);
             CreateAudioDeviceOutputNodeResult deviceOutputNodeResult = await result.Graph.CreateDeviceOutputNodeAsync();
-            if (deviceOutputNodeResult.Status != AudioDeviceNodeCreationStatus.Success) throw new Exception("AudioGraph creation error: " + deviceOutputNodeResult.Status.ToString(), deviceOutputNodeResult.ExtendedError);
+            if (deviceOutputNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
+                throw new InvalidOperationException("AudioGraph creation error: " + deviceOutputNodeResult.Status.ToString(), deviceOutputNodeResult.ExtendedError);
 
             return new AudioGraphOutput(result.Graph, deviceOutputNodeResult.DeviceOutputNode);
         }
 
         /// <summary>
-        /// Initializes the <see cref="T:MonoAudio.SoundOut.ISoundOut" /> for playing a <paramref name="source" />.
+        /// Initializes the <see cref="ISoundOut" /> for playing a <paramref name="source" />.
         /// </summary>
         /// <param name="source">The source to play.</param>
-        /// <exception cref="System.ArgumentException">Only 32-bit IEEEFloat format is supported! - source</exception>
+        /// <exception cref="ArgumentException">Only 32-bit IEEEFloat format is supported! - source</exception>
         public void Initialize(IWaveSource source)
         {
             if (source.Format.Encoding != AudioEncoding.IeeeFloat || source.Format.BitDepth != 32) throw new ArgumentException("Only 32-bit IEEEFloat format is supported!", nameof(source));
@@ -132,6 +130,7 @@ namespace MonoAudio.SoundOut
         /// </summary>
         public void Pause()
         {
+            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot pause without playing!");
             frameInputNode.Stop();
             AudioGraph.Stop();
             PlaybackState = PlaybackState.Paused;
@@ -142,6 +141,7 @@ namespace MonoAudio.SoundOut
         /// </summary>
         public void Play()
         {
+            if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException($"Cannot start playback without stopping or initializing!");
             AudioGraph.Start();
             frameInputNode.Start();
             PlaybackState = PlaybackState.Playing;
@@ -152,6 +152,7 @@ namespace MonoAudio.SoundOut
         /// </summary>
         public void Resume()
         {
+            if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException($"Cannot resume without pausing!");
             AudioGraph.Start();
             frameInputNode.Start();
             PlaybackState = PlaybackState.Playing;
@@ -162,6 +163,7 @@ namespace MonoAudio.SoundOut
         /// </summary>
         public void Stop()
         {
+            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot stop without playing!");
             frameInputNode.Stop();
             AudioGraph.Stop();
             PlaybackState = PlaybackState.Stopped;

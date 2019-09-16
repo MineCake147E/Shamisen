@@ -12,7 +12,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using MonoAudio.SoundOut;
 using MonoAudio.Synthesis;
 using MonoAudio.Formats;
 using MonoAudio.Conversion.Resampling.Sample;
@@ -41,7 +40,7 @@ namespace MonoAudio.Output.Tests.UWP
         private ISampleSource source;
         private SplineResampler resampler;
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_ClickAsync(object sender, RoutedEventArgs e)
         {
             //soundOut = await AudioGraphOutput.CreateAudioGraphOutput(2, SampleRate);
             //source = new SinusoidSource(new SampleFormat(2, 44100)) { Frequency = 436 };
