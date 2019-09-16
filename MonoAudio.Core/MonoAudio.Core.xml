@@ -559,6 +559,55 @@
             Initializes a new instance of the <see cref="T:MonoAudio.FixedBitDepthAttribute"/> class.
             </summary>
         </member>
+        <member name="T:MonoAudio.Concepts.ConceptKind">
+            <summary>
+            Represents a kind of concepts.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Concepts.ConceptKind.None">
+            <summary>
+            Invalid.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Concepts.ConceptKind.Unit">
+            <summary>
+            The concept of Units.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Concepts.ConceptAttribute">
+            <summary>
+            Defines a concept.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Concepts.ConceptAttribute.#ctor(MonoAudio.Concepts.ConceptKind)">
+            <summary>
+            Initializes a new instance of <see cref="T:MonoAudio.Concepts.ConceptAttribute"/>.
+            </summary>
+            <param name="kind">The kind of concept.</param>
+        </member>
+        <member name="P:MonoAudio.Concepts.ConceptAttribute.Kind">
+            <summary>
+            The kind of concept.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Units">
+            <summary>
+            The concepts for Units.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Units.Frame">
+            <summary>
+            The <see cref="P:MonoAudio.Units.Frame"/> is a packed unit of multiple audio <see cref="P:MonoAudio.Units.Sample"/>s.<br/>
+            A single <see cref="P:MonoAudio.Units.Frame"/> contains the same number of samples as the channel of the stream.<br/>
+            For example, the length of frames in the 2ch <see cref="F:MonoAudio.AudioEncoding.IeeeFloat"/> audio data in bytes is <c>sizeof(float) * 4</c>, which is 16.<br/>
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Units.Sample">
+            <summary>
+            The <see cref="P:MonoAudio.Units.Sample"/> is a smallest unit of the multi-channel discrete(digital) audio data.<br/>
+            The <see cref="P:MonoAudio.Units.Sample"/> besides channel-by-channel, so the length of frame in bytes is the size of the sample itself, multiplied by the number of channels.
+            </summary>
+        </member>
         <member name="T:MonoAudio.Conversion.IAudioConverter`4">
             <summary>
             The base definition of some audio converters.
@@ -1769,6 +1818,82 @@
             Constant 0 dB peak gain.
             </summary>
         </member>
+        <member name="T:MonoAudio.Filters.StreamBuffer`2">
+            <summary>
+            Buffers the samples like YouTube does.<br/>
+            It reads a little more than required, and prevents waiting for IOs / decoding.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.StreamBuffer`2.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1},System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="initialBlockSize">
+            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of 3 reading buffers.
+            </param>
+            <param name="internalBufferNumber">The number of internal</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Read(System.Span{`0})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Filters.StreamBuffer`2.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
+            </summary>
+        </member>
         <member name="T:MonoAudio.Filters.IAudioFilter`2">
             <summary>
             Defines a base infrastructure of an audio filter.
@@ -1919,79 +2044,31 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:MonoAudio.Filters.StreamBuffer`2">
+        <member name="T:MonoAudio.ChannelMaskUtils">
             <summary>
-            Buffers the samples like YouTube does.<br/>
-            It reads a little more than required, and prevents waiting for IOs / decoding.
+            Provides several utilities for manipulating <see cref="T:MonoAudio.Speakers"/>.
             </summary>
         </member>
-        <member name="P:MonoAudio.Filters.StreamBuffer`2.CanSeek">
+        <member name="M:MonoAudio.ChannelMaskUtils.GetChannelMasks``1(MonoAudio.IAudioFormat{``0})">
             <summary>
-            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            Gets the value which indicates how the speakers are used.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+            <param name="format">The format.</param>
+            <returns>The matching <see cref="T:MonoAudio.Speakers"/> combination.</returns>
+        </member>
+        <member name="T:MonoAudio.FormatUtils">
+            <summary>
+            Provides some utilities for <see cref="T:MonoAudio.IAudioFormat`1"/>.
             </summary>
         </member>
-        <member name="P:MonoAudio.Filters.StreamBuffer`2.Format">
+        <member name="M:MonoAudio.FormatUtils.GetFrameSize``1(MonoAudio.IAudioFormat{``0})">
             <summary>
-            Gets the format of the audio data.
+            Gets the value which indicates how long the <see cref="P:MonoAudio.Units.Frame"/> is, in bytes.
             </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Filters.StreamBuffer`2.Length">
-            <summary>
-            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
-            -1 Means Infinity.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Filters.StreamBuffer`2.Position">
-            <summary>
-            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
-            Some implementation could not support this property.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Filters.StreamBuffer`2.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
-        </member>
-        <member name="M:MonoAudio.Filters.StreamBuffer`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1},System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="initialBlockSize">
-            The 1/9 size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of 3 reading buffers.
-            </param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
-        </member>
-        <member name="M:MonoAudio.Filters.StreamBuffer`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Filters.StreamBuffer`2.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Filters.StreamBuffer`2.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:MonoAudio.Filters.StreamBuffer`2"/> class.
-            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+            <param name="format">The format to calculate the length of frame.</param>
+            <returns><c>sizeof(TSample) * <see cref="P:MonoAudio.IAudioFormat`1.Channels"/></c></returns>
         </member>
         <member name="T:MonoAudio.IAudioFormat`1">
             <summary>
@@ -2024,6 +2101,16 @@
             <value>
             The bit depth.
             </value>
+        </member>
+        <member name="T:MonoAudio.Formats.IChannelMaskedFormat">
+            <summary>
+            Defines a base structure of an <see cref="T:MonoAudio.IAudioFormat`1"/> that has an information of channel masks.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Formats.IChannelMaskedFormat.ChannelCombination">
+            <summary>
+            Gets the value which indicates how the speakers are used.
+            </summary>
         </member>
         <member name="T:MonoAudio.Formats.IWaveFormat">
             <summary>
@@ -2134,6 +2221,171 @@
             <returns>
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="T:MonoAudio.Speakers">
+            <summary>
+            Represents a mask of channels' combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.None">
+            <summary>
+            Invalid.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontLeft">
+            <summary>
+            The speaker placed in left front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontRight">
+            <summary>
+            The speaker placed in right front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontCenter">
+            <summary>
+            The speaker placed in front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontLowFrequency">
+            <summary>
+            The subwoofer speaker placed in front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.RearLeft">
+            <summary>
+            The speaker placed in left rear of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.RearRight">
+            <summary>
+            The speaker placed in right rear of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontLeftOfCenter">
+            <summary>
+            The speaker placed between <see cref="F:MonoAudio.Speakers.FrontCenter"/> and <see cref="F:MonoAudio.Speakers.FrontLeft"/>, of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontRightOfCenter">
+            <summary>
+            The speaker placed between <see cref="F:MonoAudio.Speakers.FrontCenter"/> and <see cref="F:MonoAudio.Speakers.FrontRight"/>, of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.RearCenter">
+            <summary>
+            The speaker placed behind the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.SideLeft">
+            <summary>
+            The speaker placed to the left of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.SideRight">
+            <summary>
+            The speaker placed to the right of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.RearLowFrequency">
+            <summary>
+            The subwoofer speaker placed behind the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopFrontLeft">
+            <summary>
+            The speaker placed at the upper left front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopFrontCenter">
+            <summary>
+            The speaker placed at the upper front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopFrontRight">
+            <summary>
+            The speaker placed at the upper right front of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopRearLeft">
+            <summary>
+            The speaker placed at the upper left rear of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopRearCenter">
+            <summary>
+            The speaker placed at the upper rear of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopRearRight">
+            <summary>
+            The speaker placed at the upper right rear of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopSideLeft">
+            <summary>
+            The speaker placed at the upper left of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopSideCenter">
+            <summary>
+            The speaker placed above the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopSideRight">
+            <summary>
+            The speaker placed at the upper right of the listener.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.Monaural">
+            <summary>
+            The representation of single speaker.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FrontStereo">
+            <summary>
+            The ordinal Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.SideStereo">
+            <summary>
+            The side Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.RearStereo">
+            <summary>
+            The rear Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopFrontStereo">
+            <summary>
+            The top front Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopSideStereo">
+            <summary>
+            The top side Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.TopRearStereo">
+            <summary>
+            The top rear Stereo combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.ThreePointOne">
+            <summary>
+            The 3.1ch combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.FivePointOne">
+            <summary>
+            The 5.1ch combination.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Speakers.SevenPointOne">
+            <summary>
+            The 7.1ch combination.
+            </summary>
         </member>
         <member name="T:MonoAudio.WaveFormat">
             <summary>
