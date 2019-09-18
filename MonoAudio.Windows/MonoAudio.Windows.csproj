@@ -47,9 +47,9 @@
     <Compile Include="SoundOut\PlaybackStateUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MonoAudio.Core\MonoAudio.Core.csproj">
+    <ProjectReference Include="..\MonoAudio\MonoAudio.csproj">
       <Project>{3194b68f-7fda-402c-b9fa-3de897cd4f4c}</Project>
-      <Name>MonoAudio.Core</Name>
+      <Name>MonoAudio</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

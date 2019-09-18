@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoAudio.Core", "MonoAudio.Core\MonoAudio.Core.csproj", "{3194B68F-7FDA-402C-B9FA-3DE897CD4F4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoAudio", "MonoAudio\MonoAudio.csproj", "{3194B68F-7FDA-402C-B9FA-3DE897CD4F4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{448D17C3-9E81-4896-BCE4-6706AFFA145C}"
 	ProjectSection(SolutionItems) = preProject
