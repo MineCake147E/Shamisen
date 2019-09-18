@@ -56,14 +56,6 @@ namespace MonoAudio
         public AudioEncoding Encoding { get; }
 
         /// <summary>
-        /// Gets the size of the extra information.
-        /// </summary>
-        /// <value>
-        /// The size of the extra information.
-        /// </value>
-        public int ExtraSize { get; }
-
-        /// <summary>
         /// Gets the number of channels.
         /// It does not describe how these loudspeakers of each channels are placed in the room.
         /// </summary>
@@ -88,6 +80,14 @@ namespace MonoAudio
         /// The bit depth.
         /// </value>
         public int BitDepth { get; }
+
+        /// <summary>
+        /// Gets the size of the extra information.
+        /// </summary>
+        /// <value>
+        /// The size of the extra information.
+        /// </value>
+        public int ExtraSize { get; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

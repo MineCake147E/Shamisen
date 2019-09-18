@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MonoAudio
 {
@@ -18,5 +19,21 @@ namespace MonoAudio
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
         int Read(Span<TSample> buffer);
+    }
+
+    /// <summary>
+    /// Defines a base infrastructure of an asynchronously readable audio source.
+    /// </summary>
+    /// <typeparam name="TSample">The type of audio data.</typeparam>
+    /// <typeparam name="TFormat">The format of audio data.</typeparam>
+    /// <seealso cref="IAudioSource{TSample,TFormat}" />
+    public interface IAsynchronouslyReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat> where TFormat : IAudioFormat<TSample>
+    {
+        /// <summary>
+        /// Reads the audio to the specified buffer asynchronously.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>The length of the data written.</returns>
+        Task<int> ReadAsync(Memory<TSample> buffer);
     }
 }
