@@ -559,47 +559,160 @@
             Initializes a new instance of the <see cref="T:MonoAudio.FixedBitDepthAttribute"/> class.
             </summary>
         </member>
+        <member name="T:MonoAudio.AudioSocket`2">
+            <summary>
+            The re-pluggable socket receiving audio from <see cref="T:MonoAudio.IReadableAudioSource`2"/>
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
+        </member>
+        <member name="P:MonoAudio.AudioSocket`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSocket`2.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.AudioSocket`2.Source">
+            <summary>
+            Gets the source to read the samples from.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSocket`2.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.AudioSocket`2.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.#ctor(`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.AudioSocket`2"/> class with the specified <paramref name="format"/>.
+            </summary>
+            <param name="format">The format.</param>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.Read(System.Span{`0})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.ReplaceSource(MonoAudio.IReadableAudioSource{`0,`1})">
+            <summary>
+            Replaces the source to the <paramref name="newSource"/>.
+            </summary>
+            <param name="newSource">The new source.</param>
+            <returns>The old <see cref="P:MonoAudio.AudioSocket`2.Source"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.DeplugSource">
+            <summary>
+            De-plugs the source.
+            </summary>
+            <returns>The old <see cref="P:MonoAudio.AudioSocket`2.Source"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.AudioSocket`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
         <member name="T:MonoAudio.Codecs.CodecUtils">
             <summary>
             Provides some utility functions for <see cref="T:MonoAudio.Codecs.IEncoder"/> and <see cref="T:MonoAudio.Codecs.IDecoder"/>.
             </summary>
         </member>
-        <member name="T:MonoAudio.Codecs.IDecoder">
+        <member name="M:MonoAudio.Codecs.CodecUtils.CreateDecoderAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadFunc{System.Byte})">
             <summary>
-            Defines a base infrastructure of an audio decoder.
+            Creates a decoder that decodes the data read from <paramref name="readFunc"/>.
             </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
+            <param name="readFunc">The <see cref="T:MonoAudio.ReadFunc`1"/> to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.IsDecodable(MonoAudio.ReadFunc{System.Byte})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.CreateDecoderAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
+            <summary>
+            Creates a decoder that decodes the data read from <paramref name="readFunc"/>.
+            </summary>
+            <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
+            <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readFunc"/> with.</param>
+            <param name="readFunc">The <see cref="T:MonoAudio.ReadWithParameterFunc`2"/> to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.CodecUtils.CreateDecoderAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadAsyncFunc{System.Byte})">
+            <summary>
+            Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
+            </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
+            <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadAsyncFunc`1"/> to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.CodecUtils.CreateDecoderAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
+            <summary>
+            Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
+            </summary>
+            <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readAsyncFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
+            <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readAsyncFunc"/> with.</param>
+            <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/> to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.CodecUtils.DetermineDecodabilityAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadFunc{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="readFunc"/> can be decoded by this decoder.
             </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="readFunc">The <see cref="T:MonoAudio.ReadFunc`1"/> to read the data from.</param>
             <returns><c>true</c> if the data from <paramref name="readFunc"/> can be supported by this decoder, otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.IsDecodable``1(``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.DetermineDecodabilityAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
             <summary>
             Determines whether the data from <paramref name="readFunc"/> can be decoded by this decoder.
             </summary>
             <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="parameter">The <typeparamref name="TParam"/> value to call the <paramref name="readFunc"/> with.</param>
             <param name="readFunc">The <see cref="T:MonoAudio.ReadWithParameterFunc`2"/> to read the data from.</param>
             <returns><c>true</c> if the data from <paramref name="readFunc"/> can be supported by this decoder, otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.DetermineDecodabilityAsync(MonoAudio.ReadAsyncFunc{System.Byte})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.DetermineDecodabilityAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadAsyncFunc{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="readAsyncFunc"/> can be decoded by this decoder asynchronously.
             </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadAsyncFunc`1"/> to read the data from.</param>
             <returns>
             The whole verification task which returns the value below:<br/>
             <c>true</c> if the data from <paramref name="readAsyncFunc"/> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.DetermineDecodabilityAsync``1(``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.DetermineDecodabilityAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
             <summary>
             Determines whether the data from <paramref name="readAsyncFunc"/> can be decoded by this decoder asynchronously.
             </summary>
             <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readAsyncFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="parameter">The <typeparamref name="TParam"/> value to call the <paramref name="readAsyncFunc"/> with.</param>
             <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2" /> to read the data from.</param>
             <returns>
@@ -607,53 +720,23 @@
             <c>true</c> if the data from <paramref name="readAsyncFunc"/> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.CreateDecoder(MonoAudio.ReadFunc{System.Byte})">
-            <summary>
-            Creates a decoder that decodes the data read from <paramref name="readFunc"/>.
-            </summary>
-            <param name="readFunc">The <see cref="T:MonoAudio.ReadFunc`1"/> to read the data from.</param>
-            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.CreateDecoder``1(``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
-            <summary>
-            Creates a decoder that decodes the data read from <paramref name="readFunc"/>.
-            </summary>
-            <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readFunc"/> with.</typeparam>
-            <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readFunc"/> with.</param>
-            <param name="readFunc">The <see cref="T:MonoAudio.ReadWithParameterFunc`2"/> to read the data from.</param>
-            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.CreateDecoderAsync(MonoAudio.ReadAsyncFunc{System.Byte})">
-            <summary>
-            Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
-            </summary>
-            <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadAsyncFunc`1"/> to read the data from.</param>
-            <returns>The decoding <see cref="T:MonoAudio.IAsyncWaveSource"/>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.CreateDecoderAsync``1(``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
-            <summary>
-            Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
-            </summary>
-            <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readAsyncFunc"/> with.</typeparam>
-            <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readAsyncFunc"/> with.</param>
-            <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/> to read the data from.</param>
-            <returns>The decoding <see cref="T:MonoAudio.IAsyncWaveSource"/>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoder(MonoAudio.ReadFunc{System.Byte})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.TryCreateDecoderAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadFunc{System.Byte})">
             <summary>
             Tries to create a decoder that decodes the data read from <paramref name="readFunc"/>.
             </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="readFunc">The <see cref="T:MonoAudio.ReadFunc`1"/> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoder``1(``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.TryCreateDecoderAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterFunc{System.Byte,``0})">
             <summary>
             Tries to create a decoder that decodes the data read from <paramref name="readFunc"/>.
             </summary>
             <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readFunc"/> with.</param>
             <param name="readFunc">The <see cref="T:MonoAudio.ReadWithParameterFunc`2"/> to read the data from.</param>
             <returns>
@@ -661,23 +744,57 @@
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoderAsync(MonoAudio.ReadAsyncFunc{System.Byte})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.TryCreateDecoderAsync(MonoAudio.Codecs.IDecoder,MonoAudio.ReadAsyncFunc{System.Byte})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
             </summary>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadAsyncFunc`1"/> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoderAsync``1(``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
+        <member name="M:MonoAudio.Codecs.CodecUtils.TryCreateDecoderAsync``1(MonoAudio.Codecs.IDecoder,``0,MonoAudio.ReadWithParameterAsyncFunc{System.Byte,``0})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="readAsyncFunc"/>.
             </summary>
             <typeparam name="TParam">The type of <paramref name="parameter"/> to call <paramref name="readAsyncFunc"/> with.</typeparam>
+            <param name="codec">The calling <see cref="T:MonoAudio.Codecs.IDecoder"/> instance.</param>
             <param name="parameter">The value of <typeparamref name="TParam"/> to call <paramref name="readAsyncFunc"/> with.</param>
             <param name="readAsyncFunc">The <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/> to read the data from.</param>
+            <returns>
+            success: The value which indicates whether the data is decodable, and the decoder is created.
+            decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.IDecoder">
+            <summary>
+            Defines a base infrastructure of an audio decoder.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.IDecoder.DetermineDecodabilityAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>
+            Determines whether the data from <paramref name="dataReader"/> can be decoded by this decoder asynchronously.
+            </summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
+            <returns>
+            The whole verification task which returns the value below:<br/>
+            <c>true</c> if the data from <paramref name="dataReader"/> can be supported by this decoder, otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.IDecoder.CreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>
+            Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>
+            Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
@@ -726,6 +843,69 @@
             <param name="parameter">The <typeparamref name="TParam"/> value to call the <paramref name="writeAsyncFunc"/> with.</param>
             <param name="writeAsyncFunc">The destination.</param>
             <returns>The whole encoding task.</returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.WaveCodec">
+            <summary>
+            Encodes and decodes some ".wav" files in certain formats.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.CreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
+            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>Determines whether the data from <paramref name="dataReader" /> can be decoded by this decoder asynchronously.</summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
+            <returns>The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataReader" /> can be supported by this decoder, otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
+            <summary>Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
+            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
+            <returns>success: The value which indicates whether the data is decodable, and the decoder is created.
+            decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.WaveDecoder">
+            <summary>
+            Decodes "*.wav" files in some format.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.WaveDecoder.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.WaveDecoder.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
         </member>
         <member name="T:MonoAudio.Concepts.ConceptKind">
             <summary>
@@ -787,7 +967,7 @@
         </member>
         <member name="P:MonoAudio.Conversion.IAudioConverter`4.Source">
             <summary>
-            Gets the source.
+            Gets the source to read the samples from.
             </summary>
             <value>
             The source.
@@ -1620,6 +1800,451 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
+        <member name="T:MonoAudio.Data.SynchronizedDataReader`1">
+            <summary>
+            Provides a synchronization for <see cref="T:MonoAudio.Data.DataReader`1"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.ISynchronizedDataReader`1" />
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.#ctor(MonoAudio.Data.DataReader{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer"/> class.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <exception cref="T:System.ArgumentNullException">dataReader</exception>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.#ctor(MonoAudio.Data.DataReader{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.SynchronizedDataReader`1"/> class.
+            </summary>
+            <param name="reader">The reader.</param>
+            <exception cref="T:System.ArgumentNullException">reader</exception>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Data.DataBuffer`1">
+            <summary>
+            Buffers the data like YouTube does.<br/>
+            It reads a little more than required, and prevents waiting for IOs.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.#ctor(MonoAudio.Data.ISynchronizedDataReader{`0},System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataBuffer`1"/> class.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <param name="initialBlockSize">
+            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
+            </param>
+            <param name="internalBufferNumber">The number of internal buffer.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Data.ISynchronizedDataReader`1">
+            <summary>
+            Abstractions for the delegates below:<br/>
+            <see cref="T:MonoAudio.ReadFunc`1"/> and
+            <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+        </member>
+        <member name="M:MonoAudio.Data.ISynchronizedDataReader`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:MonoAudio.Data.DataReader`1">
+            <summary>
+            Abstractions for the delegates below:<br/>
+            <see cref="T:MonoAudio.ReadFunc`1"/>,
+            <see cref="T:MonoAudio.ReadAsyncFunc`1"/>,
+            <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>, and
+            <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+        </member>
+        <member name="M:MonoAudio.Data.DataReader`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length read.</returns>
+        </member>
+        <member name="M:MonoAudio.Data.DataReader`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataReader`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Data.DataReaderOrdinal`1">
+            <summary>
+            The data reader to the <see cref="T:MonoAudio.ReadFunc`1"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataReader`1" />
+        </member>
+        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.#ctor(MonoAudio.ReadFunc{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataReaderOrdinal`1"/> class.
+            </summary>
+            <param name="func">The function to call.</param>
+            <exception cref="T:System.ArgumentNullException">func</exception>
+        </member>
+        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously.
+            </summary>
+            <param name="buffer">The buffer to fill with the read data.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.AsyncDataReader`1">
+            <summary>
+            The data reader to the <see cref="T:MonoAudio.ReadAsyncFunc`1"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataReader`1" />
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataReader`1.#ctor(MonoAudio.ReadAsyncFunc{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.AsyncDataReader`1"/> class.
+            </summary>
+            <param name="function">The function.</param>
+            <exception cref="T:System.ArgumentNullException">function</exception>
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataReader`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously.
+            </summary>
+            <param name="buffer">The buffer to fill with the read data.</param>
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataReader`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:MonoAudio.Data.ParametrizedDataReader`2">
+            <summary>
+            The data reader to the <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataReader`1" />
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.#ctor(MonoAudio.ReadWithParameterFunc{`0,`1},`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedDataReader`2"/> class.
+            </summary>
+            <param name="action">The action.</param>
+            <param name="parameter">The parameter.</param>
+            <exception cref="T:System.ArgumentNullException">action</exception>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously.
+            </summary>
+            <param name="buffer">The buffer to fill with the read data.</param>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.ParametrizedAsyncDataReader`2">
+            <summary>
+            The data reader to the <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataReader`1" />
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.#ctor(MonoAudio.ReadWithParameterAsyncFunc{`0,`1},`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedAsyncDataReader`2"/> class.
+            </summary>
+            <param name="function">The function.</param>
+            <param name="parameter">The parameter.</param>
+            <exception cref="T:System.ArgumentNullException">function</exception>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously.
+            </summary>
+            <param name="buffer">The buffer to fill with the read data.</param>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.DataWriter`1">
+            <summary>
+            Abstractions for the delegates below:<br/>
+            <see cref="T:MonoAudio.WriteAction`1"/>,
+            <see cref="T:MonoAudio.WriteAsyncFunc`1"/>,
+            <see cref="T:MonoAudio.WriteWithParameterAction`2"/>, and
+            <see cref="T:MonoAudio.WriteWithParameterAsyncFunc`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriter`1.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the data asynchronously.
+            </summary>
+            <param name="data">The data to write.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriter`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriter`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriter`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Data.DataWriterOrdinal`1">
+            <summary>
+            The data writer to the <see cref="T:MonoAudio.WriteAction`1"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
+        </member>
+        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.#ctor(MonoAudio.WriteAction{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataWriterOrdinal`1"/> class.
+            </summary>
+            <param name="func">The function to call.</param>
+            <exception cref="T:System.ArgumentNullException">func</exception>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the data asynchronously.
+            </summary>
+            <param name="data">The data to write.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.AsyncDataWriter`1">
+            <summary>
+            The data writer to the <see cref="T:MonoAudio.WriteAsyncFunc`1"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataWriter`1.#ctor(MonoAudio.WriteAsyncFunc{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.AsyncDataWriter`1"/> class.
+            </summary>
+            <param name="function">The function.</param>
+            <exception cref="T:System.ArgumentNullException">function</exception>
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataWriter`1.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the data asynchronously.
+            </summary>
+            <param name="data">The data to write.</param>
+        </member>
+        <member name="M:MonoAudio.Data.AsyncDataWriter`1.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:MonoAudio.Data.ParametrizedDataWriter`2">
+            <summary>
+            The data writer to the <see cref="T:MonoAudio.WriteWithParameterAction`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.#ctor(MonoAudio.WriteWithParameterAction{`0,`1},`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedDataWriter`2"/> class.
+            </summary>
+            <param name="action">The action.</param>
+            <param name="parameter">The parameter.</param>
+            <exception cref="T:System.ArgumentNullException">action</exception>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the data asynchronously.
+            </summary>
+            <param name="data">The data to write.</param>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.ParametrizedAsyncDataWriter`2">
+            <summary>
+            The data writer to the <see cref="T:MonoAudio.WriteWithParameterAction`2"/>
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
+            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.#ctor(MonoAudio.WriteWithParameterAsyncFunc{`0,`1},`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedAsyncDataWriter`2"/> class.
+            </summary>
+            <param name="function">The function.</param>
+            <param name="parameter">The parameter.</param>
+            <exception cref="T:System.ArgumentNullException">function</exception>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the data asynchronously.
+            </summary>
+            <param name="data">The data to write.</param>
+        </member>
+        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.DisposeInternal(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Data.SampleDataReader`2">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataReader`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.SampleDataReader`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataReader`2.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataReader`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataReader`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.ReadAsyncFunc`1">
+            <summary>
+            Encapsulates a method that asynchronously fills given <see cref="T:System.Memory`1"/> and returns how many <typeparamref name="TSample"/>s are filled.
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <param name="buffer">The destination buffer.</param>
+            <returns>The reading task that returns the length of buffer filled.</returns>
+        </member>
         <member name="T:MonoAudio.ReadFunc`1">
             <summary>
             Encapsulates a method that fills given <see cref="T:System.Span`1"/> and returns how many <typeparamref name="TSample"/>s are filled.
@@ -1627,6 +2252,16 @@
             <typeparam name="TSample">The type of Sample.</typeparam>
             <param name="buffer">The destination buffer.</param>
             <returns>The length of buffer filled.</returns>
+        </member>
+        <member name="T:MonoAudio.ReadWithParameterAsyncFunc`2">
+            <summary>
+            Encapsulates a method that asynchronously fills given <see cref="T:System.Memory`1"/> and returns how many <typeparamref name="TSample"/>s are filled.
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
+            <param name="buffer">The destination buffer.</param>
+            <param name="parameter">The parameter to call the method with.</param>
+            <returns>The reading task that returns the length of buffer filled.</returns>
         </member>
         <member name="T:MonoAudio.ReadWithParameterFunc`2">
             <summary>
@@ -1645,6 +2280,14 @@
             <typeparam name="TSample">The type of Sample.</typeparam>
             <param name="data">The data to write.</param>
         </member>
+        <member name="T:MonoAudio.WriteAsyncFunc`1">
+            <summary>
+            Encapsulates a method that asynchronously writes the given <see cref="T:System.ReadOnlyMemory`1"/> into the destination.
+            </summary>
+            <typeparam name="TSample">The type of Sample.</typeparam>
+            <param name="data">The data to write.</param>
+            <returns>The writing task.</returns>
+        </member>
         <member name="T:MonoAudio.WriteWithParameterAction`2">
             <summary>
             Encapsulates a method that writes the given <see cref="T:System.ReadOnlySpan`1"/> into the destination.
@@ -1653,32 +2296,6 @@
             <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
             <param name="data">The data to write.</param>
             <param name="parameter">The parameter to call the method with.</param>
-        </member>
-        <member name="T:MonoAudio.ReadAsyncFunc`1">
-            <summary>
-            Encapsulates a method that asynchronously fills given <see cref="T:System.Memory`1"/> and returns how many <typeparamref name="TSample"/>s are filled.
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <param name="buffer">The destination buffer.</param>
-            <returns>The reading task that returns the length of buffer filled.</returns>
-        </member>
-        <member name="T:MonoAudio.ReadWithParameterAsyncFunc`2">
-            <summary>
-            Encapsulates a method that asynchronously fills given <see cref="T:System.Memory`1"/> and returns how many <typeparamref name="TSample"/>s are filled.
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
-            <param name="buffer">The destination buffer.</param>
-            <param name="parameter">The parameter to call the method with.</param>
-            <returns>The reading task that returns the length of buffer filled.</returns>
-        </member>
-        <member name="T:MonoAudio.WriteAsyncFunc`1">
-            <summary>
-            Encapsulates a method that asynchronously writes the given <see cref="T:System.ReadOnlyMemory`1"/> into the destination.
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <param name="data">The data to write.</param>
-            <returns>The writing task.</returns>
         </member>
         <member name="T:MonoAudio.WriteWithParameterAsyncFunc`2">
             <summary>
@@ -2102,9 +2719,9 @@
             <param name="source">The source.</param>
             <param name="initialBlockSize">
             The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of 3 reading buffers.
+            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
             </param>
-            <param name="internalBufferNumber">The number of internal</param>
+            <param name="internalBufferNumber">The number of internal buffer.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
@@ -3446,6 +4063,65 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
         </member>
+        <member name="T:MonoAudio.Synthesis.SilenceSource`2">
+            <summary>
+            Generates a silence.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:MonoAudio.IReadableAudioSource`2" />
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceSource`2.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2" /> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceSource`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceSource`2.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2" /> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceSource`2.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2" /> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceSource`2.#ctor(`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SilenceSource`2"/> class.
+            </summary>
+            <param name="format">The format.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceSource`2.Read(System.Span{`0})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceSource`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceSource`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
         <member name="T:MonoAudio.Synthesis.SinusoidSource">
             <summary>
             Generates a sinusoid wave with specified frequency.
@@ -3494,6 +4170,13 @@
             </summary>
             <param name="theta">The theta(from 0 to 2*pi).</param>
             <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Utils.BufferInstance`1">
+            <summary>
+            Provides a simple internal buffer instancing.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:System.IDisposable" />
         </member>
         <member name="T:MonoAudio.Utils.ResizableBufferWrapper`1">
             <summary>
@@ -3632,6 +4315,13 @@
             <param name="step">The step.</param>
             <returns></returns>
         </member>
+        <member name="M:System.MathI.LargestPowerOfTwoLessThanOrEqualsTo(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
         <member name="T:System.SpanExtensions">
             <summary>
             Provides some extension functions.
@@ -3678,6 +4368,14 @@
             or
             samplesA must be as long as samplesB! - samplesA
             </exception>
+        </member>
+        <member name="M:System.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
             <summary>

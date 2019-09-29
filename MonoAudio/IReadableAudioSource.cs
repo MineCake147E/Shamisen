@@ -11,7 +11,9 @@ namespace MonoAudio
     /// <typeparam name="TSample">The type of audio data.</typeparam>
     /// <typeparam name="TFormat">The format of audio data.</typeparam>
     /// <seealso cref="IAudioSource{TSample,TFormat}" />
-    public interface IReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat> where TFormat : IAudioFormat<TSample>
+    public interface IReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
+        where TSample : unmanaged
+        where TFormat : IAudioFormat<TSample>
     {
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -27,7 +29,9 @@ namespace MonoAudio
     /// <typeparam name="TSample">The type of audio data.</typeparam>
     /// <typeparam name="TFormat">The format of audio data.</typeparam>
     /// <seealso cref="IAudioSource{TSample,TFormat}" />
-    public interface IAsynchronouslyReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat> where TFormat : IAudioFormat<TSample>
+    public interface IAsynchronouslyReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
+        where TSample : unmanaged
+        where TFormat : IAudioFormat<TSample>
     {
         /// <summary>
         /// Reads the audio to the specified buffer asynchronously.

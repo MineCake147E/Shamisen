@@ -174,5 +174,34 @@ namespace System
         }
 
         #endregion SIMD-Related Functions
+
+        #region QuickFill
+
+        /// <summary>
+        /// Quickly (but slower than <see cref="FastFill(Span{float}, float)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="TSample">The type of the sample.</typeparam>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        public static void QuickFill<TSample>(this Span<TSample> span, TSample value = default)
+        {
+            if (span.Length < 32)
+            {
+                span.Fill(value);
+                return;
+            }
+            var fillled = span.SliceWhile(16);
+            var remaining = span.Slice(fillled.Length);
+            fillled.Fill(value);
+            do
+            {
+                fillled.CopyTo(remaining);
+                remaining = remaining.Slice(fillled.Length);
+                fillled = span.SliceWhile(fillled.Length << 1);
+            } while (remaining.Length >= fillled.Length);
+            fillled.Slice(fillled.Length - remaining.Length).CopyTo(remaining);
+        }
+
+        #endregion QuickFill
     }
 }

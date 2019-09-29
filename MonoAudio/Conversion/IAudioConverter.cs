@@ -12,10 +12,13 @@ namespace MonoAudio.Conversion
     /// <typeparam name="TTo">The type to convert data to.</typeparam>
     /// <typeparam name="TToFormat"></typeparam>
     public interface IAudioConverter<TFrom, TFromFormat, TTo, TToFormat> : IReadableAudioSource<TTo, TToFormat>
-        where TFromFormat : IAudioFormat<TFrom> where TToFormat : IAudioFormat<TTo>
+        where TFrom : unmanaged
+        where TTo : unmanaged
+        where TFromFormat : IAudioFormat<TFrom>
+        where TToFormat : IAudioFormat<TTo>
     {
         /// <summary>
-        /// Gets the source.
+        /// Gets the source to read the samples from.
         /// </summary>
         /// <value>
         /// The source.

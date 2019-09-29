@@ -9,7 +9,7 @@ namespace MonoAudio
     /// </summary>
     /// <typeparam name="TSample">The type of sample.</typeparam>
     /// <typeparam name="TFormat">The type of audio format.</typeparam>
-    public interface IAudioSource<TSample, out TFormat> : IDisposable where TFormat : IAudioFormat<TSample>
+    public interface IAudioSource<TSample, out TFormat> : IDisposable where TSample : unmanaged where TFormat : IAudioFormat<TSample>
     {
         /// <summary>
         /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.

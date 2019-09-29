@@ -12,6 +12,50 @@ namespace MonoAudio.Core.Tests.CoreFx
     public class SpanExtensionsTest
     {
         [Test]
+        public void QuickFillFillsCorrectly()
+        {
+            Span<decimal> span = new decimal[127];
+            const decimal Value = -1m;
+            span.QuickFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [TestCase(2459)]    //Prime number
+        [TestCase(2048)]    //2^11
+        public void QuickFillFasterThanNormalFill(int length)
+        {
+            var sw = new Stopwatch();
+            Span<float> span = new float[length];
+            long cntFast = 0;
+            long cntStandard = 0;
+            Thread.Sleep(50);
+            sw.Start();
+            do
+            {
+                span.QuickFill(cntFast);
+                cntFast += span.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
+            sw.Stop();
+            Console.WriteLine($"QuickFill: {cntFast / sw.Elapsed.TotalSeconds} sample/s({cntFast / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
+            sw.Reset();
+            Thread.Sleep(50);
+            sw.Start();
+            do
+            {
+                span.Fill(cntStandard);
+                cntStandard += span.Length;
+            } while (sw.ElapsedMilliseconds < 2000);
+            sw.Stop();
+            Console.WriteLine($"Fill: {cntStandard / sw.Elapsed.TotalSeconds} sample/s({cntStandard / sw.Elapsed.TotalSeconds / 384000.0} times faster than real time in 192kHz Stereo)");
+            Console.WriteLine($"{nameof(SpanExtensions.QuickFill)} seems to be {(double)cntFast / cntStandard} times faster than {nameof(Span<float>.Fill)}.");
+            Assert.Greater(cntFast, cntStandard);
+        }
+
+        [Test]
         public void FastFillFillsCorrectly()
         {
             Span<float> span = new float[32];

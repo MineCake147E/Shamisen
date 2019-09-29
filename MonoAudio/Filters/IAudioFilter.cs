@@ -9,7 +9,9 @@ namespace MonoAudio.Filters
     /// <typeparam name="TSample">The type of the sample.</typeparam>
     /// <typeparam name="TFormat">The format of the sample.</typeparam>
     /// <seealso cref="Conversion.IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}" />
-    public interface IAudioFilter<TSample, TFormat> : IAudioConverter<TSample, TFormat, TSample, TFormat> where TFormat : IAudioFormat<TSample>
+    public interface IAudioFilter<TSample, TFormat> : IAudioConverter<TSample, TFormat, TSample, TFormat>
+        where TSample : unmanaged
+        where TFormat : IAudioFormat<TSample>
     {
     }
 }

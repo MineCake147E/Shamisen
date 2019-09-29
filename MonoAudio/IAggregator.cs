@@ -11,7 +11,9 @@ namespace MonoAudio
     /// <typeparam name="TSource">The type of the aggregator.</typeparam>
     /// <typeparam name="TDestinationFormat">The format of output audio.</typeparam>
     public interface IAggregator<TSample, out TSource, out TDestinationFormat>
-        where TSource : IReadableAudioSource<TSample, TDestinationFormat> where TDestinationFormat : IAudioFormat<TSample>
+        where TSample : unmanaged
+        where TSource : IReadableAudioSource<TSample, TDestinationFormat>
+        where TDestinationFormat : IAudioFormat<TSample>
     {
         /// <summary>
         /// Gets the base source.

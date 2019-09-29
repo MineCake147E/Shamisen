@@ -22,7 +22,7 @@ namespace MonoAudio.IO.Android
     /// <seealso cref="ISoundOut" />
     public sealed class AudioTrackOutput : ISoundOut
     {
-        private const Speakers speakersNotSupported = Speakers.RearLowFrequency
+        private const Speakers SpeakersNotSupported = Speakers.RearLowFrequency
                     | Speakers.TopFrontLeft | Speakers.TopFrontCenter | Speakers.TopFrontRight
                     | Speakers.TopRearLeft | Speakers.TopRearCenter | Speakers.TopRearRight
                     | Speakers.TopSideLeft | Speakers.TopSideCenter | Speakers.TopSideRight;
@@ -233,7 +233,7 @@ namespace MonoAudio.IO.Android
                 case Speakers.SevenPointOne:
                     return ChannelOut.SevenPointOne;
                 default:
-                    if ((speakers & speakersNotSupported) > 0)
+                    if ((speakers & SpeakersNotSupported) > 0)
                         throw new NotSupportedException($"The given format ({format.ToString()}) is not supported!");
                     ChannelOut result = ChannelOut.None;
                     if ((speakers & Speakers.FrontLeft) > 0) result |= ChannelOut.FrontLeft;
