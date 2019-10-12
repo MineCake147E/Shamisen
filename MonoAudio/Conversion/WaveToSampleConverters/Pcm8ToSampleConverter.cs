@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using MonoAudio.Formats;
 
 namespace MonoAudio.Conversion.WaveToSampleConverters
 {

@@ -11,7 +11,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using MonoAudio.Formats;
 using Encoding = Android.Media.Encoding;
 
 namespace MonoAudio.IO.Android

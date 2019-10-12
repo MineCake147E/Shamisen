@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoAudio.Formats
+namespace MonoAudio
 {
     /// <summary>
     /// Defines a base infrastructure of an wave format.
@@ -25,13 +25,5 @@ namespace MonoAudio.Formats
         /// The sample encoding.
         /// </value>
         AudioEncoding Encoding { get; }
-
-        /// <summary>
-        /// Gets the size of the extra information.
-        /// </summary>
-        /// <value>
-        /// The size of the extra information.
-        /// </value>
-        int ExtraSize { get; }
     }
 }

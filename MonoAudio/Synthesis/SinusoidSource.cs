@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using MonoAudio.MathUtils;
+using MonoAudio.Mathematics;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace MonoAudio.Synthesis

@@ -3,7 +3,7 @@
 using SignedIntType = System.Int32;
 using UnsignedIntType = System.UInt32;
 
-namespace MonoAudio.MathUtils
+namespace MonoAudio.Mathematics
 {
     /// <summary>
     /// Represents a 32bit/32bit fractions.
