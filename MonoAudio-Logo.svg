@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="2160"
+   height="640"
+   viewBox="0 0 571.49999 169.33334"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="MonoAudio-Logo.svg"
+   inkscape:export-filename="C:\Visual Studio 2019\Repos\MonoAudio\MonoAudio-Logo.png"
+   inkscape:export-xdpi="144"
+   inkscape:export-ydpi="144">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="995.21373"
+     inkscape:cy="333.91824"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:pagecheckerboard="true"
+     inkscape:snap-global="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="996"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="レイヤー 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-127.66665)">
+    <path
+       style="fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1.73938715;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 70.126908,129.54535 35.294925,184.16268 H 3.6343255 v 56.34075 H 35.294925 l 34.831983,54.61786 H 84.768391 L 49.868196,246.93301 A 52.538688,46.302083 0 0 0 67.813354,212.56302 52.538688,46.302083 0 0 0 50.082651,177.437 l 34.68574,-47.89165 z"
+       id="rect4519"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:0.75;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="74.039291"
+       y="251.35936"
+       id="text4487"><tspan
+         sodipodi:role="line"
+         x="74.039291"
+         y="251.35936"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:112.8888855px;line-height:0.75;font-family:'MS PGothic';-inkscape-font-specification:'MS PGothic Bold';letter-spacing:-2.64583325px;stroke-width:0.26458332"
+         id="tspan4499"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:112.8888855px;line-height:0.75;font-family:'MS PGothic';-inkscape-font-specification:'MS PGothic Bold';fill:#666666"
+           id="tspan4491">Mono</tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:112.8888855px;line-height:0.75;font-family:'MS PGothic';-inkscape-font-specification:'MS PGothic Bold';fill:#338000"
+           id="tspan4501">Audio</tspan></tspan></text>
+  </g>
+</svg>
