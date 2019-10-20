@@ -100,7 +100,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         {
             const int SourceSampleRate = 44100;
             const int DestinationSampleRate = 192000;
-            const double destinationSampleRateD = DestinationSampleRate;
+            const double DestinationSampleRateD = DestinationSampleRate;
             double channelsInverse = 1.0 / Channels;
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 6000 };
             var resampler = new SplineResampler(src, DestinationSampleRate);
@@ -114,8 +114,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 1000);
             sw.Stop();
-            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             samples = 0;
             sw.Reset();
             sw.Start();
@@ -124,8 +124,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             Assert.Greater(samples, DestinationSampleRate);
             resampler.Dispose();
         }
