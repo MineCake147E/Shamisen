@@ -1,3 +1,4 @@
+![MonoAudio Logo](MonoAudio-Logo.png)
 # MonoAudio - .NET Standard Audio Library
 A Cross-Platform Audio Library for .NET Standard.
 
