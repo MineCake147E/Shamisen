@@ -1,4 +1,5 @@
-![MonoAudio Logo](https://github.com/MineCake147E/MonoAudio/blob/develop/MonoAudio-Logo.png)
+![MonoAudio Logo](MonoAudio-Logo.png)
+
 # MonoAudio - .NET Standard Audio Library
 A Cross-Platform Audio Library for .NET Standard.
 
