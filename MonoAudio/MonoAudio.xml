@@ -844,69 +844,6 @@
             <param name="writeAsyncFunc">The destination.</param>
             <returns>The whole encoding task.</returns>
         </member>
-        <member name="T:MonoAudio.Codecs.Waveform.WaveCodec">
-            <summary>
-            Encodes and decodes some ".wav" files in certain formats.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.CreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
-            <summary>Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
-            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
-            <returns>The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(MonoAudio.Data.DataReader{System.Byte})">
-            <summary>Determines whether the data from <paramref name="dataReader" /> can be decoded by this decoder asynchronously.</summary>
-            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
-            <returns>The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataReader" /> can be supported by this decoder, otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(MonoAudio.Data.DataReader{System.Byte})">
-            <summary>Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
-            <param name="dataReader">The <see cref="T:MonoAudio.Data.DataReader`1"/>(which the TSample is <see cref="T:System.Byte"/>) to read the data from.</param>
-            <returns>success: The value which indicates whether the data is decodable, and the decoder is created.
-            decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.</returns>
-        </member>
-        <member name="T:MonoAudio.Codecs.Waveform.WaveDecoder">
-            <summary>
-            Decodes "*.wav" files in some format.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.CanSeek">
-            <summary>
-            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Position">
-            <summary>
-            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
-            Some implementation could not support this property.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Codecs.Waveform.WaveDecoder.Length">
-            <summary>
-            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
-            -1 Means Infinity.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveDecoder.Read(System.Span{System.Byte})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveDecoder.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:MonoAudio.Concepts.ConceptKind">
             <summary>
             Represents a kind of concepts.
@@ -979,14 +916,21 @@
             </summary>
             <seealso cref="T:MonoAudio.Filters.IAudioFilter`2" />
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Int32)">
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Format">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase"/> class.
+            Gets the format.
             </summary>
-            <param name="source">The source.</param>
-            <param name="destinationSampleRate">The destination sample rate.</param>
-            <exception cref="T:System.ArgumentNullException">source</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">destinationSampleRate</exception>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Position">
+            <summary>
+            Gets or sets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
         </member>
         <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Source">
             <summary>
@@ -1004,122 +948,12 @@
               <c>true</c> if this instance can seek; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMul">
-            <summary>
-            Gets the rate destination sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDiv">
-            <summary>
-            Gets the rate source sample rate.
-            </summary>
-            <value>
-            The number to divide with.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMulInverse">
-            <summary>
-            Gets the divisor destination sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDivInverse">
-            <summary>
-            Gets the divisor source sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
         <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels">
             <summary>
             Gets the channels of output.
             </summary>
             <value>
             The channels of output.
-            </value>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int32)">
-            <summary>
-            Gets the output buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="inputPosition">The input position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int32)">
-            <summary>
-            Gets the input buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="outputPosition">The output position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int64)">
-            <summary>
-            Gets the output buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="inputPosition">The input position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int64)">
-            <summary>
-            Gets the input buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="outputPosition">The output position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Single)">
-            <summary>
-            Gets the output buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="inputPosition">The input position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Single)">
-            <summary>
-            Gets the input buffer position.
-            Supports Lighter rate conversion.
-            </summary>
-            <param name="outputPosition">The output position.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetConversionGradient(System.Int32)">
-            <summary>
-            Calculates the conversion gradient a little precisely.
-            </summary>
-            <param name="outputPosition">The output position. Must not be multiplied by <see cref="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetCeiledInputPosition(System.Int32)">
-            <summary>
-            Gets the ceilinged input position.
-            </summary>
-            <param name="outputPosition">The output position.</param>
-            <returns></returns>
-        </member>
-        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Position">
-            <summary>
-            Gets or sets the position.
-            </summary>
-            <value>
-            The position.
             </value>
         </member>
         <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Length">
@@ -1130,24 +964,138 @@
             The length.
             </value>
         </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDivDivisor">
+            <summary>
+            Gets the divisor for converting source sample rate to destination sample rate.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDiv">
+            <summary>
+            Gets the rate source sample rate.
+            </summary>
+            <value>
+            The number to divide with.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateDivInverse">
+            <summary>
+            Gets the divisor source sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMulDivisor">
+            <summary>
+            Gets the divisor for converting destination sample rate to source sample rate.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMul">
+            <summary>
+            Gets the rate destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.RateMulInverse">
+            <summary>
+            Gets the divisor destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="destinationSampleRate">The destination sample rate.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">destinationSampleRate</exception>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetCeiledInputPosition(System.Int32)">
+            <summary>
+            Gets the ceilinged input position.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetConversionGradient(System.Int32)">
+            <summary>
+            Calculates the conversion gradient a little precisely.
+            </summary>
+            <param name="outputPosition">The output position that is not multiplied by <see cref="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetConversionPosition(System.Int32)">
+            <summary>
+            Calculates the conversion gradient.
+            </summary>
+            <param name="outputPosition">The output position that is not multiplied by <see cref="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int32)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Int64)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetInputPosition(System.Single)">
+            <summary>
+            Gets the input buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int32)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Int64)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetOutputPosition(System.Single)">
+            <summary>
+            Gets the output buffer position.
+            Supports Lighter rate conversion.
+            </summary>
+            <param name="inputPosition">The input position.</param>
+            <returns></returns>
+        </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.ActualDispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose">
             <summary>
@@ -1162,6 +1110,18 @@
             reclaim the memory that the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>
             was occupying.</remarks>
         </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.ActualDispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
         <member name="T:MonoAudio.Conversion.Resampling.Sample.SplineResampler">
              <summary>
              Performs up-sampling using Catmull-Rom Spline interpolation.
@@ -1174,6 +1134,15 @@
              </summary>
              <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficents">
+            <summary>
+            The pre calculated catmull-rom coefficents.<br/>
+            X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
+            Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
+            Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
+            W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
+            </summary>
+        </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Conversion.Resampling.Sample.SplineResampler"/> class.
@@ -1181,18 +1150,33 @@
             <param name="source">The source.</param>
             <param name="destinationSampleRate">The destination sample rate.</param>
         </member>
-        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ActualDispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ActualDispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
+            <summary>
+            Calculate on demand
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedDirect">
+            <summary>
+            Pre-Calculated
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd">
+            <summary>
+            Pre-Calculated and Wrapped
+            </summary>
         </member>
         <member name="T:MonoAudio.Conversion.SampleToWaveConverters.SampleToFloat32Converter">
             <summary>
@@ -4371,7 +4355,7 @@
         </member>
         <member name="M:System.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
             <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            Quickly (but slower than <see cref="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <param name="span">The span to fill.</param>
