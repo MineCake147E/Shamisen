@@ -66,7 +66,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The divisor object.
         /// </value>
-        private UInt32Divisor RateDivDivisor { get; }
+        protected UInt32Divisor RateDivDivisor { get; }
 
         /// <summary>
         /// Gets the rate source sample rate.
@@ -74,7 +74,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The number to divide with.
         /// </value>
-        private int RateDiv { get; }
+        protected int RateDiv { get; }
 
         /// <summary>
         /// Gets the divisor source sample rate.
@@ -82,7 +82,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The number to multiply.
         /// </value>
-        private float RateDivInverse { get; }
+        protected float RateDivInverse { get; }
 
         /// <summary>
         /// Gets the divisor for converting destination sample rate to source sample rate.
@@ -90,7 +90,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The divisor object.
         /// </value>
-        private UInt32Divisor RateMulDivisor { get; }
+        protected UInt32Divisor RateMulDivisor { get; }
 
         /// <summary>
         /// Gets the rate destination sample rate.
@@ -98,7 +98,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The number to multiply.
         /// </value>
-        private int RateMul { get; }
+        protected int RateMul { get; }
 
         /// <summary>
         /// Gets the divisor destination sample rate.
@@ -106,7 +106,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The number to multiply.
         /// </value>
-        private float RateMulInverse { get; }
+        protected float RateMulInverse { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResamplerBase"/> class.

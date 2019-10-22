@@ -63,13 +63,14 @@ namespace MonoAudio.Core.Tests.CoreFx
             resampler.Dispose();
         }
 
-        [Test]
-        public void UpSamplingTwoFrameDump()
+        [TestCase(44100, 192000)]
+        [TestCase(48000, 192000)]
+        [TestCase(24000, 154320)]
+        [TestCase(96000, 192000)]
+        public void UpSamplingTwoFrameDump(int sourceSampleRate, int destinationSampleRate)
         {
-            const int SourceSampleRate = 44100;
-            const int DestinationSampleRate = 192000;
-            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = 6000 };
-            var resampler = new SplineResampler(src, DestinationSampleRate);
+            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = 6000 };
+            var resampler = new SplineResampler(src, destinationSampleRate);
             var buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
             resampler.Read(buffer);
