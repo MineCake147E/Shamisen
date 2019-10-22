@@ -21,16 +21,16 @@ namespace MonoAudio.Conversion.Resampling.Sample
         private float[][] sampleCache;
 
         /// <summary>
-        /// The pre calculated cutmull rom coefficents.<br/>
+        /// The pre calculated catmull-rom coefficents.<br/>
         /// X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
         /// Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
         /// Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
         /// W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
         /// </summary>
-        private Vector4[] preCalculatedCutmullRomCoefficents;
+        private Vector4[] preCalculatedCatmullRomCoefficents;
 
         [Obsolete("", true)]
-        private bool IsCutmullRomOptimized { get; }
+        private bool IsCatmullRomOptimized { get; }
 
         private ResampleStrategy Strategy { get; }
 
@@ -55,13 +55,13 @@ namespace MonoAudio.Conversion.Resampling.Sample
                 if (RateMul < 512)
                 {
                     Strategy = ResampleStrategy.CachedDirect;
-                    preCalculatedCutmullRomCoefficents = new Vector4[RateMul];
-                    for (int i = 0; i < preCalculatedCutmullRomCoefficents.Length; i++)
+                    preCalculatedCatmullRomCoefficents = new Vector4[RateMul];
+                    for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                     {
                         var x = i * RateMulInverse;
                         var xP2 = x * x;
                         var xP3 = xP2 * x;
-                        preCalculatedCutmullRomCoefficents[i] =
+                        preCalculatedCatmullRomCoefficents[i] =
                             new Vector4(
                                 (-xP3 + (2 * xP2) - x) * 0.5f,
                                 ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
@@ -74,13 +74,13 @@ namespace MonoAudio.Conversion.Resampling.Sample
                     if ((RateMul & 1) > 0)
                     {
                         Strategy = ResampleStrategy.CachedWrappedOdd;
-                        preCalculatedCutmullRomCoefficents = new Vector4[(RateMul / 2) + 1];
-                        for (int i = 0; i < preCalculatedCutmullRomCoefficents.Length; i++)
+                        preCalculatedCatmullRomCoefficents = new Vector4[(RateMul / 2) + 1];
+                        for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                         {
                             var x = i * RateMulInverse;
                             var xP2 = x * x;
                             var xP3 = xP2 * x;
-                            preCalculatedCutmullRomCoefficents[i] =
+                            preCalculatedCatmullRomCoefficents[i] =
                                 new Vector4(
                                     (-xP3 + (2 * xP2) - x) * 0.5f,
                                     ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
@@ -91,13 +91,13 @@ namespace MonoAudio.Conversion.Resampling.Sample
                     else
                     {
                         Strategy = ResampleStrategy.CachedWrappedEven;
-                        preCalculatedCutmullRomCoefficents = new Vector4[(RateMul / 2)];
-                        for (int i = 0; i < preCalculatedCutmullRomCoefficents.Length; i++)
+                        preCalculatedCatmullRomCoefficents = new Vector4[(RateMul / 2)];
+                        for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                         {
                             var x = i * RateMulInverse;
                             var xP2 = x * x;
                             var xP3 = xP2 * x;
-                            preCalculatedCutmullRomCoefficents[i] =
+                            preCalculatedCatmullRomCoefficents[i] =
                                 new Vector4(
                                     (-xP3 + (2 * xP2) - x) * 0.5f,
                                     ((3 * xP3) - (5 * xP2) + 2) * 0.5f,

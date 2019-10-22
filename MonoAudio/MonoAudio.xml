@@ -1134,9 +1134,9 @@
              </summary>
              <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
-        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.preCalculatedCutmullRomCoefficents">
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficents">
             <summary>
-            The pre calculated cutmull rom coefficents.<br/>
+            The pre calculated catmull-rom coefficents.<br/>
             X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
             Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
             Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>

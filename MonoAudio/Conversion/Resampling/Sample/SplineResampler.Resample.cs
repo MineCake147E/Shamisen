@@ -17,7 +17,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
     /// <seealso cref="ResamplerBase" />
     public sealed partial class SplineResampler {
         private void ResampleCachedDirect (ref Span<float> buffer, int channels, ref Span<float> srcBuffer) {
-            ref var coeffPtr = ref GetReference (preCalculatedCutmullRomCoefficents.AsSpan ());
+            ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
             // Use formula from http://www.mvps.org/directx/articles/catmull/
 
@@ -181,16 +181,13 @@ namespace MonoAudio.Conversion.Resampling.Sample {
             }
         }
         private void ResampleCachedWrappedOdd (ref Span<float> buffer, int channels, ref Span<float> srcBuffer) {
-            ref var coeffPtr = ref GetReference (preCalculatedCutmullRomCoefficents.AsSpan ());
+            ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
             // Use formula from http://www.mvps.org/directx/articles/catmull/
-            Vector4 GetCutmullRomCoefficents (ref Vector4 coeffs, int i)
-            {
+            Vector4 GetCatmullRomCoefficents (ref Vector4 coeffs, int i) {
                 int x = i;
-                if (i <= RateMul / 2) return Unsafe.Add(ref coeffs, x);
-                x = RateMul - i;
-                var q = Unsafe.Add(ref coeffs, x);
-                return new Vector4(q.W, q.Z, q.Y, q.X);
+                if (i > RateMul / 2) x = RateMul - i;
+                return Unsafe.Add (ref coeffs, x);
             }
 
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
@@ -206,7 +203,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                     } else {
                         ref var values = ref Unsafe.As < Vector<float>,
                             (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W) > (ref vSrcBuffer[inputSampleIndex]);
-                        var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                        var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                         var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                         var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -227,7 +224,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                 buffer[i] = srcBuffer[inputSampleIndex + 1];
                             } else {
                                 var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
-                                var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
 
                                 // Use formula from http://www.mvps.org/directx/articles/catmull/
                                 buffer[i] = Vector4.Dot (values, cutmullCoeffs);
@@ -251,7 +248,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector2,
                                                 ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -276,7 +273,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector3,
                                                 ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -301,7 +298,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector4,
                                                 ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -328,7 +325,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                             srcBuffer.Slice (inputSampleIndex + channels, channels).CopyTo (buffer.Slice (i));
                                         } else {
                                             var cache = srcBufPtr + inputSampleIndex;
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             for (int ch = 0; ch < channels; ch++) {
                                                 ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                                 var value1 = cache[ch] * cutmullCoeffs.X; //The control point 1.
@@ -353,16 +350,13 @@ namespace MonoAudio.Conversion.Resampling.Sample {
             }
         }
         private void ResampleCachedWrappedEven (ref Span<float> buffer, int channels, ref Span<float> srcBuffer) {
-            ref var coeffPtr = ref GetReference (preCalculatedCutmullRomCoefficents.AsSpan ());
+            ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
             // Use formula from http://www.mvps.org/directx/articles/catmull/
-            Vector4 GetCutmullRomCoefficents (ref Vector4 coeffs, int i)
-            {
+            Vector4 GetCatmullRomCoefficents (ref Vector4 coeffs, int i) {
                 int x = i;
-                if (i < RateMul / 2) return Unsafe.Add(ref coeffs, x);
-                x = RateMul - i - 1;
-                var q = Unsafe.Add(ref coeffs, x);
-                return new Vector4(q.W, q.Z, q.Y, q.X);
+                if (i >= RateMul / 2) x = RateMul - i - 1;
+                return Unsafe.Add (ref coeffs, x);
             }
 
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
@@ -378,7 +372,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                     } else {
                         ref var values = ref Unsafe.As < Vector<float>,
                             (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W) > (ref vSrcBuffer[inputSampleIndex]);
-                        var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                        var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                         var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                         var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -399,7 +393,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                 buffer[i] = srcBuffer[inputSampleIndex + 1];
                             } else {
                                 var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
-                                var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
 
                                 // Use formula from http://www.mvps.org/directx/articles/catmull/
                                 buffer[i] = Vector4.Dot (values, cutmullCoeffs);
@@ -423,7 +417,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector2,
                                                 ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -448,7 +442,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector3,
                                                 ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -473,7 +467,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                         } else {
                                             ref var values = ref Unsafe.As <Vector4,
                                                 ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             var value1 = values.X * cutmullCoeffs.X; //The control point 1.
                                             var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                                             var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
@@ -500,7 +494,7 @@ namespace MonoAudio.Conversion.Resampling.Sample {
                                             srcBuffer.Slice (inputSampleIndex + channels, channels).CopyTo (buffer.Slice (i));
                                         } else {
                                             var cache = srcBufPtr + inputSampleIndex;
-                                            var cutmullCoeffs = GetCutmullRomCoefficents (ref coeffPtr, x);
+                                            var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                             for (int ch = 0; ch < channels; ch++) {
                                                 ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                                 var value1 = cache[ch] * cutmullCoeffs.X; //The control point 1.
