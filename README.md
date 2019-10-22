@@ -10,8 +10,8 @@ A Cross-Platform Audio Library for .NET Standard.
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
 - Fast and smooth Upsampling using Catmull-Rom Spline
-  - About 70 times faster than real time in 44.1kHz→192kHz **10ch** on .NET Core, Intel Core i7 4790.
-  - About 120 times faster than real time in 44.1kHz→192kHz **Stereo** on .NET Core, Intel Core i7 4790.
+  - About 90x faster than real time in 44.1kHz→192kHz **10ch** on .NET Core, Intel Core i7 4790.
+  - About 150x faster than real time in 44.1kHz→192kHz **Stereo** on .NET Core, Intel Core i7 4790.
   - Uses `MemoryMarshal.Cast<float,Vector2>(Span<float>)` so it doesn't copy while casting.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
 
