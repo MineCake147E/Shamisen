@@ -4,7 +4,8 @@ using System.Text;
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Synthesis;
 using NUnit.Framework;
-using CSCodec.Filters.Transformation;
+
+//using CSCodec.Filters.Transformation;
 using System.Numerics;
 using System.Diagnostics;
 
