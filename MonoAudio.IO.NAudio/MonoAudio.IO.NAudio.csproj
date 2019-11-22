@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>MonoAudio.IO</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DocumentationFile>MonoAudio.IO.NAudio.xml</DocumentationFile>
+      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DocumentationFile>MonoAudio.IO.NAudio.xml</DocumentationFile>
+      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NAudio" Version="1.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MonoAudio\MonoAudio.csproj" />
+    </ItemGroup>
+</Project>
