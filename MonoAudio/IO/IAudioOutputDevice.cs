@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoAudio.Formats;
 
 namespace MonoAudio.IO
 {
@@ -13,7 +14,7 @@ namespace MonoAudio.IO
         /// Indicates whether the audio output device supports a particular stream format.
         /// </summary>
         /// <param name="format">The format to judge the availability.</param>
-        /// <returns><c>true</c> if succeeded and the audio device supports the specified stream format.</returns>
-        bool IsFormatSupported(WaveFormat format);
+        /// <returns>The value which indicates how the <see cref="IWaveFormat"/> can be supported by <see cref="MonoAudio"/>.</returns>
+        FormatSupportStatus CheckSupportStatus(IWaveFormat format);
     }
 }
