@@ -12,7 +12,7 @@ namespace MonoAudio
     [StructLayout(LayoutKind.Explicit, Size = 1)]
     public readonly struct OffsetSByte
     {
-        private const byte inverter = 0x80;
+        private const byte Inverter = 0x80;
 
         [FieldOffset(0)]
         private readonly byte value;
@@ -26,7 +26,7 @@ namespace MonoAudio
             unchecked
             {
                 byte vp = Unsafe.As<sbyte, byte>(ref value);
-                this.value = (byte)(vp ^ inverter);
+                this.value = (byte)(vp ^ Inverter);
             }
         }
 
@@ -41,7 +41,7 @@ namespace MonoAudio
         {
             unchecked
             {
-                return (sbyte)(value.value ^ inverter);
+                return (sbyte)(value.value ^ Inverter);
             }
         }
     }

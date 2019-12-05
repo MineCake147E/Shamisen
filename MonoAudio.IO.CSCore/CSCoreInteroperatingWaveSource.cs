@@ -23,9 +23,12 @@ namespace MonoAudio.IO
         public CSCoreInteroperatingWaveSource(IWaveSource source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            WaveFormat = new CSCore.WaveFormat(Source.Format.SampleRate, Source.Format.BitDepth, Source.Format.Channels,
-                                               (CSCore.AudioEncoding)(short)Source.Format.Encoding, Source.Format.ExtraSize);
+            var format = source.Format;
+            WaveFormat = ConvertToCSCoreWaveFormat(format);
         }
+
+        internal static CSCore.WaveFormat ConvertToCSCoreWaveFormat(Formats.IWaveFormat format) => new CSCore.WaveFormat(format.SampleRate, format.BitDepth, format.Channels,
+                                                       (CSCore.AudioEncoding)(short)format.Encoding, format.ExtraSize);
 
         /// <summary>
         /// Gets the source to read the audio from.

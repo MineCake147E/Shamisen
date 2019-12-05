@@ -60,9 +60,16 @@ namespace MonoAudio.IO
         /// <param name="latency">
         /// The value which indicates how long can <see cref="ALOutput"/> take between buffering and actual audio output.
         /// </param>
-        public ALOutput(TimeSpan latency) : this(null, latency)
+        public ALOutput(TimeSpan latency) : this(string.Empty, latency)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ALOutput"/> class.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        /// <param name="latency">The latency.</param>
+        public ALOutput(ALDevice device, TimeSpan latency) : this(device.Name, latency) { }
 
         [Obsolete("The Device name gets no longer supported!")]
         internal ALOutput(string name) : this(name, DefaultLatency)
