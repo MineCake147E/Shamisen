@@ -169,6 +169,39 @@ namespace MonoAudio
         /// </returns>
         public static explicit operator OffsetSByte(int value) => (OffsetSByte)unchecked((sbyte)value);
 
+        /// <summary>
+        /// Converts the numeric value of this instance to its equivalent string representation.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents the value of this instance.
+        /// </returns>
+        public override string ToString() => ((sbyte)this).ToString();
+
+        /// <summary>
+        /// Converts the string representation of a number to its <see cref="OffsetSByte"/> equivalent.
+        /// </summary>
+        /// <param name="s">The string representation of the number to convert.</param>
+        /// <returns>The equivalent to the number contained in <paramref name="s"/>.</returns>
+        public static OffsetSByte Parse(string s) => new OffsetSByte(sbyte.Parse(s));
+
+        /// <summary>
+        /// Converts the string representation of a number to its <see cref="OffsetSByte"/> equivalent.<br/>
+        /// A return value indicates whether the conversion succeeded or failed.
+        /// </summary>
+        /// <param name="s">The string representation of the number to convert.</param>
+        /// <param name="result">When this method returns, contains the <see cref="OffsetSByte"/> number that is equivalent to the numeric value contained in <paramref name="s"/>, if the conversion succeeded, or zero if the conversion failed.
+        /// The conversion fails if the <paramref name="s"/> parameter is <c>null</c> or <see cref="string.Empty"/>, is not a number in a valid format, or represents a number less than <see cref="MinValue"/> or greater than <see cref="MaxValue"/>.
+        /// This parameter is passed uninitialized; any value originally supplied in result is overwritten.</param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="s"/> was converted successfully; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool TryParse(string s, out OffsetSByte result)
+        {
+            var g = sbyte.TryParse(s, out var b);
+            result = new OffsetSByte(b);
+            return g;
+        }
+
         #endregion Conversion
 
         #region Comparison
