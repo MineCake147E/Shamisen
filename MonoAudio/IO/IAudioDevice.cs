@@ -5,9 +5,9 @@ using System.Text;
 namespace MonoAudio.IO
 {
     /// <summary>
-    /// Defines a base structure of an audio device.
+    /// Defines a base structure of an audio device.<br/>
     /// </summary>
-    public interface IAudioDevice
+    public interface IAudioDevice : IEquatable<IAudioDevice>
     {
         /// <summary>
         /// Gets the name of this audio device.

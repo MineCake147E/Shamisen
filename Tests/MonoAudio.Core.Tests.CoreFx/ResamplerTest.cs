@@ -4,7 +4,8 @@ using System.Text;
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Synthesis;
 using NUnit.Framework;
-using CSCodec.Filters.Transformation;
+
+//using CSCodec.Filters.Transformation;
 using System.Numerics;
 using System.Diagnostics;
 
@@ -63,13 +64,14 @@ namespace MonoAudio.Core.Tests.CoreFx
             resampler.Dispose();
         }
 
-        [Test]
-        public void UpSamplingTwoFrameDump()
+        [TestCase(44100, 192000)]
+        [TestCase(48000, 192000)]
+        [TestCase(24000, 154320)]
+        [TestCase(96000, 192000)]
+        public void UpSamplingTwoFrameDump(int sourceSampleRate, int destinationSampleRate)
         {
-            const int SourceSampleRate = 44100;
-            const int DestinationSampleRate = 192000;
-            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = 6000 };
-            var resampler = new SplineResampler(src, DestinationSampleRate);
+            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = 6000 };
+            var resampler = new SplineResampler(src, destinationSampleRate);
             var buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
             resampler.Read(buffer);
@@ -100,7 +102,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         {
             const int SourceSampleRate = 44100;
             const int DestinationSampleRate = 192000;
-            const double destinationSampleRateD = DestinationSampleRate;
+            const double DestinationSampleRateD = DestinationSampleRate;
             double channelsInverse = 1.0 / Channels;
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 6000 };
             var resampler = new SplineResampler(src, DestinationSampleRate);
@@ -114,8 +116,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 1000);
             sw.Stop();
-            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             samples = 0;
             sw.Reset();
             sw.Start();
@@ -124,8 +126,8 @@ namespace MonoAudio.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / destinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / destinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             Assert.Greater(samples, DestinationSampleRate);
             resampler.Dispose();
         }

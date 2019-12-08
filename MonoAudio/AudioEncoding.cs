@@ -19,7 +19,7 @@ namespace MonoAudio
         /// Microsoft PCM Format
         /// </summary>
         [FixedBitDepth]
-        Pcm = 0x0001,
+        LinearPcm = 0x0001,
 
         /// <summary>
         /// Microsoft ADPCM Format

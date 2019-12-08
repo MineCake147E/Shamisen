@@ -30,7 +30,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
         public SampleToPcm32Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
-            : base(source, new WaveFormat(source.Format.SampleRate, 32, source.Format.Channels, AudioEncoding.Pcm))
+            : base(source, new WaveFormat(source.Format.SampleRate, 32, source.Format.Channels, AudioEncoding.LinearPcm))
         {
             if (accuracyNeeded)
             {

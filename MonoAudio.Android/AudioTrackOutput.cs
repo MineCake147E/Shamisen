@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
 using Android.Media;
+
+using MonoAudio.Formats;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+
 using Encoding = Android.Media.Encoding;
 
 namespace MonoAudio.IO.Android
@@ -98,16 +96,19 @@ namespace MonoAudio.IO.Android
             using (var formatBuilder = new AudioFormat.Builder())
             using (var trackBuilder = new AudioTrack.Builder())
             {
-                attributesBuilder.SetUsage(UsageKind);
-                attributesBuilder.SetContentType(ContentType);
+                _ = attributesBuilder
+                    .SetUsage(UsageKind)
+                    .SetContentType(ContentType);
                 attributes = attributesBuilder.Build();
-                formatBuilder.SetEncoding(ConvertEncoding(source.Format));
-                formatBuilder.SetSampleRate(source.Format.SampleRate);
-                formatBuilder.SetChannelMask(ConvertChannelMask(source.Format));
+                _ = formatBuilder
+                    .SetEncoding(ConvertEncoding(source.Format))
+                    .SetSampleRate(source.Format.SampleRate)
+                    .SetChannelMask(ConvertChannelMask(source.Format));
                 format = formatBuilder.Build();
-                trackBuilder.SetAudioAttributes(attributes);
-                trackBuilder.SetAudioFormat(format);
-                trackBuilder.SetBufferSizeInBytes(bufferSizeInBytes);
+                _ = trackBuilder
+                    .SetAudioAttributes(attributes)
+                    .SetAudioFormat(format)
+                    .SetBufferSizeInBytes(bufferSizeInBytes);
                 track = trackBuilder.Build();
             }
             Source = source;
@@ -192,7 +193,7 @@ namespace MonoAudio.IO.Android
         {
             switch (format.Encoding)
             {
-                case AudioEncoding.Pcm:
+                case AudioEncoding.LinearPcm:
                     switch (format.BitDepth)
                     {
                         case 8:

@@ -7,8 +7,8 @@
     <ProjectGuid>{59D7E2D7-357B-42CB-8B25-ADA594BC3156}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MonoAudio</RootNamespace>
-    <AssemblyName>MonoAudio.UWP</AssemblyName>
+    <RootNamespace>MonoAudio.IO</RootNamespace>
+    <AssemblyName>MonoAudio.IO.UWP</AssemblyName>
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
@@ -132,8 +132,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SoundOut\AudioGraphOutput.cs" />
-    <Compile Include="SoundOut\IMemoryBufferByteAccess.cs" />
+    <Compile Include="AudioGraphOutput.cs" />
+    <Compile Include="IMemoryBufferByteAccess.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">

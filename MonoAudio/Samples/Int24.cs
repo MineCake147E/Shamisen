@@ -13,8 +13,8 @@ namespace MonoAudio
 	[StructLayout(LayoutKind.Explicit, Size = 3)]
     public readonly struct Int24 : IComparable<Int24>, IEquatable<Int24>
     {
-        private const int negativeValueOrMask = -0x80_0000;
-        private const int mask = -0x7F80_0001;
+        private const int NegativeValueOrMask = -0x80_0000;
+        private const int Mask = -0x7F80_0001;
 
         [FieldOffset(0)]
         private readonly byte tail;
