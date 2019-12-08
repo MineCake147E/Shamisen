@@ -158,9 +158,9 @@
       <Project>{3194b68f-7fda-402c-b9fa-3de897cd4f4c}</Project>
       <Name>MonoAudio</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoAudio.UWP\MonoAudio.UWP.csproj">
+    <ProjectReference Include="..\..\MonoAudio.UWP\MonoAudio.IO.UWP.csproj">
       <Project>{59d7e2d7-357b-42cb-8b25-ada594bc3156}</Project>
-      <Name>MonoAudio.UWP</Name>
+      <Name>MonoAudio.IO.UWP</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

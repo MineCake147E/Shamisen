@@ -23,7 +23,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <param name="source">The source.</param>
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
         public SampleToPCM8Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true)
-            : base(source, new WaveFormat(source.Format.SampleRate, 8, source.Format.Channels, AudioEncoding.Pcm))
+            : base(source, new WaveFormat(source.Format.SampleRate, 8, source.Format.Channels, AudioEncoding.LinearPcm))
         {
             if (accuracyNeeded)
             {

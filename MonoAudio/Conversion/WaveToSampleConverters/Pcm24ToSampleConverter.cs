@@ -12,10 +12,10 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
     /// <seealso cref="WaveToSampleConverterBase" />
     public sealed class Pcm24ToSampleConverter : WaveToSampleConverterBase
     {
-        private const float divisor = 8388608.0f;
-        private const int bytesPerSample = 3;   //sizeof(Int24)
-        private const int bufferMax = 1024;
-        private int ActualBufferMax => bufferMax - (bufferMax % Source.Format.Channels);
+        private const float Divisor = 8388608.0f;
+        private const int ActualBytesPerSample = 3;   //sizeof(Int24)
+        private const int BufferMax = 1024;
+        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         /// <summary>
         /// Gets the endianness of <see cref="WaveToSampleConverterBase.Source"/>.
@@ -41,7 +41,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// <value>
         /// The bytes consumed per sample.
         /// </value>
-        protected override int BytesPerSample => bytesPerSample;
+        protected override int BytesPerSample => ActualBytesPerSample;
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -57,7 +57,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                int u = Source.Read(MemoryMarshal.AsBytes(span)) / bytesPerSample;
+                int u = Source.Read(MemoryMarshal.AsBytes(span)) / BytesPerSample;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -67,14 +67,14 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)
                     {
-                        dest[i] = Int24.ReverseEndianness(wrote[i]) / divisor;
+                        dest[i] = Int24.ReverseEndianness(wrote[i]) / Divisor;
                     }
                 }
                 else
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)
                     {
-                        dest[i] = wrote[i] / divisor;
+                        dest[i] = wrote[i] / Divisor;
                     }
                 }
                 cursor = cursor.Slice(u);
