@@ -50,7 +50,7 @@ namespace MonoAudio.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="ALOutput"/> class.
         /// </summary>
-        public ALOutput() : this(null, DefaultLatency)
+        public ALOutput() : this(DefaultLatency)
         {
         }
 

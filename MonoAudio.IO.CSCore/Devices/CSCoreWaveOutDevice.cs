@@ -73,6 +73,21 @@ namespace MonoAudio.IO.Devices
         }
 
         /// <summary>
+        /// Indicates whether the audio output device supports a particular stream format.
+        /// </summary>
+        /// <param name="format">The format to judge the availability.</param>
+        /// <param name="mode">The share mode.</param>
+        /// <returns>
+        /// The value which indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat" /> can be supported by <see cref="N:MonoAudio" />.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public FormatSupportStatus CheckSupportStatus(IWaveFormat format, IOExclusivity mode = IOExclusivity.Shared)
+        {
+            if (mode == IOExclusivity.Exclusive) throw new NotSupportedException($"Exclusive mode is not supported!");
+            return CheckSupportStatus(format);
+        }
+
+        /// <summary>
         /// Creates the <see cref="ISoundOut" /> that outputs audio to this device.
         /// </summary>
         /// <param name="latency">The desired latency for output.</param>
@@ -85,6 +100,19 @@ namespace MonoAudio.IO.Devices
                 {
                     Device = Device
                 });
+
+        /// <summary>
+        /// Creates the <see cref="T:MonoAudio.IO.ISoundOut" /> that outputs audio to this device with the specified <paramref name="mode" />.
+        /// </summary>
+        /// <param name="latency">The latency.</param>
+        /// <param name="mode">The share mode.</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public CSCoreSoundOutput CreateSoundOut(TimeSpan latency, IOExclusivity mode)
+        {
+            if (mode == IOExclusivity.Exclusive) throw new NotSupportedException($"Exclusive mode is not supported!");
+            return CreateSoundOut(latency);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

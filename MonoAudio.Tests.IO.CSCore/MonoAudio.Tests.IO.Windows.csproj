@@ -20,8 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MonoAudio.IO.CSCore\MonoAudio.IO.CSCore.csproj" />
-    <ProjectReference Include="..\MonoAudio.IO.NAudio\MonoAudio.IO.NAudio.csproj" />
-    <ProjectReference Include="..\MonoAudio.IO.OpenTK\MonoAudio.IO.OpenTK.csproj" />
     <ProjectReference Include="..\MonoAudio\MonoAudio.csproj" />
   </ItemGroup>
 

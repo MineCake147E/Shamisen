@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("MonoAudio.IO.Android.Resource", IsApplication=false)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("MonoAudio.IO.Resource", IsApplication=false)]
 
-namespace MonoAudio.IO.Android
+namespace MonoAudio.IO
 {
 	
 	

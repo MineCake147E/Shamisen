@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MonoAudio.IO.OpenTK</name>
+    </assembly>
+    <members>
+        <member name="T:MonoAudio.IO.ALAttribute`1">
+            <summary>
+            Represents an <see cref="T:OpenTK.Audio.OpenAL.AL"/> Attribute Key and Value pair.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.ALAttribute`1.Key">
+            <summary>
+            The key of this <see cref="T:MonoAudio.IO.ALAttribute`1"/>.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.ALAttribute`1.Value">
+            <summary>
+            The value of this <see cref="T:MonoAudio.IO.ALAttribute`1"/>.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.IO.ALDevice">
+            <summary>
+            Represents a device for OpenAL.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALDevice"/> class.
+            </summary>
+            <param name="name">The name.</param>
+            <exception cref="T:System.ArgumentNullException">name</exception>
+        </member>
+        <member name="P:MonoAudio.IO.ALDevice.Name">
+            <summary>
+            Gets the name of this <see cref="T:MonoAudio.IO.ALDevice"/>.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.CheckSupportStatus(MonoAudio.Formats.IWaveFormat,MonoAudio.IO.IOExclusivity)">
+            <summary>
+            Indicates whether the audio output device supports a particular stream format.
+            </summary>
+            <param name="format">The format to judge the availability.</param>
+            <param name="mode">The share mode.</param>
+            <returns>The value which indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat"/> can be supported by <see cref="N:MonoAudio"/>.</returns>
+            <exception cref="T:System.NotSupportedException">The {nameof(IOExclusivity.Exclusive)} mode is not supported!</exception>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.CreateSoundOut(System.TimeSpan)">
+            <summary>
+            Creates the <see cref="T:MonoAudio.IO.ISoundOut" /> that outputs audio to this device.
+            </summary>
+            <param name="latency">The desired latency for output.</param>
+            <returns>
+            The <see cref="T:MonoAudio.IO.ALOutput"/> instance.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.MonoAudio#IO#IAudioOutputDevice{MonoAudio#IO#ALOutput}#CreateSoundOut(System.TimeSpan,MonoAudio.IO.IOExclusivity)">
+            <summary>
+            Creates the <see cref="T:MonoAudio.IO.ISoundOut" /> that outputs audio to this device with the specified <paramref name="mode" />.
+            </summary>
+            <param name="latency">The latency.</param>
+            <param name="mode">The share mode.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.Equals(MonoAudio.IO.ALDevice)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.Equals(MonoAudio.IO.IAudioDevice)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.op_Equality(MonoAudio.IO.ALDevice,MonoAudio.IO.ALDevice)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.IO.ALDevice"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.IO.ALDevice"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.IO.ALDevice"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.ALDevice.op_Inequality(MonoAudio.IO.ALDevice,MonoAudio.IO.ALDevice)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.IO.ALDevice"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.IO.ALDevice"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.IO.ALDevice"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.IO.ALDeviceEnumerator">
+            <summary>
+            Enumerates the AL devices.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.ALDeviceEnumerator.Instance">
+            <summary>
+            The instance
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALDeviceEnumerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALDeviceEnumerator"/> class.<br/>
+            Obsolete: Use <see cref="F:MonoAudio.IO.ALDeviceEnumerator.Instance"/> instead.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALDeviceEnumerator.EnumerateDevices(MonoAudio.IO.DataFlow)">
+            <summary>
+            Enumerates devices of specified <paramref name="dataFlow" />.
+            </summary>
+            <param name="dataFlow">The <see cref="T:MonoAudio.IO.DataFlow" /> kind to enumerate devices of.</param>
+            <returns>
+            The <see cref="T:System.Collections.Generic.IEnumerable`1" /> of audio devices.
+            </returns>
+            <exception cref="T:System.NotSupportedException">
+            </exception>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:MonoAudio.IO.ALException">
+            <summary>
+            Represents errors that occur during OpenAL operation.
+            </summary>
+            <seealso cref="T:System.Exception" />
+        </member>
+        <member name="M:MonoAudio.IO.ALException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALException"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:MonoAudio.IO.ALException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="inner">The inner.</param>
+        </member>
+        <member name="M:MonoAudio.IO.ALException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:MonoAudio.IO.ALOutput">
+            <summary>
+            Provides an <see cref="T:OpenTK.Audio.OpenAL.AL"/> output.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.IO.ALOutput.Latency">
+            <summary>
+            Gets the value which indicates how long does the <see cref="T:OpenTK.Audio.OpenAL.AL"/> takes while delivering the audio data to the hardware.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.IO.ALOutput.PlaybackState">
+            <summary>
+            Gets the state of the playback.
+            </summary>
+            <value>
+            The state of the playback.
+            </value>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALOutput"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.#ctor(System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALOutput"/> class with the specified <paramref name="latency"/>.
+            </summary>
+            <param name="latency">
+            The value which indicates how long can <see cref="T:MonoAudio.IO.ALOutput"/> take between buffering and actual audio output.
+            </param>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.#ctor(MonoAudio.IO.ALDevice,System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.IO.ALOutput"/> class.
+            </summary>
+            <param name="device">The device.</param>
+            <param name="latency">The latency.</param>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Initialize(MonoAudio.IWaveSource)">
+            <summary>
+            Initializes the <see cref="T:MonoAudio.IO.ISoundOut"/> for playing a <paramref name="source"/>.
+            </summary>
+            <param name="source">The source to play.</param>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Pause">
+            <summary>
+            Pauses the audio playback.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Play">
+            <summary>
+            Starts the audio playback.
+            Use <see cref="M:MonoAudio.IO.ALOutput.Resume"/> instead while the playback is <see cref="F:MonoAudio.IO.PlaybackState.Paused"/>.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Cannot start playback without stopping or initializing!
+            </exception>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Resume">
+            <summary>
+            Resumes the audio playback.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Stop">
+            <summary>
+            Stops the audio playback.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.IO.ALOutput.EnumrateDeviceNames">
+            <summary>
+            Enumerates all device names using <c>ALC_ENUMERATION_EXT</c>(falls back to <c>ALC_ENUMERATE_ALL_EXT</c>).
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

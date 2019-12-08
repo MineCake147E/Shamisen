@@ -2909,6 +2909,15 @@
             <param name="format">The format to calculate the length of frame.</param>
             <returns><c>sizeof(TSample) * <see cref="P:MonoAudio.IAudioFormat`1.Channels"/></c></returns>
         </member>
+        <member name="M:MonoAudio.FormatUtils.GetBufferSizeRequired``1(MonoAudio.IAudioFormat{``0},System.TimeSpan)">
+            <summary>
+            Gets the value which indicates how long the <see cref="T:System.Byte"/>[] buffer should be.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="format">The format.</param>
+            <param name="length">The length.</param>
+            <returns></returns>
+        </member>
         <member name="T:MonoAudio.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.
@@ -3462,9 +3471,104 @@
             Input.
             </summary>
         </member>
+        <member name="T:MonoAudio.IO.FormatSupportStatus">
+            <summary>
+            Indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat"/> is supported by the <see cref="N:MonoAudio"/>.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.FormatSupportStatus.Unchecked">
+            <summary>
+            The value which indicates the <see cref="T:MonoAudio.IO.IAudioDevice"/> has no ability to check the support status currently.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.FormatSupportStatus.NotSupported">
+            <summary>
+            The value which indicates the <see cref="T:MonoAudio.Formats.IWaveFormat"/> is not supported by the <see cref="T:MonoAudio.IO.IAudioDevice"/>.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.FormatSupportStatus.SupportedBySoftware">
+            <summary>
+            The value which indicates the <see cref="T:MonoAudio.Formats.IWaveFormat"/> is supported by the <see cref="T:MonoAudio.IO.IAudioDevice"/>, by converting the audio into some different format.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.FormatSupportStatus.SupportedByHardware">
+            <summary>
+            The value which indicates the <see cref="T:MonoAudio.Formats.IWaveFormat"/> is supported by the <see cref="T:MonoAudio.IO.IAudioDevice"/> natively, without converting the audio into some different format.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.IO.FormatSupportStatus.IsChecked">
+            <summary>
+            Gets a value indicating whether the <see cref="T:MonoAudio.Formats.IWaveFormat"/> has been checked the availability on the device.
+            </summary>
+            <value>
+              <c>true</c> if this instance is checked; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.IO.FormatSupportStatus.IsSupported">
+            <summary>
+            Gets a value indicating whether the format is supported.
+            </summary>
+            <value>
+              <c>true</c> if this instance is supported; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.IO.FormatSupportStatus.IsNativelySupported">
+            <summary>
+            Gets a value indicating whether the <see cref="T:MonoAudio.Formats.IWaveFormat"/> is natively supported.
+            </summary>
+            <value>
+              <c>true</c> if this instance is natively supported; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:MonoAudio.IO.FormatSupportStatus.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns>
+            true if <paramref name="obj">obj</paramref> and this instance are the same type and represent the same value; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.FormatSupportStatus.Equals(MonoAudio.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.FormatSupportStatus.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.FormatSupportStatus.op_Equality(MonoAudio.IO.FormatSupportStatus,MonoAudio.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.IO.FormatSupportStatus"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.IO.FormatSupportStatus"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.IO.FormatSupportStatus"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.IO.FormatSupportStatus.op_Inequality(MonoAudio.IO.FormatSupportStatus,MonoAudio.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.IO.FormatSupportStatus"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.IO.FormatSupportStatus"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.IO.FormatSupportStatus"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.IO.IAudioDevice">
             <summary>
-            Defines a base structure of an audio device.
+            Defines a base structure of an audio device.<br/>
             </summary>
         </member>
         <member name="P:MonoAudio.IO.IAudioDevice.Name">
@@ -3499,17 +3603,50 @@
             <param name="format">The format to judge the availability.</param>
             <returns><c>true</c> if succeeded and the audio device supports the specified stream format.</returns>
         </member>
-        <member name="T:MonoAudio.IO.IAudioOutputDevice">
+        <member name="T:MonoAudio.IO.IAudioOutputDevice`1">
             <summary>
             Defines a base structure of audio output device.
             </summary>
         </member>
-        <member name="M:MonoAudio.IO.IAudioOutputDevice.IsFormatSupported(MonoAudio.WaveFormat)">
+        <member name="M:MonoAudio.IO.IAudioOutputDevice`1.CheckSupportStatus(MonoAudio.Formats.IWaveFormat,MonoAudio.IO.IOExclusivity)">
             <summary>
             Indicates whether the audio output device supports a particular stream format.
             </summary>
             <param name="format">The format to judge the availability.</param>
-            <returns><c>true</c> if succeeded and the audio device supports the specified stream format.</returns>
+            <param name="mode">The share mode.</param>
+            <returns>The value which indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat"/> can be supported by <see cref="N:MonoAudio"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.IO.IAudioOutputDevice`1.CreateSoundOut(System.TimeSpan)">
+            <summary>
+            Creates the <see cref="T:MonoAudio.IO.ISoundOut"/> that outputs audio to this device.
+            </summary>
+            <param name="latency">The desired latency for output.</param>
+            <returns>The <typeparamref name="TSoundOut"/> instance.</returns>
+        </member>
+        <member name="M:MonoAudio.IO.IAudioOutputDevice`1.CreateSoundOut(System.TimeSpan,MonoAudio.IO.IOExclusivity)">
+            <summary>
+            Creates the <see cref="T:MonoAudio.IO.ISoundOut"/> that outputs audio to this device with the specified <paramref name="mode"/>.
+            </summary>
+            <param name="latency">The latency.</param>
+            <param name="mode">The share mode.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.IO.IOExclusivity">
+            <summary>
+            Represents an exclusivity of audio IO.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.IOExclusivity.Shared">
+            <summary>
+            The <see cref="T:MonoAudio.IO.ISoundOut"/> will be opened under some sharing system.<br/>
+            The other applications will be able to access the device.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.IO.IOExclusivity.Exclusive">
+            <summary>
+            The <see cref="T:MonoAudio.IO.ISoundOut"/> will be created exclusively.<br/>
+            The other applications can't access the device anymore.
+            </summary>
         </member>
         <member name="T:MonoAudio.IO.ISoundIn">
             <summary>
@@ -4018,10 +4155,10 @@
         </member>
         <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.Read(System.Span{System.Single})">
             <summary>
-            Reads the specified buffer.
+            Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
-            <returns></returns>
+            <returns>The length of the data written.</returns>
         </member>
         <member name="M:MonoAudio.Synthesis.PseudoMonauralSignalSourceBase.GenerateMonauralSample(System.Double)">
             <summary>
@@ -4105,6 +4242,56 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Synthesis.SilenceWaveSource">
+            <summary>
+            Generates a silence.
+            </summary>
+            <seealso cref="T:MonoAudio.IWaveSource" />
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceWaveSource.#ctor(MonoAudio.Formats.IWaveFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SilenceWaveSource"/> class.
+            </summary>
+            <param name="format">The format.</param>
+            <exception cref="T:System.ArgumentNullException">format</exception>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceWaveSource.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceWaveSource.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceWaveSource.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SilenceWaveSource.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceWaveSource.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SilenceWaveSource.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
         </member>
         <member name="T:MonoAudio.Synthesis.SinusoidSource">
             <summary>
