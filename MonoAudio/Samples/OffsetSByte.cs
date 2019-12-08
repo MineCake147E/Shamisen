@@ -27,6 +27,7 @@ namespace MonoAudio
             unchecked
             {
                 byte vp = (byte)value;
+
                 this.value = (byte)(vp ^ Inverter);
             }
         }
