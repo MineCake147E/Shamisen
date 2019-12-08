@@ -187,7 +187,7 @@ namespace MonoAudio.IO.Android
         {
             switch (format.Encoding)
             {
-                case AudioEncoding.Pcm:
+                case AudioEncoding.LinearPcm:
                     switch (format.BitDepth)
                     {
                         case 8:

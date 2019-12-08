@@ -131,7 +131,7 @@ namespace MonoAudio.IO
         {
             if (wf.Channels == 1)
             {
-                if (wf.Encoding == AudioEncoding.Pcm)
+                if (wf.Encoding == AudioEncoding.LinearPcm)
                 {
                     if (wf.BitDepth == 8) return ALFormat.Mono8;
                     else if (wf.BitDepth == 16) return ALFormat.Mono16;
@@ -143,7 +143,7 @@ namespace MonoAudio.IO
             }
             else if (wf.Channels == 2)
             {
-                if (wf.Encoding == AudioEncoding.Pcm)
+                if (wf.Encoding == AudioEncoding.LinearPcm)
                 {
                     if (wf.BitDepth == 8) return ALFormat.Stereo8;
                     else if (wf.BitDepth == 16) return ALFormat.Stereo16;

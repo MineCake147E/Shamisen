@@ -70,7 +70,7 @@ namespace MonoAudio.IO
             if (format.Channels > 2) return FormatSupportStatus.NotSupported;
             switch (format.Encoding)
             {
-                case AudioEncoding.Pcm:
+                case AudioEncoding.LinearPcm:
                     break;
                 case AudioEncoding.IeeeFloat:
                     return FormatSupportStatus.SupportedBySoftware;

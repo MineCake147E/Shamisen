@@ -53,7 +53,7 @@ namespace MonoAudio.IO.Devices
         {
             switch (format.Encoding)
             {
-                case AudioEncoding.Pcm:
+                case AudioEncoding.LinearPcm:
                 case AudioEncoding.IeeeFloat:
                     break;
                 default:

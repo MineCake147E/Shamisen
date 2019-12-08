@@ -14,7 +14,7 @@
             Unknown format
             </summary>
         </member>
-        <member name="F:MonoAudio.AudioEncoding.Pcm">
+        <member name="F:MonoAudio.AudioEncoding.LinearPcm">
             <summary>
             Microsoft PCM Format
             </summary>
