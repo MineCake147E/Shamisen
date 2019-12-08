@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using MonoAudio.Formats;
 
 namespace MonoAudio
 {
     /// <summary>
     /// Represents a wave format.
     /// </summary>
-    /// <seealso cref="MonoAudio.IAudioFormat{TSample}" />
+    /// <seealso cref="IAudioFormat{TSample}" />
     public readonly struct WaveFormat : IWaveFormat, IEquatable<WaveFormat>
     {
         /// <summary>

@@ -5,6 +5,7 @@ using MonoAudio.Formats;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
 
+
 namespace MonoAudio.IO
 {
     /// <summary>
@@ -48,7 +49,6 @@ namespace MonoAudio.IO
             Alc.DestroyContext(context);
             Alc.CloseDevice(device);
         }
-
         /// <summary>
         /// Gets the name of this <see cref="ALDevice"/>.
         /// </summary>
@@ -60,6 +60,7 @@ namespace MonoAudio.IO
         /// Indicates whether the audio output device supports a particular stream format.
         /// </summary>
         /// <param name="format">The format to judge the availability.</param>
+
         /// <param name="mode">The share mode.</param>
         /// <returns>The value which indicates how the <see cref="IWaveFormat"/> can be supported by <see cref="MonoAudio"/>.</returns>
         /// <exception cref="NotSupportedException">The {nameof(IOExclusivity.Exclusive)} mode is not supported!</exception>
@@ -161,5 +162,6 @@ namespace MonoAudio.IO
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(ALDevice left, ALDevice right) => !(left == right);
+
     }
 }

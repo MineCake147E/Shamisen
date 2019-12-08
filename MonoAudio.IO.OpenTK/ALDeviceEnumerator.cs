@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK.Audio.OpenAL;
 
+
 namespace MonoAudio.IO
 {
     /// <summary>
@@ -72,6 +73,7 @@ namespace MonoAudio.IO
                     }
                     break;
             }
+
         }
     }
 }

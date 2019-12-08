@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonoAudio.MathUtils
+namespace MonoAudio.Mathematics
 {
     /// <summary>
     /// Helps some calculations.

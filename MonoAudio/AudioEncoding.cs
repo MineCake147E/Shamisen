@@ -8,7 +8,7 @@ namespace MonoAudio
     /// <summary>
     /// Defines known encoding types.
     /// </summary>
-    public enum AudioEncoding : short
+    public enum AudioEncoding : ushort
     {
         /// <summary>
         /// Unknown format
@@ -539,6 +539,6 @@ namespace MonoAudio
         /// <summary>
         ///
         /// </summary>
-        Extensible = unchecked((short)0xFFFE),
+        Extensible = unchecked((ushort)0xFFFEu),
     }
 }

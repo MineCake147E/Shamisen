@@ -1,5 +1,4 @@
 ﻿using MonoAudio.Extensions;
-using MonoAudio.Formats;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;

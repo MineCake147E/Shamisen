@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MonoAudio.Formats;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
-
 namespace MonoAudio.IO
 {
     /// <summary>
@@ -47,10 +46,12 @@ namespace MonoAudio.IO
 
         private int src;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ALOutput"/> class.
         /// </summary>
         public ALOutput() : this(DefaultLatency)
+
         {
         }
 
@@ -109,6 +110,7 @@ namespace MonoAudio.IO
             Debug.WriteLine(vendor);
             Debug.WriteLine(renderer);
 #endif
+
         }
 
         /// <summary>
@@ -247,6 +249,7 @@ namespace MonoAudio.IO
             }
 
             return bp;
+
         }
 
         #region Playback Controls
@@ -260,6 +263,7 @@ namespace MonoAudio.IO
             PlaybackState = PlaybackState.Paused;
             if (AL.IsSource(src)) AL.SourcePause(src);
             fillFlag.Reset();
+
         }
 
         /// <summary>
@@ -283,6 +287,7 @@ namespace MonoAudio.IO
                 fillFlag.Set();
                 fillTask ??= Task.Run(() => FillBuffer(cancellationTokenSource.Token), cancellationTokenSource.Token);
             }
+
         }
 
         /// <summary>
@@ -294,6 +299,7 @@ namespace MonoAudio.IO
             if (AL.IsSource(src)) AL.SourcePlay(src);
             PlaybackState = PlaybackState.Playing;
             fillFlag.Set();
+
         }
 
         /// <summary>
@@ -308,6 +314,7 @@ namespace MonoAudio.IO
             fillFlag.Set();
             cancellationTokenSource.Cancel();
             fillTask.Dispose();
+
         }
 
         #endregion Playback Controls
@@ -344,6 +351,7 @@ namespace MonoAudio.IO
                 if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
                 _ = Alc.CloseDevice(device);
                 Alc.DestroyContext(contextHandle);
+
                 disposedValue = true;
             }
         }

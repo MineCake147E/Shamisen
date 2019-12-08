@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using DivideSharp;
 using MonoAudio.Filters;
-using MonoAudio.MathUtils;
+using MonoAudio.Mathematics;
 
 namespace MonoAudio.Conversion.Resampling.Sample
 {
