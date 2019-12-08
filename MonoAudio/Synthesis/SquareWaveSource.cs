@@ -32,6 +32,6 @@ namespace MonoAudio.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from 0 to 2*pi).</param>
         /// <returns></returns>
-        protected override float GenerateMonauralSample(double theta) => Math.Sign(Math.Sin(theta));
+        protected override float GenerateMonauralSample(double theta) => Math.Sign(Math.PI - theta);
     }
 }

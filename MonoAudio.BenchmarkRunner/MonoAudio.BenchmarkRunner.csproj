@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net472</TargetFrameworks>
+        <AssemblyName>MonoAudio.Benchmarks.Running</AssemblyName>
+        <RootNamespace>MonoAudio.Benchmarks.Running</RootNamespace>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MonoAudio.Benchmarks\MonoAudio.Benchmarks.csproj" />
+        <ProjectReference Include="..\MonoAudio\MonoAudio.csproj" />
+    </ItemGroup>
+</Project>

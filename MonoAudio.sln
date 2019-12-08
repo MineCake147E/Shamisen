@@ -36,6 +36,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{DF25CEAE-97D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoAudio.IO.MonoGame", "MonoAudio.IO.MonoGame\MonoAudio.IO.MonoGame.csproj", "{D513A5D2-80C8-44FC-B2E8-03F94D83D249}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{137071CE-130A-43E7-92CF-97C8C7C70268}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoAudio.Benchmarks", "MonoAudio.Benchmarks\MonoAudio.Benchmarks.csproj", "{B898D712-EB5B-4345-A3CD-98C24C11A1FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoAudio.BenchmarkRunner", "MonoAudio.BenchmarkRunner\MonoAudio.BenchmarkRunner.csproj", "{21BAC05E-92F6-42D3-B6E7-2F40BBA80550}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -256,6 +262,7 @@ Global
 		{D513A5D2-80C8-44FC-B2E8-03F94D83D249}.Release|x64.Build.0 = Release|Any CPU
 		{D513A5D2-80C8-44FC-B2E8-03F94D83D249}.Release|x86.ActiveCfg = Release|Any CPU
 		{D513A5D2-80C8-44FC-B2E8-03F94D83D249}.Release|x86.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
