@@ -66,10 +66,10 @@ namespace MonoAudio.Synthesis
         private double Theta { get; set; } = 0;
 
         /// <summary>
-        /// Reads the specified buffer.
+        /// Reads the audio to the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
-        /// <returns></returns>
+        /// <returns>The length of the data written.</returns>
         public int Read(Span<float> buffer)
         {
             var channels = Format.Channels;

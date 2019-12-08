@@ -31,10 +31,4 @@
     <ItemGroup>
         <ProjectReference Include="..\..\MonoAudio\MonoAudio.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="CSCodec">
-            <HintPath>..\..\..\..\..\Visual Studio 2017\Projects\CSCodec\CSCodec\bin\Release\netstandard2.0\CSCodec.dll</HintPath>
-        </Reference>
-    </ItemGroup>
 </Project>
