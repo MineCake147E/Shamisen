@@ -69,7 +69,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public int Read(Span<TSample> buffer) => Source.Read(buffer);
+        public ReadResult Read(Span<TSample> buffer) => Source.Read(buffer);
 
         /// <summary>
         /// Replaces the source to the <paramref name="newSource"/>.

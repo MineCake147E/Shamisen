@@ -70,7 +70,7 @@ namespace MonoAudio.Synthesis
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public int Read(Span<float> buffer)
+        public ReadResult Read(Span<float> buffer)
         {
             var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);

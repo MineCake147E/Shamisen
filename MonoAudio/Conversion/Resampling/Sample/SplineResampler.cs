@@ -6,7 +6,7 @@ using MonoAudio.Filters;
 using MonoAudio.Utils;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using MonoAudio.MathUtils;
+using MonoAudio.Mathematics;
 
 namespace MonoAudio.Conversion.Resampling.Sample
 {
@@ -114,7 +114,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public override int Read(Span<float> buffer)
+        public override ReadResult Read(Span<float> buffer)
         {
             int channels = Channels;
 

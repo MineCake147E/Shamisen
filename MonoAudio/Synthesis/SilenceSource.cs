@@ -55,7 +55,7 @@ namespace MonoAudio.Synthesis
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public int Read(Span<TSample> buffer)
+        public ReadResult Read(Span<TSample> buffer)
         {
             var span = MemoryMarshal.Cast<TSample, int>(buffer);
             span.FastFill(0);

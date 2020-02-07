@@ -69,7 +69,7 @@ namespace MonoAudio.Data
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public int Read(Span<TSample> buffer)
+        public ReadResult Read(Span<TSample> buffer)
         {
             bufferSize = Math.Max(buffer.Length, bufferSize);
             int written = 0;
@@ -141,7 +141,9 @@ namespace MonoAudio.Data
                 }
                 else
                 {
-                    int readLength = ReadFromSource(internalBuffer.ActualBuffer.Span);
+                    ReadResult rr = ReadFromSource(internalBuffer.ActualBuffer.Span);
+                    if (rr.HasNoData) continue;
+                    int readLength = rr.Length;
                     if (readLength < 0) //End of stream
                     {
                         internalBuffer.Filled = Memory<TSample>.Empty;
@@ -165,7 +167,7 @@ namespace MonoAudio.Data
             }
         }
 
-        private int ReadFromSource(Span<TSample> buffer) => dataReader.Read(buffer);
+        private ReadResult ReadFromSource(Span<TSample> buffer) => dataReader.Read(buffer);
 
         #region IDisposable Support
 

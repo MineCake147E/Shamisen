@@ -106,7 +106,7 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public int Read(Span<float> buffer)
+        public ReadResult Read(Span<float> buffer)
         {
             buffer = CheckBuffer(buffer);
             FetchAddInternal();
@@ -116,7 +116,9 @@ namespace MonoAudio.Filters
             foreach (var item in Entries.Values)
             {
                 readBuffer.FastFill(0);
-                var rc = item.Source.Read(readBuffer);
+                var rr = item.Source.Read(readBuffer);
+                if (rr.HasNoData) continue;
+                var rc = rr.Length;
                 if (rc < readBuffer.Length)
                 {
                     var rc2 = item.Source.Read(readBuffer.Slice(rc));

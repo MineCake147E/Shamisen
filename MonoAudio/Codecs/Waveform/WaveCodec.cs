@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MonoAudio.Codecs.Waveform.Chunks;
+
+//using MonoAudio.Codecs.Waveform.Chunks;
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -16,10 +17,11 @@ namespace MonoAudio.Codecs.Waveform
     public sealed class WaveCodec : IDecoder
     {
         private const uint WIdWAVE = 0x5741_5645;
-
+        /*
         private async ValueTask<(bool, RiffChunk?)> CheckHeadersAsync(IDataSource dataReader)
         {
         }
+        */
 
         /// <summary>
         /// Determines whether the data from <paramref name="dataSource" /> can be decoded by this decoder asynchronously.<br/>
@@ -29,7 +31,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <returns>
         /// The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataSource" /> can be supported by this decoder, otherwise, <c>false</c>.
         /// </returns>
-        public async ValueTask<bool> DetermineDecodabilityAsync(IDataSource dataSource) => (await CheckHeadersAsync(dataSource)).Item1;
+        public async ValueTask<bool> DetermineDecodabilityAsync(IDataSource dataSource) => throw new NotImplementedException();
 
         /// <summary>
         /// Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource" />.
@@ -41,7 +43,8 @@ namespace MonoAudio.Codecs.Waveform
         /// </returns>
         public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource dataSource)
         {
-            var v = await CheckHeadersAsync(dataSource);
+            throw new NotImplementedException();
+            /*var v = await CheckHeadersAsync(dataSource);
             if (v.Item1)
             {
                 try
@@ -57,8 +60,7 @@ namespace MonoAudio.Codecs.Waveform
             {
                 return (false, null);
             }
-            //TODO: Implementation
-            throw new NotImplementedException();
+            //TODO: Implementation*/
         }
     }
 }

@@ -19,7 +19,7 @@ namespace MonoAudio.Data
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        int Read(Span<TSample> buffer);
+        ReadResult Read(Span<TSample> buffer);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace MonoAudio.Data
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public int Read(Span<TSample> buffer) => func(buffer);
+        public ReadResult Read(Span<TSample> buffer) => func(buffer);
 
 #pragma warning disable CS1998 // 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
 
@@ -127,7 +127,7 @@ namespace MonoAudio.Data
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public int Read(Span<TSample> buffer) => action(buffer, parameter);
+        public ReadResult Read(Span<TSample> buffer) => action(buffer, parameter);
 
 #pragma warning disable CS1998 // 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
 

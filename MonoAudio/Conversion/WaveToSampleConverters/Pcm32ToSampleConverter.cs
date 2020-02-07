@@ -13,10 +13,10 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
     /// <seealso cref="MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase" />
     public sealed class Pcm32ToSampleConverter : WaveToSampleConverterBase
     {
-        private const float divisor = 2147483648.0f;
-        private const int bytesPerSample = sizeof(int);
-        private const int bufferMax = 1024;
-        private int ActualBufferMax => bufferMax - (bufferMax % Source.Format.Channels);
+        private const float Divisor = 2147483648.0f;
+        private const int ActualBytesPerSample = sizeof(int);
+        private const int BufferMax = 1024;
+        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         /// <summary>
         /// Gets the endianness of <see cref="WaveToSampleConverterBase.Source"/>.
@@ -42,7 +42,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// <value>
         /// The bytes consumed per sample.
         /// </value>
-        protected override int BytesPerSample => bytesPerSample;
+        protected override int BytesPerSample => ActualBytesPerSample;
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -51,14 +51,16 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override int Read(Span<float> buffer)
+        public override ReadResult Read(Span<float> buffer)
         {
             Span<int> span = stackalloc int[buffer.Length > ActualBufferMax ? ActualBufferMax : buffer.Length];
             var cursor = buffer;
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                int u = Source.Read(MemoryMarshal.AsBytes(span)) / bytesPerSample;
+                var rr = Source.Read(MemoryMarshal.AsBytes(span));
+                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                int u = rr.Length / ActualBytesPerSample;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -68,14 +70,14 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)
                     {
-                        dest[i] = BinaryPrimitives.ReverseEndianness(wrote[i]) / divisor;
+                        dest[i] = BinaryPrimitives.ReverseEndianness(wrote[i]) / Divisor;
                     }
                 }
                 else
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)
                     {
-                        dest[i] = wrote[i] / divisor;
+                        dest[i] = wrote[i] / Divisor;
                     }
                 }
                 cursor = cursor.Slice(u);

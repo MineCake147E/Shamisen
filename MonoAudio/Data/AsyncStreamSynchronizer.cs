@@ -26,7 +26,7 @@ namespace MonoAudio.Data
             /// <exception cref="ArgumentNullException">dataReader</exception>
             public AsyncStreamSynchronizer(DataReader<TSample> dataReader) => this.dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
 
-            public int Read(Span<TSample> buffer)
+            public ReadResult Read(Span<TSample> buffer)
             {
                 if (internalBuffer == null || buffer.Length > internalBuffer.Length)
                 {

@@ -35,9 +35,10 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override int Read(Span<byte> buffer)
+        public override ReadResult Read(Span<byte> buffer)
         {
-            return sizeof(float) * Source.Read(MemoryMarshal.Cast<byte, float>(buffer));
+            var rr = Source.Read(MemoryMarshal.Cast<byte, float>(buffer));
+            return rr.HasData ? sizeof(float) * rr.Length : rr;
         }
 
         /// <summary>

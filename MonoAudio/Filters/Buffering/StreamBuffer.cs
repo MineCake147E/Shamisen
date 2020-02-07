@@ -80,7 +80,7 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public int Read(Span<TSample> buffer)
+        public ReadResult Read(Span<TSample> buffer)
         {
             buffer = buffer.SliceAlign(Format.Channels);
             return dataBuffer.Read(buffer);

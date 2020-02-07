@@ -54,7 +54,7 @@ namespace MonoAudio.Synthesis
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public int Read(Span<byte> buffer)
+        public ReadResult Read(Span<byte> buffer)
         {
             buffer.FastFill();
             return buffer.Length;

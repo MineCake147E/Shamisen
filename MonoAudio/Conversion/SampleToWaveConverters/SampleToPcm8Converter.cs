@@ -14,8 +14,8 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         private Memory<float> dsmAccumulator;
         private int dsmChannelPointer = 0;
         private Memory<float> readBuffer;
-        private const int bufferMax = 1024; //The bufferMax is fixed to 1024 regardless of the destination type because the buffer is float.
-        private int ActualBufferMax => bufferMax - (bufferMax % Source.Format.Channels);
+        private const int BufferMax = 1024; //The bufferMax is fixed to 1024 regardless of the destination type because the buffer is float.
+        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SampleToPCM8Converter"/> class.
@@ -57,13 +57,15 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override int Read(Span<byte> buffer)
+        public override ReadResult Read(Span<byte> buffer)
         {
             var cursor = buffer;
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= readBuffer.Length ? readBuffer : readBuffer.Slice(0, cursor.Length);
-                int u = Source.Read(reader.Span);
+                var rr = Source.Read(reader.Span);
+                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                int u = rr.Length;
                 var wrote = reader.Span.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)

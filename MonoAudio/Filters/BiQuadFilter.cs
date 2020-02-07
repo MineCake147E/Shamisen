@@ -80,9 +80,11 @@ namespace MonoAudio.Filters
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public int Read(Span<float> buffer)
+        public ReadResult Read(Span<float> buffer)
         {
-            var len = Source.Read(buffer);
+            ReadResult rr = Source.Read(buffer);
+            if (rr.HasNoData) return rr;
+            var len = rr.Length;
             buffer = buffer.Slice(0, len);
             unsafe
             {

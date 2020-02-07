@@ -13,6 +13,7 @@ namespace MonoAudio.Codecs.Waveform
     {
         #region Fmt
 
+        /*
         /// <summary>
         /// Reads and decodes the fmt chunk of WAVE file.
         /// </summary>
@@ -56,6 +57,7 @@ namespace MonoAudio.Codecs.Waveform
                     throw new NotSupportedException("The given data is invalid WAVE!");
             }
         }
+        */
 
         #endregion Fmt
     }

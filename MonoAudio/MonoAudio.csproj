@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Compile Remove="Codecs\HeaderPreservingDataSource.cs" />
+    <Compile Remove="Codecs\Waveform\Chunks\RiffChunk.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,6 +83,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Codecs\Waveform\Chunks\" />
     <Folder Include="Utils\Samples\" />
   </ItemGroup>
 </Project>

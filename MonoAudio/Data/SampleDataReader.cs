@@ -29,7 +29,7 @@ namespace MonoAudio.Data
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public int Read(Span<TSample> buffer) => source.Read(buffer);
+        public ReadResult Read(Span<TSample> buffer) => source.Read(buffer);
 
         #region IDisposable Support
 

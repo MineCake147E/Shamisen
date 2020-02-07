@@ -228,7 +228,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        public abstract int Read(Span<float> buffer);
+        public abstract ReadResult Read(Span<float> buffer);
 
         #region IDisposable Support
 

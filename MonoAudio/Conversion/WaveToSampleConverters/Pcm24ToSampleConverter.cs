@@ -50,14 +50,16 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override int Read(Span<float> buffer)
+        public override ReadResult Read(Span<float> buffer)
         {
             Span<Int24> span = stackalloc Int24[buffer.Length > ActualBufferMax ? ActualBufferMax : buffer.Length];
             var cursor = buffer;
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                int u = Source.Read(MemoryMarshal.AsBytes(span)) / BytesPerSample;
+                var rr = Source.Read(MemoryMarshal.AsBytes(span));
+                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                int u = rr.Length / BytesPerSample;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)

@@ -67,6 +67,18 @@ namespace MonoAudio
         }
 
         /// <summary>
+        /// Gets a value indicating whether the buffer has no data.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the buffer has no data; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasNoData
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => value <= 0;
+        }
+
+        /// <summary>
         /// Gets the actual length read.
         /// </summary>
         /// <value>

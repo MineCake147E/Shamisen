@@ -57,7 +57,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public abstract int Read(Span<byte> buffer);
+        public abstract ReadResult Read(Span<byte> buffer);
 
         #region IDisposable Support
 

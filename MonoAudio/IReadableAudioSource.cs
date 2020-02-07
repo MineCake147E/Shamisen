@@ -20,7 +20,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        int Read(Span<TSample> buffer);
+        ReadResult Read(Span<TSample> buffer);
     }
 
     /// <summary>

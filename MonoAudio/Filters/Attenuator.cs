@@ -70,9 +70,11 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        public int Read(Span<float> buffer)
+        public ReadResult Read(Span<float> buffer)
         {
-            var r = Source.Read(buffer);
+            ReadResult rr = Source.Read(buffer);
+            if (rr.HasNoData) return rr;
+            var r = rr.Length;
             buffer.Slice(0, r).FastScalarMultiply(Scale);
             return r;
         }

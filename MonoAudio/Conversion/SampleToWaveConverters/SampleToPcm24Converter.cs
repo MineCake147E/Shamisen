@@ -13,10 +13,10 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
     /// <seealso cref="SampleToWaveConverterBase" />
     public sealed class SampleToPcm24Converter : SampleToWaveConverterBase
     {
-        private const float multiplier = 8388608.0f;
-        private const int bytesPerSample = 3;   //sizeof(Int24)
-        private const int bufferMax = 1024;
-        private int ActualBufferMax => bufferMax - (bufferMax % Source.Format.Channels);
+        private const float Multiplier = 8388608.0f;
+        private const int ActualBytesPerSample = 3;   //sizeof(Int24)
+        private const int BufferMax = 1024;
+        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         private Memory<Int24> dsmLastOutput;
         private Memory<float> dsmAccumulator;
@@ -66,7 +66,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <value>
         /// The bytes consumed per sample.
         /// </value>
-        protected override int BytesPerSample => bytesPerSample;
+        protected override int BytesPerSample => ActualBytesPerSample;
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -75,13 +75,15 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override int Read(Span<byte> buffer)
+        public override ReadResult Read(Span<byte> buffer)
         {
             var cursor = MemoryMarshal.Cast<byte, Int24>(buffer);
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= readBuffer.Length ? readBuffer : readBuffer.Slice(0, cursor.Length);
-                int u = Source.Read(reader.Span);
+                var rr = Source.Read(reader.Span);
+                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                int u = rr.Length;
                 var wrote = reader.Span.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -94,7 +96,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
                     dsmChannelPointer %= dsmAcc.Length;
                     for (int i = 0; i < dest.Length; i++)
                     {
-                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / multiplier);
+                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
                         dsmAcc[dsmChannelPointer] += diff;
                         var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
                         dest[i] = IsEndiannessConversionRequired ? Int24.ReverseEndianness(v) : v;
@@ -117,7 +119,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
 
         private static Int24 Convert(float srcval)
         {
-            return (Int24)Math.Min(Int24.MaxValue, Math.Max(srcval * multiplier, Int24.MinValue));
+            return (Int24)Math.Min(Int24.MaxValue, Math.Max(srcval * Multiplier, Int24.MinValue));
         }
 
         /// <summary>

@@ -11,8 +11,8 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
     /// <seealso cref="MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase" />
     public sealed class Pcm8ToSampleConverter : WaveToSampleConverterBase
     {
-        private const int bufferMax = 4096;
-        private int ActualBufferMax => bufferMax - (bufferMax % Source.Format.Channels);
+        private const int BufferMax = 4096;
+        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Pcm8ToSampleConverter"/> class.
@@ -39,14 +39,16 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         /// The length of the data written.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int Read(Span<float> buffer)
+        public override ReadResult Read(Span<float> buffer)
         {
             Span<byte> span = stackalloc byte[buffer.Length > ActualBufferMax ? ActualBufferMax : buffer.Length];
             var cursor = buffer;
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                int u = Source.Read(reader);
+                var rr = Source.Read(reader);
+                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                int u = rr.Length;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
