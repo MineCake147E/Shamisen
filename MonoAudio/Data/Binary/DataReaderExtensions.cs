@@ -21,7 +21,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns>The value read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ReadByte(this ISynchronizedDataReader<byte> dataReader)
+        public static byte ReadByte(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[1];
             _ = dataReader.Read(span);
@@ -34,7 +34,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns>The value read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static sbyte ReadSignedByte(this ISynchronizedDataReader<byte> dataReader)
+        public static sbyte ReadSignedByte(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[1];
             _ = dataReader.Read(span);
@@ -51,7 +51,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ushort ReadUInt16LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static ushort ReadUInt16LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[2];
             _ = dataReader.Read(span);
@@ -64,7 +64,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ushort ReadUInt16BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static ushort ReadUInt16BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[2];
             _ = dataReader.Read(span);
@@ -77,7 +77,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static short ReadInt16LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static short ReadInt16LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[2];
             _ = dataReader.Read(span);
@@ -90,7 +90,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static short ReadInt16BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static short ReadInt16BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[2];
             _ = dataReader.Read(span);
@@ -107,7 +107,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint ReadUInt32LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static uint ReadUInt32LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[4];
             _ = dataReader.Read(span);
@@ -120,7 +120,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint ReadUInt32BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static uint ReadUInt32BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[4];
             _ = dataReader.Read(span);
@@ -133,7 +133,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ReadInt32LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static int ReadInt32LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[4];
             _ = dataReader.Read(span);
@@ -146,7 +146,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ReadInt32BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static int ReadInt32BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[4];
             _ = dataReader.Read(span);
@@ -163,7 +163,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong ReadUInt64LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static ulong ReadUInt64LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[8];
             _ = dataReader.Read(span);
@@ -176,7 +176,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong ReadUInt64BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static ulong ReadUInt64BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[8];
             _ = dataReader.Read(span);
@@ -189,7 +189,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long ReadInt64LittleEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static long ReadInt64LittleEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[8];
             _ = dataReader.Read(span);
@@ -202,7 +202,7 @@ namespace MonoAudio.Data.Binary
         /// <param name="dataReader">The data reader.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long ReadInt64BigEndian(this ISynchronizedDataReader<byte> dataReader)
+        public static long ReadInt64BigEndian(this IDataSource dataReader)
         {
             Span<byte> span = stackalloc byte[8];
             _ = dataReader.Read(span);
@@ -219,7 +219,7 @@ namespace MonoAudio.Data.Binary
         /// <typeparam name="TStruct">The type to read.</typeparam>
         /// <param name="dataReader">The data reader.</param>
         /// <returns>The deserialized <typeparamref name="TStruct"/> value.</returns>
-        public static TStruct ReadStruct<TStruct>(this ISynchronizedDataReader<byte> dataReader) where TStruct : unmanaged
+        public static TStruct ReadStruct<TStruct>(this IDataSource dataReader) where TStruct : unmanaged
         {
             Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<TStruct>()];
             if (dataReader.Read(buffer) != buffer.Length)

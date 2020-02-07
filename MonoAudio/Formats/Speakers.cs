@@ -6,7 +6,7 @@ namespace MonoAudio
     /// Represents a mask of channels' combination.
     /// </summary>
     [Flags]
-    public enum Speakers : ulong
+    public enum Speakers : uint
     {
         #region Masks
 
@@ -18,107 +18,107 @@ namespace MonoAudio
         /// <summary>
         /// The speaker placed in left front of the listener.
         /// </summary>
-        FrontLeft = 0x1,
+        FrontLeft = 0b1,
 
         /// <summary>
         /// The speaker placed in right front of the listener.
         /// </summary>
-        FrontRight = 0x2,
+        FrontRight = 0b10,
 
         /// <summary>
         /// The speaker placed in front of the listener.
         /// </summary>
-        FrontCenter = 0x4,
+        FrontCenter = 0b100,
 
         /// <summary>
         /// The subwoofer speaker placed in front of the listener.
         /// </summary>
-        FrontLowFrequency = 0x8,
+        FrontLowFrequency = 0b1000,
 
         /// <summary>
         /// The speaker placed in left rear of the listener.
         /// </summary>
-        RearLeft = 0x10,
+        RearLeft = 0b1_0000,
 
         /// <summary>
         /// The speaker placed in right rear of the listener.
         /// </summary>
-        RearRight = 0x20,
+        RearRight = 0b10_0000,
 
         /// <summary>
         /// The speaker placed between <see cref="FrontCenter"/> and <see cref="FrontLeft"/>, of the listener.
         /// </summary>
-        FrontLeftOfCenter = 0x40,
+        FrontLeftOfCenter = 0b100_0000,
 
         /// <summary>
         /// The speaker placed between <see cref="FrontCenter"/> and <see cref="FrontRight"/>, of the listener.
         /// </summary>
-        FrontRightOfCenter = 0x80,
+        FrontRightOfCenter = 0b1000_0000,
 
         /// <summary>
         /// The speaker placed behind the listener.
         /// </summary>
-        RearCenter = 0x100,
+        RearCenter = 0b1_0000_0000,
 
         /// <summary>
         /// The speaker placed to the left of the listener.
         /// </summary>
-        SideLeft = 0x200,
+        SideLeft = 0b10_0000_0000,
 
         /// <summary>
         /// The speaker placed to the right of the listener.
         /// </summary>
-        SideRight = 0x400,
+        SideRight = 0b100_0000_0000,
 
         /// <summary>
         /// The subwoofer speaker placed behind the listener.
         /// </summary>
-        RearLowFrequency = 0x800,
+        RearLowFrequency = 0b1000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper left front of the listener.
         /// </summary>
-        TopFrontLeft = 0x1000,
+        TopFrontLeft = 0b1_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper front of the listener.
         /// </summary>
-        TopFrontCenter = 0x2000,
+        TopFrontCenter = 0b10_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper right front of the listener.
         /// </summary>
-        TopFrontRight = 0x4000,
+        TopFrontRight = 0b100_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper left rear of the listener.
         /// </summary>
-        TopRearLeft = 0x8000,
+        TopRearLeft = 0b1000_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper rear of the listener.
         /// </summary>
-        TopRearCenter = 0x10000,
+        TopRearCenter = 0b1_0000_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper right rear of the listener.
         /// </summary>
-        TopRearRight = 0x20000,
+        TopRearRight = 0b10_0000_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper left of the listener.
         /// </summary>
-        TopSideLeft = 0x40000,
+        TopSideLeft = 0b100_0000_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed above the listener.
         /// </summary>
-        TopSideCenter = 0x80000,
+        TopSideCenter = 0b1000_0000_0000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper right of the listener.
         /// </summary>
-        TopSideRight = 0x100000,
+        TopSideRight = 0b1_0000_0000_0000_0000_0000,
 
         #endregion Masks
 

@@ -3,7 +3,7 @@
 namespace MonoAudio.Codecs.Waveform
 {
     /// <summary>
-    /// Represents a sub format for <see cref="ExtensibleWaveFormat.subFormat"/>.
+    /// Represents a sub format for <see cref="ExtensibleWaveFormat.SubFormat"/>.
     /// </summary>
     public static class WaveformSubFormats
     {

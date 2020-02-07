@@ -30,6 +30,25 @@ namespace MonoAudio.Codecs.Waveform
         [FieldOffset(14)]
         private readonly ushort bitDepth;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StandardWaveFormat"/> struct.
+        /// </summary>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="channels">The channels.</param>
+        /// <param name="sampleRate">The sample rate.</param>
+        /// <param name="bytesPerSecond">The bytes per second.</param>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <param name="bitDepth">The bit depth.</param>
+        public StandardWaveFormat(AudioEncoding encoding, ushort channels, uint sampleRate, uint bytesPerSecond, ushort blockSize, ushort bitDepth)
+        {
+            this.encoding = encoding;
+            this.channels = channels;
+            this.sampleRate = sampleRate;
+            this.bytesPerSecond = bytesPerSecond;
+            this.blockSize = blockSize;
+            this.bitDepth = bitDepth;
+        }
+
         internal uint BytesPerSecond => bytesPerSecond;
 
         /// <summary>

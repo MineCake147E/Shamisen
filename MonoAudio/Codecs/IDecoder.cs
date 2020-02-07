@@ -13,30 +13,24 @@ namespace MonoAudio.Codecs
     public interface IDecoder
     {
         /// <summary>
-        /// Determines whether the data from <paramref name="dataReader"/> can be decoded by this decoder asynchronously.
+        /// Determines whether the data from <paramref name="dataSource"/> can be decoded by this decoder asynchronously.<br/>
+        /// The actual decoding stream must be opened after seeking the source <see cref="Stream"/> to head.
         /// </summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
+        /// <param name="dataSource">The <see cref="IDataSource"/> to read the data from.</param>
         /// <returns>
         /// The whole verification task which returns the value below:<br/>
-        /// <c>true</c> if the data from <paramref name="dataReader"/> can be supported by this decoder, otherwise, <c>false</c>.
+        /// <c>true</c> if the data from <paramref name="dataSource"/> can be supported by this decoder, otherwise, <c>false</c>.
         /// </returns>
-        Task<bool> DetermineDecodabilityAsync(DataReader<byte> dataReader);
+        ValueTask<bool> DetermineDecodabilityAsync(IDataSource dataSource);
 
         /// <summary>
-        /// Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader"/>.
+        /// Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource"/>.
         /// </summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
-        /// <returns>The decoding <see cref="IWaveSource"/>.</returns>
-        Task<IWaveSource> CreateDecoderAsync(DataReader<byte> dataReader);
-
-        /// <summary>
-        /// Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader"/>.
-        /// </summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
+        /// <param name="dataSource">The <see cref="IDataSource"/> to read the data from.</param>
         /// <returns>
         /// success: The value which indicates whether the data is decodable, and the decoder is created.
         /// decoder: The decoding <see cref="IWaveSource"/>.
         /// </returns>
-        Task<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(DataReader<byte> dataReader);
+        ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource dataSource);
     }
 }

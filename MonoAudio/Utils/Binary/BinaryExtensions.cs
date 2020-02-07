@@ -13,6 +13,14 @@ namespace MonoAudio
     public static class BinaryExtensions
     {
         /// <summary>
+        /// Gets the system endianness.
+        /// </summary>
+        /// <value>
+        /// The system endianness.
+        /// </value>
+        public static Endianness SystemEndianness => BitConverter.IsLittleEndian ? Endianness.Little : Endianness.Big;
+
+        /// <summary>
         /// Reverses internal primitive values by performing an endianness swap of the specified <see cref="Guid"/> <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value to reverse.</param>

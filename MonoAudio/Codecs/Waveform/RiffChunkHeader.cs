@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using MonoAudio.Data;
+using MonoAudio.Data.Binary;
 
 namespace MonoAudio.Codecs.Waveform
 {
@@ -11,6 +13,7 @@ namespace MonoAudio.Codecs.Waveform
     /// Represents a header of RIFF chunks.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+    [Obsolete("", true)]
     public readonly struct RiffChunkHeader : IEndiannessReversible<RiffChunkHeader>
     {
         private readonly ChunkId chunkId;
@@ -52,6 +55,18 @@ namespace MonoAudio.Codecs.Waveform
         {
             var ckId = (ChunkId)BinaryPrimitives.ReverseEndianness((uint)chunkId);
             var ckLen = BinaryPrimitives.ReverseEndianness(length);
+            return new RiffChunkHeader(ckId, ckLen);
+        }
+
+        /// <summary>
+        /// Reads the chunk header from the specified <paramref name="dataSource"/>.
+        /// </summary>
+        /// <param name="dataSource">The data source.</param>
+        /// <returns>The deserialized chunk header.</returns>
+        public static RiffChunkHeader ReadChunkHeader(IDataSource dataSource)
+        {
+            var ckId = (ChunkId)dataSource.ReadUInt32LittleEndian();
+            var ckLen = dataSource.ReadUInt32LittleEndian();
             return new RiffChunkHeader(ckId, ckLen);
         }
     }

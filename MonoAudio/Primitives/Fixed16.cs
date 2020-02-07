@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MonoAudio.Primitives
+namespace MonoAudio
 {
     /// <summary>
     /// Represents a Fixed-Point Number in Signed Q0.15 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
@@ -91,7 +91,7 @@ namespace MonoAudio.Primitives
         /// <returns>
         /// The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new Fixed16((short)((left.Value * right.Value) >> 15));
+        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new Fixed16((short)(left.Value * right.Value >> 15));
 
         /// <summary>
         /// Divides two specified <see cref="Fixed16"/> values.

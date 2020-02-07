@@ -13,6 +13,7 @@ namespace MonoAudio.Data
     /// <see cref="ReadWithParameterAsyncFunc{TSample, TParam}"/>
     /// </summary>
     /// <typeparam name="TSample">The type of Sample.</typeparam>
+    [Obsolete("Moving to IDataSource")]
     public abstract class DataReader<TSample> : IDisposable
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {

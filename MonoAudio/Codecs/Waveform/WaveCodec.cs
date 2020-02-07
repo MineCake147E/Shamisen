@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MonoAudio.Codecs.Waveform.Chunks;
 using MonoAudio.Data;
+using MonoAudio.Data.Binary;
 
 namespace MonoAudio.Codecs.Waveform
 {
@@ -12,44 +15,38 @@ namespace MonoAudio.Codecs.Waveform
     /// </summary>
     public sealed class WaveCodec : IDecoder
     {
-        private const int ChunkIdRiff = 0x4646_4952;
+        private const uint WIdWAVE = 0x5741_5645;
 
-        /// <summary>Creates a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
-        /// <returns>The decoding <see cref="IWaveSource"/>.</returns>
-        public async Task<IWaveSource> CreateDecoderAsync(DataReader<byte> dataReader)
+        private async ValueTask<(bool, RiffChunk?)> CheckHeadersAsync(IDataSource dataReader)
         {
-            var (success, decoder) = await TryCreateDecoderAsync(dataReader);
-            return success ? decoder : throw new ArgumentException($"The {nameof(dataReader)}'s data is invalid!", nameof(dataReader));
         }
 
-        /// <summary>Determines whether the data from <paramref name="dataReader" /> can be decoded by this decoder asynchronously.</summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
-        /// <returns>The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataReader" /> can be supported by this decoder, otherwise, <c>false</c>.</returns>
-        public async Task<bool> DetermineDecodabilityAsync(DataReader<byte> dataReader) => await CheckHeadersAsync(dataReader);
+        /// <summary>
+        /// Determines whether the data from <paramref name="dataSource" /> can be decoded by this decoder asynchronously.<br/>
+        /// The actual decoding stream must be opened after seeking the source <see cref="Stream"/> to head.
+        /// </summary>
+        /// <param name="dataSource">The <see cref="IDataSource" /> to read the data from.</param>
+        /// <returns>
+        /// The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataSource" /> can be supported by this decoder, otherwise, <c>false</c>.
+        /// </returns>
+        public async ValueTask<bool> DetermineDecodabilityAsync(IDataSource dataSource) => (await CheckHeadersAsync(dataSource)).Item1;
 
-        private async Task<bool> CheckHeadersAsync(DataReader<byte> dataReader)
+        /// <summary>
+        /// Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource" />.
+        /// </summary>
+        /// <param name="dataSource">The <see cref="IDataSource" /> to read the data from.</param>
+        /// <returns>
+        /// success: The value which indicates whether the data is decodable, and the decoder is created.
+        /// decoder: The decoding <see cref="IWaveSource" />.
+        /// </returns>
+        public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource dataSource)
         {
-            uint ReadUInt32(ReadOnlyMemory<byte> region) => BinaryPrimitives.ReadUInt32LittleEndian(region.Span);
-            var space = new byte[4];
-            var memory = space.AsMemory();
-            var length = await dataReader.ReadAsync(memory);
-            if (length < 4) return false;
-            var riff = ReadUInt32(memory);
-            return riff == ChunkIdRiff;
-        }
-
-        /// <summary>Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataReader" />.</summary>
-        /// <param name="dataReader">The <see cref="DataReader{TSample}"/>(which the TSample is <see cref="byte"/>) to read the data from.</param>
-        /// <returns>success: The value which indicates whether the data is decodable, and the decoder is created.
-        /// decoder: The decoding <see cref="IWaveSource"/>.</returns>
-        public async Task<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(DataReader<byte> dataReader)
-        {
-            if (await CheckHeadersAsync(dataReader))
+            var v = await CheckHeadersAsync(dataSource);
+            if (v.Item1)
             {
                 try
                 {
-                    var decoder = new WaveDecoder(dataReader.Synchronized());
+                    //var decoder = new WaveDecoder(dataSource, v.Item2.Value);
                 }
                 catch (Exception)
                 {

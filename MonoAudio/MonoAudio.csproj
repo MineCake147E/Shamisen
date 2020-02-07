@@ -22,6 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Codecs\HeaderPreservingDataSource.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DivideSharp" Version="0.0.1" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.IO" Version="4.3.0" />
@@ -29,6 +33,7 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.10.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Conversion\Resampling\Sample\SplineResampler.Resample.cs">
