@@ -10,13 +10,20 @@ A Cross-Platform Audio Library for .NET Standard.
 - Audio outputs
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
-- Fast and smooth Upsampling using Catmull-Rom Spline
-  - About 90x faster than real time in 44.1kHz→192kHz **10ch** on .NET Core, Intel Core i7 4790.
-  - About 150x faster than real time in 44.1kHz→192kHz **Stereo** on .NET Core, Intel Core i7 4790.
-  - Uses `MemoryMarshal.Cast<float,Vector2>(Span<float>)` so it doesn't copy while casting.
+- Fast and smooth Up-sampling using Catmull-Rom Spline
+  - Benchmarks on .Net Core, Intel Core i7 4790
+    Note that the results are not inversely proportional due to differences in caching strategies.
+    - About 170x faster than playback in 44.1kHz→192kHz **10ch**(e.g. 9.1ch).
+    - About 520x faster than playback in 44.1kHz→192kHz **Stereo**.
+    - About 830x faster than playback in 44.1kHz→192kHz **4ch**(e.g. 3.1ch).
+    - About 1200x faster than playback in 44.1kHz→192kHz **Monaural**.
+    - About 150x faster than playback in 48kHz→192kHz **10ch**(e.g. 9.1ch).
+    - About 580x faster than playback in 48kHz→192kHz **Stereo**.
+    - About 1200x faster than playback in 48kHz→192kHz **4ch**(e.g. 3.1ch).
+    - About 1300x faster than playback in 48kHz→192kHz **Monaural**.
+  - Uses `MemoryMarshal.Cast` so it doesn't copy while casting.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
 
-  
 ### Currently implemented features(not tested yet)
 - Optimized BiQuad Filters that supports some filtering
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.

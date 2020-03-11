@@ -1860,11 +1860,6 @@
             
              </summary>
              <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
-             <summary>
-             Performs up-sampling using Catmull-Rom Spline interpolation.
-            
-             </summary>
-             <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
         <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficents">
             <summary>
@@ -6047,22 +6042,67 @@
         </member>
         <member name="M:MonoAudio.Synthesis.SinusoidSource.#ctor(MonoAudio.SampleFormat)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SquareWaveSource"/> class.
+            Initializes a new instance of the <see cref="T:MonoAudio.Synthesis.SinusoidSource"/> class.
             </summary>
             <param name="format">The output format.</param>
         </member>
-        <member name="M:MonoAudio.Synthesis.SinusoidSource.DisposeInternal(System.Boolean)">
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.CanSeek">
             <summary>
-            Releases unmanaged and - optionally - managed resources.
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
             </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Frequency">
+            <summary>
+            Gets or sets the frequency.
+            </summary>
+            <value>
+            The frequency.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Synthesis.SinusoidSource.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
         </member>
         <member name="M:MonoAudio.Synthesis.SinusoidSource.GenerateMonauralSample(System.Double)">
             <summary>
             Generates the monaural sample.
             </summary>
-            <param name="theta">The theta(from 0 to 2*pi).</param>
+            <param name="theta">The theta(from -pi to pi).</param>
             <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Synthesis.SinusoidSource.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
         </member>
         <member name="T:MonoAudio.Synthesis.SquareWaveSource">
             <summary>
@@ -6703,14 +6743,14 @@
             The fifth value
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector5.Front">
+        <member name="F:System.Numerics.Vector5.front">
             <summary>
-            The front 2 values
+            The front 4 values
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector5.Back">
+        <member name="F:System.Numerics.Vector5.back">
             <summary>
-            The back 3 values
+            The back value
             </summary>
         </member>
         <member name="M:System.Numerics.Vector5.#ctor(System.Single)">
@@ -6729,12 +6769,12 @@
             <param name="v4">The v4.</param>
             <param name="v5">The v5.</param>
         </member>
-        <member name="M:System.Numerics.Vector5.#ctor(System.Numerics.Vector2,System.Numerics.Vector3)">
+        <member name="M:System.Numerics.Vector5.#ctor(System.Numerics.Vector4,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector5"/> struct.
             </summary>
-            <param name="two">The front two values.</param>
-            <param name="three">The back three values.</param>
+            <param name="four">The front four values.</param>
+            <param name="last">The lase value.</param>
         </member>
         <member name="M:System.Numerics.Vector5.op_UnaryNegation(System.Numerics.Vector5)">
             <summary>
@@ -6896,12 +6936,12 @@
             The sixth value
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector6.Front">
+        <member name="F:System.Numerics.Vector6.front">
             <summary>
             The front 3 values
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector6.Back">
+        <member name="F:System.Numerics.Vector6.back">
             <summary>
             The back 3 values
             </summary>
@@ -6923,12 +6963,12 @@
             <param name="v5">The v5.</param>
             <param name="v6">The v6.</param>
         </member>
-        <member name="M:System.Numerics.Vector6.#ctor(System.Numerics.Vector3,System.Numerics.Vector3)">
+        <member name="M:System.Numerics.Vector6.#ctor(System.Numerics.Vector4,System.Numerics.Vector2)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
             </summary>
-            <param name="front">The front three values.</param>
-            <param name="back">The back three values.</param>
+            <param name="front">The front four values.</param>
+            <param name="back">The back two values.</param>
         </member>
         <member name="M:System.Numerics.Vector6.op_UnaryNegation(System.Numerics.Vector6)">
             <summary>
@@ -7095,12 +7135,12 @@
             The seventh value
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector7.Front">
+        <member name="F:System.Numerics.Vector7.front">
             <summary>
             The front 3 values
             </summary>
         </member>
-        <member name="F:System.Numerics.Vector7.Back">
+        <member name="F:System.Numerics.Vector7.back">
             <summary>
             The back 4 values
             </summary>
@@ -7123,12 +7163,12 @@
             <param name="v6">The v6.</param>
             <param name="v7">The v7.</param>
         </member>
-        <member name="M:System.Numerics.Vector7.#ctor(System.Numerics.Vector3,System.Numerics.Vector4)">
+        <member name="M:System.Numerics.Vector7.#ctor(System.Numerics.Vector4,System.Numerics.Vector3)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
             </summary>
-            <param name="front">The front three values.</param>
-            <param name="back">The back four values.</param>
+            <param name="front">The front four values.</param>
+            <param name="back">The back three values.</param>
         </member>
         <member name="M:System.Numerics.Vector7.op_UnaryNegation(System.Numerics.Vector7)">
             <summary>

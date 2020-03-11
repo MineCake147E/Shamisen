@@ -29,6 +29,26 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// </summary>
         private Vector4[] preCalculatedCatmullRomCoefficents;
 
+        private int conversionGradient = 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int AdvanceConversionGradient(ref int conversionGradient)
+        {
+            unchecked
+            {
+                conversionGradient += RateDiv;
+                if (conversionGradient >= RateMul)
+                {
+                    conversionGradient = (int)RateMulDivisor.DivRem((uint)conversionGradient, out var posDiff);
+                    return (int)posDiff;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
         [Obsolete("", true)]
         private bool IsCatmullRomOptimized { get; }
 
@@ -59,14 +79,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
                     for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                     {
                         var x = i * RateMulInverse;
-                        var xP2 = x * x;
-                        var xP3 = xP2 * x;
-                        preCalculatedCatmullRomCoefficents[i] =
-                            new Vector4(
-                                (-xP3 + (2 * xP2) - x) * 0.5f,
-                                ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
-                                (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
-                                (xP3 - xP2) * 0.5f);
+                        preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
                     }
                 }
                 else if (RateMul < 1024)
@@ -78,14 +91,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
                         for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                         {
                             var x = i * RateMulInverse;
-                            var xP2 = x * x;
-                            var xP3 = xP2 * x;
-                            preCalculatedCatmullRomCoefficents[i] =
-                                new Vector4(
-                                    (-xP3 + (2 * xP2) - x) * 0.5f,
-                                    ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
-                                    (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
-                                    (xP3 - xP2) * 0.5f);
+                            preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
                         }
                     }
                     else
@@ -95,18 +101,23 @@ namespace MonoAudio.Conversion.Resampling.Sample
                         for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
                         {
                             var x = i * RateMulInverse;
-                            var xP2 = x * x;
-                            var xP3 = xP2 * x;
-                            preCalculatedCatmullRomCoefficents[i] =
-                                new Vector4(
-                                    (-xP3 + (2 * xP2) - x) * 0.5f,
-                                    ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
-                                    (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
-                                    (xP3 - xP2) * 0.5f);
+                            preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
                         }
                     }
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector4 CalculateCatmullRomCoeffs(float x)
+        {
+            var xP2 = x * x;
+            var xP3 = xP2 * x;
+            return new Vector4(
+                (-xP3 + (2 * xP2) - x) * 0.5f,
+                ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
+                (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
+                (xP3 - xP2) * 0.5f);
         }
 
         /// <summary>
@@ -176,6 +187,14 @@ namespace MonoAudio.Conversion.Resampling.Sample
             if (bufferWrapper.Buffer.Length > 3 * Channels) bufferWrapper.Buffer.Slice(0, Channels * 3).CopyTo(a);
             bufferWrapper.Resize(internalBufferLengthRequired);
             a.CopyTo(bufferWrapper.Buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint Abs(int value)
+        {
+            //TODO: get outside
+            int mask = value >> 31;
+            return (uint)((value + mask) ^ mask);
         }
 
         /// <summary>

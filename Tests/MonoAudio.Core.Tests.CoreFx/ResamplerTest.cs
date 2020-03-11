@@ -70,7 +70,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         [TestCase(96000, 192000)]
         public void UpSamplingTwoFrameDump(int sourceSampleRate, int destinationSampleRate)
         {
-            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = 6000 };
+            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = 5987 };
             var resampler = new SplineResampler(src, destinationSampleRate);
             var buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
@@ -98,14 +98,50 @@ namespace MonoAudio.Core.Tests.CoreFx
         [TestCase(8)]   //7.1ch Surround
         [TestCase(9)]   //7.2ch Surround
         [TestCase(10)]   //9.1ch Surround
-        public void UpSamplingLoadTest(int Channels)
+        public void UpSampleLoadCachedDirect(int channels) => UpSamplingLoadTest(channels, 48000);
+
+        [TestCase(1)]   //Monaural
+        [TestCase(2)]   //Stereo
+        [TestCase(3)]   //2.1ch / 3ch Surround
+        [TestCase(4)]   //3.1ch / 4ch Surround
+        [TestCase(5)]   //4.1ch / 5ch Surround
+        [TestCase(6)]   //5.1ch Surround
+        [TestCase(7)]   //5.2ch Surround
+        [TestCase(8)]   //7.1ch Surround
+        [TestCase(9)]   //7.2ch Surround
+        [TestCase(10)]   //9.1ch Surround
+        public void UpSampleLoadCachedWrappedEven(int channels) => UpSamplingLoadTest(channels, 44100);
+
+        [TestCase(1)]   //Monaural
+        [TestCase(2)]   //Stereo
+        [TestCase(3)]   //2.1ch / 3ch Surround
+        [TestCase(4)]   //3.1ch / 4ch Surround
+        [TestCase(5)]   //4.1ch / 5ch Surround
+        [TestCase(6)]   //5.1ch Surround
+        [TestCase(7)]   //5.2ch Surround
+        [TestCase(8)]   //7.1ch Surround
+        [TestCase(9)]   //7.2ch Surround
+        [TestCase(10)]   //9.1ch Surround
+        public void UpSampleLoadCachedWrappedOdd(int channels) => UpSamplingLoadTest(channels, 44100, 192300);
+
+        [TestCase(1)]   //Monaural
+        [TestCase(2)]   //Stereo
+        [TestCase(3)]   //2.1ch / 3ch Surround
+        [TestCase(4)]   //3.1ch / 4ch Surround
+        [TestCase(5)]   //4.1ch / 5ch Surround
+        [TestCase(6)]   //5.1ch Surround
+        [TestCase(7)]   //5.2ch Surround
+        [TestCase(8)]   //7.1ch Surround
+        [TestCase(9)]   //7.2ch Surround
+        [TestCase(10)]   //9.1ch Surround
+        public void UpSampleLoadDirect(int channels) => UpSamplingLoadTest(channels, 44089);
+
+        public void UpSamplingLoadTest(int channels, int sourceSampleRate, int destinationSampleRate = 192000)
         {
-            const int SourceSampleRate = 44100;
-            const int DestinationSampleRate = 192000;
-            const double DestinationSampleRateD = DestinationSampleRate;
-            double channelsInverse = 1.0 / Channels;
-            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 6000 };
-            var resampler = new SplineResampler(src, DestinationSampleRate);
+            double DestinationSampleRateD = destinationSampleRate;
+            double channelsInverse = 1.0 / channels;
+            var src = new DummySource<float, SampleFormat>(new SampleFormat(channels, sourceSampleRate));
+            var resampler = new SplineResampler(src, destinationSampleRate);
             var buffer = new float[2048];
             //Warm up
             var sw = new Stopwatch();
@@ -128,7 +164,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             sw.Stop();
             Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
             Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
-            Assert.Greater(samples, DestinationSampleRate);
+            Assert.Greater(samples, (ulong)destinationSampleRate);
             resampler.Dispose();
         }
     }
