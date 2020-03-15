@@ -618,7 +618,8 @@
             Replaces the source to the <paramref name="newSource"/>.
             </summary>
             <param name="newSource">The new source.</param>
-            <returns>The old <see cref="P:MonoAudio.AudioSocket`2.Source"/>.</returns>
+            <returns>The <see cref="P:MonoAudio.AudioSocket`2.Source"/> that was previously set.</returns>
+            <exception cref="T:System.ArgumentException">The Format is not same as newSource's Format!</exception>
         </member>
         <member name="M:MonoAudio.AudioSocket`2.DeplugSource">
             <summary>

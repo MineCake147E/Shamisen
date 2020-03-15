@@ -75,12 +75,20 @@ namespace MonoAudio
         /// Replaces the source to the <paramref name="newSource"/>.
         /// </summary>
         /// <param name="newSource">The new source.</param>
-        /// <returns>The old <see cref="Source"/>.</returns>
+        /// <returns>The <see cref="Source"/> that was previously set.</returns>
+        /// <exception cref="ArgumentException">The Format is not same as newSource's Format!</exception>
         public IReadableAudioSource<TSample, TFormat> ReplaceSource(IReadableAudioSource<TSample, TFormat> newSource)
         {
-            var result = Source;
-            Source = newSource;
-            return result;
+            if (newSource.Format.Equals(Format) && Format.Equals(newSource.Format))
+            {
+                var result = Source;
+                Source = newSource;
+                return result;
+            }
+            else
+            {
+                throw new ArgumentException($"The Format is not same as newSource's Format!");
+            }
         }
 
         /// <summary>

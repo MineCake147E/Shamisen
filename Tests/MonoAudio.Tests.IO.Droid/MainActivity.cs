@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using Declaration
+
+using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO;
@@ -30,6 +32,8 @@ using MonoAudio.IO.Android;
 using MonoAudio.Synthesis;
 using Debug = System.Diagnostics.Debug;
 using Uri = Android.Net.Uri;
+
+#endregion Using Declaration
 
 namespace MonoAudio.Tests.IO.Droid
 {
