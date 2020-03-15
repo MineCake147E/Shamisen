@@ -53,6 +53,14 @@ namespace MonoAudio.Conversion.Resampling.Sample
         protected int Channels => Format.Channels;
 
         /// <summary>
+        /// Gets the divisor for dividing a number by <see cref="Channels"/>.
+        /// </summary>
+        /// <value>
+        /// The divisor object.
+        /// </value>
+        protected UInt32Divisor ChannelsDivisor { get; }
+
+        /// <summary>
         /// Gets the length.
         /// </summary>
         /// <value>
@@ -125,21 +133,31 @@ namespace MonoAudio.Conversion.Resampling.Sample
             RateDivInverse = 1.0f / RateDiv;
             RateMulDivisor = new UInt32Divisor((uint)RateMul);
             RateDivDivisor = new UInt32Divisor((uint)RateDiv);
+            ChannelsDivisor = new UInt32Divisor((uint)Channels);
         }
 
         #region Rate Conversion Utilities
 
         /// <summary>
-        /// Gets the ceilinged input position.
+        /// Gets the rounded input position further than -inf.
         /// </summary>
         /// <param name="outputPosition">The output position.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int GetCeiledInputPosition(int outputPosition)
         {
-            var a = Math.DivRem(outputPosition * RateDiv, RateMul, out int m);
+            var m = (int)RateMulDivisor.DivRem((uint)(outputPosition * RateDiv), out uint aa);
+            int a = (int)aa;
             return m > 0 ? a + 1 : a;
         }
+
+        /// <summary>
+        /// Gets the rounded output position further than +inf.
+        /// </summary>
+        /// <param name="inputPosition">The input position.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected int GetFlooredOutputPosition(int inputPosition) => (int)RateDivDivisor.Divide((uint)(inputPosition * RateMul));
 
         /// <summary>
         /// Calculates the conversion gradient a little precisely.

@@ -77,14 +77,15 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
         /// </returns>
         public override ReadResult Read(Span<byte> buffer)
         {
-            var cursor = MemoryMarshal.Cast<byte, short>(buffer);
+            Span<short> outBuffer = MemoryMarshal.Cast<byte, short>(buffer).SliceAlign(Format.Channels);
+            var cursor = outBuffer;
             while (cursor.Length > 0)
             {
                 var reader = cursor.Length >= readBuffer.Length ? readBuffer : readBuffer.Slice(0, cursor.Length);
                 var rr = Source.Read(reader.Span);
                 if (rr.HasNoData) return buffer.Length - cursor.Length;
                 int u = rr.Length;
-                var wrote = reader.Span.Slice(0, u);
+                var wrote = reader.Span.Slice(0, u).SliceAlign(Format.Channels);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
                     new InvalidOperationException(
@@ -114,7 +115,7 @@ namespace MonoAudio.Conversion.SampleToWaveConverters
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
-            return buffer.Length;
+            return outBuffer.Length * sizeof(ushort);
         }
 
         private static short Convert(float srcval)

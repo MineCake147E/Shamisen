@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MonoAudio.Tests.IO.Droid</string>
+    <string name="action_settings">Settings</string>
+    <string name="ok">OK</string>
+    <string name="perm_eread">We need Storage access in order to read audio files.</string>
+    <string name="perm_ewrite">We need Storage access in order to write audio files.</string>
+</resources>

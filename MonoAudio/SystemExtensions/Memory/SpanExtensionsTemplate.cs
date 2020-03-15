@@ -4,6 +4,7 @@ using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using DivideSharp;
 namespace System
 {
     /// <summary>
@@ -225,6 +226,16 @@ namespace System
         public static Span<T> SliceAlign<T>(this Span<T> span, int channels) => span.Slice(0, MathI.FloorStep(span.Length, channels));
 
         /// <summary>
+        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<T> SliceAlign<T>(this Span<T> span, UInt32Divisor channelsDivisor) => span.Slice(0, (int)channelsDivisor.Floor((uint)span.Length));
+
+        /// <summary>
         /// Slices the <paramref name="span"/> with the specified length.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -288,6 +299,16 @@ namespace System
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, int channels) => memory.Slice(0, MathI.FloorStep(memory.Length, channels));
+
+        /// <summary>
+        /// Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Memory<T> SliceAlign<T>(this Memory<T> memory, UInt32Divisor channelsDivisor) => memory.Slice(0, (int)channelsDivisor.Floor((uint)memory.Length));
 
         /// <summary>
         /// Slices the <paramref name="memory"/> with the specified length.
@@ -355,6 +376,16 @@ namespace System
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, int channels) => readOnlySpan.Slice(0, MathI.FloorStep(readOnlySpan.Length, channels));
 
         /// <summary>
+        /// Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, UInt32Divisor channelsDivisor) => readOnlySpan.Slice(0, (int)channelsDivisor.Floor((uint)readOnlySpan.Length));
+
+        /// <summary>
         /// Slices the <paramref name="readOnlySpan"/> with the specified length.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -418,6 +449,16 @@ namespace System
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, int channels) => readOnlyMemory.Slice(0, MathI.FloorStep(readOnlyMemory.Length, channels));
+
+        /// <summary>
+        /// Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, UInt32Divisor channelsDivisor) => readOnlyMemory.Slice(0, (int)channelsDivisor.Floor((uint)readOnlyMemory.Length));
 
         /// <summary>
         /// Slices the <paramref name="readOnlyMemory"/> with the specified length.

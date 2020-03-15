@@ -16,6 +16,7 @@ using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using DivideSharp;
 namespace System
 {
     /// <summary>
@@ -59,11 +60,21 @@ namespace System
         /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="<#=            nameCamel#>">The <see cref="<#=            item#>{T}"/> to slice.</param>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=            item#><T> SliceAlign<T>(this <#=            item#><T> <#=            nameCamel#>, int channels) => <#=            nameCamel#>.Slice(0, MathI.FloorStep(<#=            nameCamel#>.Length, channels));
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, int channels) => <#=nameCamel#>.Slice(0, MathI.FloorStep(<#=nameCamel#>.Length, channels));
+
+        /// <summary>
+        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, UInt32Divisor channelsDivisor) => <#=nameCamel#>.Slice(0, (int)channelsDivisor.Floor((uint)<#=nameCamel#>.Length));
 
         /// <summary>
         /// Slices the <paramref name="<#=            nameCamel#>"/> with the specified length.

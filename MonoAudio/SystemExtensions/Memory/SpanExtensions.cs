@@ -203,5 +203,18 @@ namespace System
         }
 
         #endregion QuickFill
+
+        #region LinqLikeForSpan
+
+        /// <summary>
+        /// Skips the specified step.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
+        public static Span<T> Skip<T>(this Span<T> span, int step) => span.Slice(step);
+
+        #endregion LinqLikeForSpan
     }
 }

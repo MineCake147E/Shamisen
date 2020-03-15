@@ -155,7 +155,10 @@ namespace MonoAudio.IO.MonoGame
                 var buf = buffers[currentBufferIndex];
                 currentBufferIndex = ++currentBufferIndex % buffers.Length;
                 var len = waveSource.Read(buf);
-                soundEffectInstance.SubmitBuffer(buf, 0, len);
+                if (len.HasData)
+                {
+                    soundEffectInstance.SubmitBuffer(buf, 0, len.Length);
+                }
             }
             isProcessing = false;
         }

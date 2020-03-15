@@ -166,14 +166,14 @@
             The device.
             </value>
         </member>
-        <member name="M:MonoAudio.IO.Devices.CSCoreMMDevice.CheckSupportStatus(MonoAudio.Formats.IWaveFormat,MonoAudio.IO.IOExclusivity)">
+        <member name="M:MonoAudio.IO.Devices.CSCoreMMDevice.CheckSupportStatus(MonoAudio.IWaveFormat,MonoAudio.IO.IOExclusivity)">
             <summary>
             Indicates whether the audio output device supports a particular stream format.
             </summary>
             <param name="format">The format to judge the availability.</param>
             <param name="mode">The share mode.</param>
             <returns>
-            The value which indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat" /> can be supported by <see cref="N:MonoAudio" />.
+            The value which indicates how the <see cref="T:MonoAudio.IWaveFormat" /> can be supported by <see cref="N:MonoAudio" />.
             </returns>
         </member>
         <member name="M:MonoAudio.IO.Devices.CSCoreMMDevice.CheckInternalSupport(CSCore.CoreAudioAPI.AudioClient,CSCore.WaveFormat)">
@@ -286,16 +286,16 @@
             The device.
             </value>
         </member>
-        <member name="M:MonoAudio.IO.Devices.CSCoreWaveOutDevice.CheckSupportStatus(MonoAudio.Formats.IWaveFormat)">
+        <member name="M:MonoAudio.IO.Devices.CSCoreWaveOutDevice.CheckSupportStatus(MonoAudio.IWaveFormat)">
             <summary>
             Indicates whether the audio output device supports a particular stream format.
             </summary>
             <param name="format">The format to judge the availability.</param>
             <returns>
-            The value which indicates how the <see cref="T:MonoAudio.Formats.IWaveFormat" /> can be supported by <see cref="N:MonoAudio" />.
+            The value which indicates how the <see cref="T:MonoAudio.IWaveFormat" /> can be supported by <see cref="N:MonoAudio" />.
             </returns>
         </member>
-        <member name="M:MonoAudio.IO.Devices.CSCoreWaveOutDevice.CheckSupportStatus(MonoAudio.Formats.IWaveFormat,MonoAudio.IO.IOExclusivity)">
+        <member name="M:MonoAudio.IO.Devices.CSCoreWaveOutDevice.CheckSupportStatus(MonoAudio.IWaveFormat,MonoAudio.IO.IOExclusivity)">
             <summary>
             Indicates whether the audio output device supports a particular stream format.
             </summary>

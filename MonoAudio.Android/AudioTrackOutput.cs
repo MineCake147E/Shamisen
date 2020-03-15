@@ -89,7 +89,7 @@ namespace MonoAudio.IO.Android
         {
             AudioAttributes attributes;
             AudioFormat format;
-            int latencyInFrames = (int)(source.Format.SampleRate * Latency.TotalSeconds);
+            int latencyInFrames = (int)(source.Format.SampleRate * Latency.TotalSeconds / 2.0);
             bufferSizeInBytes = latencyInFrames * source.Format.GetFrameSize();
             buffer = new byte[bufferSizeInBytes];
             using (var attributesBuilder = new AudioAttributes.Builder())
@@ -108,7 +108,7 @@ namespace MonoAudio.IO.Android
                 _ = trackBuilder
                     .SetAudioAttributes(attributes)
                     .SetAudioFormat(format)
-                    .SetBufferSizeInBytes(bufferSizeInBytes);
+                    .SetBufferSizeInBytes(bufferSizeInBytes * 2);
                 track = trackBuilder.Build();
             }
             Source = source;
@@ -173,15 +173,19 @@ namespace MonoAudio.IO.Android
                     track.Play();
                 }
                 var span = buffer.AsSpan();
-                span = span.Slice(0, Source.Read(span));
-                try
+                ReadResult rr = Source.Read(span);
+                if (rr.HasData)
                 {
-                    track.Write(buffer, 0, span.Length, WriteMode.Blocking);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                    throw;
+                    span = span.Slice(0, rr.Length);
+                    try
+                    {
+                        track.Write(buffer, 0, span.Length, WriteMode.Blocking);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                        throw;
+                    }
                 }
                 token.ThrowIfCancellationRequested();
                 fillFlag.Wait();

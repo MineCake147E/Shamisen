@@ -1688,6 +1688,14 @@
             The channels of output.
             </value>
         </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.ChannelsDivisor">
+            <summary>
+            Gets the divisor for dividing a number by <see cref="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Channels"/>.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
         <member name="P:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.Length">
             <summary>
             Gets the length.
@@ -1755,9 +1763,16 @@
         </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetCeiledInputPosition(System.Int32)">
             <summary>
-            Gets the ceilinged input position.
+            Gets the rounded input position further than -inf.
             </summary>
             <param name="outputPosition">The output position.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetFlooredOutputPosition(System.Int32)">
+            <summary>
+            Gets the rounded output position further than +inf.
+            </summary>
+            <param name="inputPosition">The input position.</param>
             <returns></returns>
         </member>
         <member name="M:MonoAudio.Conversion.Resampling.Sample.ResamplerBase.GetConversionGradient(System.Int32)">
@@ -4725,6 +4740,11 @@
             Represents a state of playback.
             </summary>
         </member>
+        <member name="F:MonoAudio.IO.PlaybackState.NotInitialized">
+            <summary>
+            The output is not initialized
+            </summary>
+        </member>
         <member name="F:MonoAudio.IO.PlaybackState.Stopped">
             <summary>
             The playback is stopped.
@@ -6355,6 +6375,15 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:System.SpanExtensions.Skip``1(System.Span{``0},System.Int32)">
+            <summary>
+            Skips the specified step.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
@@ -6434,6 +6463,15 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
         <member name="M:System.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
             <summary>
             Slices the <paramref name="span"/> with the specified length.
@@ -6486,6 +6524,15 @@
             <typeparam name="T"></typeparam>
             <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
             <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
         <member name="M:System.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
@@ -6542,6 +6589,15 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
         <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the specified length.
@@ -6594,6 +6650,15 @@
             <typeparam name="T"></typeparam>
             <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
             <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
         <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">

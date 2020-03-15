@@ -143,7 +143,9 @@ namespace MonoAudio.Synthesis
             theta += omega;
             if (theta > Math.PI)
             {
-                theta -= MathHelper.DoublePI;
+                theta += Math.PI;
+                theta %= MathHelper.DoublePI;
+                theta -= Math.PI;
             }
             return theta;
         }

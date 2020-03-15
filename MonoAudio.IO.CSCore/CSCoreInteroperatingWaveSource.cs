@@ -27,8 +27,8 @@ namespace MonoAudio.IO
             WaveFormat = ConvertToCSCoreWaveFormat(format);
         }
 
-        internal static CSCore.WaveFormat ConvertToCSCoreWaveFormat(Formats.IWaveFormat format) => new CSCore.WaveFormat(format.SampleRate, format.BitDepth, format.Channels,
-                                                       (CSCore.AudioEncoding)(short)format.Encoding, format.ExtraSize);
+        internal static CSCore.WaveFormat ConvertToCSCoreWaveFormat(IWaveFormat format) => new CSCore.WaveFormat(format.SampleRate, format.BitDepth, format.Channels,
+                                                       (CSCore.AudioEncoding)(short)format.Encoding, 0);
 
         /// <summary>
         /// Gets the source to read the audio from.
@@ -70,7 +70,7 @@ namespace MonoAudio.IO
         /// <param name="offset">The offset to overwrite the <paramref name="buffer"/>.</param>
         /// <param name="count">The number of bytes to overwrite the <paramref name="buffer"/>.</param>
         /// <returns>The number of bytes read.</returns>
-        public int Read(byte[] buffer, int offset, int count) => Source.Read(new Span<byte>(buffer, offset, count));
+        public int Read(byte[] buffer, int offset, int count) => Source.Read(new Span<byte>(buffer, offset, count)).Length;
 
         #region IDisposable Support
 

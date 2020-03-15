@@ -68,15 +68,15 @@ namespace MonoAudio.IO
                 do
                 {
                     var read = FillBuffer(u > sampleCap ? sampleCap : (int)u, dataInBytes);
-                    dataInBytes += read;
-                    u -= read;
+                    dataInBytes += read.Length;
+                    u -= read.Length;
                 } while (u > 0);
             }
 
             return frame;
         }
 
-        private unsafe int FillBuffer(int bufferSize, byte* dataInBytes)
+        private unsafe ReadResult FillBuffer(int bufferSize, byte* dataInBytes)
         {
             var span = new Span<byte>(dataInBytes, bufferSize);
             return Source.Read(span);

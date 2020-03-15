@@ -52,7 +52,7 @@ namespace MonoAudio.IO
         /// <param name="offset">The offset to overwrite the <paramref name="buffer"/>.</param>
         /// <param name="count">The number of bytes to overwrite the <paramref name="buffer"/>.</param>
         /// <returns>The number of bytes read.</returns>
-        public int Read(byte[] buffer, int offset, int count) => Source.Read(new Span<byte>(buffer, offset, count));
+        public int Read(byte[] buffer, int offset, int count) => Source.Read(new Span<byte>(buffer, offset, count)).Length;
 
         #region IDisposable Support
 

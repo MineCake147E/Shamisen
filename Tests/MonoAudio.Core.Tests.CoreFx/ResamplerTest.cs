@@ -8,19 +8,22 @@ using NUnit.Framework;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace MonoAudio.Core.Tests.CoreFx
 {
     [TestFixture]
     public class ResamplerTest
     {
+        private const double Freq = 523.2511306011972693556999870466094027289077206840796617283;
+
         [Test]
         public void UpSamplingDoesNotThrow()
         {
             const int Channels = 3;
             const int SourceSampleRate = 44100;
             const int DestinationSampleRate = 48000;
-            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 20000 };
+            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[Channels * 1024];
             Assert.DoesNotThrow(() =>
@@ -36,7 +39,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             const int Channels = 3;
             const int SourceSampleRate = 48000;
             const int DestinationSampleRate = 44100;
-            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = 20000 };
+            var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[Channels * 1024];
             Assert.DoesNotThrow(() =>
@@ -51,7 +54,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         {
             const int SourceSampleRate = 44100;
             const int DestinationSampleRate = 192000;
-            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = 6000 };
+            var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
@@ -70,7 +73,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         [TestCase(96000, 192000)]
         public void UpSamplingTwoFrameDump(int sourceSampleRate, int destinationSampleRate)
         {
-            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = 5987 };
+            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, destinationSampleRate);
             var buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
@@ -83,6 +86,39 @@ namespace MonoAudio.Core.Tests.CoreFx
             foreach (var item in buffer)
             {
                 Console.WriteLine(item);
+            }
+            Assert.Pass();
+            resampler.Dispose();
+        }
+
+        [TestCase(1, 24000, 154320)]
+        [TestCase(1, 48000, 192000)]
+        [TestCase(1, 24000, 192000)]
+        [TestCase(2, 24000, 192000, 1021)]
+        [TestCase(2, 23000, 192000, 192, 4096)]
+        public void UpSamplingManyFrameDump(int channels, int sourceSampleRate, int destinationSampleRate, int frameLen = 1024, int framesToWrite = 1024)
+        {
+            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
+            var resampler = new SplineResampler(src, destinationSampleRate);
+            var h = new System.IO.FileInfo($"SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.raw");
+            Console.WriteLine(h.FullName);
+            using (var file = h.OpenWrite())
+            {
+                var buffer = new float[frameLen];
+                var brspan = MemoryMarshal.Cast<float, byte>(buffer);
+                for (int i = 0; i < framesToWrite; i++)
+                {
+                    var rr = resampler.Read(buffer);
+                    if (rr.HasData)
+                    {
+                        var bwspan = brspan.SliceWhile(rr.Length * sizeof(float));
+                        file.Write(bwspan);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             Assert.Pass();
             resampler.Dispose();

@@ -6,6 +6,11 @@
     public enum PlaybackState
     {
         /// <summary>
+        /// The output is not initialized
+        /// </summary>
+        NotInitialized,
+
+        /// <summary>
         /// The playback is stopped.
         /// </summary>
         Stopped,

@@ -18,7 +18,8 @@ namespace MonoAudio.Conversion.Resampling.Sample
     public sealed partial class SplineResampler : ResamplerBase
     {
         private ResizableBufferWrapper<float> bufferWrapper;
-        private float[][] sampleCache;
+        private int conversionGradient = 0;
+        private int framesReserved = 1;
 
         /// <summary>
         /// The pre calculated catmull-rom coefficents.<br/>
@@ -29,25 +30,8 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// </summary>
         private Vector4[] preCalculatedCatmullRomCoefficents;
 
-        private int conversionGradient = 0;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int AdvanceConversionGradient(ref int conversionGradient)
-        {
-            unchecked
-            {
-                conversionGradient += RateDiv;
-                if (conversionGradient >= RateMul)
-                {
-                    conversionGradient = (int)RateMulDivisor.DivRem((uint)conversionGradient, out var posDiff);
-                    return (int)posDiff;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
+        private float[][] sampleCache;
+        private int samplesRemaining = 0;
 
         [Obsolete("", true)]
         private bool IsCatmullRomOptimized { get; }
@@ -108,18 +92,6 @@ namespace MonoAudio.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Vector4 CalculateCatmullRomCoeffs(float x)
-        {
-            var xP2 = x * x;
-            var xP3 = xP2 * x;
-            return new Vector4(
-                (-xP3 + (2 * xP2) - x) * 0.5f,
-                ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
-                (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
-                (xP3 - xP2) * 0.5f);
-        }
-
         /// <summary>
         /// Reads the audio to the specified buffer.
         /// </summary>
@@ -134,67 +106,65 @@ namespace MonoAudio.Conversion.Resampling.Sample
             //Align the length of the buffer.
             buffer = buffer.SliceAlign(Format.Channels);
 
-            int SampleLengthOut = buffer.Length / channels;
+            int SampleLengthOut = (int)((uint)buffer.Length / ChannelsDivisor);
             int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
 
             //Resampling start
             Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
-            Source.Read(srcBuffer.Slice(channels * 3));
+            int lengthReserved = channels * framesReserved;
+            Span<float> readBuffer = srcBuffer.Slice(lengthReserved).SliceAlign(ChannelsDivisor);
+            var rr = Source.Read(readBuffer);
 
             #endregion Initialize and Read
 
-            var strategy = Strategy;
-            switch (strategy)
+            if (rr.HasData)
             {
-                case ResampleStrategy.Direct:
-                    ResampleDirect(ref buffer, channels, ref srcBuffer);
-                    break;
-                case ResampleStrategy.CachedDirect:
-                    ResampleCachedDirect(ref buffer, channels, ref srcBuffer);
-                    break;
-                case ResampleStrategy.CachedWrappedOdd:
-                    ResampleCachedWrappedOdd(ref buffer, channels, ref srcBuffer);
-                    break;
-                case ResampleStrategy.CachedWrappedEven:
-                    ResampleCachedWrappedEven(ref buffer, channels, ref srcBuffer);
-                    break;
+                if (rr.Length < readBuffer.Length)   //The input result was not as long as the buffer we gave
+                {
+                    int v = SampleLengthOut * RateDiv + conversionGradient;
+                    var h = RateMulDivisor.DivRem((uint)v, out var b);
+                    int readSamples = rr.Length + lengthReserved;
+                    srcBuffer = srcBuffer.SliceWhile(readSamples).SliceAlign(ChannelsDivisor);
+                    var framesAvailable = (int)((uint)readSamples / ChannelsDivisor);
+                    var bA = framesAvailable - 3 - (h > 0 ? 1 : 0);
+                    var vA = h + bA * RateMul;
+                    var outLenFrames = (int)((uint)vA / RateDivDivisor);
+                    buffer = buffer.SliceWhile(outLenFrames * channels).SliceAlign(ChannelsDivisor);
+                }
+                int lastInputSampleIndex = -1;
+                switch (Strategy)
+                {
+                    case ResampleStrategy.Direct:
+                        lastInputSampleIndex = ResampleDirect(buffer, channels, srcBuffer);
+                        break;
+                    case ResampleStrategy.CachedDirect:
+                        lastInputSampleIndex = ResampleCachedDirect(buffer, channels, srcBuffer);
+                        break;
+                    case ResampleStrategy.CachedWrappedOdd:
+                        lastInputSampleIndex = ResampleCachedWrappedOdd(buffer, channels, srcBuffer);
+                        break;
+                    case ResampleStrategy.CachedWrappedEven:
+                        lastInputSampleIndex = ResampleCachedWrappedEven(buffer, channels, srcBuffer);
+                        break;
+                }
+                Span<float> reservingRegion = srcBuffer.Slice(lastInputSampleIndex * channels);
+                reservingRegion.CopyTo(srcBuffer);
+                framesReserved = (int)((uint)reservingRegion.Length / ChannelsDivisor);
+#if false   //For Test purpose only
+                int lisi_tail = lastInputSampleIndex + 3 - (conversionGradient < RateDiv ? 1 : 0);
+                Console.WriteLine($"inputLength:{srcBuffer.Length}, " +
+                    $"lastInputSampleIndex: {lisi_tail}(value:{srcBuffer[lisi_tail]}), " +
+                    $"nextFirstSampleIndex: {lastInputSampleIndex}(value:{srcBuffer[lastInputSampleIndex]}), " +
+                    $"conversionGradient: {conversionGradient}, " +
+                    $"framesReserved:{framesReserved}");
+#endif
+
+                return buffer.Length;
             }
-            srcBuffer.Slice(srcBuffer.Length - channels * 3, channels * 3).CopyTo(srcBuffer);
-            return buffer.Length;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CheckBuffer(int channels, int sampleLengthOut)
-        {
-            //Internal buffer length check and some boundary-sample copies
-            //Reserving some samples ahead
-            //Row 1: #=to read $=not to read %=read and copied to $s
-            //$$$############################%%%
-            // ^ process head                 ^process tail
-            int internalBufferLengthRequired = (GetCeiledInputPosition(sampleLengthOut) + 3) * channels;
-
-            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
+            else
             {
-                ExpandBuffer(internalBufferLengthRequired);
+                return ReadResult.WaitingForSource;
             }
-
-            return internalBufferLengthRequired;
-        }
-
-        private void ExpandBuffer(int internalBufferLengthRequired)
-        {
-            Span<float> a = stackalloc float[3 * Channels];
-            if (bufferWrapper.Buffer.Length > 3 * Channels) bufferWrapper.Buffer.Slice(0, Channels * 3).CopyTo(a);
-            bufferWrapper.Resize(internalBufferLengthRequired);
-            a.CopyTo(bufferWrapper.Buffer);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Abs(int value)
-        {
-            //TODO: get outside
-            int mask = value >> 31;
-            return (uint)((value + mask) ^ mask);
         }
 
         /// <summary>
@@ -209,6 +179,74 @@ namespace MonoAudio.Conversion.Resampling.Sample
             Source.Dispose();
             bufferWrapper.Dispose();
             sampleCache = null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint Abs(int value)
+        {
+            //TODO: get outside
+            int mask = value >> 31;
+            return (uint)((value + mask) ^ mask);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector4 CalculateCatmullRomCoeffs(float x)
+        {
+            var xP2 = x * x;
+            var xP3 = xP2 * x;
+            return new Vector4(
+                (-xP3 + (2 * xP2) - x) * 0.5f,
+                ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
+                (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
+                (xP3 - xP2) * 0.5f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int AdvanceConversionGradient(ref int conversionGradient)
+        {
+            unchecked
+            {
+                conversionGradient += RateDiv;
+                if (conversionGradient >= RateMul)
+                {
+                    conversionGradient = (int)RateMulDivisor.DivRem((uint)conversionGradient, out var posDiff);
+                    return (int)posDiff;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int CheckBuffer(int channels, int sampleLengthOut)
+        {
+            //Internal buffer length check and some boundary-sample copies
+            //Reserving some samples ahead
+            //Row 1: #=to read $=not to read %=read and copied to $s
+            //$$$############################%%%%
+            // ^ process head                 ^process tail
+            int v = sampleLengthOut * RateDiv + conversionGradient;
+            var h = RateMulDivisor.DivRem((uint)v, out var b);
+            int samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
+            int internalBufferLengthRequired = samplesRequired * channels;
+            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
+            {
+                ExpandBuffer(internalBufferLengthRequired);
+            }
+
+            return internalBufferLengthRequired;
+        }
+
+        private void ExpandBuffer(int internalBufferLengthRequired)
+        {
+            int lengthReserved = framesReserved * Channels;
+            Span<float> a = stackalloc float[lengthReserved];
+
+            if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer.Slice(0, lengthReserved).CopyTo(a);
+            bufferWrapper.Resize(internalBufferLengthRequired);
+            a.CopyTo(bufferWrapper.Buffer);
         }
     }
 }
