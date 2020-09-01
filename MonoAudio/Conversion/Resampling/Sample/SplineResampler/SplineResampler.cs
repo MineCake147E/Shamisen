@@ -54,6 +54,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
             {
                 sampleCache[i] = new float[Channels];
             }
+            Strategy = ResampleStrategy.Direct;
             if (source.Format.SampleRate < destinationSampleRate)
             {
                 if (RateMul < 512)
