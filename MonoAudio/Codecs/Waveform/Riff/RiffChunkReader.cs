@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -20,7 +21,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         ///   <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.
         /// </value>
-        public bool CanPubliclyRead => CurrentSubChunk is null;
+        public bool CanPubliclyRead => CurrentSubChunk is null || CurrentSubChunk.RemainingBytes < 1;
 
         /// <summary>
         /// Gets the current chunk identifier.

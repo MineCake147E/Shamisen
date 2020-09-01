@@ -16,7 +16,7 @@ namespace MonoAudio.Codecs.Waveform
     /// </summary>
     public sealed class WaveCodec : IDecoder
     {
-        private const uint WIdWAVE = 0x5741_5645;
+        private const uint RiffSubChunkIdWave = 0x5741_5645;
         /*
         private async ValueTask<(bool, RiffChunk?)> CheckHeadersAsync(IDataSource dataReader)
         {

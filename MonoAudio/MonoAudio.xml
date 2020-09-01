@@ -771,7 +771,7 @@
         </member>
         <member name="T:MonoAudio.Codecs.Waveform.ChunkId">
             <summary>
-            Represents a chunk ID for waveform file format.
+            Represents a chunk ID for waveform file format in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Riff">
@@ -1441,6 +1441,16 @@
         <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Riff.RiffSubChunkId">
+            <summary>
+            Represents a RIFF sub-chunk ID for waveform file format in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.Riff.RiffSubChunkId.Wave">
+            <summary>
+            The wave sub chunk.
             </summary>
         </member>
         <member name="T:MonoAudio.Codecs.Waveform.StandardWaveFormat">
@@ -2812,6 +2822,104 @@
             <typeparam name="TStruct">The type to read.</typeparam>
             <param name="dataReader">The data reader.</param>
             <returns>The deserialized <typeparamref name="TStruct"/> value.</returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadByte(MonoAudio.Data.IDataSource,System.Byte@)">
+            <summary>
+            Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadSignedByte(MonoAudio.Data.IDataSource,System.SByte@)">
+            <summary>
+            Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(MonoAudio.Data.IDataSource,System.UInt16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(MonoAudio.Data.IDataSource,System.UInt16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(MonoAudio.Data.IDataSource,System.Int16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(MonoAudio.Data.IDataSource,System.Int16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(MonoAudio.Data.IDataSource,System.UInt32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(MonoAudio.Data.IDataSource,System.UInt32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(MonoAudio.Data.IDataSource,System.Int32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(MonoAudio.Data.IDataSource,System.Int32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(MonoAudio.Data.IDataSource,System.UInt64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(MonoAudio.Data.IDataSource,System.UInt64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(MonoAudio.Data.IDataSource,System.Int64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(MonoAudio.Data.IDataSource,System.Int64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <returns></returns>
         </member>
         <member name="T:MonoAudio.Data.DataBuffer`1">
             <summary>

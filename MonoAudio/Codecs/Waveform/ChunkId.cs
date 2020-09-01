@@ -5,7 +5,7 @@ using System.Text;
 namespace MonoAudio.Codecs.Waveform
 {
     /// <summary>
-    /// Represents a chunk ID for waveform file format.
+    /// Represents a chunk ID for waveform file format in Little Endian.
     /// </summary>
     public enum ChunkId : uint
     {
