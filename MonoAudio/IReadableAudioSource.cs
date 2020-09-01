@@ -29,7 +29,7 @@ namespace MonoAudio
     /// <typeparam name="TSample">The type of audio data.</typeparam>
     /// <typeparam name="TFormat">The format of audio data.</typeparam>
     /// <seealso cref="IAudioSource{TSample,TFormat}" />
-    public interface IAsynchronouslyReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
+    public interface IAsyncReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
@@ -38,6 +38,6 @@ namespace MonoAudio
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        Task<int> ReadAsync(Memory<TSample> buffer);
+        ValueTask<int> ReadAsync(Memory<TSample> buffer);
     }
 }

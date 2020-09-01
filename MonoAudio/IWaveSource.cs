@@ -15,8 +15,8 @@ namespace MonoAudio
     /// <summary>
     /// Defines a base infrastructure of an asynchronously-readable raw audio data source.
     /// </summary>
-    /// <seealso cref="IAsynchronouslyReadableAudioSource{TSample, TFormat}" />
-    public interface IAsyncWaveSource : IAsynchronouslyReadableAudioSource<byte, IWaveFormat>
+    /// <seealso cref="IAsyncReadableAudioSource{TSample, TFormat}" />
+    public interface IAsyncWaveSource : IAsyncReadableAudioSource<byte, IWaveFormat>
     {
     }
 
