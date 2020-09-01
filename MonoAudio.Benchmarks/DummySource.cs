@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 
-namespace MonoAudio.Core.Tests.CoreFx
+using MonoAudio.Synthesis;
+
+namespace MonoAudio.Benchmarks
 {
     public sealed class DummySource<TSample, TFormat> : IReadableAudioSource<TSample, TFormat>
         where TSample : unmanaged
@@ -49,7 +48,10 @@ namespace MonoAudio.Core.Tests.CoreFx
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public ReadResult Read(Span<TSample> buffer) => buffer.Length;
+        public ReadResult Read(Span<TSample> buffer)
+        {
+            return buffer.Length;
+        }
 
         #region IDisposable Support
 

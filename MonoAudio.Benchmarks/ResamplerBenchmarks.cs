@@ -1,29 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Synthesis;
 
 namespace MonoAudio.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp22)]
-    [SimpleJob(RuntimeMoniker.Mono, baseline: true)]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
+    //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]
     public class ResamplerBenchmarks
     {
         private SplineResampler resampler;
-        private SquareWaveSource source;
+        private IReadableAudioSource<float, SampleFormat> source;
         private float[] buffer;
+
+        [ParamsSource(nameof(ValuesForConversionRatio))]
+        public (int before, int after) ConversionRatio { get; set; }
+
+        public IEnumerable<(int, int)> ValuesForConversionRatio => new[] { (44100, 192000), (48000, 192000), (24000, 154320), (96000, 192000) };
+
+        [Params(1, 2, 3, 4, 8)]
+        public int Channels { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            source = new SquareWaveSource(new SampleFormat(2, 44100))
-            {
-                Frequency = 6000
-            };
-            resampler = new SplineResampler(source, 192000);
+            source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, ConversionRatio.before));
+            resampler = new SplineResampler(source, ConversionRatio.after);
             buffer = new float[2560];
         }
 
@@ -40,13 +47,6 @@ namespace MonoAudio.Benchmarks
         {
             var span = buffer.AsSpan();
             _ = resampler.Read(span);
-        }
-
-        [Benchmark(Baseline = true)]
-        public void InternalGenerate()
-        {
-            var span = buffer.AsSpan().Slice(588);
-            _ = source.Read(span);
         }
     }
 }

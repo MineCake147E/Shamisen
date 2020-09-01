@@ -1,6 +1,4 @@
-﻿using System;
-
-using SignedIntType = System.Int32;
+﻿using SignedIntType = System.Int32;
 using UnsignedIntType = System.UInt32;
 
 namespace MonoAudio.Mathematics

@@ -10,7 +10,7 @@ namespace MonoAudio.Mathematics
         /// <summary>
         /// The double pi.
         /// </summary>
-        public const double DoublePI = Math.PI * 2;
+        public const double DoublePI = 6.2831853071795864769252867665590057683943387987502116419498891846;
 
         /// <summary>
         /// Minimizes the divisor.
@@ -33,12 +33,7 @@ namespace MonoAudio.Mathematics
         /// <param name="a">a.</param>
         /// <param name="b">The b.</param>
         /// <returns></returns>
-        public static int Gcd(int a, int b)
-        {
-            if (a == b) return a;
-            if (a > b) return GcdInternal(a, b);
-            return GcdInternal(b, a);
-        }
+        public static int Gcd(int a, int b) => a == b ? a : a > b ? GcdInternal(a, b) : GcdInternal(b, a);
 
         private static int GcdInternal(int m, int n)
         {

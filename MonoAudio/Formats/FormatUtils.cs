@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static MonoAudio.Units;
 
 namespace MonoAudio
@@ -16,7 +17,7 @@ namespace MonoAudio
         /// <typeparam name="TSample">The type of sample.</typeparam>
         /// <param name="format">The format to calculate the length of frame.</param>
         /// <returns><c>sizeof(TSample) * <see cref="IAudioFormat{TSample}.Channels"/></c></returns>
-        public static int GetFrameSize<TSample>(this IAudioFormat<TSample> format) => format.Channels * (format.BitDepth / 8);
+        public static int GetFrameSize<TSample>(this IAudioFormat<TSample> format) => format.Channels * ((format.BitDepth + 7) / 8);
 
         /// <summary>
         /// Gets the value which indicates how long the <see cref="byte"/>[] buffer should be.
@@ -26,6 +27,6 @@ namespace MonoAudio
         /// <param name="length">The length.</param>
         /// <returns></returns>
         public static int GetBufferSizeRequired<TSample>(this IAudioFormat<TSample> format, TimeSpan length)
-            => (int)Math.Ceiling(format.SampleRate * length.TotalSeconds) * format.Channels * (format.BitDepth / 8);
+            => (int)Math.Ceiling(format.SampleRate * length.TotalSeconds) * format.Channels * ((format.BitDepth + 7) / 8);
     }
 }
