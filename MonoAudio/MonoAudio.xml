@@ -4,6 +4,62 @@
         <name>MonoAudio</name>
     </assembly>
     <members>
+        <member name="T:MonoAudio.AudioBuffer`2">
+            <summary>
+            Represents an audio buffer.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.AudioBuffer`2.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioBuffer`2"/>.
+            </summary>
+            <value>
+            The element.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.AudioBuffer`2.#ctor(`1,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.AudioBuffer`2" /> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="sizeInFrames">The size in frames.</param>
+        </member>
+        <member name="P:MonoAudio.AudioBuffer`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioBuffer`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.AudioBuffer`2"/>.
+            </summary>
+            <value>
+            The length of this buffer.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioBuffer`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioBuffer`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
         <member name="T:MonoAudio.AudioEncoding">
             <summary>
             Defines known encoding types.
@@ -1877,6 +1933,15 @@
              </summary>
              <seealso cref="T:MonoAudio.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
+        <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.CachedDirectStereoResampler.preCalculatedCatmullRomCoefficents">
+            <summary>
+            The pre calculated catmull-rom coefficents.<br/>
+            X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
+            Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
+            Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
+            W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
+            </summary>
+        </member>
         <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficents">
             <summary>
             The pre calculated catmull-rom coefficents.<br/>
@@ -1905,6 +1970,62 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.ChannelsDivisor">
+            <summary>
+            Gets the divisor for dividing a number by Channels.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDivDivisor">
+            <summary>
+            Gets the divisor for converting source sample rate to destination sample rate.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDiv">
+            <summary>
+            Gets the rate source sample rate.
+            </summary>
+            <value>
+            The number to divide with.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDivInverse">
+            <summary>
+            Gets the divisor source sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMulDivisor">
+            <summary>
+            Gets the divisor for converting destination sample rate to source sample rate.
+            </summary>
+            <value>
+            The divisor object.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMul">
+            <summary>
+            Gets the rate destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMulInverse">
+            <summary>
+            Gets the divisor destination sample rate.
+            </summary>
+            <value>
+            The number to multiply.
+            </value>
         </member>
         <member name="F:MonoAudio.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
             <summary>
@@ -3739,144 +3860,101 @@
             <typeparam name="TFormat">The format of the sample.</typeparam>
             <seealso cref="T:MonoAudio.Conversion.IAudioConverter`4" />
         </member>
-        <member name="T:MonoAudio.Filters.SimpleMixer">
+        <member name="T:MonoAudio.Filters.Mixing.Advanced.AdvancedMixer">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="T:MonoAudio.Filters.Mixing.MixerItem">
             <summary>
-            Mixes the sound simply from some input nodes.
+            Represents an item of <see cref="T:MonoAudio.Filters.Mixing.SimpleMixer"/> and <see cref="T:MonoAudio.Filters.Mixing.Advanced.AdvancedMixer"/>.
             </summary>
         </member>
-        <member name="F:MonoAudio.Filters.SimpleMixer.bufferWrapper">
+        <member name="P:MonoAudio.Filters.Mixing.MixerItem.Source">
             <summary>
-            The buffer wrapper
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.#ctor(MonoAudio.SampleFormat)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Filters.SimpleMixer"/> class.
-            </summary>
-            <param name="format">The output format.</param>
-        </member>
-        <member name="P:MonoAudio.Filters.SimpleMixer.CanSeek">
-            <summary>
-            Gets a value indicating whether this instance supports seeking.
+            Gets the source of this <see cref="T:MonoAudio.Filters.Mixing.MixerItem"/>.
             </summary>
             <value>
-              <c>true</c> if this instance can seek; otherwise, <c>false</c>.
+            The source.
             </value>
         </member>
-        <member name="P:MonoAudio.Filters.SimpleMixer.Format">
+        <member name="P:MonoAudio.Filters.Mixing.MixerItem.Volume">
             <summary>
-            Gets the output format.
+            Gets the volume of this <see cref="T:MonoAudio.Filters.Mixing.MixerItem"/>.
             </summary>
             <value>
-            The format.
+            The volume.
             </value>
         </member>
-        <member name="P:MonoAudio.Filters.SimpleMixer.Position">
+        <member name="P:MonoAudio.Filters.Mixing.MixerItem.Buffer">
             <summary>
-            Gets or sets the position.
+            Gets or sets the input buffer for this <see cref="T:MonoAudio.Filters.Mixing.MixerItem"/>.
             </summary>
             <value>
-            The position.
+            The buffer.
             </value>
-            <exception cref="T:System.NotSupportedException">
-            </exception>
         </member>
-        <member name="P:MonoAudio.Filters.SimpleMixer.Length">
+        <member name="T:MonoAudio.Filters.Mixing.SimpleMixer">
             <summary>
-            Gets the length.
+            Mixes down two signal into one signal.
+            </summary>
+            <seealso cref="T:MonoAudio.ISampleSource" />
+        </member>
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.Format">
+            <summary>
+            Gets the format of the audio data.
             </summary>
             <value>
-            The length.
+            The format of the audio data.
             </value>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.AddSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Single,System.Boolean)">
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.Position">
             <summary>
-            Adds the source.
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
             </summary>
-            <param name="source">The source.</param>
-            <param name="volume">The volume.</param>
-            <param name="disposeSourceOnRemove">if set to <c>true</c> it disposes source on removal.</param>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.RemoveSource(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat})">
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.Length">
             <summary>
-            Removes the source.
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            -1 Means Infinity.
             </summary>
-            <param name="source">The source.</param>
-            <exception cref="T:System.ArgumentException">The Mixer doesn't contain the specified <paramref name="source"/>! - source</exception>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.Read(System.Span{System.Single})">
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.ItemA">
+            <summary>
+            Gets the item A.
+            </summary>
+            <value>
+            The item A.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Filters.Mixing.SimpleMixer.ItemB">
+            <summary>
+            Gets the item B.
+            </summary>
+            <value>
+            The item B.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Filters.Mixing.SimpleMixer.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.Dispose(System.Boolean)">
+        <member name="M:MonoAudio.Filters.Mixing.SimpleMixer.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:MonoAudio.Filters.SimpleMixer"/> class.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Filters.SimpleMixer.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:MonoAudio.Filters.MixerEntry">
-            <summary>
-            Represents a <see cref="T:MonoAudio.Filters.SimpleMixer"/>'s entry.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Filters.MixerEntry.#ctor(MonoAudio.IReadableAudioSource{System.Single,MonoAudio.SampleFormat},System.Single,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Filters.MixerEntry"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="volume">The volume.</param>
-            <param name="disposeSource">if set to <c>true</c> [dispose source].</param>
-            <exception cref="T:System.ArgumentNullException">source</exception>
-        </member>
-        <member name="P:MonoAudio.Filters.MixerEntry.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Filters.MixerEntry.Volume">
-            <summary>
-            Gets or sets the volume.
-            </summary>
-            <value>
-            The volume.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Filters.MixerEntry.DisposeSource">
-            <summary>
-            Gets a value indicating whether to dispose source in <see cref="M:MonoAudio.Filters.MixerEntry.Dispose"/>.
-            </summary>
-            <value>
-              <c>true</c> to dispose source in <see cref="M:MonoAudio.Filters.MixerEntry.Dispose"/>; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="M:MonoAudio.Filters.MixerEntry.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Filters.MixerEntry.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:MonoAudio.Filters.MixerEntry"/> class.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Filters.MixerEntry.Dispose">
+        <member name="M:MonoAudio.Filters.Mixing.SimpleMixer.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
@@ -4808,7 +4886,7 @@
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="T:MonoAudio.IAsynchronouslyReadableAudioSource`2">
+        <member name="T:MonoAudio.IAsyncReadableAudioSource`2">
             <summary>
             Defines a base infrastructure of an asynchronously readable audio source.
             </summary>
@@ -4816,7 +4894,7 @@
             <typeparam name="TFormat">The format of audio data.</typeparam>
             <seealso cref="T:MonoAudio.IAudioSource`2" />
         </member>
-        <member name="M:MonoAudio.IAsynchronouslyReadableAudioSource`2.ReadAsync(System.Memory{`0})">
+        <member name="M:MonoAudio.IAsyncReadableAudioSource`2.ReadAsync(System.Memory{`0})">
             <summary>
             Reads the audio to the specified buffer asynchronously.
             </summary>
@@ -4845,7 +4923,7 @@
             <summary>
             Defines a base infrastructure of an asynchronously-readable raw audio data source.
             </summary>
-            <seealso cref="T:MonoAudio.IAsynchronouslyReadableAudioSource`2" />
+            <seealso cref="T:MonoAudio.IAsyncReadableAudioSource`2" />
         </member>
         <member name="T:MonoAudio.IWaveAggregator">
             <summary>
@@ -4896,6 +4974,68 @@
             <param name="a">a.</param>
             <param name="b">The b.</param>
             <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Pipeline.AudioBufferPool`2">
+            <summary>
+            Provides some audio buffers to a single pipeline.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.Pipeline.AudioBufferPool`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="T:MonoAudio.Pipeline.AudioPipe`2">
+            <summary>
+            Transfers audio buffers between two components.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="T:MonoAudio.Pipeline.IAudioPipelineComponent`2">
+            <summary>
+            Defines a base infrastructure of an audio pipeline component.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:MonoAudio.IAudioSource`2" />
+        </member>
+        <member name="M:MonoAudio.Pipeline.IAudioPipelineComponent`2.ProcessAsync(MonoAudio.ReadOnlyAudioBuffer{`0,`1})">
+            <summary>
+            Processes the <paramref name="input"/> asynchronously.
+            </summary>
+            <param name="input">The input buffer.</param>
+        </member>
+        <member name="T:MonoAudio.Pipeline.IAudioPipelineSource`2">
+            <summary>
+            Defines a base infrastructure of a readable audio pipeline component.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:MonoAudio.Pipeline.IAudioPipelineComponent`2" />
+            <seealso cref="T:MonoAudio.IAsyncReadableAudioSource`2" />
+            <seealso cref="T:MonoAudio.IReadableAudioSource`2" />
+        </member>
+        <member name="T:MonoAudio.Pipeline.IAudioPipelineTarget`2">
+            <summary>
+            Defines a base infrastructure of an audio pipeline input.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Pipeline.IAudioPipelineTarget`2.GetUnusedBuffersAsync">
+            <summary>
+            Gets the unused buffers asynchronously.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Pipeline.PipelineExtensions">
+             <summary>
+            
+             </summary>
         </member>
         <member name="T:MonoAudio.Primitives.DisposableArray`1">
             <summary>
@@ -5838,6 +5978,55 @@
             <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:MonoAudio.ReadOnlyAudioBuffer`2">
+            <summary>
+            Represents a read-only audio buffer.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Item(System.Int32)">
+            <summary>
+            Gets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioBuffer`2"/>.
+            </summary>
+            <value>
+            The element.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.AudioBuffer`2"/>.
+            </summary>
+            <value>
+            The length of this buffer.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
         <member name="T:MonoAudio.StoppedEventArgs">
             <summary>
             Represents an event arguments that tells you that something has (been) stopped and holds why.<br/>
@@ -6277,6 +6466,32 @@
             Resizes the buffer to the specified new size.
             </summary>
             <param name="newSize">The new size in bytes.</param>
+        </member>
+        <member name="T:MonoAudio.Utils.ContentSwapper`1">
+            <summary>
+            Swaps two <typeparamref name="T"/> instances.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:MonoAudio.Utils.ContentSwapper`1.#ctor(`0,`0)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Utils.ContentSwapper`1"/> class.
+            </summary>
+            <param name="initialVisibleValue">The value initial visible.</param>
+            <param name="initiallyHiddenValue">The value initially hidden.</param>
+        </member>
+        <member name="M:MonoAudio.Utils.ContentSwapper`1.Swap">
+            <summary>
+            Swaps two values of this instance.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Utils.ContentSwapper`1.Value">
+            <summary>
+            Gets the current value.
+            </summary>
+            <value>
+            The value.
+            </value>
         </member>
         <member name="T:System.ThrowHelper">
             <summary>

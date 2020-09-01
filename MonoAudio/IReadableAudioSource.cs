@@ -38,6 +38,6 @@ namespace MonoAudio
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        ValueTask<int> ReadAsync(Memory<TSample> buffer);
+        ValueTask<ReadResult> ReadAsync(Memory<TSample> buffer);
     }
 }
