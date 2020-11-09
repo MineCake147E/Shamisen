@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MonoAudio
 {
     /// <summary>
-    /// Represents a format of an sample source.
+    /// Represents a format of a sample source.
     /// </summary>
     public readonly struct SampleFormat : IAudioFormat<float>, IEquatable<SampleFormat>
     {
@@ -45,6 +46,24 @@ namespace MonoAudio
         /// The bit depth.
         /// </value>
         public int BitDepth => 32;
+
+        /// <summary>
+        /// Gets the value indicates how many <see cref="float"/> values are required per whole sample.<br/>
+        /// It depends on <see cref="IAudioFormat{TSample}.Channels"/>.
+        /// </summary>
+        /// <value>
+        /// The size of block.
+        /// </value>
+        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => Channels; }
+
+        /// <summary>
+        /// Gets the value indicates how many <see cref="float"/>s are required per 1-channel sample.<br/>
+        /// Does not depend on the number of <see cref="Channels"/>.<br/>
+        /// </summary>
+        /// <value>
+        /// The size of a frame in <see cref="float"/>s.
+        /// </value>
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => 1; }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="obj">An object to compare with this object.</param>

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+using MonoAudio.Codecs.Waveform.Parsing;
+using MonoAudio.Codecs.Waveform.Rf64;
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -47,7 +49,7 @@ namespace MonoAudio.Codecs.Waveform
         /// </value>
         public ulong RemainingBytes { get; private set; }
 
-        private IDataSource DataSource { get; set; }
+        private IDataSource<byte> DataSource { get; set; }
 
         private bool HasParent => !(Parent is null);
 
@@ -62,7 +64,7 @@ namespace MonoAudio.Codecs.Waveform
         public ulong TotalSize { get; }
 
         /// <summary>
-        /// Gets the current position of this <see cref="IDataSource" />.
+        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
         /// </summary>
         /// <value>
         /// The position.
@@ -76,13 +78,14 @@ namespace MonoAudio.Codecs.Waveform
         /// </summary>
         /// <param name="dataSource">The data source.</param>
         /// <exception cref="ArgumentNullException">dataSource</exception>
-        public RiffChunkReader(IDataSource dataSource)
+        public RiffChunkReader(IDataSource<byte> dataSource)
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             ChunkId = (ChunkId)DataSource.ReadUInt32LittleEndian();
             TotalSize = RemainingBytes = ChunkId switch
             {
                 ChunkId.Riff => dataSource.ReadUInt32LittleEndian(),
+                ChunkId.Rf64 => throw new ArgumentException($"Use {nameof(Rf64ChunkReader)} instead for decoding RF64 \"WAVE\" streams!"),
                 _ => throw new ArgumentException("The specified dataSource has invalid WAVE data!"),
             };
         }
@@ -108,7 +111,7 @@ namespace MonoAudio.Codecs.Waveform
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <returns>
-        /// The number of <see cref="byte" />s read from this <see cref="IDataSource" />.
+        /// The number of <see cref="byte" />s read from this <see cref="IDataSource{TSample}" />.
         /// </returns>
         public async ValueTask<ReadResult> ReadAsync(Memory<byte> destination)
             => CanPubliclyRead ? await ReadInternalAsync(destination)
@@ -201,6 +204,22 @@ namespace MonoAudio.Codecs.Waveform
                 {
                     return read;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Skips this data source the specified number of elements to skip.
+        /// </summary>
+        /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        public void Skip(ulong numberOfElementsToSkip)
+        {
+            if (HasParent)
+            {
+                Parent.Skip(numberOfElementsToSkip);
+            }
+            else
+            {
+                DataSource.Skip(numberOfElementsToSkip);
             }
         }
 

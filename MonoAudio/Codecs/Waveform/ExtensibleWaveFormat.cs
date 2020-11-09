@@ -21,7 +21,7 @@ namespace MonoAudio.Codecs.Waveform
         private readonly ushort validBitsPerSample;
 
         [FieldOffset(20)]
-        private readonly uint channelMask;
+        private readonly Speakers channelMask;
 
         [FieldOffset(24)]
         private readonly Guid subFormat;
@@ -38,7 +38,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <param name="channelMask">The channel mask.</param>
         /// <param name="subFormat">The sub format.</param>
         /// <param name="extraData">The extra data.</param>
-        public ExtensibleWaveFormat(StandardWaveFormat format, ushort extensionSize, ushort validBitsPerSample, uint channelMask, Guid subFormat, ReadOnlyMemory<byte> extraData)
+        public ExtensibleWaveFormat(StandardWaveFormat format, ushort extensionSize, ushort validBitsPerSample, Speakers channelMask, Guid subFormat, ReadOnlyMemory<byte> extraData)
         {
             this.format = format;
             this.extensionSize = extensionSize;
@@ -78,7 +78,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The channel mask.
         /// </value>
-        public uint ChannelMask => channelMask;
+        public Speakers ChannelMask => channelMask;
 
         /// <summary>
         /// Gets the sub format.
@@ -95,7 +95,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The size of block.
         /// </value>
-        public int BlockSize => ((IWaveFormat)Format).BlockSize;
+        public int BlockSize => Format.BlockSize;
 
         /// <summary>
         /// Gets the value indicates how the samples are encoded.
@@ -103,7 +103,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The sample encoding.
         /// </value>
-        public AudioEncoding Encoding => ((IWaveFormat)Format).Encoding;
+        public AudioEncoding Encoding => Format.Encoding;
 
         /// <summary>
         /// Gets the number of channels.
@@ -112,7 +112,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The number of channels.
         /// </value>
-        public int Channels => ((IWaveFormat)Format).Channels;
+        public int Channels => Format.Channels;
 
         /// <summary>
         /// Gets the number indicates how many times the audio signal is sampled.
@@ -120,7 +120,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The sample rate.
         /// </value>
-        public int SampleRate => ((IWaveFormat)Format).SampleRate;
+        public int SampleRate => Format.SampleRate;
 
         /// <summary>
         /// Gets the number indicates how many bits are consumed per every single 1-channel sample.
@@ -129,7 +129,15 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The bit depth.
         /// </value>
-        public int BitDepth => ((IWaveFormat)Format).BitDepth;
+        public int BitDepth => Format.BitDepth;
+
+        /// <summary>
+        /// Gets the size of the frame.
+        /// </summary>
+        /// <value>
+        /// The size of the frame.
+        /// </value>
+        public int SampleSize => Format.SampleSize;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

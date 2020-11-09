@@ -8,7 +8,7 @@ using MonoAudio.Data;
 
 namespace MonoAudio.Core.Tests.CoreFx
 {
-    public class DummyDataSource : IDataSource
+    public class DummyDataSource : IDataSource<byte>
     {
         private bool disposedValue;
 

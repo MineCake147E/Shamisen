@@ -14,8 +14,9 @@ using MonoAudio.Codecs.Waveform;
 using MonoAudio.Codecs.Waveform.Riff;
 using System.IO;
 using MonoAudio.Data.Binary;
+using MonoAudio.Data;
 
-namespace MonoAudio.Core.Tests.CoreFx
+namespace MonoAudio.Core.Tests.CoreFx.Codecs.Waveform
 {
     [TestFixture]
     public class RiffChunkReaderTest
@@ -38,14 +39,14 @@ namespace MonoAudio.Core.Tests.CoreFx
             BinaryPrimitives.WriteUInt16LittleEndian(testData.Slice(34), 16);
             BinaryPrimitives.WriteUInt32LittleEndian(testData.Slice(36), (uint)ChunkId.Data);
             BinaryPrimitives.WriteUInt32LittleEndian(testData.Slice(40), 128 - 44);
-            using (var ms = new MemoryStream())
+            using (var ms = new DataCache<byte>())
             {
                 ms.Write(testData);
-                _ = ms.Seek(0, SeekOrigin.Begin);
+                ms.Seek(0, SeekOrigin.Begin);
                 RiffChunkReader riffReader = null;
                 Assert.Multiple(() =>
                 {
-                    Assert.DoesNotThrow(() => riffReader = new RiffChunkReader(new DummyDataSource(ms)));
+                    Assert.DoesNotThrow(() => riffReader = new RiffChunkReader(ms));
                     Assert.NotNull(riffReader);
                     Assert.AreEqual((uint)RiffSubChunkId.Wave, riffReader.ReadUInt32LittleEndian());
                     IChunkReader fmt = null;

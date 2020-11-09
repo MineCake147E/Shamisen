@@ -90,7 +90,7 @@ namespace MonoAudio.IO.Android
             AudioAttributes attributes;
             AudioFormat format;
             int latencyInFrames = (int)(source.Format.SampleRate * Latency.TotalSeconds / 2.0);
-            bufferSizeInBytes = latencyInFrames * source.Format.GetFrameSize();
+            bufferSizeInBytes = latencyInFrames * source.Format.GetFrameSizeInBytes();
             buffer = new byte[bufferSizeInBytes];
             using (var attributesBuilder = new AudioAttributes.Builder())
             using (var formatBuilder = new AudioFormat.Builder())

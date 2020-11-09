@@ -158,7 +158,7 @@ namespace MonoAudio.Tests.IO.Droid
                 var resam = new SplineResampler(sin, DestinationSampleRate);
                 var vol = new Attenuator(resam) { Scale = Scale };
                 var conv = new SampleToFloat32Converter(vol);
-                var buffer = new byte[192 * conv.Format.GetFrameSize()];
+                var buffer = new byte[192 * conv.Format.GetFrameSizeInBytes()];
                 var lenToWrite = TimeSpan.FromSeconds(10);
                 var bytesToWtite = conv.Format.GetBufferSizeRequired(lenToWrite);
                 var blocksToWrite = bytesToWtite / buffer.Length;
@@ -220,7 +220,7 @@ namespace MonoAudio.Tests.IO.Droid
                     BinaryPrimitives.WriteInt32LittleEndian(bytebuf.Skip(24), conv.Format.SampleRate);   //nSamplesPerSec
                     BinaryPrimitives.WriteInt32LittleEndian(bytebuf.Skip(28),
                         conv.Format.GetBufferSizeRequired(TimeSpan.FromSeconds(1)));   //nAvgBytesPerSec
-                    BinaryPrimitives.WriteInt16LittleEndian(bytebuf.Skip(32), (short)conv.Format.GetFrameSize());   //nBlockAlign
+                    BinaryPrimitives.WriteInt16LittleEndian(bytebuf.Skip(32), (short)conv.Format.GetFrameSizeInBytes());   //nBlockAlign
                     BinaryPrimitives.WriteInt16LittleEndian(bytebuf.Skip(34), (short)conv.Format.BitDepth);   //wBitsPerSample
                     BinaryPrimitives.WriteInt32LittleEndian(bytebuf.Skip(42), bytesToWtite);   //wBitsPerSample
                     st.Write(bytebuf);

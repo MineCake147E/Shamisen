@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -60,5 +61,19 @@ namespace MonoAudio.Codecs.Waveform
         */
 
         #endregion Fmt
+
+        /// <summary>
+        /// Determines whether the specified <paramref name="chunkId"/> represents JUNK chunk.
+        /// </summary>
+        /// <param name="chunkId">The chunk identifier.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <paramref name="chunkId"/> represents JUNK chunk; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsJunkChunk(this ChunkId chunkId)
+        {
+            //UPPER to lower conversion
+            var ckid = (uint)chunkId | 0x2020_2020u;
+            return (ChunkId)ckid == ChunkId.JunkSmall;
+        }
     }
 }

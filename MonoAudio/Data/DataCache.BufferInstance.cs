@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MonoAudio.Data
 {
-    public sealed partial class DataCache
+    public sealed partial class DataCache<TSample> where TSample : unmanaged
     {
         private sealed class BufferInstance : IDisposable
         {
-            private byte[] actualBuffer;
+            private TSample[] actualBuffer;
 
-            private int writeHead;
-            public Memory<byte> WriteHead => actualBuffer.AsMemory(writeHead);
+            private int writePosition;
+            public Memory<TSample> WriteHead => actualBuffer.AsMemory(writePosition);
 
-            private int readHead;
-            public Memory<byte> ReadHead => actualBuffer.AsMemory(readHead).Slice(0, writeHead);
+            public Memory<TSample> ReadHead => actualBuffer.AsMemory().Slice(ReadPosition, writePosition - ReadPosition);
 
             public bool IsFull => WriteHead.IsEmpty;
 
@@ -23,46 +23,60 @@ namespace MonoAudio.Data
 
             private bool disposedValue;
 
-            public BufferInstance(byte[] actualBuffer)
+            public ulong InitialIndex { get; }
+
+            public ulong NextIndex => InitialIndex + (ulong)actualBuffer.Length;
+
+            public int ReadPosition { get; set; }
+
+            public BufferInstance(TSample[] actualBuffer, ulong initialIndex)
             {
                 this.actualBuffer = actualBuffer ?? throw new ArgumentNullException(nameof(actualBuffer));
-                writeHead = 0;
-                readHead = 0;
+                InitialIndex = initialIndex;
+                writePosition = 0;
+                ReadPosition = 0;
                 disposedValue = false;
             }
 
-            public int Write(ReadOnlySpan<byte> data)
+            public int CompareRegion(ulong globalIndex)
+            {
+                bool a = globalIndex >= InitialIndex;
+                bool b = globalIndex < NextIndex;
+                return Unsafe.As<bool, byte>(ref a) - Unsafe.As<bool, byte>(ref b);
+            }
+
+            public int Write(ReadOnlySpan<TSample> data)
             {
                 if (IsFull) return 0;
                 var whead = WriteHead;
                 if (data.Length >= whead.Length)
                 {
                     data.Slice(0, whead.Length).CopyTo(whead.Span);
-                    writeHead += whead.Length;
+                    writePosition += whead.Length;
                     return whead.Length;
                 }
                 else
                 {
                     data.CopyTo(whead.Span.Slice(0, data.Length));
-                    writeHead += data.Length;
+                    writePosition += data.Length;
                     return data.Length;
                 }
             }
 
-            public ReadResult Read(Span<byte> destination)
+            public ReadResult Read(Span<TSample> destination)
             {
                 if (HasNoDataToRead) return ReadResult.EndOfStream;
                 var rhead = ReadHead;
                 if (destination.Length >= rhead.Length)
                 {
-                    ReadHead.Span.CopyTo(destination.Slice(rhead.Length));
-                    readHead += rhead.Length;
+                    rhead.Span.CopyTo(destination.Slice(0, rhead.Length));
+                    ReadPosition += rhead.Length;
                     return rhead.Length;
                 }
                 else
                 {
                     rhead.Span.Slice(0, destination.Length).CopyTo(destination);
-                    readHead += destination.Length;
+                    ReadPosition += destination.Length;
                     return destination.Length;
                 }
             }

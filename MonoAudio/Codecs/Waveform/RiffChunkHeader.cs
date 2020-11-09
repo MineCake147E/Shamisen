@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -63,7 +64,7 @@ namespace MonoAudio.Codecs.Waveform
         /// </summary>
         /// <param name="dataSource">The data source.</param>
         /// <returns>The deserialized chunk header.</returns>
-        public static RiffChunkHeader ReadChunkHeader(IDataSource dataSource)
+        public static RiffChunkHeader ReadChunkHeader(IDataSource<byte> dataSource)
         {
             var ckId = (ChunkId)dataSource.ReadUInt32LittleEndian();
             var ckLen = dataSource.ReadUInt32LittleEndian();

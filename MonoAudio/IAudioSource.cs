@@ -27,12 +27,13 @@ namespace MonoAudio
         /// <summary>
         /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
         /// Some implementation could not support this property.
+        /// The implementation which doesn't support this property entirely(without depending on source) must have an <see cref="ObsoleteAttribute"/> and cause an compile-time error.
         /// </summary>
         long Position { get; set; }
 
         /// <summary>
         /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
-        /// -1 Means Infinity.
+        /// Negative value Means Infinity.
         /// </summary>
         long Length { get; }
     }

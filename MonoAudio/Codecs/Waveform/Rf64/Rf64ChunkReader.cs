@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+
+using MonoAudio.Codecs.Waveform.Parsing;
 using MonoAudio.Data;
 using MonoAudio.Data.Binary;
 
@@ -20,7 +23,7 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         /// <value>
         ///   <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.
         /// </value>
-        public bool CanPubliclyRead => CurrentSubChunk is null;
+        public bool CanPubliclyRead => CurrentSubChunk is null || CurrentSubChunk.RemainingBytes < 1;
 
         /// <summary>
         /// Gets the current chunk identifier.
@@ -46,14 +49,22 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         /// </value>
         public ulong RemainingBytes { get; private set; }
 
-        private IDataSource DataSource { get; set; }
+        private IDataSource<byte> DataSource { get; set; }
+
+        /// <summary>
+        /// Gets the parser.
+        /// </summary>
+        /// <value>
+        /// The parser.
+        /// </value>
+        public IRf64Parser Parser { get; }
 
         private bool HasParent => !(Parent is null);
 
-        private Rf64ChunkReader Parent { get; }
+        private Rf64ChunkReader Parent { get; set; }
 
         /// <summary>
-        /// Gets the current position of this <see cref="IDataSource" />.
+        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
         /// </summary>
         /// <value>
         /// The position.
@@ -66,27 +77,59 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         /// <value>
         /// The total size.
         /// </value>
-        public ulong TotalSize { get; }
+        public ulong TotalSize { get; private set; }
 
         private static readonly string ExceptionMessageOnIllegalRead = $"The {nameof(Rf64ChunkReader)} is occupied by sub chunk reader!";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Rf64ChunkReader"/> class that reads <see cref="ChunkId.Riff"/> chunk.
+        /// Initializes a new instance of the <see cref="Rf64ChunkReader" /> class that reads <see cref="ChunkId.Riff" /> and <see cref="ChunkId.Rf64" /> chunk.
         /// </summary>
         /// <param name="dataSource">The data source.</param>
+        /// <param name="parser">The RF64 parser instance.</param>
+        /// <param name="totalSizeSetter">A method to set the <see cref="TotalSize"/>.</param>
         /// <exception cref="ArgumentNullException">dataSource</exception>
-        public Rf64ChunkReader(IDataSource dataSource)
+        public Rf64ChunkReader(IDataSource<byte> dataSource, IRf64Parser parser, out StackOnlyActionContainer<ulong> totalSizeSetter)
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-            ChunkId = (ChunkId)DataSource.ReadUInt32LittleEndian();
-            TotalSize = RemainingBytes = 0; //TODO: RF64 support
+            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            ChunkId = (ChunkId)dataSource.ReadUInt32LittleEndian();
+            TotalSize = RemainingBytes = dataSource.ReadUInt32LittleEndian();
+            totalSizeSetter = TotalSize == uint.MaxValue
+                ? new StackOnlyActionContainer<ulong>((size) =>
+                {
+                    TotalSize = size;
+                    var read = RemainingBytes - uint.MaxValue;
+                    RemainingBytes = read + TotalSize;
+                })
+                : new StackOnlyActionContainer<ulong>((size) => { });
         }
 
-        private Rf64ChunkReader(Rf64ChunkReader parent)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rf64ChunkReader" /> class that reads <see cref="ChunkId.Riff" /> and <see cref="ChunkId.Rf64" /> chunk.
+        /// </summary>
+        /// <param name="dataSource">The data source.</param>
+        /// <param name="parser">The RF64 parser instance.</param>
+        /// <exception cref="ArgumentNullException">dataSource</exception>
+        public Rf64ChunkReader(IDataSource<byte> dataSource, IRf64Parser parser)
+        {
+            DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            ChunkId = (ChunkId)dataSource.ReadUInt32LittleEndian();
+            TotalSize = RemainingBytes = dataSource.ReadUInt32LittleEndian();
+        }
+
+        private Rf64ChunkReader(Rf64ChunkReader parent, IRf64Parser parser)
         {
             DataSource = Parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            ChunkId = (ChunkId)parent.ReadUInt32LittleEndian();
-            TotalSize = RemainingBytes = 0; //TODO: RF64 support
+            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            var chunkId = (ChunkId)parent.ReadUInt32LittleEndian();
+            ChunkId = chunkId;
+            ulong size = parent.ReadUInt32LittleEndian();
+            if (size == uint.MaxValue)
+            {
+                size = parser.GetSizeForNextChunk(chunkId);
+            }
+            TotalSize = RemainingBytes = size;
         }
 
         /// <summary>
@@ -103,7 +146,7 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <returns>
-        /// The number of <see cref="byte" />s read from this <see cref="IDataSource" />.
+        /// The number of <see cref="byte" />s read from this <see cref="IDataSource{TSample}" />.
         /// </returns>
         public async ValueTask<ReadResult> ReadAsync(Memory<byte> destination)
             => CanPubliclyRead ? await ReadInternalAsync(destination)
@@ -116,7 +159,7 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         public IChunkReader ReadSubChunk()
         {
             if (!CanPubliclyRead) throw new InvalidOperationException(ExceptionMessageOnIllegalRead);
-            var g = new Rf64ChunkReader(this);
+            var g = new Rf64ChunkReader(this, Parser);
             CurrentSubChunk = g;
             return g;
         }
@@ -199,6 +242,23 @@ namespace MonoAudio.Codecs.Waveform.Rf64
             }
         }
 
+        /// <summary>
+        /// Skips this data source the specified number of elements to skip.
+        /// </summary>
+        /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        public void Skip(ulong numberOfElementsToSkip)
+        {
+            if (HasParent)
+            {
+                Parent.Skip(numberOfElementsToSkip);
+            }
+            else
+            {
+                DataSource.Skip(numberOfElementsToSkip);
+            }
+            RemainingBytes -= numberOfElementsToSkip;
+        }
+
         #region IDisposable Support
 
         /// <summary>
@@ -216,10 +276,16 @@ namespace MonoAudio.Codecs.Waveform.Rf64
             {
                 if (disposing)
                 {
-                    //
+#pragma warning disable S1066 // Collapsible "if" statements should be merged
+                    if (RemainingBytes > 0 && HasParent)
+#pragma warning restore S1066 // Collapsible "if" statements should be merged
+                    {
+                        Parent.Skip(RemainingBytes);
+                    }
                 }
 
                 DataSource = null;
+                Parent = null;
                 disposedValue = true;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -20,6 +21,7 @@ namespace MonoAudio
         /// <param name="isDisposed">if set to <c>true</c> it throws.</param>
         /// <exception cref="ObjectDisposedException">This instance of <typeparamref name="T"/> is disposed!</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [DebuggerNonUserCode]
         internal static void ThrowIfDisposed<T>(this T instance, bool isDisposed) where T : IDisposable
         {
             if (isDisposed) throw new ObjectDisposedException(typeof(T).Name);

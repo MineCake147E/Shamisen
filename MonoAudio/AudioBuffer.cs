@@ -37,7 +37,7 @@ namespace MonoAudio
         public AudioBuffer(TFormat format, int sizeInFrames)
         {
             Format = format;
-            Memory = new TSample[format.GetFrameSize() / Unsafe.SizeOf<TSample>() * sizeInFrames];
+            Memory = new TSample[format.GetFrameSizeInBytes() / Unsafe.SizeOf<TSample>() * sizeInFrames];
         }
 
         /// <summary>

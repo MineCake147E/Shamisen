@@ -704,22 +704,22 @@
             Defines a base infrastructure of an audio decoder.
             </summary>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.DetermineDecodabilityAsync(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.IDecoder.DetermineDecodabilityAsync(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="dataSource"/> can be decoded by this decoder asynchronously.<br/>
             The actual decoding stream must be opened after seeking the source <see cref="T:System.IO.Stream"/> to head.
             </summary>
-            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource"/> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource`1"/> to read the data from.</param>
             <returns>
             The whole verification task which returns the value below:<br/>
             <c>true</c> if the data from <paramref name="dataSource"/> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoderAsync(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.IDecoder.TryCreateDecoderAsync(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource"/>.
             </summary>
-            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource"/> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource`1"/> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource"/>.
@@ -776,87 +776,127 @@
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Riff">
             <summary>
-            The RIFF chunk read in Little Endian.
+            The RIFF chunk "RIFF" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Rf64">
             <summary>
-            The RF64 chunk read in Little Endian.
+            The RF64 chunk "RF64" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Bw64">
+            <summary>
+            The BWF chunk "bw64" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Rf64DataSize">
+            <summary>
+            The RF64/BWF data size chunk "ds64" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Format">
             <summary>
-            The "fmt " chunk read in Little Endian.
+            The format chunk "fmt " read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Fact">
             <summary>
-            The fact chunk read in Little Endian.
+            The fact chunk "fact" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Data">
             <summary>
-            The data chunk read in Little Endian.
+            The data chunk "data" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.WaveList">
             <summary>
-            The Wave List chunk read in Little Endian.
+            The Wave List chunk "wavl" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Silent">
             <summary>
-            The silent chunk read in Little Endian.
+            The silent chunk "slnt" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Cue">
             <summary>
-            The cue chunk read in Little Endian.
+            The cue chunk "cue " read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Playlist">
             <summary>
-            The playlist chunk read in Little Endian.
+            The playlist chunk "plst" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.AssociatedDataList">
             <summary>
-            The associated data list chunk read in Little Endian.
+            The associated data list chunk "list" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Label">
             <summary>
-            The label chunk read in Little Endian.
+            The label chunk "labl" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Note">
             <summary>
-            The note chunk read in Little Endian.
+            The note chunk "note" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.LabeledText">
             <summary>
-            The labeled text chunk read in Little Endian.
+            The labeled text chunk "ltxt" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Sampler">
             <summary>
-            The sampler chunk read in Little Endian.
+            The sampler chunk "smpl" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.Instrument">
             <summary>
-            The instrument chunk read in Little Endian.
+            The instrument chunk "inst" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.JunkLarge">
             <summary>
-            The JUNK chunk read in Little Endian.
+            The JUNK chunk "JUNK" read in Little Endian.
             </summary>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.ChunkId.JunkSmall">
             <summary>
-            The junk chunk read in Little Endian.
+            The junk chunk "junk" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.MetadataRawAXml">
+            <summary>
+            The raw XML metadata chunk "axml" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.MetadataCompressedBinaryXml">
+            <summary>
+            The compressed binary XML metadata chunk "bxml" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.MetadataSubXmlList">
+            <summary>
+            The XML list metadata chunk "sxml" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.MetadataAudioDefinitionModel">
+            <summary>
+            The metadata chunk of ITU-R BS.2076-2 audio definition model "chna" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.AssociatedDataListUpperCase">
+            <summary>
+            The riff metadata chunk "LIST" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.ChunkId.MetadataId3">
+            <summary>
+            The id3 metadata chunk "id3 " read in Little Endian.
             </summary>
         </member>
         <member name="T:MonoAudio.Codecs.Waveform.ChunkUtils">
@@ -864,12 +904,21 @@
             Provides a utility function that manipulates chunks in WAVE file.
             </summary>
         </member>
+        <member name="M:MonoAudio.Codecs.Waveform.ChunkUtils.IsJunkChunk(MonoAudio.Codecs.Waveform.ChunkId)">
+            <summary>
+            Determines whether the specified <paramref name="chunkId"/> represents JUNK chunk.
+            </summary>
+            <param name="chunkId">The chunk identifier.</param>
+            <returns>
+              <c>true</c> if the specified <paramref name="chunkId"/> represents JUNK chunk; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat">
             <summary>
             Represents an "extensible" wave format.
             </summary>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.#ctor(MonoAudio.Codecs.Waveform.StandardWaveFormat,System.UInt16,System.UInt16,System.UInt32,System.Guid,System.ReadOnlyMemory{System.Byte})">
+        <member name="M:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.#ctor(MonoAudio.Codecs.Waveform.StandardWaveFormat,System.UInt16,System.UInt16,MonoAudio.Speakers,System.Guid,System.ReadOnlyMemory{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat"/> struct.
             </summary>
@@ -961,6 +1010,14 @@
             </summary>
             <value>
             The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.SampleSize">
+            <summary>
+            Gets the size of the frame.
+            </summary>
+            <value>
+            The size of the frame.
             </value>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.Equals(System.Object)">
@@ -1070,23 +1127,169 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:MonoAudio.Codecs.Waveform.Formats.IFormatDataParser">
+        <member name="T:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser">
             <summary>
-            Defines a base infrastructure of a WAVE audio decoder.
+            Parses n-bit Linear and IEEE 754 floating point PCM data chunk.
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.IWaveformChunkParser" />
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.#ctor(MonoAudio.Codecs.Waveform.IChunkReader,MonoAudio.IWaveFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="format">The format.</param>
+            <exception cref="T:System.ArgumentNullException">
+            source
+            or
+            format
+            </exception>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.ChunkLength">
+            <summary>
+            Gets the length of this chunk excluding header 8 bytes.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Source">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The source chunk reader.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
             </summary>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.Formats.IFormatDataParser.Initialize(MonoAudio.Codecs.Waveform.IChunkReader)">
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Format">
             <summary>
-            Initializes the <see cref="T:MonoAudio.Codecs.Waveform.Formats.IFormatDataParser"/> with the specified fact chunk.
+            Gets the format of the audio data.
             </summary>
-            <param name="header">The header.</param>
-            <param name="chunkReader">The chunk reader to read a fact chunk from.</param>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2" /> is.
+            Some implementation could not support this property.
+            </summary>
+            <value>
+            The position.
+            </value>
+            <exception cref="T:System.NotSupportedException">
+            </exception>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            Negative value Means Infinity.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser">
+            <summary>
+            Parses fmt chunks for PCM-Like files.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.#ctor(MonoAudio.Codecs.Waveform.IChunkReader,MonoAudio.AudioEncoding)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser" /> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="encoding">The encoding.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.RequireFactChunk">
+            <summary>
+            Gets a value indicating whether the format requires a fact chunk.
+            </summary>
+            <value>
+              <c>true</c> if the format requires a fact chunk; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.Data">
+            <summary>
+            Gets the stored data.<br />
+            The data must be parsed at initialization.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.ChunkLength">
+            <summary>
+            Gets the length of this chunk excluding header 8 bytes.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.Source">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The source chunk reader.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.GetWaveformChunkParser(MonoAudio.Codecs.Waveform.IChunkReader,MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer)">
+            <summary>
+            Gets the waveform chunk parser.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+            <param name="rf64ChunkSizeContainer">The container of informations about the size of certain chunks.</param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.ParseFactChunk(MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Parses the fact chunk.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Formats.LinearPcm.PcmFormatChunkParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
         </member>
         <member name="T:MonoAudio.Codecs.Waveform.IChunkReader">
             <summary>
             Defines a base infrastructure of a chunk reader.
             </summary>
-            <seealso cref="T:MonoAudio.Data.IDataSource" />
+            <seealso cref="T:MonoAudio.Data.IDataSource`1" />
         </member>
         <member name="P:MonoAudio.Codecs.Waveform.IChunkReader.ChunkId">
             <summary>
@@ -1098,7 +1301,7 @@
         </member>
         <member name="P:MonoAudio.Codecs.Waveform.IChunkReader.TotalSize">
             <summary>
-            Gets the total size of this chunk.
+            Gets the total size of this chunk excluding the 8 bytes of header.
             </summary>
             <value>
             The total size.
@@ -1122,7 +1325,7 @@
         </member>
         <member name="P:MonoAudio.Codecs.Waveform.IChunkReader.CanPubliclyRead">
             <summary>
-            Gets a value indicating whether this instance can be read by <see cref="M:MonoAudio.Data.IDataSource.Read(System.Span{System.Byte})"/> and <see cref="M:MonoAudio.Data.IDataSource.ReadAsync(System.Memory{System.Byte})"/>.
+            Gets a value indicating whether this instance can be read by <see cref="M:MonoAudio.Data.IDataSource`1.Read(System.Span{`0})"/> and <see cref="M:MonoAudio.Data.IDataSource`1.ReadAsync(System.Memory{`0})"/>.
             </summary>
             <value>
               <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.
@@ -1145,6 +1348,586 @@
             Reverses endianness for all fields, and returns a new value.
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.InfoSubChunkId">
+            <summary>
+            Represents a subchunk ID for waveform "LIST" chunk in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.ArchivalLocation">
+            <summary>
+            The Archival Location subchunk "IARL" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Artist">
+            <summary>
+            The Artist subchunk "IART" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Commissioned">
+            <summary>
+            The Commissioned subchunk "ICMS" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Comments">
+            <summary>
+            The Comments subchunk "ICMT" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Copyright">
+            <summary>
+            The Copyright subchunk "ICOP" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.CreationDate">
+            <summary>
+            The Creation Date subchunk "ICRD" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Cropped">
+            <summary>
+            The Cropped subchunk "ICRP" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Dimensions">
+            <summary>
+            The Dimensions subchunk "IDIM" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.DotsPerInch">
+            <summary>
+            The Dots Per Inch subchunk "IDPI" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Engineer">
+            <summary>
+            The Engineer subchunk "IENG" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Genre">
+            <summary>
+            The Genre subchunk "IGNR" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Keywords">
+            <summary>
+            The Keywords subchunk "IKEY" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Lightness">
+            <summary>
+            The Lightness subchunk "ILGT" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Medium">
+            <summary>
+            The Medium subchunk "IMED" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Name">
+            <summary>
+            The Name subchunk "INAM" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.PaletteSetting">
+            <summary>
+            The Palette Setting subchunk "IPLT" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Product">
+            <summary>
+            The Product subchunk "IPRD" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Subject">
+            <summary>
+            The Subject subchunk "ISBJ" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Software">
+            <summary>
+            The Software subchunk "ISFT" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Sharpness">
+            <summary>
+            The Sharpness subchunk "ISHP" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Source">
+            <summary>
+            The Source subchunk "ISRC" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.SourceForm">
+            <summary>
+            The SourceForm subchunk "ISRF" read in Little Endian.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.InfoSubChunkId.Technician">
+            <summary>
+            The Technician subchunk "ITCH" read in Little Endian.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFactChunkParser">
+            <summary>
+            Defines a base infrastructure of a "fact" chunk parser.
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParserWithSingleData`1" />
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFormatChunkParser">
+            <summary>
+            Defines a base infrastructure of a parser for "fmt " chunk.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFormatChunkParser.RequireFactChunk">
+            <summary>
+            Gets a value indicating whether the format requires a fact chunk.
+            </summary>
+            <value>
+              <c>true</c> if the format requires a fact chunk; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFormatChunkParser.GetWaveformChunkParser(MonoAudio.Codecs.Waveform.IChunkReader,MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer)">
+            <summary>
+            Gets the waveform chunk parser.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+            <param name="rf64ChunkSizeContainer">The container of informations about the size of certain chunks.</param>
+            <exception cref="T:System.InvalidOperationException">The <see cref="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFormatChunkParser"/> didn't parse a required "fact" chunk.</exception>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.Chunks.IFormatChunkParser.ParseFactChunk(MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Parses the fact chunk.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.IWaveformChunkParser">
+            <summary>
+            Parses a ".wav" file into waveform data.
+            Applicable for chunks like <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.WaveList"/>, <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Silent"/>, and <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Data"/>
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParser" />
+            <seealso cref="T:MonoAudio.IWaveSource" />
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser">
+            <summary>
+            Parses "JUNK", "PAD ", and non-supported chunks.
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParser" />
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser.#ctor(MonoAudio.Codecs.Waveform.ChunkId,System.UInt64,MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser"/> class.
+            </summary>
+            <param name="chunkId">The chunk identifier.</param>
+            <param name="chunkLength">Length of the chunk.</param>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser.ChunkLength">
+            <summary>
+            Gets the length of this chunk excluding header 8 bytes.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser.Source">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The source chunk reader.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.Chunks.JunkChunkParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParser">
+            <summary>
+            Parses a wave sub-chunk.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IChunkParser.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IChunkParser.ChunkLength">
+            <summary>
+            Gets the length of this chunk excluding header 8 bytes.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IChunkParser.Source">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The source chunk reader.
+            </value>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParserWithSingleData`1">
+            <summary>
+            Parses a wave sub-chunk with certain data.
+            </summary>
+            <typeparam name="T">The type of stored data.</typeparam>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IChunkParserWithSingleData`1.Data">
+            <summary>
+            Gets the stored data.<br/>
+            The data must be parsed at initialization.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParserWithMultipleData`1">
+            <summary>
+            Parses a wave sub-chunk with certain multiple data.
+            </summary>
+            <typeparam name="T">The type of stored data.</typeparam>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IChunkParserFactory">
+            <summary>
+            Defines a base infrastructure of a chunk-parser factory.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.IChunkParserFactory.GetChunkParser(MonoAudio.Codecs.Waveform.ChunkId,MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Gets the chunk parser for the specified <paramref name="id"/>.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="chunkReader">The source chunk reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.IChunkParserFactory.GetFormatChunkParser(MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Gets the format chunk parser.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer">
+            <summary>
+            Defines a base structure that contains informations about the size of certain chunks.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer.RiffSize">
+            <summary>
+            Gets the size of the RF64 chunk.
+            </summary>
+            <value>
+            The size of the RF64 chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer.DataSize">
+            <summary>
+            Gets the size of the data chunk.
+            </summary>
+            <value>
+            The size of the data chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer.SampleCount">
+            <summary>
+            Gets the sample count in the fact chunk.
+            </summary>
+            <value>
+            The sample count in the fact chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer.ChunkSizeTable">
+            <summary>
+            Gets the chunk size table.
+            </summary>
+            <value>
+            The chunk size table.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.IRf64ChunkSizeContainer.GetSizeForNextChunk(MonoAudio.Codecs.Waveform.ChunkId)">
+            <summary>
+            Gets the size for next chunk with specified <paramref name="id"/>.<br/>
+            This function must not be called more than once for single chunk.
+            </summary>
+            <param name="id">The chunk identifier.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IWaveParser">
+            <summary>
+            Decodes a ".wav" file from <see cref="T:MonoAudio.Codecs.Waveform.IChunkReader"/>.<br/>
+            The instance of <see cref="T:MonoAudio.Codecs.Waveform.Parsing.IWaveParser"/> must be ready to <see cref="M:MonoAudio.IReadableAudioSource`2.Read(System.Span{`0})"/> after the instance is initialized with its constructor.
+            </summary>
+            <seealso cref="T:MonoAudio.IWaveSource" />
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IWaveParser.ChunkParserFactory">
+            <summary>
+            Gets the chunk parser factory.
+            </summary>
+            <value>
+            The chunk parser factory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.IWaveParser.ChunkReader">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The chunk reader.
+            </value>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.IRf64Parser">
+            <summary>
+            Decodes an RF64 ".wav" file from <see cref="T:MonoAudio.Codecs.Waveform.IChunkReader"/>.
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.IWaveParser" />
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.RegisterableChunkParserFactory">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.SimpleChunkParserFactory">
+            <summary>
+            Constructs simple chunk parsers and discards any metadata chunks.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleChunkParserFactory.GetChunkParser(MonoAudio.Codecs.Waveform.ChunkId,MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Gets the chunk parser for the specified <paramref name="id" />.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="chunkReader">The source chunk reader.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleChunkParserFactory.GetFormatChunkParser(MonoAudio.Codecs.Waveform.IChunkReader)">
+            <summary>
+            Gets the format chunk parser.
+            </summary>
+            <param name="chunkReader">The chunk reader.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser">
+            <summary>
+            Parses ".wav" files from <see cref="T:MonoAudio.Codecs.Waveform.IChunkReader"/>
+            </summary>
+            <seealso cref="T:MonoAudio.Codecs.Waveform.Parsing.IWaveParser" />
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.CanSeek">
+            <summary>
+            Gets or sets whether the <see cref="T:MonoAudio.IAudioSource`2"/> supports seeking or not.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.ChunkParserFactory">
+            <summary>
+            Gets the chunk parser factory.
+            </summary>
+            <value>
+            The chunk parser factory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.ChunkReader">
+            <summary>
+            Gets the source chunk reader.
+            </summary>
+            <value>
+            The chunk reader.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.ChunkSizeTable">
+            <summary>
+            Gets the chunk size table.
+            </summary>
+            <value>
+            The chunk size table.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.DataSize">
+            <summary>
+            Gets the size of the data chunk.
+            </summary>
+            <value>
+            The size of the data chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Length">
+            <summary>
+            Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
+            Negative value Means Infinity.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Position">
+            <summary>
+            Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.RiffSize">
+            <summary>
+            Gets the size of the RF64 chunk.
+            </summary>
+            <value>
+            The size of the RF64 chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.SampleCount">
+            <summary>
+            Gets the sample count in the fact chunk.
+            </summary>
+            <value>
+            The sample count in the fact chunk.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Metadata">
+            <summary>
+            Gets the metadata.
+            </summary>
+            <value>
+            The metadata.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.#ctor(MonoAudio.Codecs.Waveform.Parsing.IChunkParserFactory,MonoAudio.Data.IDataSource{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser" /> class.
+            </summary>
+            <param name="chunkParserFactory">The chunk parser factory.</param>
+            <param name="dataSource">The data source for whole WAVE file.</param>
+            <exception cref="T:System.ArgumentNullException">chunkParserFactory
+            or
+            chunkReader</exception>
+            <exception cref="T:System.NotSupportedException">The \"{chars}\" file is not supported!</exception>
+            <exception cref="T:System.IO.InvalidDataException">
+            The first chunk wasn't \"ds64\"!
+            or
+            "fmt " chunk not found!
+            or
+            "fact" chunk not found!
+            or
+            The "wavl" and "slnt" chunks are not currently supported!
+            </exception>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.GetSizeForNextChunk(MonoAudio.Codecs.Waveform.ChunkId)">
+            <summary>
+            Gets the size for next chunk with specified <paramref name="id" />.<br />
+            This function must not be called more than once for single chunk.
+            </summary>
+            <param name="id">The chunk identifier.</param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException">When the parser is nor parsing RF64 data.</exception>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Parsing.SimpleWaveParser.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry">
+            <summary>
+            Represents a chunk's size entry of RF64.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.Id">
+            <summary>
+            The identifier of the corresponding chunk.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.ChunkSize">
+            <summary>
+            The chunk size.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.#ctor(MonoAudio.Codecs.Waveform.ChunkId,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> struct.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="chunkSize">Size of the chunk.</param>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.Equals(MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.op_Equality(MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry,MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry.op_Inequality(MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry,MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.Codecs.Waveform.Rf64.ChunkSizeTableEntry"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader">
             <summary>
@@ -1183,9 +1966,17 @@
             The remaining bytes.
             </value>
         </member>
+        <member name="P:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.Parser">
+            <summary>
+            Gets the parser.
+            </summary>
+            <value>
+            The parser.
+            </value>
+        </member>
         <member name="P:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.Position">
             <summary>
-            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource" />.
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </summary>
             <value>
             The position.
@@ -1199,11 +1990,21 @@
             The total size.
             </value>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(MonoAudio.Data.IDataSource{System.Byte},MonoAudio.Codecs.Waveform.Parsing.IRf64Parser,MonoAudio.StackOnlyActionContainer{System.UInt64}@)">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader"/> class that reads <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Riff"/> chunk.
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader" /> class that reads <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Riff" /> and <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Rf64" /> chunk.
             </summary>
             <param name="dataSource">The data source.</param>
+            <param name="parser">The RF64 parser instance.</param>
+            <param name="totalSizeSetter">A method to set the <see cref="P:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.TotalSize"/>.</param>
+            <exception cref="T:System.ArgumentNullException">dataSource</exception>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(MonoAudio.Data.IDataSource{System.Byte},MonoAudio.Codecs.Waveform.Parsing.IRf64Parser)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader" /> class that reads <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Riff" /> and <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Rf64" /> chunk.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <param name="parser">The RF64 parser instance.</param>
             <exception cref="T:System.ArgumentNullException">dataSource</exception>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.Read(System.Span{System.Byte})">
@@ -1219,7 +2020,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.ReadSubChunk">
@@ -1227,6 +2028,12 @@
             Opens the stream for sub chunk.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.Skip(System.UInt64)">
+            <summary>
+            Skips this data source the specified number of elements to skip.
+            </summary>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.Rf64.Rf64ChunkReader.Dispose">
             <summary>
@@ -1267,7 +2074,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.RiffChunkHeader.ReadChunkHeader(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.Waveform.RiffChunkHeader.ReadChunkHeader(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads the chunk header from the specified <paramref name="dataSource"/>.
             </summary>
@@ -1403,13 +2210,13 @@
         </member>
         <member name="P:MonoAudio.Codecs.Waveform.RiffChunkReader.Position">
             <summary>
-            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource" />.
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </summary>
             <value>
             The position.
             </value>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.#ctor(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.#ctor(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Codecs.Waveform.RiffChunkReader"/> class that reads <see cref="F:MonoAudio.Codecs.Waveform.ChunkId.Riff"/> chunk.
             </summary>
@@ -1429,7 +2236,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.ReadSubChunk">
@@ -1437,6 +2244,12 @@
             Opens the stream for sub chunk.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.Skip(System.UInt64)">
+            <summary>
+            Skips this data source the specified number of elements to skip.
+            </summary>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         </member>
         <member name="M:MonoAudio.Codecs.Waveform.RiffChunkReader.Dispose">
             <summary>
@@ -1513,6 +2326,14 @@
             The bit depth.
             </value>
         </member>
+        <member name="P:MonoAudio.Codecs.Waveform.StandardWaveFormat.SampleSize">
+            <summary>
+            Gets the size of the frame.
+            </summary>
+            <value>
+            The size of the frame.
+            </value>
+        </member>
         <member name="M:MonoAudio.Codecs.Waveform.StandardWaveFormat.Equals(System.Object)">
             <summary>
             Indicates whether this instance and a specified object are equal.
@@ -1573,21 +2394,21 @@
             Encodes and decodes some ".wav" files in certain formats.
             </summary>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="dataSource" /> can be decoded by this decoder asynchronously.<br/>
             The actual decoding stream must be opened after seeking the source <see cref="T:System.IO.Stream"/> to head.
             </summary>
-            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource" /> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource`1" /> to read the data from.</param>
             <returns>
             The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataSource" /> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource" />.
             </summary>
-            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource" /> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:MonoAudio.Data.IDataSource`1" /> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:MonoAudio.IWaveSource" />.
@@ -1597,36 +2418,16 @@
             <summary>
             Represents a sub format for <see cref="P:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.SubFormat"/>.
             </summary>
-        </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.IeeeFloat">
             <summary>
-            IEEE floating-point audio.
+            Represents a sub format for <see cref="P:MonoAudio.Codecs.Waveform.ExtensibleWaveFormat.SubFormat"/>.
             </summary>
         </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Pcm">
+        <member name="M:MonoAudio.Codecs.Waveform.WaveformSubFormats.ToGuid(MonoAudio.AudioEncoding)">
             <summary>
-            PCM audio.
+            Converts specified <paramref name="encoding"/> to GUID.
             </summary>
-        </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DolbyAc3Spdif">
-            <summary>
-            Dolby AC-3 over S/PDIF.
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.RawSport">
-            <summary>
-            AC-3 over S/PDIF;
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.SpdifTag_241h">
-            <summary>
-            AC-3 over S/PDIF;
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DrmAudio">
-            <summary>
-            Audio with digital rights management (DRM) protection.
-            </summary>
+            <param name="encoding">The encoding.</param>
+            <returns></returns>
         </member>
         <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Mpeg1Packet">
             <summary>
@@ -1638,9 +2439,529 @@
             MPEG1 audio packet.
             </summary>
         </member>
-        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Mpeg1AudioPayload">
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Unknown">
             <summary>
-            MPEG1 audio Payload.
+            Unknown format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.LinearPcm">
+            <summary>
+            Microsoft PCM Format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.MsAdpcm">
+            <summary>
+            Microsoft ADPCM Format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.IeeeFloat">
+            <summary>
+            IEEE 754 Single Precision Floating-Point Number
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Vselp">
+            <summary>
+            Vector sum excited linear prediction Compaq Computer Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.IbmCvsd">
+            <summary>
+            IBM Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Alaw">
+            <summary>
+            A-law format by Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Mulaw">
+            <summary>
+            μ-law format by Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.OkiAdpcm">
+            <summary>
+            OKI ADPCM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.ImaAdpcm">
+            <summary>
+            Intel Corporation ADPCM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.MediaspaceAdpcm">
+            <summary>
+            Videologic ADPCM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.SierraAdpcm">
+            <summary>
+            Sierra Semiconductor Corp
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G723Adpcm">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Digistd">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Digifix">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DialogicOkiAdpcm">
+            <summary>
+            Dialogic Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.MediavisionAdpcm">
+            <summary>
+            Media Vision, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.CuCodec">
+            <summary>
+            Hewlett-Packard Company
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.YamahaAdpcm">
+            <summary>
+            Yamaha Corporation of America
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Sonarc">
+            <summary>
+            Speech Compression
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DspgroupTruespeech">
+            <summary>
+            DSP Group, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Echosc1">
+            <summary>
+            Echo Speech Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.AudiofileAf36">
+            <summary>
+            Audiofile, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Aptx">
+            <summary>
+            Audio Processing Technology
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.AudiofileAf10">
+            <summary>
+            Audiofile, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Prosody1612">
+            <summary>
+            Aculab plc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Lrc">
+            <summary>
+            Merging Technologies S.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DolbyAc2">
+            <summary>
+            Dolby Laboratories
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Gsm610">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Msnaudio">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.AntexAdpcme">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.ControlResVqlpc">
+            <summary>
+            Control Resources Limited
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Digireal">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Digiadpcm">
+            <summary>
+            DSP Solutions, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.ControlResCr10">
+            <summary>
+            Control Resources Limited
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.NmsVbxadpcm">
+            <summary>
+            Natural MicroSystems
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.RolandRdac">
+            <summary>
+            Roland
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Echosc3">
+            <summary>
+            Echo Speech Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.RockwellAdpcm">
+            <summary>
+            Rockwell International
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.RockwellDigitalk">
+            <summary>
+            Rockwell International
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Xebec">
+            <summary>
+            Xebec Multimedia Solutions Limited
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G721Adpcm">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G728Celp">
+            <summary>
+            Antex Electronics Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Msg723">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Mpeg">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Rt24">
+            <summary>
+            InSoft Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Pac">
+            <summary>
+            InSoft Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Mpeglayer3">
+            <summary>
+            MPEG 3 Layer 1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.LucentG723">
+            <summary>
+            Lucent Technologies
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Cirrus">
+            <summary>
+            Cirrus Logic
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Espcm">
+            <summary>
+            ESS Technology
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Voxware">
+            <summary>
+            Voxware Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.CanopusAtrac">
+            <summary>
+            Canopus, Co., Ltd.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G726Adpcm">
+            <summary>
+            APICOM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G722Adpcm">
+            <summary>
+            APICOM
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Dsat">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DsatDisplay">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareByteAligned">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareAc8">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareAc10">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareAc16">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareAc20">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareRt24">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareRt29">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareRt29hw">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareVr12">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareVr18">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxwareTq40">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Softsound">
+            <summary>
+            Softsound, Ltd.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VoxareTq60">
+            <summary>
+            Voxware Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Msrt24">
+            <summary>
+            Microsoft Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.G729a">
+            <summary>
+            AT&amp;T Laboratories
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.MviMv12">
+            <summary>
+            Motion Pixels
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DfG726">
+            <summary>
+            DataFusion Systems (Pty) (Ltd)
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DfGsm610">
+            <summary>
+            DataFusion Systems (Pty) (Ltd)
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Onlive">
+            <summary>
+            OnLive! Technologies, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Sbc24">
+            <summary>
+            Siemens Business Communications Systems
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DolbyAc3Spdif">
+            <summary>
+            Sonic Foundry
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.ZyxelAdpcm">
+            <summary>
+            ZyXEL Communications, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.PhilipsLpcbb">
+            <summary>
+            Philips Speech Processing
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Packed">
+            <summary>
+            Studer Professional Audio AG
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.RhetorexAdpcm">
+            <summary>
+            Rhetorex, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.IbmMulaw">
+            <summary>
+            IBM mu-law format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.IbmAlaw">
+            <summary>
+            IBM a-law format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Adpcm">
+            <summary>
+            IBM AVC Adaptive Differential PCM format
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VivoG723">
+            <summary>
+            Vivo Software
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VivoSiren">
+            <summary>
+            Vivo Software
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.DigitalG723">
+            <summary>
+            Digital Equipment Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.CreativeAdpcm">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.CreativeFastspeech8">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.CreativeFastspeech10">
+            <summary>
+            Creative Labs, Inc
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Quarterdeck">
+            <summary>
+            Quarterdeck Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.FmTownsSnd">
+            <summary>
+            Fujitsu Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.BzvDigital">
+            <summary>
+            Brooktree Corporation
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.VmeVmpcm">
+            <summary>
+            AT&amp;T Labs, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Oligsm">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Oliadpcm">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Olicelp">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Olisbc">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Oliopr">
+            <summary>
+            Ing C. Olivetti &amp; C., S.p.A.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.LhCodec">
+            <summary>
+            Lernout &amp; Hauspie
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Norris">
+            <summary>
+            Norris Communications, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.SoundspaceMusicompress">
+            <summary>
+            AT&amp;T Labs, Inc.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.Dvm">
+            <summary>
+            FAST Multimedia AG
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Codecs.Waveform.WaveformSubFormats.InterwavVsc112">
+            <summary>
+            ?????
             </summary>
         </member>
         <member name="T:MonoAudio.Concepts.ConceptKind">
@@ -2373,6 +3694,41 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
+        <member name="T:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter">
+            <summary>
+            Converts 8-bit A-Law PCM to Sample.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter.#ctor(MonoAudio.IReadableAudioSource{System.Byte,MonoAudio.IWaveFormat},MonoAudio.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="format">The format.</param>
+        </member>
+        <member name="P:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter.BytesPerSample">
+            <summary>
+            Gets the bytes consumed per sample.
+            </summary>
+            <value>
+            The bytes consumed per sample.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.ALawToSampleConverter.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
         <member name="T:MonoAudio.Conversion.WaveToSampleConverters.Float32ToSampleConverter">
             <summary>
             Converts 32-bit IeeeFloat PCM to Sample.
@@ -2621,6 +3977,18 @@
             -1 Means Infinity.
             </summary>
         </member>
+        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Byte,MonoAudio.IWaveFormat},MonoAudio.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="format">The format.</param>
+            <exception cref="T:System.ArgumentNullException">
+            source
+            or
+            format
+            </exception>
+        </member>
         <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -2635,18 +4003,6 @@
             The disposed value
             </summary>
         </member>
-        <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.#ctor(MonoAudio.IReadableAudioSource{System.Byte,MonoAudio.IWaveFormat},MonoAudio.SampleFormat)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="format">The format.</param>
-            <exception cref="T:System.ArgumentNullException">
-            source
-            or
-            format
-            </exception>
-        </member>
         <member name="M:MonoAudio.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -2658,164 +4014,111 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:MonoAudio.Data.SynchronizedDataReader`1">
-            <summary>
-            Provides a synchronization for <see cref="T:MonoAudio.Data.DataReader`1"/>.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <seealso cref="T:MonoAudio.Data.ISynchronizedDataReader`1" />
-            <seealso cref="T:System.IDisposable" />
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.#ctor(MonoAudio.Data.DataReader{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer"/> class.
-            </summary>
-            <param name="dataReader">The data reader.</param>
-            <exception cref="T:System.ArgumentNullException">dataReader</exception>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.AsyncStreamSynchronizer.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.#ctor(MonoAudio.Data.DataReader{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.SynchronizedDataReader`1"/> class.
-            </summary>
-            <param name="reader">The reader.</param>
-            <exception cref="T:System.ArgumentNullException">reader</exception>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.SynchronizedDataReader`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:MonoAudio.Data.Binary.DataReaderExtensions">
             <summary>
             Provides some functions that helps you to analyze data input binary.
             </summary>
-            <seealso cref="T:MonoAudio.Data.ISynchronizedDataReader`1" />
+            <seealso cref="!:ISynchronizedDataReader&lt;TSample&gt;" />
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadByte(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadByte(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadSignedByte(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadSignedByte(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt16LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt16LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt16BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt16BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt16LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt16LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt16BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt16BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt32LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt32LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt32BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt32BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt32LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt32LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt32BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt32BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt64LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt64LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt64BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadUInt64BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt64LittleEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt64LittleEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt64BigEndian(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadInt64BigEndian(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadStruct``1(MonoAudio.Data.IDataSource)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadStruct``1(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
             Reads single <typeparamref name="TStruct"/> value from <paramref name="dataReader"/>.
             </summary>
@@ -2823,103 +4126,160 @@
             <param name="dataReader">The data reader.</param>
             <returns>The deserialized <typeparamref name="TStruct"/> value.</returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadByte(MonoAudio.Data.IDataSource,System.Byte@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadByte(MonoAudio.Data.IDataSource{System.Byte},System.Byte@)">
             <summary>
             Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadSignedByte(MonoAudio.Data.IDataSource,System.SByte@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadSignedByte(MonoAudio.Data.IDataSource{System.Byte},System.SByte@)">
             <summary>
             Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(MonoAudio.Data.IDataSource,System.UInt16@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt16@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(MonoAudio.Data.IDataSource,System.UInt16@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt16@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(MonoAudio.Data.IDataSource,System.Int16@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int16@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(MonoAudio.Data.IDataSource,System.Int16@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int16@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(MonoAudio.Data.IDataSource,System.UInt32@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt32@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(MonoAudio.Data.IDataSource,System.UInt32@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt32@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(MonoAudio.Data.IDataSource,System.Int32@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int32@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(MonoAudio.Data.IDataSource,System.Int32@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int32@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(MonoAudio.Data.IDataSource,System.UInt64@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt64@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(MonoAudio.Data.IDataSource,System.UInt64@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.UInt64@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(MonoAudio.Data.IDataSource,System.Int64@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int64@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(MonoAudio.Data.IDataSource,System.Int64@)">
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(MonoAudio.Data.IDataSource{System.Byte},System.Int64@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadAll``1(MonoAudio.Data.IDataSource{``0},System.Span{``0})">
+            <summary>
+            Reads some data from <paramref name="dataSource"/> to fill <paramref name="buffer"/>.
+            </summary>
+            <typeparam name="T">Type of buffer data.</typeparam>
+            <param name="dataSource">The data source.</param>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.CheckRead``1(MonoAudio.Data.IDataSource{``0},System.Span{``0})">
+            <summary>
+            Reads some data from <paramref name="dataSource"/> to <paramref name="buffer"/>.
+            </summary>
+            <typeparam name="T">Type of buffer data.</typeparam>
+            <param name="dataSource">The data source.</param>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ThrowWhenInsufficient(MonoAudio.ReadResult,System.Int32,System.String)">
+            <summary>
+            Throws an exception when the read data is insufficient.
+            </summary>
+            <param name="readResult">The read result.</param>
+            <param name="lengthRequired">The least length required.</param>
+            <param name="situation">The situation of reading some required data.</param>
+        </member>
+        <member name="T:MonoAudio.Data.BufferingException">
+            <summary>
+            The exception that is thrown when a reader of <see cref="T:MonoAudio.Data.IDataSource`1"/> has ran out of buffered data.
+            </summary>
+            <seealso cref="T:System.IO.IOException" />
+        </member>
+        <member name="M:MonoAudio.Data.BufferingException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.BufferingException"/> class.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.BufferingException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.BufferingException"/> class.
+            </summary>
+            <param name="message">A <see cref="T:System.String"></see> that describes the error. The content of message is intended to be understood by humans. The caller of this constructor is required to ensure that this string has been localized for the current system culture.</param>
+        </member>
+        <member name="M:MonoAudio.Data.BufferingException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.BufferingException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="inner">The inner.</param>
+        </member>
+        <member name="M:MonoAudio.Data.BufferingException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.BufferingException"/> class.
+            </summary>
+            <param name="info">The data for serializing or deserializing the object.</param>
+            <param name="context">The source and destination for the object.</param>
         </member>
         <member name="T:MonoAudio.Data.DataBuffer`1">
             <summary>
@@ -2927,11 +4287,19 @@
             It reads a little more than required, and prevents waiting for IOs.
             </summary>
         </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.#ctor(MonoAudio.Data.ISynchronizedDataReader{`0},System.Int32,System.Int32)">
+        <member name="P:MonoAudio.Data.DataBuffer`1.Position">
+            <summary>
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.#ctor(MonoAudio.Data.IDataSource{`0},System.Int32,System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:MonoAudio.Data.DataBuffer`1"/> class.
             </summary>
-            <param name="dataReader">The data reader.</param>
+            <param name="dataSource">The data source.</param>
             <param name="initialBlockSize">
             The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
             The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
@@ -2944,9 +4312,18 @@
             <summary>
             Reads the data to the specified buffer.
             </summary>
-            <param name="buffer">The buffer.</param>
+            <param name="destination">The buffer.</param>
             <returns>
             The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.DataBuffer`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously to the specified destination.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>
+            The number of <typeparamref name="TSample" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:MonoAudio.Data.DataBuffer`1.Dispose(System.Boolean)">
@@ -2960,26 +4337,18 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:MonoAudio.Data.DataCache">
+        <member name="T:MonoAudio.Data.DataCache`1">
             <summary>
             Caches data into managed memory region.
             </summary>
             <seealso cref="T:System.IDisposable" />
         </member>
-        <member name="M:MonoAudio.Data.DataCache.BufferInstance.Dispose">
+        <member name="M:MonoAudio.Data.DataCache`1.BufferInstance.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="P:MonoAudio.Data.DataCache.MonoAudio#Data#ISeekableDataSource#Position">
-            <summary>
-            Gets or sets the READING position.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="P:MonoAudio.Data.DataCache.BytesWritten">
+        <member name="P:MonoAudio.Data.DataCache`1.BytesWritten">
             <summary>
             Gets the bytes written inside internal buffer.
             </summary>
@@ -2987,7 +4356,7 @@
             The bytes written.
             </value>
         </member>
-        <member name="P:MonoAudio.Data.DataCache.ReadPosition">
+        <member name="P:MonoAudio.Data.DataCache`1.ReadPosition">
             <summary>
             Gets or sets the current reading position.
             </summary>
@@ -2995,7 +4364,7 @@
             The read position.
             </value>
         </member>
-        <member name="P:MonoAudio.Data.DataCache.MonoAudio#Data#IDataSource#Position">
+        <member name="P:MonoAudio.Data.DataCache`1.MonoAudio#Data#IDataSource{TSample}#Position">
             <summary>
             Gets the READING position.
             </summary>
@@ -3003,229 +4372,83 @@
             The position.
             </value>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.Read(System.Span{System.Byte})">
+        <member name="M:MonoAudio.Data.DataCache`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataCache`1"/> class.
+            </summary>
+            <param name="allocationUnit">The allocation unit.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataCache`1.Read(System.Span{`0})">
             <summary>
             Reads the data to the specified destination.
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource" />.
+            The number of <typeparamref name="TSample"/>s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.ReadAsync(System.Memory{System.Byte})">
+        <member name="M:MonoAudio.Data.DataCache`1.ReadAsync(System.Memory{`0})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.Write(System.ReadOnlySpan{System.Byte})">
+        <member name="M:MonoAudio.Data.DataCache`1.Write(System.ReadOnlySpan{`0})">
             <summary>
             Writes the data inside specified buffer to this instance.
             </summary>
             <param name="buffer">The data buffer.</param>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.WriteAsync(System.ReadOnlyMemory{System.Byte})">
+        <member name="M:MonoAudio.Data.DataCache`1.WriteAsync(System.ReadOnlyMemory{`0})">
             <summary>
             Asynchronously writes the data inside specified buffer to this instance.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.Finalize">
+        <member name="M:MonoAudio.Data.DataCache`1.Seek(System.Int64,System.IO.SeekOrigin)">
             <summary>
-            Finalizes an instance of the <see cref="T:MonoAudio.Data.DataCache"/> class.
+            Seeks the specified offset.
+            </summary>
+            <param name="offset">The offset.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataCache`1.SeekTo(System.UInt64)">
+            <summary>
+            Seeks this data source to the specified index.
+            </summary>
+            <param name="index">The index.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataCache`1.Skip(System.UInt64)">
+            <summary>
+            Skips this data source the specified number of elements to skip.
+            </summary>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        </member>
+        <member name="M:MonoAudio.Data.DataCache`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:MonoAudio.Data.DataCache`1"/> class.
             </summary>
         </member>
-        <member name="M:MonoAudio.Data.DataCache.Dispose">
+        <member name="M:MonoAudio.Data.DataCache`1.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
-        </member>
-        <member name="T:MonoAudio.Data.DataReader`1">
-            <summary>
-            Abstractions for the delegates below:<br/>
-            <see cref="T:MonoAudio.ReadFunc`1"/>,
-            <see cref="T:MonoAudio.ReadAsyncFunc`1"/>,
-            <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>, and
-            <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-        </member>
-        <member name="M:MonoAudio.Data.DataReader`1.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length read.</returns>
-        </member>
-        <member name="M:MonoAudio.Data.DataReader`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataReader`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:MonoAudio.Data.ISynchronizedDataReader`1">
-            <summary>
-            Abstractions for the delegates below:<br/>
-            <see cref="T:MonoAudio.ReadFunc`1"/> and
-            <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-        </member>
-        <member name="M:MonoAudio.Data.ISynchronizedDataReader`1.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="T:MonoAudio.Data.DataReaderOrdinal`1">
-            <summary>
-            The data reader to the <see cref="T:MonoAudio.ReadFunc`1"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataReader`1" />
-        </member>
-        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.#ctor(MonoAudio.ReadFunc{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataReaderOrdinal`1"/> class.
-            </summary>
-            <param name="func">The function to call.</param>
-            <exception cref="T:System.ArgumentNullException">func</exception>
-        </member>
-        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
-        </member>
-        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously.
-            </summary>
-            <param name="buffer">The buffer to fill with the read data.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataReaderOrdinal`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="T:MonoAudio.Data.AsyncDataReader`1">
-            <summary>
-            The data reader to the <see cref="T:MonoAudio.ReadAsyncFunc`1"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataReader`1" />
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataReader`1.#ctor(MonoAudio.ReadAsyncFunc{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.AsyncDataReader`1"/> class.
-            </summary>
-            <param name="function">The function.</param>
-            <exception cref="T:System.ArgumentNullException">function</exception>
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataReader`1.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously.
-            </summary>
-            <param name="buffer">The buffer to fill with the read data.</param>
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataReader`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-            <exception cref="T:System.NotImplementedException"></exception>
-        </member>
-        <member name="T:MonoAudio.Data.ParametrizedDataReader`2">
-            <summary>
-            The data reader to the <see cref="T:MonoAudio.ReadWithParameterFunc`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataReader`1" />
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.#ctor(MonoAudio.ReadWithParameterFunc{`0,`1},`1)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedDataReader`2"/> class.
-            </summary>
-            <param name="action">The action.</param>
-            <param name="parameter">The parameter.</param>
-            <exception cref="T:System.ArgumentNullException">action</exception>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously.
-            </summary>
-            <param name="buffer">The buffer to fill with the read data.</param>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataReader`2.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="T:MonoAudio.Data.ParametrizedAsyncDataReader`2">
-            <summary>
-            The data reader to the <see cref="T:MonoAudio.ReadWithParameterAsyncFunc`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataReader`1" />
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.#ctor(MonoAudio.ReadWithParameterAsyncFunc{`0,`1},`1)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedAsyncDataReader`2"/> class.
-            </summary>
-            <param name="function">The function.</param>
-            <param name="parameter">The parameter.</param>
-            <exception cref="T:System.ArgumentNullException">function</exception>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously.
-            </summary>
-            <param name="buffer">The buffer to fill with the read data.</param>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataReader`2.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="T:MonoAudio.Data.DataUtils">
             <summary>
-            Provides some extensions for <see cref="T:MonoAudio.Data.DataReader`1"/>s.
+            Provides some extensions for <see cref="T:MonoAudio.Data.IDataSource`1"/>s.
             </summary>
         </member>
-        <member name="M:MonoAudio.Data.DataUtils.Synchronized``1(MonoAudio.Data.DataReader{``0})">
+        <member name="M:MonoAudio.Data.DataUtils.Skip``1(MonoAudio.Data.IDataSource{``0},System.UInt64)">
             <summary>
-            Returns the synchronized data reader.
+            Skips this data source the specified number of elements to skip.
             </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <param name="dataReader">The data reader.</param>
-            <returns></returns>
+            <param name="dataSource"></param>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         </member>
         <member name="T:MonoAudio.Data.DataWriter`1">
             <summary>
@@ -3370,80 +4593,111 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="T:MonoAudio.Data.IDataSource">
+        <member name="T:MonoAudio.Data.IDataSource`1">
             <summary>
             Defines a base infrastructure of a source of binary data.
             </summary>
         </member>
-        <member name="M:MonoAudio.Data.IDataSource.Read(System.Span{System.Byte})">
+        <member name="M:MonoAudio.Data.IDataSource`1.Read(System.Span{`0})">
             <summary>
             Reads the data to the specified destination.
             </summary>
             <param name="destination">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:MonoAudio.Data.IDataSource"/>.</returns>
+            <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="T:MonoAudio.Data.IDataSource`1"/>.</returns>
         </member>
-        <member name="M:MonoAudio.Data.IDataSource.ReadAsync(System.Memory{System.Byte})">
+        <member name="M:MonoAudio.Data.IDataSource`1.ReadAsync(System.Memory{`0})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
             <param name="destination">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:MonoAudio.Data.IDataSource"/>.</returns>
+            <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="T:MonoAudio.Data.IDataSource`1"/>.</returns>
         </member>
-        <member name="P:MonoAudio.Data.IDataSource.Position">
+        <member name="P:MonoAudio.Data.IDataSource`1.Position">
             <summary>
-            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource"/>.
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1"/>.
             </summary>
             <value>
             The position.
             </value>
         </member>
-        <member name="T:MonoAudio.Data.ISeekableDataSource">
+        <member name="T:MonoAudio.Data.ISkippableDataSource`1">
+            <summary>
+            Defines a base infrastructure of a source of binary data, which supports skipping.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:MonoAudio.Data.IDataSource`1" />
+        </member>
+        <member name="M:MonoAudio.Data.ISkippableDataSource`1.Skip(System.UInt64)">
+            <summary>
+            Skips this data source the specified number of elements to skip.
+            </summary>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        </member>
+        <member name="T:MonoAudio.Data.ISeekableDataSource`1">
             <summary>
             Defines a base infrastructure of a source of binary data, which supports seeking.
             </summary>
-            <seealso cref="T:MonoAudio.Data.IDataSource" />
+            <seealso cref="T:MonoAudio.Data.IDataSource`1" />
         </member>
-        <member name="P:MonoAudio.Data.ISeekableDataSource.Position">
+        <member name="M:MonoAudio.Data.ISeekableDataSource`1.Seek(System.Int64,System.IO.SeekOrigin)">
             <summary>
-            Gets or sets the position.
+            Seeks this data source with the specified offset.
             </summary>
-            <value>
-            The position.
-            </value>
+            <param name="offset">The offset.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="M:MonoAudio.Data.ISeekableDataSource`1.SeekTo(System.UInt64)">
+            <summary>
+            Seeks this data source to the specified index.
+            </summary>
+            <param name="index">The index.</param>
         </member>
         <member name="T:MonoAudio.Data.IDataWriter">
             <summary>
             Defines a base infrastructure for writing data.
             </summary>
         </member>
-        <member name="T:MonoAudio.Data.SampleDataReader`2">
-             <summary>
-            
-             </summary>
-        </member>
-        <member name="M:MonoAudio.Data.SampleDataReader`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1})">
+        <member name="T:MonoAudio.Data.SampleDataSource`2">
             <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.SampleDataReader`2"/> class.
+            Translates calls between <see cref="T:MonoAudio.Data.IDataSource`1"/> and <see cref="T:MonoAudio.IReadableAudioSource`2"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataSource`2.#ctor(MonoAudio.IReadableAudioSource{`0,`1})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.SampleDataSource`2"/> class.
             </summary>
             <param name="source">The source.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
-        <member name="M:MonoAudio.Data.SampleDataReader`2.Read(System.Span{`0})">
+        <member name="P:MonoAudio.Data.SampleDataSource`2.Position">
             <summary>
-            Reads the data to the specified buffer.
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </summary>
-            <param name="buffer">The buffer.</param>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Data.SampleDataSource`2.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified destination.
+            </summary>
+            <param name="destination">The destination.</param>
             <returns>
-            The length of the data written.
+            The number of <typeparamref name="TSample" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
             </returns>
         </member>
-        <member name="M:MonoAudio.Data.SampleDataReader`2.Dispose(System.Boolean)">
+        <member name="M:MonoAudio.Data.SampleDataSource`2.ReadAsync(System.Memory{`0})">
             <summary>
-            Releases unmanaged and - optionally - managed resources.
+            Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+            <param name="destination">The destination.</param>
+            <returns>
+            The number of <typeparamref name="TSample" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </returns>
         </member>
-        <member name="M:MonoAudio.Data.SampleDataReader`2.Dispose">
+        <member name="M:MonoAudio.Data.SampleDataSource`2.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
@@ -4085,7 +5339,7 @@
             Provides some utilities for <see cref="T:MonoAudio.IAudioFormat`1"/>.
             </summary>
         </member>
-        <member name="M:MonoAudio.FormatUtils.GetFrameSize``1(MonoAudio.IAudioFormat{``0})">
+        <member name="M:MonoAudio.FormatUtils.GetFrameSizeInBytes``1(MonoAudio.IAudioFormat{``0})">
             <summary>
             Gets the value which indicates how long the <see cref="P:MonoAudio.Units.Frame"/> is, in bytes.
             </summary>
@@ -4104,34 +5358,55 @@
         </member>
         <member name="T:MonoAudio.IAudioFormat`1">
             <summary>
-            Defines a base structure of audio formats.
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
             </summary>
             <typeparam name="TSample">The type of sample.</typeparam>
         </member>
         <member name="P:MonoAudio.IAudioFormat`1.Channels">
             <summary>
-            Gets the number of channels.
-            It does not describe how these loudspeakers of each channels are placed in the room.
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
         <member name="P:MonoAudio.IAudioFormat`1.SampleRate">
-            <summary>
-            Gets the number indicates how many times the audio signal is sampled.
-            </summary>
-            <value>
-            The sample rate.
-            </value>
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
         </member>
         <member name="P:MonoAudio.IAudioFormat`1.BitDepth">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.<br/>
             </summary>
             <value>
             The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.IAudioFormat`1.BlockSize">
+            <summary>
+            Gets the value indicates how many <typeparamref name="TSample"/>s are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of frame.
+            </value>
+        </member>
+        <member name="P:MonoAudio.IAudioFormat`1.SampleSize">
+            <summary>
+            Gets the value indicates how many <typeparamref name="TSample"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a sample in <typeparamref name="TSample"/>s.
             </value>
         </member>
         <member name="T:MonoAudio.Formats.IChannelMaskedFormat">
@@ -4146,17 +5421,8 @@
         </member>
         <member name="T:MonoAudio.IWaveFormat">
             <summary>
-            Defines a base infrastructure of an wave format.
+            Defines a base infrastructure of a wave format.
             </summary>
-        </member>
-        <member name="P:MonoAudio.IWaveFormat.BlockSize">
-            <summary>
-            Gets the value indicates how many bytes are required per whole sample.
-            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
-            </summary>
-            <value>
-            The size of block.
-            </value>
         </member>
         <member name="P:MonoAudio.IWaveFormat.Encoding">
             <summary>
@@ -4168,7 +5434,7 @@
         </member>
         <member name="T:MonoAudio.SampleFormat">
             <summary>
-            Represents a format of an sample source.
+            Represents a format of a sample source.
             </summary>
         </member>
         <member name="M:MonoAudio.SampleFormat.#ctor(System.Int32,System.Int32)">
@@ -4202,6 +5468,24 @@
             </summary>
             <value>
             The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.SampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Single"/> values are required per whole sample.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.SampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Single"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.SampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Single"/>s.
             </value>
         </member>
         <member name="M:MonoAudio.SampleFormat.Equals(System.Object)">
@@ -4487,6 +5771,14 @@
             The size of the extra information.
             </value>
         </member>
+        <member name="P:MonoAudio.WaveFormat.SampleSize">
+            <summary>
+            Gets the size of the frame.
+            </summary>
+            <value>
+            The size of the frame.
+            </value>
+        </member>
         <member name="M:MonoAudio.WaveFormat.Equals(System.Object)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
@@ -4582,12 +5874,13 @@
             <summary>
             Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2"/> is.
             Some implementation could not support this property.
+            The implementation which doesn't support this property entirely(without depending on source) must have an <see cref="T:System.ObsoleteAttribute"/> and cause an compile-time error.
             </summary>
         </member>
         <member name="P:MonoAudio.IAudioSource`2.Length">
             <summary>
             Gets how long the <see cref="T:MonoAudio.IAudioSource`2"/> lasts in specific types.
-            -1 Means Infinity.
+            Negative value Means Infinity.
             </summary>
         </member>
         <member name="T:MonoAudio.InternalExtensions">
@@ -5144,6 +6437,178 @@
              <summary>
             
              </summary>
+        </member>
+        <member name="T:MonoAudio.DataLength">
+            <summary>
+            Represents a length of some data.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.DataLength.#ctor(System.UInt64,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.DataLength" /> struct.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="isInfinity">if set to <c>true</c> the instance represents infinity.</param>
+        </member>
+        <member name="P:MonoAudio.DataLength.Infinity">
+            <summary>
+            Represents the fact that the source stream is infinitely long.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.DataLength.Length">
+            <summary>
+            Gets the actual length available.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:MonoAudio.DataLength.IsInfinity">
+            <summary>
+            Gets a value indicating whether the available length of data is infinity.
+            </summary>
+            <value>
+              <c>true</c> if this <see cref="P:MonoAudio.DataLength.Length"/> is infinity; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:MonoAudio.DataLength.Cast``2">
+            <summary>
+            Casts the size value of this instance.
+            </summary>
+            <typeparam name="TFrom">The type of from.</typeparam>
+            <typeparam name="TTo">The type of to.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Division(MonoAudio.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator /.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Multiply(MonoAudio.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator *.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Implicit(System.UInt64)~MonoAudio.DataLength">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Int64" /> to <see cref="T:MonoAudio.DataLength" />.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Explicit(MonoAudio.DataLength)~System.UInt64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:MonoAudio.DataLength"/> to <see cref="T:System.Int64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.CompareTo(MonoAudio.DataLength)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.Equals(MonoAudio.DataLength)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Equality(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.DataLength" /> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.DataLength" /> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.DataLength" /> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_Inequality(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.DataLength"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.DataLength"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.DataLength"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_LessThan(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Implements the operator &lt;.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_LessThanOrEqual(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Implements the operator &lt;=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_GreaterThan(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Implements the operator &gt;.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DataLength.op_GreaterThanOrEqual(MonoAudio.DataLength,MonoAudio.DataLength)">
+            <summary>
+            Implements the operator &gt;=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
         </member>
         <member name="T:MonoAudio.Primitives.DisposableArray`1">
             <summary>
@@ -6086,6 +7551,70 @@
             <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:MonoAudio.StackOnlyActionContainer`1">
+            <summary>
+            Stores <see cref="T:System.Action`1"/> that cannot leave the stack.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.#ctor(System.Action{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> struct.
+            </summary>
+            <param name="action">The action.</param>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.Invoke(`0)">
+            <summary>
+            Invokes this instance with specified parameter.
+            </summary>
+            <param name="parameter">The first parameter.</param>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.Equals(MonoAudio.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="value">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.op_Equality(MonoAudio.StackOnlyActionContainer{`0},MonoAudio.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.StackOnlyActionContainer`1.op_Inequality(MonoAudio.StackOnlyActionContainer{`0},MonoAudio.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.StackOnlyActionContainer`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.ReadOnlyAudioBuffer`2">
             <summary>
             Represents a read-only audio buffer.
@@ -6447,6 +7976,19 @@
             <param name="theta">The theta(from 0 to 2*pi).</param>
             <returns></returns>
         </member>
+        <member name="T:MonoAudio.AudioSourceExtensions">
+            <summary>
+            Contains some utility functions about <see cref="T:MonoAudio.IAudioSource`2"/>
+            </summary>
+        </member>
+        <member name="M:MonoAudio.AudioSourceExtensions.ReadAsAsync``2(MonoAudio.IReadableAudioSource{``0,``1},System.Memory{``0})">
+            <summary>
+            Reads the audio to the specified buffer asynchronously if possible.
+            </summary>
+            <param name="source"></param>
+            <param name="destination">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
         <member name="T:MonoAudio.BinaryExtensions">
             <summary>
             Provides some functions that helps you about binary things.
@@ -6635,6 +8177,21 @@
             </summary>
             <param name="value">The value.</param>
             <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.MathI.CountConsecutiveZeros(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.MathI.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
             <returns></returns>
         </member>
         <member name="M:System.MathI.LargestPowerOfTwoLessThanOrEqualsTo(System.UInt32)">

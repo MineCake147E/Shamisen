@@ -54,6 +54,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
                 {
                     Source.Dispose();
                 }
+                //
             }
             disposedValue = true;
         }
