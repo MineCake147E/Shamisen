@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -44,7 +45,7 @@ namespace MonoAudio
         /// <value>
         /// The size of block.
         /// </value>
-        public int BlockSize => Channels * (BitDepth / 8);
+        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => Channels * SampleSize; }
 
         /// <summary>
         /// Gets the value indicates how the samples are encoded.
@@ -87,6 +88,14 @@ namespace MonoAudio
         /// The size of the extra information.
         /// </value>
         public int ExtraSize { get; }
+
+        /// <summary>
+        /// Gets the size of the frame.
+        /// </summary>
+        /// <value>
+        /// The size of the frame.
+        /// </value>
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

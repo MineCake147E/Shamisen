@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using MonoAudio.Data;
 
 namespace MonoAudio.Codecs.Waveform
@@ -7,8 +8,8 @@ namespace MonoAudio.Codecs.Waveform
     /// <summary>
     /// Defines a base infrastructure of a chunk reader.
     /// </summary>
-    /// <seealso cref="IDataSource" />
-    public interface IChunkReader : IDataSource
+    /// <seealso cref="IDataSource{TSample}" />
+    public interface IChunkReader : ISkippableDataSource<byte>
     {
         /// <summary>
         /// Gets the current chunk identifier.
@@ -19,7 +20,7 @@ namespace MonoAudio.Codecs.Waveform
         ChunkId ChunkId { get; }
 
         /// <summary>
-        /// Gets the total size of this chunk.
+        /// Gets the total size of this chunk excluding the 8 bytes of header.
         /// </summary>
         /// <value>
         /// The total size.
@@ -43,7 +44,7 @@ namespace MonoAudio.Codecs.Waveform
         IChunkReader CurrentSubChunk { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can be read by <see cref="IDataSource.Read(Span{byte})"/> and <see cref="IDataSource.ReadAsync(Memory{byte})"/>.
+        /// Gets a value indicating whether this instance can be read by <see cref="IDataSource{TSample}.Read(Span{TSample})"/> and <see cref="IDataSource{TSample}.ReadAsync(Memory{TSample})"/>.
         /// </summary>
         /// <value>
         ///   <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.

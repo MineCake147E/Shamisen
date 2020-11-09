@@ -24,7 +24,11 @@
 
     <ItemGroup>
         <Compile Remove="Codecs\HeaderPreservingDataSource.cs" />
-        <Compile Remove="Codecs\Waveform\Chunks\RiffChunk.cs" />
+        <Compile Remove="Data\AsyncStreamSynchronizer.cs" />
+        <Compile Remove="Data\DataReader.cs" />
+        <Compile Remove="Data\DataReaders.cs" />
+        <Compile Remove="Data\SampleDataReader.cs" />
+        <Compile Remove="Data\SynchronizedDataReader.cs" />
         <Compile Remove="Filters\SimpleMixerEntry.cs" />
     </ItemGroup>
 
@@ -41,6 +45,16 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="Codecs\Waveform\InfoSubChunkId.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
+        </None>
+        <None Include="Codecs\Waveform\WaveformSubFormats.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
+        </None>
         <None Include="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -58,6 +72,14 @@
         </None>
     </ItemGroup>
     <ItemGroup>
+        <None Update="Codecs\Waveform\InfoSubChunkId.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>InfoSubChunkId.g.cs</LastGenOutput>
+        </None>
+        <None Update="Codecs\Waveform\WaveformSubFormats.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>WaveformSubFormats.g.cs</LastGenOutput>
+        </None>
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
@@ -75,6 +97,16 @@
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Update="Codecs\Waveform\InfoSubChunkId.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Waveform\WaveformSubFormats.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
+        </Compile>
         <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -87,7 +119,10 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Codecs\Waveform\Chunks\" />
+        <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
+        <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
+        <Folder Include="Codecs\Waveform\Formats\ALaw\" />
+        <Folder Include="Metadata\Id3\" />
         <Folder Include="Utils\Samples\" />
     </ItemGroup>
 </Project>

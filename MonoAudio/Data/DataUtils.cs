@@ -1,21 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MonoAudio.Data
 {
     /// <summary>
-    /// Provides some extensions for <see cref="DataReader{TSample}"/>s.
+    /// Provides some extensions for <see cref="IDataSource{TSample}"/>s.
     /// </summary>
     public static class DataUtils
     {
         /// <summary>
-        /// Returns the synchronized data reader.
+        /// Skips this data source the specified number of elements to skip.
         /// </summary>
-        /// <typeparam name="TSample">The type of the sample.</typeparam>
-        /// <param name="dataReader">The data reader.</param>
-        /// <returns></returns>
-        public static SynchronizedDataReader<TSample> Synchronized<TSample>(this DataReader<TSample> dataReader)
-            => new SynchronizedDataReader<TSample>(dataReader);
+        /// <param name="dataSource"></param>
+        /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        public static void Skip<TSample>(this IDataSource<TSample> dataSource, ulong numberOfElementsToSkip) where TSample : unmanaged
+        {
+            if (dataSource is ISkippableDataSource<byte> src)
+            {
+                src.Skip(numberOfElementsToSkip);
+            }
+            else
+            {
+                Span<TSample> buffer = new TSample[Math.Min(numberOfElementsToSkip, 2048)];
+                ulong h = numberOfElementsToSkip;
+                while (h > 0)
+                {
+                    var result = dataSource.Read(buffer);
+                    if (result.IsEndOfStream) return;
+                    h -= (uint)result.Length;
+                }
+            }
+        }
     }
 }

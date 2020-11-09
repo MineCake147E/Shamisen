@@ -37,6 +37,7 @@ namespace MonoAudio
         /// Initializes a new instance of the <see cref="ReadResult"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadResult(int value)
         {
             this.value = value;

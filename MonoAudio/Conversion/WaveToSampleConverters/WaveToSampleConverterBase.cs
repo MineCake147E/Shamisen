@@ -51,22 +51,6 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
         public long Length => Source.Length / BytesPerSample;
 
         /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>
-        /// The length of the data written.
-        /// </returns>
-        public abstract ReadResult Read(Span<float> buffer);
-
-        #region IDisposable Support
-
-        /// <summary>
-        /// The disposed value
-        /// </summary>
-        protected bool disposedValue = false;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="WaveToSampleConverterBase"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -81,6 +65,22 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
             Source = source ?? throw new ArgumentNullException(nameof(source));
             Format = format;
         }
+
+        /// <summary>
+        /// Reads the audio to the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>
+        /// The length of the data written.
+        /// </returns>
+        public abstract ReadResult Read(Span<float> buffer);
+
+        #region IDisposable Support
+
+        /// <summary>
+        /// The disposed value
+        /// </summary>
+        protected bool disposedValue = false;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using MonoAudio.Utils;
 
 namespace MonoAudio.Data
@@ -12,7 +13,7 @@ namespace MonoAudio.Data
     /// Buffers the data like YouTube does.<br/>
     /// It reads a little more than required, and prevents waiting for IOs.
     /// </summary>
-    public sealed class DataBuffer<TSample> : ISynchronizedDataReader<TSample>, IDisposable
+    public sealed class DataBuffer<TSample> : IDataSource<TSample> where TSample : unmanaged
     {
         private ManualResetEventSlim fillFlag = new ManualResetEventSlim(true);
 
@@ -30,12 +31,20 @@ namespace MonoAudio.Data
 
         private Task writeTask;
 
-        private ISynchronizedDataReader<TSample> dataReader;
+        private IDataSource<TSample> dataSource;
+
+        /// <summary>
+        /// Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+        /// </summary>
+        /// <value>
+        /// The position.
+        /// </value>
+        public ulong Position { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataBuffer{TSample}"/> class.
         /// </summary>
-        /// <param name="dataReader">The data reader.</param>
+        /// <param name="dataSource">The data source.</param>
         /// <param name="initialBlockSize">
         /// The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
         /// The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
@@ -43,9 +52,9 @@ namespace MonoAudio.Data
         /// <param name="internalBufferNumber">The number of internal buffer.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
-        public DataBuffer(ISynchronizedDataReader<TSample> dataReader, int initialBlockSize, int internalBufferNumber = 4)
+        public DataBuffer(IDataSource<TSample> dataSource, int initialBlockSize, int internalBufferNumber = 4)
         {
-            this.dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
+            this.dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             if (initialBlockSize < 0) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
             if (internalBufferNumber < 2) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
             bufferSize = initialBlockSize;
@@ -65,15 +74,15 @@ namespace MonoAudio.Data
         /// <summary>
         /// Reads the data to the specified buffer.
         /// </summary>
-        /// <param name="buffer">The buffer.</param>
+        /// <param name="destination">The buffer.</param>
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public ReadResult Read(Span<TSample> buffer)
+        public ReadResult Read(Span<TSample> destination)
         {
-            bufferSize = Math.Max(buffer.Length, bufferSize);
+            bufferSize = Math.Max(destination.Length, bufferSize);
             int written = 0;
-            var remBuffer = buffer;
+            var remBuffer = destination;
 #pragma warning disable IDE0068 // 推奨される dispose パターンを使用する
             while (!remBuffer.IsEmpty && buffersFilled.TryPeek(out var internalBuffer))
 #pragma warning restore IDE0068 // 推奨される dispose パターンを使用する
@@ -113,7 +122,7 @@ namespace MonoAudio.Data
                         g.CopyTo(remBuffer);
                         remBuffer = remBuffer.Slice(g.Length);
                         buffersFilled.TryDequeue(out _);
-                        buffersNeededToBeResized.Enqueue((internalBuffer, buffer.Length));
+                        buffersNeededToBeResized.Enqueue((internalBuffer, destination.Length));
                         fillFlag.Set();
                     }
                 }
@@ -167,7 +176,20 @@ namespace MonoAudio.Data
             }
         }
 
-        private ReadResult ReadFromSource(Span<TSample> buffer) => dataReader.Read(buffer);
+        private ReadResult ReadFromSource(Span<TSample> buffer) => dataSource.Read(buffer);
+
+        /// <summary>
+        /// Reads the data asynchronously to the specified destination.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <returns>
+        /// The number of <typeparamref name="TSample" />s read from this <see cref="IDataSource{TSample}" />.
+        /// </returns>
+#pragma warning disable CS1998
+
+        public async ValueTask<ReadResult> ReadAsync(Memory<TSample> destination) => Read(destination.Span);
+
+#pragma warning restore CS1998
 
         #region IDisposable Support
 
@@ -206,8 +228,8 @@ namespace MonoAudio.Data
                 }
                 buffersFilled = null;
                 buffersEmpty = null;
-                if (dataReader is IDisposable disposable) disposable.Dispose();
-                dataReader = null;
+                if (dataSource is IDisposable disposable) disposable.Dispose();
+                dataSource = null;
                 buffersNeededToBeResized = null;
                 disposedValue = true;
             }

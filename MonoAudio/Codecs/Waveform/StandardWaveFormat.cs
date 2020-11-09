@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -93,6 +94,14 @@ namespace MonoAudio.Codecs.Waveform
         /// The bit depth.
         /// </value>
         public int BitDepth => bitDepth;
+
+        /// <summary>
+        /// Gets the size of the frame.
+        /// </summary>
+        /// <value>
+        /// The size of the frame.
+        /// </value>
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.

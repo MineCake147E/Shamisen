@@ -16,7 +16,7 @@ namespace MonoAudio.Codecs.Waveform
     /// </summary>
     public sealed class WaveCodec : IDecoder
     {
-        private const uint WIdWAVE = 0x5741_5645;
+        private const uint RiffSubChunkIdWave = 0x5741_5645;
         /*
         private async ValueTask<(bool, RiffChunk?)> CheckHeadersAsync(IDataSource dataReader)
         {
@@ -27,21 +27,21 @@ namespace MonoAudio.Codecs.Waveform
         /// Determines whether the data from <paramref name="dataSource" /> can be decoded by this decoder asynchronously.<br/>
         /// The actual decoding stream must be opened after seeking the source <see cref="Stream"/> to head.
         /// </summary>
-        /// <param name="dataSource">The <see cref="IDataSource" /> to read the data from.</param>
+        /// <param name="dataSource">The <see cref="IDataSource{TSample}" /> to read the data from.</param>
         /// <returns>
         /// The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataSource" /> can be supported by this decoder, otherwise, <c>false</c>.
         /// </returns>
-        public async ValueTask<bool> DetermineDecodabilityAsync(IDataSource dataSource) => throw new NotImplementedException();
+        public async ValueTask<bool> DetermineDecodabilityAsync(IDataSource<byte> dataSource) => throw new NotImplementedException();
 
         /// <summary>
         /// Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource" />.
         /// </summary>
-        /// <param name="dataSource">The <see cref="IDataSource" /> to read the data from.</param>
+        /// <param name="dataSource">The <see cref="IDataSource{TSample}" /> to read the data from.</param>
         /// <returns>
         /// success: The value which indicates whether the data is decodable, and the decoder is created.
         /// decoder: The decoding <see cref="IWaveSource" />.
         /// </returns>
-        public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource dataSource)
+        public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource<byte> dataSource)
         {
             throw new NotImplementedException();
             /*var v = await CheckHeadersAsync(dataSource);

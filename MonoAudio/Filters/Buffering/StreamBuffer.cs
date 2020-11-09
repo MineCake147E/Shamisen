@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using MonoAudio.Data;
 using MonoAudio.Formats;
 using MonoAudio.Utils;
@@ -72,7 +73,7 @@ namespace MonoAudio.Filters
             Source = source ?? throw new ArgumentNullException(nameof(source));
             if (initialBlockSize < 0) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
             if (internalBufferNumber < 2) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
-            dataBuffer = new DataBuffer<TSample>(new SampleDataReader<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);
+            dataBuffer = new DataBuffer<TSample>(new SampleDataSource<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);
         }
 
         /// <summary>
