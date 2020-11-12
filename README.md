@@ -1,7 +1,7 @@
 ![MonoAudio Logo](MonoAudio-Logo.png)
 
-# MonoAudio - .NET Standard Audio Library
-A Cross-Platform Audio Library for .NET Standard.
+# MonoAudio - .NET Audio Library
+A Cross-Platform Audio Library for .NET.
 
 #### Usage of MonoAudio
 - An audio output abstraction layer `MonoAudio.Core`
@@ -23,10 +23,10 @@ A Cross-Platform Audio Library for .NET Standard.
     - About 1300x faster than playback in 48kHz→192kHz **Monaural**.
   - Uses `MemoryMarshal.Cast` so it doesn't copy while casting.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
-
-### Currently implemented features(not tested yet)
 - Optimized BiQuad Filters that supports some filtering
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.
+
+### Currently implemented features(not tested yet)
 
 ### Dependencies and system requirements
 - The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
