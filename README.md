@@ -6,7 +6,7 @@ A Cross-Platform Audio Library for .NET.
 #### Usage of MonoAudio
 - An audio output abstraction layer `MonoAudio.Core`
 
-### Currently supported features
+### Currently implemented features
 - Audio outputs
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
@@ -25,8 +25,6 @@ A Cross-Platform Audio Library for .NET.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
 - Optimized BiQuad Filters that supports some filtering
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.
-
-### Currently implemented features(not tested yet)
 
 ### Dependencies and system requirements
 - The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
