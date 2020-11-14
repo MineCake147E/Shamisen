@@ -97,7 +97,7 @@ namespace MonoAudio
         public static implicit operator DataLength(ulong value) => new DataLength(value);
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="DataLength"/> to <see cref="long"/>.
+        /// Performs an explicit conversion from <see cref="DataLength"/> to <see cref="ulong"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>

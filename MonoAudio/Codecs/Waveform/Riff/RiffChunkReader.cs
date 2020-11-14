@@ -219,7 +219,7 @@ namespace MonoAudio.Codecs.Waveform
             }
             else
             {
-                DataSource.Skip(numberOfElementsToSkip);
+                DataSource.SkipWithFallback(numberOfElementsToSkip);
             }
         }
 

@@ -12,7 +12,7 @@ namespace MonoAudio.Data.Binary
     /// <summary>
     /// Provides some functions that helps you to analyze data input binary.
     /// </summary>
-    /// <seealso cref="ISynchronizedDataReader{TSample}" />
+    /// <seealso cref="IDataSource{TSample}" />
     public static class DataReaderExtensions
     {
         #region Non-Try Functions

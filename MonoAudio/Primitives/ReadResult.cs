@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Diagnostics;
 
 namespace MonoAudio
 {
@@ -10,6 +11,7 @@ namespace MonoAudio
     /// Represents a result of <see cref="IReadableAudioSource{TSample, TFormat}.Read(Span{TSample})"/> operation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct ReadResult : IEquatable<ReadResult>, IComparable<ReadResult>
     {
         [FieldOffset(0)]
@@ -20,7 +22,7 @@ namespace MonoAudio
         /// </summary>
         public static ReadResult EndOfStream
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => new ReadResult(int.MinValue);
         }
 
@@ -29,7 +31,7 @@ namespace MonoAudio
         /// </summary>
         public static ReadResult WaitingForSource
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => new ReadResult(0);
         }
 
@@ -37,7 +39,7 @@ namespace MonoAudio
         /// Initializes a new instance of the <see cref="ReadResult"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadResult(int value)
         {
             this.value = value;
@@ -51,7 +53,7 @@ namespace MonoAudio
         /// </value>
         public bool IsEndOfStream
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => value == int.MinValue;
         }
 
@@ -63,7 +65,7 @@ namespace MonoAudio
         /// </value>
         public bool HasData
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => value > 0;
         }
 
@@ -75,7 +77,7 @@ namespace MonoAudio
         /// </value>
         public bool HasNoData
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => value <= 0;
         }
 
@@ -87,8 +89,8 @@ namespace MonoAudio
         /// </value>
         public int Length
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value > 0 ? value : 0;
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => MathI.Rectify(value);
         }
 
         /// <summary>
@@ -98,7 +100,7 @@ namespace MonoAudio
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator uint(ReadResult value) => (uint)value.Length;
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator int(ReadResult value) => value.Length;
 
         /// <summary>
@@ -116,7 +118,7 @@ namespace MonoAudio
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static implicit operator ReadResult(int value) => new ReadResult(value);
 
         /// <summary>
@@ -126,7 +128,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override bool Equals(object obj) => obj is ReadResult result && Equals(result);
 
         /// <summary>
@@ -136,7 +138,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool Equals(ReadResult other) => value == other.value;
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace MonoAudio
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override int GetHashCode() => value.GetHashCode();
 
         /// <summary>
@@ -153,7 +155,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="other">An <see cref="ReadResult"/>  to compare.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public int CompareTo(ReadResult other) => value.CompareTo(other.value);
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator ==(ReadResult left, ReadResult right) => left.Equals(right);
 
         /// <summary>
@@ -175,7 +177,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator !=(ReadResult left, ReadResult right) => !(left == right);
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace MonoAudio
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <(ReadResult left, ReadResult right) => left.value < right.value;
 
         /// <summary>
@@ -197,7 +199,7 @@ namespace MonoAudio
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <=(ReadResult left, ReadResult right) => left.value <= right.value;
 
         /// <summary>
@@ -208,7 +210,7 @@ namespace MonoAudio
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >(ReadResult left, ReadResult right) => left.value > right.value;
 
         /// <summary>
@@ -219,7 +221,21 @@ namespace MonoAudio
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >=(ReadResult left, ReadResult right) => left.value >= right.value;
+
+        /// <summary>
+        /// Adds specified <see cref="ReadResult"/> value and <see cref="Int32"/> value.
+        /// </summary>
+        /// <param name="left">The first value to add.</param>
+        /// <param name="right">The second value to add.</param>
+        /// <returns>
+        /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadResult operator +(ReadResult left, int right) => new ReadResult(left.Length + right);
+
+        private string GetDebuggerDisplay()
+            => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
     }
 }

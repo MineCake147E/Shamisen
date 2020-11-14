@@ -15,7 +15,8 @@ namespace MonoAudio.Data
         /// </summary>
         /// <param name="dataSource"></param>
         /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
-        public static void Skip<TSample>(this IDataSource<TSample> dataSource, ulong numberOfElementsToSkip) where TSample : unmanaged
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void SkipWithFallback<TSample>(this IDataSource<TSample> dataSource, ulong numberOfElementsToSkip) where TSample : unmanaged
         {
             if (dataSource is ISkippableDataSource<byte> src)
             {

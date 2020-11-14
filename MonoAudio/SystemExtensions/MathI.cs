@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Numerics;
+using MonoAudio;
 
 namespace System
 {
@@ -33,12 +35,26 @@ namespace System
             return (value - m, m);
         }
 
+        /// <summary>
+        /// Rectifies the specified <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value to rectify.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int Rectify(int value)
+        {
+            var h = value >> 31;
+            return value & ~h;
+        }
+
+#if !(NET5_0 || NETCOREAPP3_1)
         private static ReadOnlySpan<byte> TrailingZeroCountDeBruijn => new byte[32]
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
             31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
         };
+#endif
 
         /// <summary>
         /// Counts the consecutive zero bits on the right.
@@ -48,6 +64,11 @@ namespace System
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CountConsecutiveZeros(uint value)
         {
+#if NET5_0 || NETCOREAPP3_1
+#pragma warning disable IDE0022
+            return BitOperations.TrailingZeroCount(value);
+#pragma warning restore IDE0022
+#else
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
@@ -62,6 +83,7 @@ namespace System
                     ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn),
                     (IntPtr)(int)index);
             }
+#endif
         }
 
         /// <summary>
@@ -75,6 +97,9 @@ namespace System
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
+#if NET5_0 || NETCOREAPP3_1
+                return 32 - BitOperations.LeadingZeroCount(value);
+#else
                 var v = value;
                 v |= v >> 1;
                 v |= v >> 2;
@@ -86,6 +111,7 @@ namespace System
                 return Unsafe.AddByteOffset(
                     ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn),
                     (IntPtr)(int)index);
+#endif
             }
         }
 
@@ -94,34 +120,6 @@ namespace System
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static uint LargestPowerOfTwoLessThanOrEqualsTo(uint value)
-        {
-            uint result = 1;
-            if ((value & 0xFFFF_0000u) > 0)
-            {
-                result <<= 16;
-                value >>= 16;
-            }
-            if ((value & 0xFF00u) > 0)
-            {
-                result <<= 8;
-                value >>= 8;
-            }
-            if ((value & 0b11110000u) > 0)
-            {
-                result <<= 4;
-                value >>= 4;
-            }
-            if ((value & 0b1100u) > 0)
-            {
-                result <<= 2;
-                value >>= 2;
-            }
-            if ((value & 0b10u) > 0)
-            {
-                result <<= 1;
-            }
-            return result;
-        }
+        public static uint LargestPowerOfTwoLessThanOrEqualsTo(uint value) => 1u << LogBase2(value);
     }
 }

@@ -13,7 +13,6 @@ namespace MonoAudio.Data
     /// Caches data into managed memory region.
     /// </summary>
     /// <seealso cref="IDisposable" />
-    //[Obsolete("Undone!")]
     public sealed partial class DataCache<TSample> : ISeekableDataSource<TSample> where TSample : unmanaged
     {
         private int allocUnit = 1024;

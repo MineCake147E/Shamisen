@@ -11,6 +11,7 @@ namespace MonoAudio
     /// Represents a wave format.
     /// </summary>
     /// <seealso cref="IAudioFormat{TSample}" />
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct WaveFormat : IWaveFormat, IEquatable<WaveFormat>
     {
         /// <summary>
@@ -178,5 +179,8 @@ namespace MonoAudio
         {
             return !(left == right);
         }
+
+        private string GetDebuggerDisplay()
+            => $"{SampleRate}Hz {Channels}ch {BitDepth}-bit {Encoding}";
     }
 }

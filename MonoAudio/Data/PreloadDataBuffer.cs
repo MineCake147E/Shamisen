@@ -10,10 +10,10 @@ using MonoAudio.Utils;
 namespace MonoAudio.Data
 {
     /// <summary>
-    /// Buffers the data like YouTube does.<br/>
+    /// Buffers the data asynchronously like YouTube does.<br/>
     /// It reads a little more than required, and prevents waiting for IOs.
     /// </summary>
-    public sealed class DataBuffer<TSample> : IDataSource<TSample> where TSample : unmanaged
+    public sealed class PreloadDataBuffer<TSample> : IDataSource<TSample> where TSample : unmanaged
     {
         private ManualResetEventSlim fillFlag = new ManualResetEventSlim(true);
 
@@ -42,7 +42,7 @@ namespace MonoAudio.Data
         public ulong Position { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataBuffer{TSample}"/> class.
+        /// Initializes a new instance of the <see cref="PreloadDataBuffer{TSample}"/> class.
         /// </summary>
         /// <param name="dataSource">The data source.</param>
         /// <param name="initialBlockSize">
@@ -52,7 +52,7 @@ namespace MonoAudio.Data
         /// <param name="internalBufferNumber">The number of internal buffer.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
-        public DataBuffer(IDataSource<TSample> dataSource, int initialBlockSize, int internalBufferNumber = 4)
+        public PreloadDataBuffer(IDataSource<TSample> dataSource, int initialBlockSize, int internalBufferNumber = 4)
         {
             this.dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             if (initialBlockSize < 0) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));

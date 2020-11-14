@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,6 +12,7 @@ namespace MonoAudio
     /// Represents a value that is offset 128 inside 8-bit PCM.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 1)]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct OffsetSByte : IEquatable<OffsetSByte>, IComparable<OffsetSByte>
     {
         private const byte Inverter = 0x80;
@@ -64,6 +66,11 @@ namespace MonoAudio
         public OffsetSByte(byte value)
         {
             this.value = value;
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return ToString();
         }
 
         #region Equality

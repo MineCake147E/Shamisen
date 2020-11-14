@@ -4,6 +4,7 @@ using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using MonoAudio;
 
 namespace System
 {
@@ -216,5 +217,16 @@ namespace System
         public static Span<T> Skip<T>(this Span<T> span, int step) => span.Slice(step);
 
         #endregion LinqLikeForSpan
+
+        /// <summary>
+        /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, int maxLength)
+            => span.Length > maxLength ? span.SliceWhile(maxLength) : span;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace MonoAudio
@@ -8,6 +9,7 @@ namespace MonoAudio
     /// Stores <see cref="Action{T}"/> that cannot leave the stack.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly ref struct StackOnlyActionContainer<T>
     {
         private readonly Action<T> value;
@@ -72,5 +74,7 @@ namespace MonoAudio
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(StackOnlyActionContainer<T> left, StackOnlyActionContainer<T> right) => !(left == right);
+
+        private string GetDebuggerDisplay() => value.ToString();
     }
 }

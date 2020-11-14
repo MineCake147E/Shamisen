@@ -254,7 +254,7 @@ namespace MonoAudio.Codecs.Waveform.Rf64
             }
             else
             {
-                DataSource.Skip(numberOfElementsToSkip);
+                DataSource.SkipWithFallback(numberOfElementsToSkip);
             }
             RemainingBytes -= numberOfElementsToSkip;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,6 +12,7 @@ namespace MonoAudio
 	/// </summary>
 	/// <seealso cref="System.IEquatable{T}" />
 	[StructLayout(LayoutKind.Explicit, Size = 3)]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct Int24 : IComparable<Int24>, IEquatable<Int24>
     {
         private const int NegativeValueOrMask = -0x80_0000;
@@ -41,7 +43,7 @@ namespace MonoAudio
         /// Initializes a new instance of the <see cref="Int24"/> struct.
         /// </summary>
         /// <param name="value">The source <see cref="int"/> value. Mask:0x807fffff</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public Int24(int value)
         {
             value <<= 8;                        //shl edx, 0x8
@@ -59,7 +61,7 @@ namespace MonoAudio
         /// <param name="head">The head.</param>
         /// <param name="middle">The middle.</param>
         /// <param name="tail">The tail.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public Int24(byte head, byte middle, byte tail)
         {
             this.head = head;
@@ -74,7 +76,7 @@ namespace MonoAudio
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static implicit operator int(Int24 value)
         {
             unchecked
@@ -96,7 +98,7 @@ namespace MonoAudio
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator Int24(int value) => new Int24(value);
 
         /// <summary>
@@ -107,11 +109,8 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Int24 int1, Int24 int2)
-        {
-            return int1.Equals(int2);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static bool operator ==(Int24 int1, Int24 int2) => int1.Equals(int2);
 
         /// <summary>
         /// Converts to string.
@@ -119,11 +118,8 @@ namespace MonoAudio
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override string ToString()
-        {
-            return ((int)this).ToString();
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public override string ToString() => ((int)this).ToString();
 
         /// <summary>
         /// Implements the operator -.
@@ -132,11 +128,8 @@ namespace MonoAudio
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Int24 operator -(Int24 value)
-        {
-            return new Int24(-(int)value);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Int24 operator -(Int24 value) => new Int24(-(int)value);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int24"/> objects are not equal.
@@ -146,11 +139,8 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if int1 and int2 are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Int24 int1, Int24 int2)
-        {
-            return !(int1 == int2);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static bool operator !=(Int24 int1, Int24 int2) => !(int1 == int2);
 
         /// <summary>
         /// Determines whether one specified <see cref="Int24"/> is less than another specified <see cref="Int24"/>.
@@ -160,7 +150,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if left is less than right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <(Int24 left, Int24 right) => (int)left < right;
 
         /// <summary>
@@ -171,7 +161,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if left is greater than right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >(Int24 left, Int24 right) => (int)left > right;
 
         /// <summary>
@@ -182,7 +172,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <=(Int24 left, Int24 right) => (int)left <= right;
 
         /// <summary>
@@ -193,7 +183,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if <see cref="Int24"/> is greater than or equal to <see cref="Int24"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >=(Int24 left, Int24 right) => (int)left >= right;
 
         /// <summary>
@@ -201,7 +191,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="value">The value to reverse endianness.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Int24 ReverseEndianness(Int24 value) => new Int24(value.tail, value.middle, value.head);
 
         /// <summary>
@@ -211,11 +201,8 @@ namespace MonoAudio
         /// <returns>
         /// A signed number indicating the relative values of this instance and the other parameter.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int CompareTo(Int24 other)
-        {
-            return ((int)this).CompareTo(other);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public int CompareTo(Int24 other) => ((int)this).CompareTo(other);
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
@@ -224,11 +211,8 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool Equals(object obj)
-        {
-            return obj is Int24 @int && Equals(@int);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public override bool Equals(object obj) => obj is Int24 @int && Equals(@int);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -237,13 +221,10 @@ namespace MonoAudio
         /// <returns>
         /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Int24 other)
-        {
-            return tail == other.tail &&
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public bool Equals(Int24 other) => tail == other.tail &&
                    middle == other.middle &&
                    head == other.head;
-        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -251,7 +232,7 @@ namespace MonoAudio
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override int GetHashCode()
         {
             var hashCode = -428595538;
@@ -260,5 +241,7 @@ namespace MonoAudio
             hashCode = hashCode * -1521134295 + head.GetHashCode();
             return hashCode;
         }
+
+        private string GetDebuggerDisplay() => ToString();
     }
 }
