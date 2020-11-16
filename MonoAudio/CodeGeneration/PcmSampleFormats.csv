@@ -1,0 +1,5 @@
+﻿"Represents a format of a 16-bit Linear PCM sample source.", "Int16LinearPcmSampleFormat", "short", "16",
+"Represents a format of a 24-bit Linear PCM sample source.", "Int24LinearPcmSampleFormat", "Int24", "24",
+"Represents a format of a 32-bit Linear PCM sample source.", "Int32LinearPcmSampleFormat", "int", "32",
+"Represents a format of a 64-bit Linear PCM sample source.", "Int64LinearPcmSampleFormat", "long", "64",
+"Represents a format of an 8-bit Linear PCM sample source.", "OffsetSByteLinearPcmSampleFormat", "OffsetSByte", "8",

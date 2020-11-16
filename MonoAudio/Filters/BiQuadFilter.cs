@@ -79,7 +79,6 @@ namespace MonoAudio.Filters
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public ReadResult Read(Span<float> buffer)
         {
             ReadResult rr = Source.Read(buffer);

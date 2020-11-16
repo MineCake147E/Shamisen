@@ -21,7 +21,7 @@ namespace MonoAudio.Filters
     {
         private bool disposedValue = false;
 
-        private DataBuffer<TSample> dataBuffer;
+        private PreloadDataBuffer<TSample> dataBuffer;
 
         /// <summary>
         /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
@@ -73,7 +73,7 @@ namespace MonoAudio.Filters
             Source = source ?? throw new ArgumentNullException(nameof(source));
             if (initialBlockSize < 0) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
             if (internalBufferNumber < 2) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
-            dataBuffer = new DataBuffer<TSample>(new SampleDataSource<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);
+            dataBuffer = new PreloadDataBuffer<TSample>(new SampleDataSource<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);
         }
 
         /// <summary>

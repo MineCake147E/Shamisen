@@ -35,14 +35,14 @@
 
     <ItemGroup>
         <PackageReference Include="DivideSharp" Version="0.0.3" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO" Version="4.3.0" />
         <PackageReference Include="System.Memory" Version="4.5.4" />
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
-        <PackageReference Include="System.Threading.Channels" Version="4.7.1" />
-        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.1" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+        <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
+        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
@@ -60,6 +60,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
+        </None>
+        <None Include="Formats\PcmSampleFormats.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </None>
         <None Include="SystemExtensions\MathITemplate.cs">
             <DesignTime>True</DesignTime>
@@ -84,6 +89,10 @@
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
+        </None>
+        <None Update="Formats\PcmSampleFormats.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
         </None>
         <None Update="SystemExtensions\MathITemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -112,6 +121,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Formats\PcmSampleFormats.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </Compile>
         <Compile Update="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
             <DesignTime>True</DesignTime>

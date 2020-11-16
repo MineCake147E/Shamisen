@@ -8,6 +8,7 @@ namespace MonoAudio.Filters.Mixing
     /// Mixes down two signal into one signal.
     /// </summary>
     /// <seealso cref="ISampleSource" />
+    [Obsolete("Undone!", true)]
     public sealed class SimpleMixer : ISampleSource
     {
         private bool disposedValue = false;

@@ -68,10 +68,7 @@ namespace MonoAudio
             this.value = value;
         }
 
-        private string GetDebuggerDisplay()
-        {
-            return ToString();
-        }
+        private string GetDebuggerDisplay() => ToString();
 
         #region Equality
 

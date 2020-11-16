@@ -41,7 +41,7 @@ namespace MonoAudio.Filters
         /// <summary>
         /// The half Math.Log10(2)/Math.Log10(Math.E) with Bit-Exact representation.
         /// </summary>
-        public static readonly double HalfLn2 = MemoryMarshal.Cast<ulong, double>(new ulong[] { 0x3fd62e42fefa39ef })[0];
+        public const double HalfLn2 = 0.34657359027997264;
 
         /// <summary>
         /// Creates the LPF parameter from specified quality.

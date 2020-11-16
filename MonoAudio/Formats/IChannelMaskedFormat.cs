@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using DivideSharp;
+
 namespace MonoAudio.Formats
 {
     /// <summary>

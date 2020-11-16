@@ -17,6 +17,6 @@ namespace MonoAudio.Pipeline
         /// Processes the <paramref name="input"/> asynchronously.
         /// </summary>
         /// <param name="input">The input buffer.</param>
-        ValueTask ProcessAsync(ReadOnlyAudioBuffer<TSample, TFormat> input);
+        ValueTask ProcessAsync(ReadOnlyAudioMemory<TSample, TFormat> input);
     }
 }

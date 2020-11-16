@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿#if NET5_0
 
-namespace MonoAudio
+using System;
+using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MonoAudio.Formats
 {
     /// <summary>
-    /// Represents a format of a 32-bit IEEE 754 Floating-Point sample source.
+    /// Represents a format of a half-precision sample source.
     /// </summary>
-    public readonly struct SampleFormat : IInterleavedAudioFormat<float>, IEquatable<SampleFormat>
+    public readonly struct HalfPrecisionSampleFormat : IInterleavedAudioFormat<Half>, IEquatable<HalfPrecisionSampleFormat>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SampleFormat"/> struct.
+        /// Initializes a new instance of the <see cref="HalfPrecisionSampleFormat"/> struct.
         /// </summary>
         /// <param name="channels">The channels.</param>
         /// <param name="sampleRate">The sample rate.</param>
-        public SampleFormat(int channels, int sampleRate)
+        public HalfPrecisionSampleFormat(int channels, int sampleRate)
         {
             Channels = channels;
             SampleRate = sampleRate;
@@ -45,10 +49,10 @@ namespace MonoAudio
         /// <value>
         /// The bit depth.
         /// </value>
-        public int BitDepth => 32;
+        public int BitDepth => 16;
 
         /// <summary>
-        /// Gets the value indicates how many <see cref="float"/> values are required per whole frame.<br/>
+        /// Gets the value indicates how many <see cref="Half"/> values are required per whole frame.<br/>
         /// It depends on <see cref="IAudioFormat{TSample}.Channels"/>.
         /// </summary>
         /// <value>
@@ -57,11 +61,11 @@ namespace MonoAudio
         public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => Channels; }
 
         /// <summary>
-        /// Gets the value indicates how many <see cref="float"/>s are required per 1-channel sample.<br/>
+        /// Gets the value indicates how many <see cref="Half"/>s are required per 1-channel sample.<br/>
         /// Does not depend on the number of <see cref="Channels"/>.<br/>
         /// </summary>
         /// <value>
-        /// The size of a frame in <see cref="float"/>s.
+        /// The size of a frame in <see cref="Half"/>s.
         /// </value>
         public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => 1; }
 
@@ -71,14 +75,14 @@ namespace MonoAudio
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            return obj is SampleFormat format && Equals(format);
+            return obj is HalfPrecisionSampleFormat format && Equals(format);
         }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(SampleFormat other)
+        public bool Equals(HalfPrecisionSampleFormat other)
         {
             return Channels == other.Channels &&
                    SampleRate == other.SampleRate;
@@ -88,45 +92,42 @@ namespace MonoAudio
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(IAudioFormat<float> other)
-        {
-            return other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
-        }
+        public bool Equals(IAudioFormat<Half> other)
+            => other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
+            return HashCode.Combine(Channels, SampleRate);
         }
 
         /// <summary>
-		/// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are equal.
-		/// </summary>
-		/// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
-		/// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
-		/// <returns>
-		///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-		/// </returns>
-        public static bool operator ==(SampleFormat left, SampleFormat right)
+        /// Indicates whether the values of two specified <see cref="HalfPrecisionSampleFormat"/> objects are equal.
+        /// </summary>
+        /// <param name="left">The first <see cref="HalfPrecisionSampleFormat"/> to compare.</param>
+        /// <param name="right">The second <see cref="HalfPrecisionSampleFormat"/> to compare.</param>
+        /// <returns>
+        ///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right)
         {
             return left.Equals(right);
         }
 
         /// <summary>
-		/// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are different.
+		/// Indicates whether the values of two specified <see cref="HalfPrecisionSampleFormat"/> objects are different.
 		/// </summary>
-		/// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
-		/// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
+		/// <param name="left">The first <see cref="HalfPrecisionSampleFormat"/> to compare.</param>
+		/// <param name="right">The second <see cref="HalfPrecisionSampleFormat"/> to compare.</param>
 		/// <returns>
 		///   <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
 		/// </returns>
-        public static bool operator !=(SampleFormat left, SampleFormat right)
+        public static bool operator !=(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right)
         {
             return !(left == right);
         }
     }
 }
+
+#endif

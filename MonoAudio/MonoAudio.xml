@@ -4,62 +4,6 @@
         <name>MonoAudio</name>
     </assembly>
     <members>
-        <member name="T:MonoAudio.AudioBuffer`2">
-            <summary>
-            Represents an audio buffer.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The type of the format.</typeparam>
-        </member>
-        <member name="P:MonoAudio.AudioBuffer`2.Item(System.Int32)">
-            <summary>
-            Gets or sets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioBuffer`2"/>.
-            </summary>
-            <value>
-            The element.
-            </value>
-            <param name="index">The index.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.AudioBuffer`2.#ctor(`1,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.AudioBuffer`2" /> struct.
-            </summary>
-            <param name="format">The format.</param>
-            <param name="sizeInFrames">The size in frames.</param>
-        </member>
-        <member name="P:MonoAudio.AudioBuffer`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:MonoAudio.AudioBuffer`2.Length">
-            <summary>
-            Gets the length of this <see cref="T:MonoAudio.AudioBuffer`2"/>.
-            </summary>
-            <value>
-            The length of this buffer.
-            </value>
-        </member>
-        <member name="P:MonoAudio.AudioBuffer`2.Memory">
-            <summary>
-            Gets the internal memory region.
-            </summary>
-            <value>
-            The memory.
-            </value>
-        </member>
-        <member name="P:MonoAudio.AudioBuffer`2.Span">
-            <summary>
-            Gets the internal memory region.
-            </summary>
-            <value>
-            The span.
-            </value>
-        </member>
         <member name="T:MonoAudio.AudioEncoding">
             <summary>
             Defines known encoding types.
@@ -693,6 +637,1268 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:MonoAudio.AudioMemory`2">
+            <summary>
+            Represents an audio buffer.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.#ctor(`1,System.Memory{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.AudioMemory`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="memory">The memory.</param>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.AudioMemory`2"/> in samples.
+            </summary>
+            <value>
+            The length of this buffer.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.Span">
+            <summary>
+            Gets the span.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current memory starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <param name="length">The desired length in samples for the slice.</param>
+            <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current memory that begins at a specified index.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <returns>
+            A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.CopyTo(MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.AudioMemory`2"/> into a destination <see cref="T:MonoAudio.AudioMemory`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.TryCopyTo(MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.AudioMemory`2"/> to a destination <see cref="T:MonoAudio.AudioMemory`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.AudioMemory`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.AudioMemory`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.AudioMemory`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.op_Implicit(MonoAudio.AudioMemory{`0,`1})~MonoAudio.ReadOnlyAudioMemory{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.AudioMemory`2"/> to <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="memory">The memory.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.op_Inequality(MonoAudio.AudioMemory{`0,`1},MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.AudioMemory`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.AudioMemory`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.AudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.op_Equality(MonoAudio.AudioMemory{`0,`1},MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.AudioMemory`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.AudioMemory`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.AudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.Equals(MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="memory">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the memory parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioMemory`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.AudioSpan`2">
+            <summary>
+            Provides a type-, memory-, and format-safe representation of a contiguous region of arbitrary memory that contains audio data.
+            </summary>
+            <typeparam name="TSample">The type of audio sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.AudioSpan`2"/>.
+            </summary>
+            <value>
+            The length of this span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioSpan`2"/>.
+            </summary>
+            <value>
+            The reference to the element.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.#ctor(`1,System.Span{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.AudioSpan`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current span starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <param name="length">The desired length in samples for the slice.</param>
+            <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current span that begins at a specified index.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <returns>
+            A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.CopyTo(MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.AudioSpan`2"/> into a destination <see cref="T:MonoAudio.AudioSpan`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.TryCopyTo(MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.AudioSpan`2"/> to a destination <see cref="T:MonoAudio.AudioSpan`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Fill(`0)">
+            <summary>
+            Fills the elements of this span with a specified value.
+            </summary>
+            <param name="value">The value to assign to each element of the span.</param>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Clear">
+            <summary>
+            Clears the contents of this <see cref="T:MonoAudio.AudioSpan`2"/> object.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.AudioSpan`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.AudioSpan`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.AudioSpan`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.op_Implicit(MonoAudio.AudioSpan{`0,`1})~MonoAudio.ReadOnlyAudioSpan{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.AudioSpan`2"/> to <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.op_Inequality(MonoAudio.AudioSpan{`0,`1},MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.AudioSpan`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.AudioSpan`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.AudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.op_Equality(MonoAudio.AudioSpan{`0,`1},MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.AudioSpan`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.AudioSpan`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.AudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.Equals(MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="span">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the span parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.AudioSpan`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.InterleavedAudioMemory`2">
+            <summary>
+            Represents a contiguous region of channel-interleaved memory that contains audio data.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.SampleLength">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> in samples.
+            </summary>
+            <value>
+            The length of this memory in samples.
+            </value>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> in frames.
+            </summary>
+            <value>
+            The length of this memory in frames.
+            </value>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.Item(System.Int32)">
+            <summary>
+            Gets the frame at the specified <paramref name="frame"/> in the <see cref="T:MonoAudio.InterleavedAudioMemory`2"/>.
+            </summary>
+            <value>
+            The memory to the frame.
+            </value>
+            <param name="frame">The index of frame.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.#ctor(`1,System.Memory{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="memory">The memory.</param>
+            <exception cref="T:System.ArgumentException">The <paramref name="memory"/> must be aligned with <paramref name="format"/>'s <see cref="P:MonoAudio.IInterleavedAudioFormat`1.BlockSize"/>!</exception>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current memory starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <param name="length">The desired length in frame for the slice.</param>
+            <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current memory that begins at a specified index.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <returns>
+            A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.CopyTo(MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> into a destination <see cref="T:MonoAudio.InterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.TryCopyTo(MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to a destination <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.InterleavedAudioMemory`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.op_Implicit(MonoAudio.InterleavedAudioMemory{`0,`1})~MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="memory">The memory.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.op_Implicit(MonoAudio.AudioMemory{`0,`1})~MonoAudio.InterleavedAudioMemory{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.AudioMemory`2"/> to <see cref="T:MonoAudio.InterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="memory">The memory.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.op_Inequality(MonoAudio.InterleavedAudioMemory{`0,`1},MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.op_Equality(MonoAudio.InterleavedAudioMemory{`0,`1},MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.Equals(MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="memory">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the memory parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.InterleavedAudioMemory`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.Buffers.InterleavedAudioSpan`2">
+            <summary>
+            Provides a type-, memory-, and format-safe representation of a contiguous region of channel-interleaved memory that contains audio data.
+            </summary>
+            <typeparam name="TSample">The type of audio sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.SampleLength">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> in samples.
+            </summary>
+            <value>
+            The length of this span in samples.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> in frames.
+            </summary>
+            <value>
+            The length of this span in frames.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.Item(System.Int32)">
+            <summary>
+            Gets the frame at the specified <paramref name="frame"/> in the <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/>.
+            </summary>
+            <value>
+            The span to the frame.
+            </value>
+            <param name="frame">The index of frame.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.#ctor(`1,System.Span{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="span">The span.</param>
+            <exception cref="T:System.ArgumentException">The <paramref name="span"/> must be aligned with <paramref name="format"/>'s <see cref="P:MonoAudio.IInterleavedAudioFormat`1.BlockSize"/>!</exception>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current span starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <param name="length">The desired length in frame for the slice.</param>
+            <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current span that begins at a specified index.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <returns>
+            A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.CopyTo(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> into a destination <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.TryCopyTo(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to a destination <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Fill(`0)">
+            <summary>
+            Fills the elements of this span with a specified value.
+            </summary>
+            <param name="value">The value to assign to each element of the span.</param>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Clear">
+            <summary>
+            Clears the contents of this <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> object.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Buffers.InterleavedAudioSpan`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.op_Implicit(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})~MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.op_Implicit(MonoAudio.AudioSpan{`0,`1})~MonoAudio.Buffers.InterleavedAudioSpan{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.AudioSpan`2"/> to <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.op_Inequality(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1},MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.op_Equality(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1},MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.Equals(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="span">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the span parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.InterleavedAudioSpan`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2">
+            <summary>
+            Provides a read-only type-, memory-, and format-safe representation of a contiguous region of channel-interleaved memory that contains audio data.
+            </summary>
+            <typeparam name="TSample">The type of audio sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.SampleLength">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> in samples.
+            </summary>
+            <value>
+            The length of this span in samples.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> in frames.
+            </summary>
+            <value>
+            The length of this span in frames.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Item(System.Int32)">
+            <summary>
+            Gets the frame at the specified <paramref name="frame"/> in the <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/>.
+            </summary>
+            <value>
+            The span to the frame.
+            </value>
+            <param name="frame">The index of frame.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.#ctor(`1,System.ReadOnlySpan{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="span">The span.</param>
+            <exception cref="T:System.ArgumentException">The <paramref name="span"/> must be aligned with <paramref name="format"/>'s <see cref="P:MonoAudio.IInterleavedAudioFormat`1.BlockSize"/>!</exception>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current span starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <param name="length">The desired length in frame for the slice.</param>
+            <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current span that begins at a specified index.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <returns>
+            A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.CopyTo(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> into a destination <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.TryCopyTo(MonoAudio.Buffers.InterleavedAudioSpan{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> to a destination <see cref="T:MonoAudio.Buffers.InterleavedAudioSpan`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.op_Implicit(MonoAudio.ReadOnlyAudioSpan{`0,`1})~MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.op_Inequality(MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1},MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.op_Equality(MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1},MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.Equals(MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="span">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the span parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Buffers.ReadOnlyInterleavedAudioSpan`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.ReadOnlyAudioMemory`2">
+            <summary>
+            Represents a read-only audio buffer.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.#ctor(`1,System.ReadOnlyMemory{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="memory">The memory.</param>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Item(System.Int32)">
+            <summary>
+            Gets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioMemory`2"/>.
+            </summary>
+            <value>
+            The element.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.AudioMemory`2"/>.
+            </summary>
+            <value>
+            The length of this buffer.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Span">
+            <summary>
+            Gets the span.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current memory starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <param name="length">The desired length in samples for the slice.</param>
+            <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current memory that begins at a specified index.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <returns>
+            A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.CopyTo(MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> into a destination <see cref="T:MonoAudio.AudioMemory`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.TryCopyTo(MonoAudio.AudioMemory{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to a destination <see cref="T:MonoAudio.AudioMemory`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioMemory`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.op_Inequality(MonoAudio.ReadOnlyAudioMemory{`0,`1},MonoAudio.ReadOnlyAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.op_Equality(MonoAudio.ReadOnlyAudioMemory{`0,`1},MonoAudio.ReadOnlyAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.Equals(MonoAudio.ReadOnlyAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="memory">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the memory parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioMemory`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.ReadOnlyAudioSpan`2">
+            <summary>
+            Provides a read-only type-, memory-, and format-safe representation of a contiguous region of arbitrary memory that contains audio data.
+            </summary>
+            <typeparam name="TSample">The type of audio sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.Span">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/>.
+            </summary>
+            <value>
+            The length of this span.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/>.
+            </summary>
+            <value>
+            The reference to the element.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.#ctor(`1,System.ReadOnlySpan{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current span starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <param name="length">The desired length in samples for the slice.</param>
+            <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current span that begins at a specified index.
+            </summary>
+            <param name="start">The index in samples at which to begin this slice.</param>
+            <returns>
+            A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.CopyTo(MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> into a destination <see cref="T:MonoAudio.AudioSpan`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.TryCopyTo(MonoAudio.AudioSpan{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to a destination <see cref="T:MonoAudio.AudioSpan`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyAudioSpan`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.op_Inequality(MonoAudio.ReadOnlyAudioSpan{`0,`1},MonoAudio.ReadOnlyAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.op_Equality(MonoAudio.ReadOnlyAudioSpan{`0,`1},MonoAudio.ReadOnlyAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.ReadOnlyAudioSpan`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.Equals(MonoAudio.ReadOnlyAudioSpan{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="span">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the span parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyAudioSpan`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
+        </member>
+        <member name="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2">
+            <summary>
+            Provides a read-only type-, memory-, and format-safe representation of a contiguous region of channel-interleaved memory that contains audio data.
+            </summary>
+            <typeparam name="TSample">The type of audio sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Memory">
+            <summary>
+            Gets the internal memory region.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.IsEmpty">
+            <summary>
+            Gets a value indicating whether this instance is empty.
+            </summary>
+            <value>
+              <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.SampleLength">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> in samples.
+            </summary>
+            <value>
+            The length of this memory in samples.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Length">
+            <summary>
+            Gets the length of this <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> in frames.
+            </summary>
+            <value>
+            The length of this memory in frames.
+            </value>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Item(System.Int32)">
+            <summary>
+            Gets the frame at the specified <paramref name="frame"/> in the <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/>.
+            </summary>
+            <value>
+            The memory to the frame.
+            </value>
+            <param name="frame">The index of frame.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.#ctor(`1,System.ReadOnlyMemory{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> struct.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="memory">The memory.</param>
+            <exception cref="T:System.ArgumentException">The <paramref name="memory"/> must be aligned with <paramref name="format"/>'s <see cref="P:MonoAudio.IInterleavedAudioFormat`1.BlockSize"/>!</exception>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Slice(System.Int32,System.Int32)">
+            <summary>
+            Forms a slice out of the current memory starting at a specified index for a specified <paramref name="length"/>.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <param name="length">The desired length in frame for the slice.</param>
+            <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Slice(System.Int32)">
+            <summary>
+            Forms a slice out of the current memory that begins at a specified index.
+            </summary>
+            <param name="start">The index in frames at which to begin this slice.</param>
+            <returns>
+            A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.CopyTo(MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Copies the contents of this <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> into a destination <see cref="T:MonoAudio.InterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.TryCopyTo(MonoAudio.InterleavedAudioMemory{`0,`1})">
+            <summary>
+            Attempts to copy the current <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> to a destination <see cref="T:MonoAudio.InterleavedAudioMemory`2"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>true if the copy operation succeeded; otherwise, false.</returns>
+        </member>
+        <member name="P:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Empty">
+            <summary>
+            Returns an empty <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> object.
+            </summary>
+            <value>
+            An empty <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> object.
+            </value>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.op_Implicit(MonoAudio.ReadOnlyAudioMemory{`0,`1})~MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:MonoAudio.ReadOnlyAudioMemory`2"/> to <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/>.
+            </summary>
+            <param name="memory">The memory.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.op_Inequality(MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1},MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> to compare.</param>
+            <param name="right">The second  <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.op_Equality(MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1},MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.ReadOnlyInterleavedAudioMemory`2"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.Equals(MonoAudio.ReadOnlyInterleavedAudioMemory{`0,`1})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="memory">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the memory parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.ReadOnlyInterleavedAudioMemory`2.GetHashCode">
+            <summary>
+            Throws a System.NotSupportedException.
+            </summary>
+            <returns>
+            Calls to this method always throw a System.NotSupportedException.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Always</exception>
         </member>
         <member name="T:MonoAudio.Codecs.CodecUtils">
             <summary>
@@ -4018,7 +5224,7 @@
             <summary>
             Provides some functions that helps you to analyze data input binary.
             </summary>
-            <seealso cref="!:ISynchronizedDataReader&lt;TSample&gt;" />
+            <seealso cref="T:MonoAudio.Data.IDataSource`1" />
         </member>
         <member name="M:MonoAudio.Data.Binary.DataReaderExtensions.ReadByte(MonoAudio.Data.IDataSource{System.Byte})">
             <summary>
@@ -4281,62 +5487,6 @@
             <param name="info">The data for serializing or deserializing the object.</param>
             <param name="context">The source and destination for the object.</param>
         </member>
-        <member name="T:MonoAudio.Data.DataBuffer`1">
-            <summary>
-            Buffers the data like YouTube does.<br/>
-            It reads a little more than required, and prevents waiting for IOs.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Data.DataBuffer`1.Position">
-            <summary>
-            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.#ctor(MonoAudio.Data.IDataSource{`0},System.Int32,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataBuffer`1"/> class.
-            </summary>
-            <param name="dataSource">The data source.</param>
-            <param name="initialBlockSize">
-            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-            </param>
-            <param name="internalBufferNumber">The number of internal buffer.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
-        </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified buffer.
-            </summary>
-            <param name="destination">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
-        </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously to the specified destination.
-            </summary>
-            <param name="destination">The destination.</param>
-            <returns>
-            The number of <typeparamref name="TSample" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
-            </returns>
-        </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataBuffer`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:MonoAudio.Data.DataCache`1">
             <summary>
             Caches data into managed memory region.
@@ -4443,155 +5593,12 @@
             Provides some extensions for <see cref="T:MonoAudio.Data.IDataSource`1"/>s.
             </summary>
         </member>
-        <member name="M:MonoAudio.Data.DataUtils.Skip``1(MonoAudio.Data.IDataSource{``0},System.UInt64)">
+        <member name="M:MonoAudio.Data.DataUtils.SkipWithFallback``1(MonoAudio.Data.IDataSource{``0},System.UInt64)">
             <summary>
             Skips this data source the specified number of elements to skip.
             </summary>
             <param name="dataSource"></param>
             <param name="numberOfElementsToSkip">The number of elements to skip.</param>
-        </member>
-        <member name="T:MonoAudio.Data.DataWriter`1">
-            <summary>
-            Abstractions for the delegates below:<br/>
-            <see cref="T:MonoAudio.WriteAction`1"/>,
-            <see cref="T:MonoAudio.WriteAsyncFunc`1"/>,
-            <see cref="T:MonoAudio.WriteWithParameterAction`2"/>, and
-            <see cref="T:MonoAudio.WriteWithParameterAsyncFunc`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriter`1.WriteAsync(System.ReadOnlyMemory{`0})">
-            <summary>
-            Writes the data asynchronously.
-            </summary>
-            <param name="data">The data to write.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriter`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriter`1.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriter`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:MonoAudio.Data.DataWriterOrdinal`1">
-            <summary>
-            The data writer to the <see cref="T:MonoAudio.WriteAction`1"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
-        </member>
-        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.#ctor(MonoAudio.WriteAction{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.DataWriterOrdinal`1"/> class.
-            </summary>
-            <param name="func">The function to call.</param>
-            <exception cref="T:System.ArgumentNullException">func</exception>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.WriteAsync(System.ReadOnlyMemory{`0})">
-            <summary>
-            Writes the data asynchronously.
-            </summary>
-            <param name="data">The data to write.</param>
-        </member>
-        <member name="M:MonoAudio.Data.DataWriterOrdinal`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="T:MonoAudio.Data.AsyncDataWriter`1">
-            <summary>
-            The data writer to the <see cref="T:MonoAudio.WriteAsyncFunc`1"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataWriter`1.#ctor(MonoAudio.WriteAsyncFunc{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.AsyncDataWriter`1"/> class.
-            </summary>
-            <param name="function">The function.</param>
-            <exception cref="T:System.ArgumentNullException">function</exception>
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataWriter`1.WriteAsync(System.ReadOnlyMemory{`0})">
-            <summary>
-            Writes the data asynchronously.
-            </summary>
-            <param name="data">The data to write.</param>
-        </member>
-        <member name="M:MonoAudio.Data.AsyncDataWriter`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-            <exception cref="T:System.NotImplementedException"></exception>
-        </member>
-        <member name="T:MonoAudio.Data.ParametrizedDataWriter`2">
-            <summary>
-            The data writer to the <see cref="T:MonoAudio.WriteWithParameterAction`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.#ctor(MonoAudio.WriteWithParameterAction{`0,`1},`1)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedDataWriter`2"/> class.
-            </summary>
-            <param name="action">The action.</param>
-            <param name="parameter">The parameter.</param>
-            <exception cref="T:System.ArgumentNullException">action</exception>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.WriteAsync(System.ReadOnlyMemory{`0})">
-            <summary>
-            Writes the data asynchronously.
-            </summary>
-            <param name="data">The data to write.</param>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedDataWriter`2.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="T:MonoAudio.Data.ParametrizedAsyncDataWriter`2">
-            <summary>
-            The data writer to the <see cref="T:MonoAudio.WriteWithParameterAction`2"/>
-            </summary>
-            <typeparam name="TSample">The type of Sample.</typeparam>
-            <typeparam name="TParam">The type of parameter to call the method with.</typeparam>
-            <seealso cref="T:MonoAudio.Data.DataWriter`1" />
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.#ctor(MonoAudio.WriteWithParameterAsyncFunc{`0,`1},`1)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Data.ParametrizedAsyncDataWriter`2"/> class.
-            </summary>
-            <param name="function">The function.</param>
-            <param name="parameter">The parameter.</param>
-            <exception cref="T:System.ArgumentNullException">function</exception>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.WriteAsync(System.ReadOnlyMemory{`0})">
-            <summary>
-            Writes the data asynchronously.
-            </summary>
-            <param name="data">The data to write.</param>
-        </member>
-        <member name="M:MonoAudio.Data.ParametrizedAsyncDataWriter`2.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="T:MonoAudio.Data.IDataSource`1">
             <summary>
@@ -4652,9 +5659,405 @@
             </summary>
             <param name="index">The index.</param>
         </member>
-        <member name="T:MonoAudio.Data.IDataWriter">
+        <member name="T:MonoAudio.Data.IDataSink`1">
             <summary>
             Defines a base infrastructure for writing data.
+            </summary>
+            <typeparam name="TSample">The type of writing data.</typeparam>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="M:MonoAudio.Data.IDataSink`1.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the specified <paramref name="data"/> asynchronously.
+            </summary>
+            <param name="data">The writing data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.IDataSink`1.Write(System.ReadOnlySpan{`0})">
+            <summary>
+            Writes the specified data.
+            </summary>
+            <param name="data">The writing data.</param>
+        </member>
+        <member name="T:MonoAudio.Data.IDataWriter`1">
+            <summary>
+            Defines a base infrastructure for writing data, with seek functionality.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.IDataWriter`1.SeekTo(System.UInt64)">
+            <summary>
+            Seeks this data writer to the specified index.
+            </summary>
+            <param name="position">The position to seek to, from the very first written <typeparamref name="TSample"/>.</param>
+        </member>
+        <member name="M:MonoAudio.Data.IDataWriter`1.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Seeks this data writer with the specified offset and origin.
+            </summary>
+            <param name="offset">The offset.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="T:MonoAudio.Data.Parsing.BufferedBinaryParser">
+            <summary>
+            Parses binary data with internal buffer.<br/>
+            It is more efficient than <see cref="T:MonoAudio.Data.Binary.DataReaderExtensions"/>'s methods.<br/>
+            The <see cref="T:MonoAudio.Data.Parsing.BufferedBinaryParser"/> won't <see cref="M:System.IDisposable.Dispose"/> the <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source"/> even if the parser gets disposed.
+            </summary>
+            <seealso cref="T:MonoAudio.Data.IDataSource`1" />
+        </member>
+        <member name="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Position">
+            <summary>
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="F:MonoAudio.Data.Parsing.BufferedBinaryParser.MinimumBufferLength">
+            <summary>
+            The minimum buffer length
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.#ctor(MonoAudio.Data.IDataSource{System.Byte},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.Parsing.BufferedBinaryParser"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="bufferLength">The length of internal buffer, which must be larger than or equals to <see cref="F:MonoAudio.Data.Parsing.BufferedBinaryParser.MinimumBufferLength"/>.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the data to the specified destination.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>
+            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.ReadAsync(System.Memory{System.Byte})">
+            <summary>
+            Reads the data asynchronously to the specified destination.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>
+            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseByte(System.Byte@)">
+            <summary>
+            Reads single <see cref="T:System.Byte" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt16BigEndian(System.Int16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int16" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt16LittleEndian(System.Int16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int16" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt32BigEndian(System.Int32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int32" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt32LittleEndian(System.Int32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int32" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt64BigEndian(System.Int64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int64" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseInt64LittleEndian(System.Int64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int64" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseSignedByte(System.SByte@)">
+            <summary>
+            Reads single <see cref="T:System.SByte" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt16BigEndian(System.UInt16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt16" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt16LittleEndian(System.UInt16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt16" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt32BigEndian(System.UInt32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt32" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt32LittleEndian(System.UInt32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt32" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt64BigEndian(System.UInt64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt64" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseUInt64LittleEndian(System.UInt64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt64" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseDoubleLittleEndian(System.Double@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Double" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseDoudleBigEndian(System.Double@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Double" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseSingleLittleEndian(System.Single@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Single" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.BufferedBinaryParser.TryParseSingleBigEndian(System.Single@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Single" /> from <see cref="P:MonoAudio.Data.Parsing.BufferedBinaryParser.Source" />.
+            </summary>
+            <param name="read"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Data.Parsing.IBinaryParser">
+            <summary>
+            Defines a base infrastructure to parse binary data from <see cref="T:MonoAudio.Data.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Data.Parsing.IBinaryParser.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseByte(System.Byte@)">
+            <summary>
+            Reads single <see cref="T:System.Byte"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseSignedByte(System.SByte@)">
+            <summary>
+            Reads single <see cref="T:System.SByte"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt16LittleEndian(System.UInt16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt16"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt16BigEndian(System.UInt16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt16"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt16LittleEndian(System.Int16@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int16"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt16BigEndian(System.Int16@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int16"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt32LittleEndian(System.UInt32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt32"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt32BigEndian(System.UInt32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt32"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt32LittleEndian(System.Int32@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int32"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt32BigEndian(System.Int32@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int32"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt64LittleEndian(System.UInt64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.UInt64"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseUInt64BigEndian(System.UInt64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.UInt64"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt64LittleEndian(System.Int64@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Int64"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseInt64BigEndian(System.Int64@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Int64"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseDoubleLittleEndian(System.Double@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Double"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseDoudleBigEndian(System.Double@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Double"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseSingleLittleEndian(System.Single@)">
+            <summary>
+            Reads single little-endianed <see cref="T:System.Single"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Data.Parsing.IBinaryParser.TryParseSingleBigEndian(System.Single@)">
+            <summary>
+            Reads single big-endianed <see cref="T:System.Single"/> from <see cref="P:MonoAudio.Data.Parsing.IBinaryParser.Source"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.Data.PreloadDataBuffer`1">
+            <summary>
+            Buffers the data asynchronously like YouTube does.<br/>
+            It reads a little more than required, and prevents waiting for IOs.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Data.PreloadDataBuffer`1.Position">
+            <summary>
+            Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Data.PreloadDataBuffer`1.#ctor(MonoAudio.Data.IDataSource{`0},System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Data.PreloadDataBuffer`1"/> class.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <param name="initialBlockSize">
+            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
+            </param>
+            <param name="internalBufferNumber">The number of internal buffer.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
+        </member>
+        <member name="M:MonoAudio.Data.PreloadDataBuffer`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="destination">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.PreloadDataBuffer`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data asynchronously to the specified destination.
+            </summary>
+            <param name="destination">The destination.</param>
+            <returns>
+            The number of <typeparamref name="TSample" />s read from this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Data.PreloadDataBuffer`1.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MonoAudio.Data.PreloadDataBuffer`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
         <member name="T:MonoAudio.Data.SampleDataSource`2">
@@ -4946,7 +6349,6 @@
             </summary>
             <param name="buffer">The buffer.</param>
             <returns></returns>
-            <exception cref="T:System.NotImplementedException"></exception>
         </member>
         <member name="M:MonoAudio.Filters.BiQuadFilter.Dispose(System.Boolean)">
             <summary>
@@ -5334,6 +6736,104 @@
             <param name="format">The format.</param>
             <returns>The matching <see cref="T:MonoAudio.Speakers"/> combination.</returns>
         </member>
+        <member name="T:MonoAudio.DoublePrecisionSampleFormat">
+            <summary>
+            Represents a format of a double-precision sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.DoublePrecisionSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.DoublePrecisionSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.DoublePrecisionSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.DoublePrecisionSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.DoublePrecisionSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Double"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.DoublePrecisionSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Double"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.DoublePrecisionSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Double"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.Equals(MonoAudio.DoublePrecisionSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.Equals(MonoAudio.IAudioFormat{System.Double})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.op_Equality(MonoAudio.DoublePrecisionSampleFormat,MonoAudio.DoublePrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.DoublePrecisionSampleFormat.op_Inequality(MonoAudio.DoublePrecisionSampleFormat,MonoAudio.DoublePrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.DoublePrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.FormatUtils">
             <summary>
             Provides some utilities for <see cref="T:MonoAudio.IAudioFormat`1"/>.
@@ -5386,27 +6886,10 @@
             <summary>
             Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
             Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
             </summary>
             <value>
             The bit depth.
-            </value>
-        </member>
-        <member name="P:MonoAudio.IAudioFormat`1.BlockSize">
-            <summary>
-            Gets the value indicates how many <typeparamref name="TSample"/>s are required per whole frame.<br/>
-            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
-            </summary>
-            <value>
-            The size of frame.
-            </value>
-        </member>
-        <member name="P:MonoAudio.IAudioFormat`1.SampleSize">
-            <summary>
-            Gets the value indicates how many <typeparamref name="TSample"/>s are required per 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.<br/>
-            </summary>
-            <value>
-            The size of a sample in <typeparamref name="TSample"/>s.
             </value>
         </member>
         <member name="T:MonoAudio.Formats.IChannelMaskedFormat">
@@ -5418,6 +6901,30 @@
             <summary>
             Gets the value which indicates how the speakers are used.
             </summary>
+        </member>
+        <member name="T:MonoAudio.IInterleavedAudioFormat`1">
+            <summary>
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.IInterleavedAudioFormat`1.BlockSize">
+            <summary>
+            Gets the value indicates how many <typeparamref name="TSample"/>s are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of frame.
+            </value>
+        </member>
+        <member name="P:MonoAudio.IInterleavedAudioFormat`1.SampleSize">
+            <summary>
+            Gets the value indicates how many <typeparamref name="TSample"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a sample in <typeparamref name="TSample"/>s.
+            </value>
         </member>
         <member name="T:MonoAudio.IWaveFormat">
             <summary>
@@ -5432,9 +6939,499 @@
             The sample encoding.
             </value>
         </member>
+        <member name="T:MonoAudio.Int16LinearPcmSampleFormat">
+            <summary>
+            Represents a format of a 16-bit Linear PCM sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.Int16LinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int16LinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int16LinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.Int16LinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int16LinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int16"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int16LinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int16"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.Int16LinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Int16"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.Equals(MonoAudio.Int16LinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.Equals(MonoAudio.IAudioFormat{System.Int16})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.op_Equality(MonoAudio.Int16LinearPcmSampleFormat,MonoAudio.Int16LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int16LinearPcmSampleFormat.op_Inequality(MonoAudio.Int16LinearPcmSampleFormat,MonoAudio.Int16LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int16LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.Int24LinearPcmSampleFormat">
+            <summary>
+            Represents a format of a 24-bit Linear PCM sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.Int24LinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int24LinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int24LinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.Int24LinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int24LinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:MonoAudio.Int24"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int24LinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:MonoAudio.Int24"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.Int24LinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:MonoAudio.Int24"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.Equals(MonoAudio.Int24LinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.Equals(MonoAudio.IAudioFormat{MonoAudio.Int24})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.op_Equality(MonoAudio.Int24LinearPcmSampleFormat,MonoAudio.Int24LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int24LinearPcmSampleFormat.op_Inequality(MonoAudio.Int24LinearPcmSampleFormat,MonoAudio.Int24LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int24LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.Int32LinearPcmSampleFormat">
+            <summary>
+            Represents a format of a 32-bit Linear PCM sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.Int32LinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int32LinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int32LinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.Int32LinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int32LinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int32"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int32LinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int32"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.Int32LinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Int32"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.Equals(MonoAudio.Int32LinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.Equals(MonoAudio.IAudioFormat{System.Int32})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.op_Equality(MonoAudio.Int32LinearPcmSampleFormat,MonoAudio.Int32LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int32LinearPcmSampleFormat.op_Inequality(MonoAudio.Int32LinearPcmSampleFormat,MonoAudio.Int32LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int32LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.Int64LinearPcmSampleFormat">
+            <summary>
+            Represents a format of a 64-bit Linear PCM sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.Int64LinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int64LinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int64LinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.Int64LinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int64LinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int64"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Int64LinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int64"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.Int64LinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Int64"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.Equals(MonoAudio.Int64LinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.Equals(MonoAudio.IAudioFormat{System.Int64})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.op_Equality(MonoAudio.Int64LinearPcmSampleFormat,MonoAudio.Int64LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Int64LinearPcmSampleFormat.op_Inequality(MonoAudio.Int64LinearPcmSampleFormat,MonoAudio.Int64LinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Int64LinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.OffsetSByteLinearPcmSampleFormat">
+            <summary>
+            Represents a format of an 8-bit Linear PCM sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:MonoAudio.OffsetSByte"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:MonoAudio.OffsetSByte"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.OffsetSByteLinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:MonoAudio.OffsetSByte"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.Equals(MonoAudio.OffsetSByteLinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.Equals(MonoAudio.IAudioFormat{MonoAudio.OffsetSByte})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.op_Equality(MonoAudio.OffsetSByteLinearPcmSampleFormat,MonoAudio.OffsetSByteLinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.OffsetSByteLinearPcmSampleFormat.op_Inequality(MonoAudio.OffsetSByteLinearPcmSampleFormat,MonoAudio.OffsetSByteLinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.OffsetSByteLinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.SampleFormat">
             <summary>
-            Represents a format of a sample source.
+            Represents a format of a 32-bit IEEE 754 Floating-Point sample source.
             </summary>
         </member>
         <member name="M:MonoAudio.SampleFormat.#ctor(System.Int32,System.Int32)">
@@ -5472,7 +7469,7 @@
         </member>
         <member name="P:MonoAudio.SampleFormat.BlockSize">
             <summary>
-            Gets the value indicates how many <see cref="T:System.Single"/> values are required per whole sample.<br/>
+            Gets the value indicates how many <see cref="T:System.Single"/> values are required per whole frame.<br/>
             It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
             </summary>
             <value>
@@ -6406,7 +8403,7 @@
             <typeparam name="TFormat">The type of the format.</typeparam>
             <seealso cref="T:MonoAudio.IAudioSource`2" />
         </member>
-        <member name="M:MonoAudio.Pipeline.IAudioPipelineComponent`2.ProcessAsync(MonoAudio.ReadOnlyAudioBuffer{`0,`1})">
+        <member name="M:MonoAudio.Pipeline.IAudioPipelineComponent`2.ProcessAsync(MonoAudio.ReadOnlyAudioMemory{`0,`1})">
             <summary>
             Processes the <paramref name="input"/> asynchronously.
             </summary>
@@ -6510,7 +8507,7 @@
         </member>
         <member name="M:MonoAudio.DataLength.op_Explicit(MonoAudio.DataLength)~System.UInt64">
             <summary>
-            Performs an explicit conversion from <see cref="T:MonoAudio.DataLength"/> to <see cref="T:System.Int64"/>.
+            Performs an explicit conversion from <see cref="T:MonoAudio.DataLength"/> to <see cref="T:System.UInt64"/>.
             </summary>
             <param name="value">The value.</param>
             <returns>
@@ -7551,6 +9548,16 @@
             <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="M:MonoAudio.ReadResult.op_Addition(MonoAudio.ReadResult,System.Int32)">
+            <summary>
+            Adds specified <see cref="T:MonoAudio.ReadResult"/> value and <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
         <member name="T:MonoAudio.StackOnlyActionContainer`1">
             <summary>
             Stores <see cref="T:System.Action`1"/> that cannot leave the stack.
@@ -7614,55 +9621,6 @@
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
-        </member>
-        <member name="T:MonoAudio.ReadOnlyAudioBuffer`2">
-            <summary>
-            Represents a read-only audio buffer.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The type of the format.</typeparam>
-        </member>
-        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Item(System.Int32)">
-            <summary>
-            Gets the element at the specified <paramref name="index"/> in the <see cref="T:MonoAudio.AudioBuffer`2"/>.
-            </summary>
-            <value>
-            The element.
-            </value>
-            <param name="index">The index.</param>
-            <returns></returns>
-        </member>
-        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Length">
-            <summary>
-            Gets the length of this <see cref="T:MonoAudio.AudioBuffer`2"/>.
-            </summary>
-            <value>
-            The length of this buffer.
-            </value>
-        </member>
-        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Memory">
-            <summary>
-            Gets the internal memory region.
-            </summary>
-            <value>
-            The memory.
-            </value>
-        </member>
-        <member name="P:MonoAudio.ReadOnlyAudioBuffer`2.Span">
-            <summary>
-            Gets the internal memory region.
-            </summary>
-            <value>
-            The span.
-            </value>
         </member>
         <member name="T:MonoAudio.StoppedEventArgs">
             <summary>
@@ -8009,6 +9967,42 @@
             <param name="value">The value to reverse.</param>
             <returns>The reversed value.</returns>
         </member>
+        <member name="M:MonoAudio.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
+            <summary>
+            Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+        </member>
+        <member name="M:MonoAudio.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
+            <summary>
+            Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+        </member>
+        <member name="M:MonoAudio.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
+            <summary>
+            Reads a <see cref="T:System.Single"/> from the beginning of a read-only span of bytes, as little endian.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Single"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.BinaryExtensions.TryReadSingleBigEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
+            <summary>
+            Reads a <see cref="T:System.Single"/> from the beginning of a read-only span of bytes, as big endian.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Single"/>; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="T:MonoAudio.Utils.BufferInstance`1">
             <summary>
             Provides a simple internal buffer instancing.
@@ -8143,6 +10137,21 @@
             The value.
             </value>
         </member>
+        <member name="T:MonoAudio.OptimizationUtils">
+            <summary>
+            Contains some utility for optimization.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.OptimizationUtils.AggressiveOptimizationIfPossible">
+            <summary>
+            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.OptimizationUtils.InlineAndOptimizeIfPossible">
+            <summary>
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            </summary>
+        </member>
         <member name="T:System.ThrowHelper">
             <summary>
             Helps throwing exceptions while in-lining aggressively.
@@ -8177,6 +10186,13 @@
             </summary>
             <param name="value">The value.</param>
             <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.MathI.Rectify(System.Int32)">
+            <summary>
+            Rectifies the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to rectify.</param>
             <returns></returns>
         </member>
         <member name="M:System.MathI.CountConsecutiveZeros(System.UInt32)">
@@ -8263,6 +10279,15 @@
             <typeparam name="T"></typeparam>
             <param name="span">The span.</param>
             <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
             <returns></returns>
         </member>
         <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">

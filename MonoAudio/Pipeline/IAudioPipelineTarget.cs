@@ -17,6 +17,6 @@ namespace MonoAudio.Pipeline
         /// Gets the unused buffers asynchronously.
         /// </summary>
         /// <returns></returns>
-        IAsyncEnumerable<AudioBuffer<TSample, TFormat>> GetUnusedBuffersAsync();
+        IAsyncEnumerable<AudioMemory<TSample, TFormat>> GetUnusedBuffersAsync();
     }
 }

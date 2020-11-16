@@ -32,28 +32,11 @@ namespace MonoAudio
         /// <summary>
         /// Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
         /// Does not depend on the number of <see cref="Channels"/>.<br/>
+        /// -1 means the bit depth is variable in the whole stream.
         /// </summary>
         /// <value>
         /// The bit depth.
         /// </value>
         int BitDepth { get; }
-
-        /// <summary>
-        /// Gets the value indicates how many <typeparamref name="TSample"/>s are required per whole frame.<br/>
-        /// It depends on <see cref="Channels"/>.
-        /// </summary>
-        /// <value>
-        /// The size of frame.
-        /// </value>
-        int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get; }
-
-        /// <summary>
-        /// Gets the value indicates how many <typeparamref name="TSample"/>s are required per 1-channel sample.<br/>
-        /// Does not depend on the number of <see cref="Channels"/>.<br/>
-        /// </summary>
-        /// <value>
-        /// The size of a sample in <typeparamref name="TSample"/>s.
-        /// </value>
-        int SampleSize { get; }
     }
 }

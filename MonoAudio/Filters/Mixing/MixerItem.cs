@@ -33,6 +33,6 @@ namespace MonoAudio.Filters.Mixing
         /// <value>
         /// The buffer.
         /// </value>
-        public AudioBuffer<float, SampleFormat> Buffer { get; internal set; }
+        public AudioMemory<float, SampleFormat> Buffer { get; internal set; }
     }
 }
