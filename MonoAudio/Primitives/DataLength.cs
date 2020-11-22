@@ -9,24 +9,16 @@ namespace MonoAudio
     /// <summary>
     /// Represents a length of some data.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Sequential)]
     public readonly struct DataLength : IEquatable<DataLength>, IComparable<DataLength>
     {
-        [FieldOffset(0)]
-        private readonly ulong value;
-
-        [FieldOffset(sizeof(ulong))]
-        private readonly bool isInfinity;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DataLength" /> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <param name="isInfinity">if set to <c>true</c> the instance represents infinity.</param>
-        public DataLength(ulong value, bool isInfinity = false)
+        public DataLength(ulong value)
         {
-            this.value = value;
-            this.isInfinity = isInfinity;
+            Length = value;
         }
 
         /// <summary>
@@ -35,7 +27,7 @@ namespace MonoAudio
         public static DataLength Infinity
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new DataLength(0, true);
+            get => new DataLength(ulong.MaxValue);
         }
 
         /// <summary>
@@ -44,7 +36,7 @@ namespace MonoAudio
         /// <value>
         /// The length.
         /// </value>
-        public ulong Length { get => IsInfinity ? value : ulong.MaxValue; }
+        public ulong Length { get; }
 
         /// <summary>
         /// Gets a value indicating whether the available length of data is infinity.
@@ -52,7 +44,7 @@ namespace MonoAudio
         /// <value>
         ///   <c>true</c> if this <see cref="Length"/> is infinity; otherwise, <c>false</c>.
         /// </value>
-        public bool IsInfinity { get => isInfinity; }
+        public bool IsInfinity { get => Length == ulong.MaxValue; }
 
         /// <summary>
         /// Casts the size value of this instance.
@@ -61,7 +53,7 @@ namespace MonoAudio
         /// <typeparam name="TTo">The type of to.</typeparam>
         /// <returns></returns>
         public DataLength Cast<TFrom, TTo>() where TFrom : unmanaged where TTo : unmanaged
-            => IsInfinity ? Infinity : value * (uint)Unsafe.SizeOf<TFrom>() / (uint)Unsafe.SizeOf<TTo>();
+            => IsInfinity ? Infinity : Length * (uint)Unsafe.SizeOf<TFrom>() / (uint)Unsafe.SizeOf<TTo>();
 
         /// <summary>
         /// Implements the operator /.
@@ -71,7 +63,7 @@ namespace MonoAudio
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static DataLength operator /(DataLength left, ulong right) => left.IsInfinity ? Infinity : new DataLength(left.value / right);
+        public static DataLength operator /(DataLength left, ulong right) => left.IsInfinity ? Infinity : new DataLength(left.Length / right);
 
         /// <summary>
         /// Implements the operator *.
@@ -84,7 +76,7 @@ namespace MonoAudio
         public static DataLength operator *(DataLength left, ulong right)
         {
             if (left.IsInfinity) return Infinity;
-            return left.value >= ulong.MaxValue / right ? Infinity : new DataLength(left.value * right);
+            return left.Length >= ulong.MaxValue / right ? Infinity : new DataLength(left.Length * right);
         }
 
         /// <summary>
@@ -110,7 +102,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="other">The other.</param>
         /// <returns></returns>
-        public int CompareTo(DataLength other) => value.CompareTo(other.value);
+        public int CompareTo(DataLength other) => Length.CompareTo(other.Length);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -130,7 +122,7 @@ namespace MonoAudio
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(DataLength other) => value == other.value;
+        public bool Equals(DataLength other) => Length == other.Length;
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -139,7 +131,7 @@ namespace MonoAudio
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode() => -1584136870 + value.GetHashCode();
+        public override int GetHashCode() => -1584136870 + Length.GetHashCode();
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="DataLength" /> objects are equal.
@@ -172,7 +164,7 @@ namespace MonoAudio
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <(DataLength left, DataLength right) => left.value < right.value;
+        public static bool operator <(DataLength left, DataLength right) => left.Length < right.Length;
 
         /// <summary>
         /// Implements the operator &lt;=.
@@ -183,7 +175,7 @@ namespace MonoAudio
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <=(DataLength left, DataLength right) => left.value <= right.value;
+        public static bool operator <=(DataLength left, DataLength right) => left.Length <= right.Length;
 
         /// <summary>
         /// Implements the operator &gt;.
@@ -194,7 +186,7 @@ namespace MonoAudio
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >(DataLength left, DataLength right) => left.value > right.value;
+        public static bool operator >(DataLength left, DataLength right) => left.Length > right.Length;
 
         /// <summary>
         /// Implements the operator &gt;=.
@@ -205,6 +197,6 @@ namespace MonoAudio
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >=(DataLength left, DataLength right) => left.value >= right.value;
+        public static bool operator >=(DataLength left, DataLength right) => left.Length >= right.Length;
     }
 }

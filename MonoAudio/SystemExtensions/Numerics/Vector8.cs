@@ -4,6 +4,13 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
+#if NET5_0 || NETCOREAPP3_1
+
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+#endif
+
 namespace System.Numerics
 {
     /// <summary>
@@ -50,27 +57,75 @@ namespace System.Numerics
         /// <summary>
         /// The eighth value
         /// </summary>
-        public float Value8 => Back.Z;
+        public float Value8 => Back.W;
+
+#if NET5_0 || NETCOREAPP3_1
+
+        private readonly Vector256<float> value;
 
         /// <summary>
         /// The front 4 values
         /// </summary>
-        private readonly Vector4 Front;
+        private Vector4 Front
+        {
+            get
+            {
+                var h = value.GetUpper();
+                return Unsafe.As<Vector128<float>, Vector4>(ref h);
+            }
+        }
 
         /// <summary>
         /// The back 4 values
         /// </summary>
-        private readonly Vector4 Back;
+        private Vector4 Back
+        {
+            get
+            {
+                var h = value.GetLower();
+                return Unsafe.As<Vector128<float>, Vector4>(ref h);
+            }
+        }
+
+#else
+        /// <summary>
+        /// The front 4 values
+        /// </summary>
+        private Vector4 Front { get; }
+
+        /// <summary>
+        /// The back 4 values
+        /// </summary>
+        private Vector4 Back { get; }
+
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector8"/> struct.
         /// </summary>
         /// <param name="value">The value to fill with.</param>
-        public Vector8(float value)
+        public Vector8(float value) : this()
         {
+#if NET5_0 || NETCOREAPP3_1
+            this.value = Vector256.Create(value);
+#else
             Front = new Vector4(value);
             Back = new Vector4(value);
+#endif
         }
+
+#if NET5_0 || NETCOREAPP3_1
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector8"/> struct.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public Vector8(Vector256<float> value) : this()
+        {
+            this.value = value;
+        }
+
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector8"/> struct.
@@ -83,10 +138,14 @@ namespace System.Numerics
         /// <param name="v6">The v6.</param>
         /// <param name="v7">The v7.</param>
         /// <param name="v8">The v8.</param>
-        public Vector8(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8)
+        public Vector8(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8) : this()
         {
+#if NET5_0 || NETCOREAPP3_1
+            value = Vector256.Create(v1, v2, v3, v4, v5, v6, v7, v8);
+#else
             Front = new Vector4(v1, v2, v3, v4);
             Back = new Vector4(v5, v6, v7, v8);
+#endif
         }
 
         /// <summary>
@@ -94,10 +153,14 @@ namespace System.Numerics
         /// </summary>
         /// <param name="front">The front four values.</param>
         /// <param name="back">The back four values.</param>
-        public Vector8(Vector4 front, Vector4 back)
+        public Vector8(Vector4 front, Vector4 back) : this()
         {
-            Front = front;
-            Back = back;
+#if NET5_0 || NETCOREAPP3_1
+            value = default;
+#else
+            this.Front = front;
+            this.Back = back;
+#endif
         }
 
         /// <summary>
@@ -108,7 +171,43 @@ namespace System.Numerics
         /// The negated vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator -(Vector8 value) => new Vector8(-value.Front, -value.Back);
+        public static Vector8 operator -(Vector8 value)
+        {
+#if NET5_0 || NETCOREAPP3_1
+            if (Avx.IsSupported)
+            {
+                var flags = Vector256.Create(0x8000_0000u).AsSingle();
+                return new Vector8(Avx.Xor(value.value, flags));
+            }
+            else if (Vector<float>.Count == 8)
+            {
+                var v = value;
+                ref var j = ref Unsafe.As<Vector8, Vector<float>>(ref v);
+#pragma warning disable S1854 // Unused assignments should be removed
+                j = -j;
+#pragma warning restore S1854 // Unused assignments should be removed
+                return v;
+            }
+            else
+            {
+                return new Vector8(-value.Front, -value.Back);
+            }
+#else
+            if (Vector<float>.Count == 8)
+            {
+                var v = value;
+                ref var j = ref Unsafe.As<Vector8, Vector<float>>(ref v);
+#pragma warning disable S1854 // Unused assignments should be removed
+                j = -j;
+#pragma warning restore S1854 // Unused assignments should be removed
+                return v;
+            }
+            else
+            {
+                return new Vector8(-value.Front, -value.Back);
+            }
+#endif
+        }
 
         /// <summary>
         /// Adds two vectors together.

@@ -13,10 +13,5 @@ namespace MonoAudio.Pipeline
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-        /// <summary>
-        /// Processes the <paramref name="input"/> asynchronously.
-        /// </summary>
-        /// <param name="input">The input buffer.</param>
-        ValueTask ProcessAsync(ReadOnlyAudioMemory<TSample, TFormat> input);
     }
 }

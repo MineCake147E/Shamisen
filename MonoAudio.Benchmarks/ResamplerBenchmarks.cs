@@ -10,7 +10,8 @@ using MonoAudio.Synthesis;
 
 namespace MonoAudio.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
+    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [DisassemblyDiagnoser(maxDepth: 16)]
     //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]
     public class ResamplerBenchmarks
     {

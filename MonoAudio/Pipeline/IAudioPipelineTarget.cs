@@ -13,10 +13,5 @@ namespace MonoAudio.Pipeline
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-        /// <summary>
-        /// Gets the unused buffers asynchronously.
-        /// </summary>
-        /// <returns></returns>
-        IAsyncEnumerable<AudioMemory<TSample, TFormat>> GetUnusedBuffersAsync();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MonoAudio.Filters
@@ -81,24 +82,30 @@ namespace MonoAudio.Filters
         /// <returns></returns>
         public ReadResult Read(Span<float> buffer)
         {
+            int channels = Format.Channels;
+            buffer = buffer.SliceAlign(channels);
             ReadResult rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
             var len = rr.Length;
             buffer = buffer.Slice(0, len);
             unsafe
             {
-                for (int i = 0; i < buffer.Length; i += Format.Channels)
+                //Factor localization greatly improved performance
+                Vector3 factorB = Parameter.B;
+                Vector2 factorA = Parameter.A;
+                for (int i = 0; i < buffer.Length; i += channels)
                 {
-                    var span = buffer.Slice(i, internalStates.Length);
+                    ref var pos = ref buffer[i];
+                    //var span = buffer.Slice(i, internalStates.Length);
                     for (int ch = 0; ch < internalStates.Length; ch++)
                     {
                         //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                         //Transformed for SIMD awareness.
                         ref var a = ref internalStates[ch]; //Persist reference in order to decrease number of times of range check.
-                        ref float v = ref span[ch];
-                        var feedForward = v * Parameter.B; //Multiply in one go
+                        ref float v = ref Unsafe.Add(ref pos, ch);
+                        var feedForward = v * factorB; //Multiply in one go
                         var sum1 = v = feedForward.X + a.X;
-                        var feedBack = sum1 * Parameter.A;  //Multiply in one go
+                        var feedBack = sum1 * factorA;  //Multiply in one go
                         var aY = a.Y;   //Needed backup
                         a = new Vector2(feedForward.Y + feedBack.X + aY, feedForward.Z + feedBack.Y);
                     }
