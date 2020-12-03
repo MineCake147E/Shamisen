@@ -14,6 +14,7 @@ namespace MonoAudio
         /// <summary>
         /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
         /// </summary>
+        [Obsolete("Moving to ISourceModifier!", true)]
         bool CanSeek { get; }
 
         /// <summary>
@@ -29,12 +30,14 @@ namespace MonoAudio
         /// Some implementation could not support this property.
         /// The implementation which doesn't support this property entirely(without depending on source) must have an <see cref="ObsoleteAttribute"/> and cause an compile-time error.
         /// </summary>
+        [Obsolete("Moving to ISourceModifier!", true)]
         long Position { get; set; }
 
         /// <summary>
         /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
         /// Negative value Means Infinity.
         /// </summary>
+        [Obsolete("Moving to ISourceModifier!", true)]
         long Length { get; }
     }
 }
