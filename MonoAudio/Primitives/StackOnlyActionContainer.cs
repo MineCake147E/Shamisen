@@ -36,7 +36,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => false;
+        public override bool Equals(object? obj) => false;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -75,6 +75,6 @@ namespace MonoAudio
         /// </returns>
         public static bool operator !=(StackOnlyActionContainer<T> left, StackOnlyActionContainer<T> right) => !(left == right);
 
-        private string GetDebuggerDisplay() => value.ToString();
+        private string GetDebuggerDisplay() => value.ToString() ?? "null";
     }
 }

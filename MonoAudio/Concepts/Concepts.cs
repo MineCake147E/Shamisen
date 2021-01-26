@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using MonoAudio.Concepts;
 
 namespace MonoAudio
@@ -16,13 +17,13 @@ namespace MonoAudio
         /// For example, the length of frames in the 2ch <see cref="AudioEncoding.IeeeFloat"/> audio data in bytes is <c>sizeof(float) * 4</c>, which is 16.<br/>
         /// </summary>
         [Concept(ConceptKind.Unit)]
-        public static string Frame { get; }
+        public static string Frame { get; } = "Frame";
 
         /// <summary>
         /// The <see cref="Sample"/> is a smallest unit of the multi-channel discrete(digital) audio data.<br/>
         /// The <see cref="Sample"/> besides channel-by-channel, so the length of frame in bytes is the size of the sample itself, multiplied by the number of channels.
         /// </summary>
         [Concept(ConceptKind.Unit)]
-        public static string Sample { get; }
+        public static string Sample { get; } = "Sample";
     }
 }

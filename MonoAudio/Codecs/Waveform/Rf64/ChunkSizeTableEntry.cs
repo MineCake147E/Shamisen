@@ -41,7 +41,7 @@ namespace MonoAudio.Codecs.Waveform.Rf64
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => obj is ChunkSizeTableEntry entry && Equals(entry);
+        public override bool Equals(object? obj) => obj is ChunkSizeTableEntry entry && Equals(entry);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

@@ -91,7 +91,7 @@ namespace MonoAudio.Data
                     {
                         //
                     }
-                    actualBuffer = null;
+                    //actualBuffer = null;
                     //
                     disposedValue = true;
                 }

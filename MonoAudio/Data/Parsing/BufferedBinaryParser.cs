@@ -222,9 +222,9 @@ namespace MonoAudio.Data.Parsing
                 {
                     //
                 }
-                buffer = null;
+                //buffer = null;
                 remainingData = Memory<byte>.Empty;
-                Source = null;
+                //Source = null;
                 disposedValue = true;
             }
         }

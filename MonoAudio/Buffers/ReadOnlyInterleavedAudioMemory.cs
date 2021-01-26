@@ -10,6 +10,7 @@ namespace MonoAudio
     /// <typeparam name="TSample">The type of audio sample.</typeparam>
     /// <typeparam name="TFormat">The type of audio format.</typeparam>
     public readonly ref struct ReadOnlyInterleavedAudioMemory<TSample, TFormat>
+        where TSample : unmanaged
         where TFormat : IInterleavedAudioFormat<TSample>
     {
         /// <summary>
@@ -167,7 +168,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => false;
+        public override bool Equals(object? obj) => false;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

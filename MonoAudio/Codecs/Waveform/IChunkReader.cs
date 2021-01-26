@@ -41,7 +41,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The current sub chunk.
         /// </value>
-        IChunkReader CurrentSubChunk { get; }
+        IChunkReader? CurrentSubChunk { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance can be read by <see cref="IDataSource{TSample}.Read(Span{TSample})"/> and <see cref="IDataSource{TSample}.ReadAsync(Memory{TSample})"/>.

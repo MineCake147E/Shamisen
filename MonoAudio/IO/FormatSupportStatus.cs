@@ -84,7 +84,7 @@ namespace MonoAudio.IO
         /// <returns>
         /// true if <paramref name="obj">obj</paramref> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj) => obj is FormatSupportStatus status && Equals(status);
+        public override bool Equals(object? obj) => obj is FormatSupportStatus status && Equals(status);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

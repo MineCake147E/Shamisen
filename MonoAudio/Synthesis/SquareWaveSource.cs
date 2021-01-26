@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+
 using MonoAudio.Mathematics;
+
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace MonoAudio.Synthesis
@@ -20,6 +22,33 @@ namespace MonoAudio.Synthesis
         public SquareWaveSource(SampleFormat format) : base(format)
         {
         }
+
+        /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Length => null;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public override ulong? TotalLength => null;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Position => null;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

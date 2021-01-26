@@ -43,8 +43,8 @@ namespace MonoAudio.Utils
         protected override void Dispose(bool disposing)
         {
             if (array != null) Pool.Return(array);
-            array = null;
-            Pool = null;
+            //array = null;
+            //Pool = null;
         }
 
         /// <summary>

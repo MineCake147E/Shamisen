@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+
 using DivideSharp;
+
 using MonoAudio.Filters;
 using MonoAudio.Mathematics;
 
@@ -9,7 +11,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
     /// <summary>
     /// The base of resampler.
     /// </summary>
-    /// <seealso cref="Filters.IAudioFilter{TSample, TFormat}" />
+    /// <seealso cref="IAudioFilter{TSample, TFormat}" />
     public abstract class ResamplerBase : IAudioFilter<float, SampleFormat>, ISampleSource
     {
         /// <summary>
@@ -21,28 +23,12 @@ namespace MonoAudio.Conversion.Resampling.Sample
         public SampleFormat Format { get; }
 
         /// <summary>
-        /// Gets or sets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
-        public virtual long Position { get => GetOutputPosition(Source.Position); set => Source.Position = value * RateDiv / RateMul; }
-
-        /// <summary>
         /// Gets the source.
         /// </summary>
         /// <value>
         /// The source.
         /// </value>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance can seek.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance can seek; otherwise, <c>false</c>.
-        /// </value>
-        public virtual bool CanSeek => Source.CanSeek;
 
         /// <summary>
         /// Gets the channels of output.
@@ -61,12 +47,12 @@ namespace MonoAudio.Conversion.Resampling.Sample
         protected UInt32Divisor ChannelsDivisor { get; }
 
         /// <summary>
-        /// Gets the length.
+        /// Gets the divisor for converting source sample rate to destination sample rate.
         /// </summary>
         /// <value>
-        /// The length.
+        /// The divisor object.
         /// </value>
-        public long Length => GetOutputPosition(Source.Length);
+        protected UInt32Divisor RateDivDivisor { get; }
 
         /// <summary>
         /// Gets the divisor for converting source sample rate to destination sample rate.
@@ -74,7 +60,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
         /// <value>
         /// The divisor object.
         /// </value>
-        protected UInt32Divisor RateDivDivisor { get; }
+        protected UInt64Divisor RateDivDivisor64 { get; }
 
         /// <summary>
         /// Gets the rate source sample rate.
@@ -117,6 +103,49 @@ namespace MonoAudio.Conversion.Resampling.Sample
         protected float RateMulInverse { get; }
 
         /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
+        /// </value>
+        public ulong? Length => Source.Length * (ulong)RateMul / RateDivDivisor64;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public ulong? TotalLength => Source.TotalLength * (ulong)RateMul / RateDivDivisor64;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public ulong? Position => Source.Position * (ulong)RateMul / RateDivDivisor64;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport { get; }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ResamplerBase"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -133,7 +162,10 @@ namespace MonoAudio.Conversion.Resampling.Sample
             RateDivInverse = 1.0f / RateDiv;
             RateMulDivisor = new UInt32Divisor((uint)RateMul);
             RateDivDivisor = new UInt32Divisor((uint)RateDiv);
+            RateDivDivisor64 = new UInt64Divisor((ulong)RateDiv);
             ChannelsDivisor = new UInt32Divisor((uint)Channels);
+            SkipSupport = source.SkipSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
+            SeekSupport = source.SeekSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
         }
 
         #region Rate Conversion Utilities
@@ -254,14 +286,14 @@ namespace MonoAudio.Conversion.Resampling.Sample
 
         /// <summary>
         /// Releases all resource used by the
-        /// <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> object.
+        /// <see cref="ResamplerBase"/> object.
         /// </summary>
         /// <remarks>Call <see cref="Dispose()"/> when you are finished using the
-        /// <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>. The <see cref="Dispose()"/>
-        /// method leaves the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> in an
+        /// <see cref="ResamplerBase"/>. The <see cref="Dispose()"/>
+        /// method leaves the <see cref="ResamplerBase"/> in an
         /// unusable state. After calling <see cref="Dispose()"/>, you must release all references to the
-        /// <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/> so the garbage collector can
-        /// reclaim the memory that the <see cref="T:MonoAudio.Conversion.Resampling.SampleResampler.ResamplerBase"/>
+        /// <see cref="ResamplerBase"/> so the garbage collector can
+        /// reclaim the memory that the <see cref="ResamplerBase"/>
         /// was occupying.</remarks>
         public void Dispose()
         {

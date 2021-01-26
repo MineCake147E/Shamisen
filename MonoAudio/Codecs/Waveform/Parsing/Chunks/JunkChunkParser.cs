@@ -59,7 +59,7 @@ namespace MonoAudio.Codecs.Waveform.Parsing.Chunks
                 {
                     Source?.Dispose();
                 }
-                Source = null;
+                //Source = null;
                 //
                 disposedValue = true;
             }

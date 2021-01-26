@@ -5,13 +5,15 @@
         <RootNamespace>MonoAudio</RootNamespace>
         <AssemblyName>MonoAudio</AssemblyName>
         <LangVersion>8.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>MonoAudio.xml</DocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
-        <WarningsAsErrors>NU1605;CS1591;CS1574</WarningsAsErrors>
+
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     </PropertyGroup>
 
@@ -19,7 +21,6 @@
         <DocumentationFile>MonoAudio.xml</DocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
-        <WarningsAsErrors>NU1605;CS1591;CS1574</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
@@ -62,9 +63,9 @@
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
         </None>
         <None Include="Formats\PcmSampleFormats.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </None>
         <None Include="SystemExtensions\MathITemplate.cs">
             <DesignTime>True</DesignTime>
@@ -91,8 +92,8 @@
             <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
         </None>
         <None Update="Formats\PcmSampleFormats.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
         </None>
         <None Update="SystemExtensions\MathITemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -123,9 +124,9 @@
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
         </Compile>
         <Compile Update="Formats\PcmSampleFormats.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </Compile>
         <Compile Update="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
             <DesignTime>True</DesignTime>

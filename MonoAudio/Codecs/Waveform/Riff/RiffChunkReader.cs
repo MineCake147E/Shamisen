@@ -39,7 +39,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <value>
         /// The current sub chunk.
         /// </value>
-        public IChunkReader CurrentSubChunk { get; private set; }
+        public IChunkReader? CurrentSubChunk { get; private set; }
 
         /// <summary>
         /// Gets the length of remaining data in bytes.
@@ -53,7 +53,7 @@ namespace MonoAudio.Codecs.Waveform
 
         private bool HasParent => !(Parent is null);
 
-        private RiffChunkReader Parent { get; }
+        private RiffChunkReader? Parent { get; }
 
         /// <summary>
         /// Gets the total size of this chunk.
@@ -130,10 +130,10 @@ namespace MonoAudio.Codecs.Waveform
         }
 
         private ReadResult ReadFromSource(Span<byte> destination)
-            => HasParent ? Parent.ReadInternal(destination) : DataSource.Read(destination);
+            => !(Parent is null) ? Parent.ReadInternal(destination) : DataSource.Read(destination);
 
         private async ValueTask<ReadResult> ReadFromSourceAsync(Memory<byte> destination)
-            => HasParent ? await Parent.ReadInternalAsync(destination) : await DataSource.ReadAsync(destination);
+            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : await DataSource.ReadAsync(destination);
 
         private ReadResult ReadInternal(Span<byte> destination)
         {
@@ -213,7 +213,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         public void Skip(ulong numberOfElementsToSkip)
         {
-            if (HasParent)
+            if (!(Parent is null))
             {
                 Parent.Skip(numberOfElementsToSkip);
             }
@@ -243,7 +243,7 @@ namespace MonoAudio.Codecs.Waveform
                     //
                 }
 
-                DataSource = null;
+                //DataSource = null;
                 disposedValue = true;
             }
         }

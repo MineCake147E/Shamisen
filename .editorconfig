@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA1200: cref タグをプレフィックスと共に使用しない
+dotnet_diagnostic.CA1200.severity = error

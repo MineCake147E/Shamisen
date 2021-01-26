@@ -146,7 +146,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => obj is ExtensibleWaveFormat format && Equals(format);
+        public override bool Equals(object? obj) => obj is ExtensibleWaveFormat format && Equals(format);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -164,7 +164,7 @@ namespace MonoAudio.Codecs.Waveform
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(IAudioFormat<byte> other) => other is ExtensibleWaveFormat format && Equals(format);
+        public bool Equals(IAudioFormat<byte>? other) => other is ExtensibleWaveFormat format && Equals(format);
 
         /// <summary>
         /// Returns a hash code for this instance.

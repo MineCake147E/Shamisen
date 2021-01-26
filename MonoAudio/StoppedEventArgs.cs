@@ -21,7 +21,7 @@ namespace MonoAudio
         /// Initializes a new instance of the <see cref="StoppedEventArgs"/> class.
         /// </summary>
         /// <param name="exception">The exception.</param>
-        public StoppedEventArgs(Exception exception) => Exception = exception;
+        public StoppedEventArgs(Exception? exception) => Exception = exception;
 
         /// <summary>
         /// Gets the exception.
@@ -29,7 +29,7 @@ namespace MonoAudio
         /// <value>
         /// The exception.
         /// </value>
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance has error.

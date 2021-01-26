@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using MonoAudio.Formats;
 
 namespace MonoAudio.Synthesis
@@ -8,7 +9,7 @@ namespace MonoAudio.Synthesis
     /// <summary>
     /// Generates a silence.
     /// </summary>
-    /// <seealso cref="MonoAudio.IWaveSource" />
+    /// <seealso cref="IWaveSource" />
     public sealed class SilenceWaveSource : IWaveSource
     {
         private bool disposedValue = false;
@@ -22,11 +23,6 @@ namespace MonoAudio.Synthesis
         {
             Format = format ?? throw new ArgumentNullException(nameof(format));
         }
-
-        /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
-        /// </summary>
-        public bool CanSeek { get; }
 
         /// <summary>
         /// Gets the format of the audio data.
@@ -44,10 +40,26 @@ namespace MonoAudio.Synthesis
         public long Position { get; set; }
 
         /// <summary>
-        /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
-        /// -1 Means Infinity.
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
         /// </summary>
-        public long Length { get; }
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+
+        ulong? IAudioSource<byte, IWaveFormat>.Length => null;
+
+        ulong? IAudioSource<byte, IWaveFormat>.TotalLength => null;
+
+        ulong? IAudioSource<byte, IWaveFormat>.Position => null;
 
         /// <summary>
         /// Reads the audio to the specified buffer.

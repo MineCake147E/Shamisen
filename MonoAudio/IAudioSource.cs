@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+#pragma warning disable CS8701
+
 namespace MonoAudio
 {
     /// <summary>
@@ -12,12 +14,6 @@ namespace MonoAudio
     public interface IAudioSource<TSample, out TFormat> : IDisposable where TSample : unmanaged where TFormat : IAudioFormat<TSample>
     {
         /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
-        /// </summary>
-        [Obsolete("Moving to ISourceModifier!", true)]
-        bool CanSeek { get; }
-
-        /// <summary>
         /// Gets the format of the audio data.
         /// </summary>
         /// <value>
@@ -26,18 +22,46 @@ namespace MonoAudio
         TFormat Format { get; }
 
         /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
-        /// Some implementation could not support this property.
-        /// The implementation which doesn't support this property entirely(without depending on source) must have an <see cref="ObsoleteAttribute"/> and cause an compile-time error.
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
         /// </summary>
-        [Obsolete("Moving to ISourceModifier!", true)]
-        long Position { get; set; }
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
+        /// </value>
+        ulong? Length { get; }
 
         /// <summary>
-        /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
-        /// Negative value Means Infinity.
+        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
         /// </summary>
-        [Obsolete("Moving to ISourceModifier!", true)]
-        long Length { get; }
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        ulong? TotalLength { get; }
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        ulong? Position { get; }
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        ISkipSupport? SkipSupport { get; }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        ISeekSupport? SeekSupport { get; }
     }
 }

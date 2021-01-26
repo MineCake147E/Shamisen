@@ -55,6 +55,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
                 sampleCache[i] = new float[Channels];
             }
             Strategy = ResampleStrategy.Direct;
+            preCalculatedCatmullRomCoefficents = new Vector4[] { };
             if (source.Format.SampleRate < destinationSampleRate)
             {
                 if (RateMul < 512)
@@ -179,7 +180,7 @@ namespace MonoAudio.Conversion.Resampling.Sample
             }
             Source.Dispose();
             bufferWrapper.Dispose();
-            sampleCache = null;
+            //sampleCache = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

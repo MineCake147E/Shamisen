@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using CSCore;
 
 namespace MonoAudio.IO
@@ -39,11 +40,6 @@ namespace MonoAudio.IO
         public IWaveSource Source { get; }
 
         /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
-        /// </summary>
-        public bool CanSeek => Source.CanSeek;
-
-        /// <summary>
         /// Gets the format of the audio data.
         /// </summary>
         /// <value>
@@ -55,13 +51,25 @@ namespace MonoAudio.IO
         /// Gets or sets where the <see cref="CSCore.IWaveSource"/> is.
         /// Some implementation could not support this property.
         /// </summary>
-        public long Position { get => Source.Position; set => Source.Position = value; }
+        public long Position
+        {
+            get => (long)(Source.SourceLength?.Position ?? throw new NotSupportedException());
+            set => Source.SeekSupport?.SeekTo((ulong)value);
+        }
 
         /// <summary>
         /// Gets how long the <see cref="CSCore.IWaveSource"/> lasts in specific types.
         /// -1 Means Infinity.
         /// </summary>
-        public long Length => Source.Length;
+        public long Length => (long)(Source.SourceLength?.Length ?? throw new NotSupportedException());
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can seek.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance can seek; otherwise, <c>false</c>.
+        /// </value>
+        public bool CanSeek { get => !(Source.SeekSupport is null); }
 
         /// <summary>
         /// Reads the audio to the specified buffer.

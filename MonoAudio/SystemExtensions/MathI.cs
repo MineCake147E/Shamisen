@@ -98,7 +98,7 @@ namespace System
             unchecked
             {
 #if NET5_0 || NETCOREAPP3_1
-                return 32 - BitOperations.LeadingZeroCount(value);
+                return BitOperations.Log2(value);
 #else
                 var v = value;
                 v |= v >> 1;

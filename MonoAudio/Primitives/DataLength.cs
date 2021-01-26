@@ -112,7 +112,7 @@ namespace MonoAudio
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool Equals(object obj) => obj is DataLength length && Equals(length);
+        public override bool Equals(object? obj) => obj is DataLength length && Equals(length);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

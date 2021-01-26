@@ -4,6 +4,7 @@ using MonoAudio.Synthesis;
 
 namespace MonoAudio.Benchmarks
 {
+    /*
     public sealed class DummySource<TSample, TFormat> : IReadableAudioSource<TSample, TFormat>
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
@@ -24,13 +25,13 @@ namespace MonoAudio.Benchmarks
         public TFormat Format { get; }
 
         /// <summary>
-        /// Gets how long the <see cref="T:MonoAudio.IAudioSource`2" /> lasts in specific types.
+        /// Gets how long the <see cref="IAudioSource{TSample,TFormat}" /> lasts in specific types.
         /// -1 Means Infinity.
         /// </summary>
         public long Length => -1;
 
         /// <summary>
-        /// Gets or sets where the <see cref="T:MonoAudio.IAudioSource`2" /> is.
+        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}" /> is.
         /// Some implementation could not support this property.
         /// </summary>
         public long Position { get; set; }
@@ -84,4 +85,5 @@ namespace MonoAudio.Benchmarks
 
         #endregion IDisposable Support
     }
+    */
 }

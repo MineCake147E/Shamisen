@@ -59,7 +59,7 @@ namespace MonoAudio.Data
                 {
                     source.Dispose();
                 }
-                source = null;
+                //source = null;
                 disposedValue = true;
             }
         }

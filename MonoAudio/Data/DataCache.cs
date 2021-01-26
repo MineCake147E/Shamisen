@@ -218,8 +218,20 @@ namespace MonoAudio.Data
         /// <summary>
         /// Skips this data source the specified number of elements to skip.
         /// </summary>
-        /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
-        public void Skip(ulong numberOfElementsToSkip) => ReadPosition += numberOfElementsToSkip;
+        /// <param name="step">The number of elements to skip.</param>
+        public void Skip(ulong step) => ReadPosition += step;
+
+        /// <summary>
+        /// Steps this data source the specified step back in frames.
+        /// </summary>
+        /// <param name="step">The number of frames to step back.</param>
+        public void StepBack(ulong step) => throw new NotImplementedException();
+
+        /// <summary>
+        /// Seeks the <see cref="IAudioSource{TSample, TFormat}"/> to the specified index in frames from the end of stream.
+        /// </summary>
+        /// <param name="offset">The offset.</param>
+        public void SeekLast(ulong offset) => throw new NotImplementedException();
 
         private bool disposedValue = false;
 
@@ -231,7 +243,7 @@ namespace MonoAudio.Data
             {
                 if (disposing)
                 {
-                    buffers = null;
+                    //buffers = null;
                 }
                 //
                 disposedValue = true;

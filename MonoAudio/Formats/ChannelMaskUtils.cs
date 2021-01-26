@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using MonoAudio.Formats;
 
 namespace MonoAudio
@@ -17,6 +18,7 @@ namespace MonoAudio
         /// <param name="format">The format.</param>
         /// <returns>The matching <see cref="Speakers"/> combination.</returns>
         public static Speakers GetChannelMasks<TSample>(this IAudioFormat<TSample> format)
+            where TSample : unmanaged
         {
             if (format is IChannelMaskedFormat cmFormat)
             {

@@ -129,7 +129,7 @@ namespace MonoAudio
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public override bool Equals(object obj) => obj is ReadResult result && Equals(result);
+        public override bool Equals(object? obj) => obj is ReadResult result && Equals(result);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

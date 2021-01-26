@@ -23,6 +23,6 @@ namespace MonoAudio.Conversion
         /// <value>
         /// The source.
         /// </value>
-        IReadableAudioSource<TFrom, TFromFormat> Source { get; }
+        IReadableAudioSource<TFrom, TFromFormat>? Source { get; }
     }
 }

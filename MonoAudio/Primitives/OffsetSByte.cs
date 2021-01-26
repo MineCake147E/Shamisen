@@ -88,7 +88,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => obj is OffsetSByte @byte && Equals(@byte);
+        public override bool Equals(object? obj) => obj is OffsetSByte @byte && Equals(@byte);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

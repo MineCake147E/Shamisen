@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+
 using MonoAudio.Mathematics;
+
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace MonoAudio.Synthesis
@@ -22,11 +24,6 @@ namespace MonoAudio.Synthesis
             SamplingFrequencyInverse = 1.0 / format.SampleRate;
             Format = format;
         }
-
-        /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
-        /// </summary>
-        public bool CanSeek => false;
 
         /// <summary>
         /// Gets the format of the audio data.
@@ -61,15 +58,31 @@ namespace MonoAudio.Synthesis
         [Obsolete("Not Supported", true)]
         public long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-        /// <summary>
-        /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
-        /// -1 Means Infinity.
-        /// </summary>
-        public long Length => -1;
-
         private double Theta { get; set; } = 0;
 
         private double Omega { get; set; }
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+
+        ulong? IAudioSource<float, SampleFormat>.Length => null;
+
+        ulong? IAudioSource<float, SampleFormat>.TotalLength => null;
+
+        ulong? IAudioSource<float, SampleFormat>.Position => null;
 
         /// <summary>
         /// Reads the audio to the specified buffer.

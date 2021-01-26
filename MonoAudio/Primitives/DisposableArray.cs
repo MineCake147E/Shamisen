@@ -32,23 +32,23 @@ namespace MonoAudio.Primitives
         public T this[int index] { get => ((IList<T>)actualArray)[index]; set => ((IList<T>)actualArray)[index] = value; }
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"></see>.
         /// </summary>
         public int Count => ((IList<T>)actualArray).Count;
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+        /// Gets a value indicating whether the <see cref="ICollection{T}"></see> is read-only.
         /// </summary>
         public bool IsReadOnly => ((IList<T>)actualArray).IsReadOnly;
 
         /// <summary>
-        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// Adds an item to the <see cref="ICollection{T}"></see>.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}"></see>.</param>
         public void Add(T item) => ((IList<T>)actualArray).Add(item);
 
         /// <summary>
-        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// Removes all items from the <see cref="ICollection{T}"></see>.
         /// </summary>
         public void Clear() => ((IList<T>)actualArray).Clear();
 
@@ -58,21 +58,21 @@ namespace MonoAudio.Primitives
         /// <param name="other">The other.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns></returns>
-        public int CompareTo(object other, IComparer comparer) => ((IStructuralComparable)actualArray).CompareTo(other, comparer);
+        public int CompareTo(object? other, IComparer comparer) => ((IStructuralComparable)actualArray).CompareTo(other, comparer);
 
         /// <summary>
         /// Determines whether this instance contains the object.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}"></see>.</param>
         /// <returns>
-        /// true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+        /// true if <paramref name="item">item</paramref> is found in the <see cref="ICollection{T}"></see>; otherwise, false.
         /// </returns>
         public bool Contains(T item) => ((IList<T>)actualArray).Contains(item);
 
         /// <summary>
-        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+        /// Copies the elements of the <see cref="ICollection{T}"></see> to an <see cref="Array"></see>, starting at a particular <see cref="Array"></see> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"></see> that is the destination of the elements copied from <see cref="ICollection{T}"></see>. The <see cref="Array"></see> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex) => ((IList<T>)actualArray).CopyTo(array, arrayIndex);
 
@@ -84,7 +84,7 @@ namespace MonoAudio.Primitives
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(object other, IEqualityComparer comparer) => ((IStructuralEquatable)actualArray).Equals(other, comparer);
+        public bool Equals(object? other, IEqualityComparer comparer) => ((IStructuralEquatable)actualArray).Equals(other, comparer);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -104,32 +104,32 @@ namespace MonoAudio.Primitives
         public int GetHashCode(IEqualityComparer comparer) => ((IStructuralEquatable)actualArray).GetHashCode(comparer);
 
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+        /// Determines the index of a specific item in the <see cref="IList{T}"></see>.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        /// <param name="item">The object to locate in the <see cref="IList{T}"></see>.</param>
         /// <returns>
         /// The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
         /// </returns>
         public int IndexOf(T item) => ((IList<T>)actualArray).IndexOf(item);
 
         /// <summary>
-        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+        /// Inserts an item to the <see cref="IList{T}"></see> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        /// <param name="item">The object to insert into the <see cref="IList{T}"></see>.</param>
         public void Insert(int index, T item) => ((IList<T>)actualArray).Insert(index, item);
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}"></see>.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}"></see>.</param>
         /// <returns>
-        /// true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// true if <paramref name="item">item</paramref> was successfully removed from the <see cref="ICollection{T}"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="ICollection{T}"></see>.
         /// </returns>
         public bool Remove(T item) => ((IList<T>)actualArray).Remove(item);
 
         /// <summary>
-        /// Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+        /// Removes the <see cref="IList{T}"></see> item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index) => ((IList<T>)actualArray).RemoveAt(index);
@@ -138,7 +138,7 @@ namespace MonoAudio.Primitives
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator"></see> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => ((IList<T>)actualArray).GetEnumerator();
     }
@@ -158,7 +158,7 @@ namespace MonoAudio.Primitives
                 {
                     //
                 }
-                actualArray = null;
+                //actualArray = null;
                 disposedValue = true;
             }
         }

@@ -42,14 +42,6 @@ namespace MonoAudio.Filters
         public BiQuadParameter Parameter { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can seek.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance can seek; otherwise, <c>false</c>.
-        /// </value>
-        public bool CanSeek => throw new NotImplementedException();
-
-        /// <summary>
         /// Gets the format.
         /// </summary>
         /// <value>
@@ -57,23 +49,50 @@ namespace MonoAudio.Filters
         /// </value>
         public SampleFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets or sets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
-        public long Position { get => Source.Position; set => Source.Position = value; }
-
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
-        public long Length => Source.Length;
-
         private Vector2[] internalStates;
+
+        /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public ulong? Length { get => Source.Length; }
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public ulong? TotalLength { get => Source.TotalLength; }
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public ulong? Position { get => Source.Position; }
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -294,8 +313,7 @@ namespace MonoAudio.Filters
                 if (disposing)
                 {
                 }
-                Source.Dispose();
-                internalStates = null;
+                internalStates = Array.Empty<Vector2>();
                 disposedValue = true;
             }
         }

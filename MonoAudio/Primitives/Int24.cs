@@ -212,7 +212,7 @@ namespace MonoAudio
         ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public override bool Equals(object obj) => obj is Int24 @int && Equals(@int);
+        public override bool Equals(object? obj) => obj is Int24 @int && Equals(@int);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

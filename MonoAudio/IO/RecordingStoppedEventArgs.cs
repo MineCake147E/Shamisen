@@ -21,7 +21,7 @@ namespace MonoAudio.IO
         /// Initializes a new instance of the <see cref="RecordingStoppedEventArgs"/> class.
         /// </summary>
         /// <param name="exception">The exception.</param>
-        public RecordingStoppedEventArgs(Exception exception) : base(exception)
+        public RecordingStoppedEventArgs(Exception? exception) : base(exception)
         {
         }
     }

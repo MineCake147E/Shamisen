@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using MonoAudio.Filters;
 using MonoAudio.Synthesis;
 
@@ -27,36 +28,55 @@ namespace MonoAudio
         public TFormat Format { get; }
 
         /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
-        /// Some implementation could not support this property.
-        /// </summary>
-        public long Position
-        {
-            get => Source?.Position ?? -1;
-            set
-            {
-                if (!(Source is null)) Source.Position = value;
-            }
-        }
-
-        /// <summary>
         /// Gets the source to read the samples from.
         /// </summary>
         /// <value>
         /// The source.
         /// </value>
-        public IReadableAudioSource<TSample, TFormat> Source { get; private set; }
+        public IReadableAudioSource<TSample, TFormat>? Source { get; private set; }
 
         /// <summary>
-        /// Gets or sets whether the <see cref="IAudioSource{TSample,TFormat}"/> supports seeking or not.
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
         /// </summary>
-        public bool CanSeek => Source?.CanSeek ?? false;
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport => Source?.SkipSupport;
 
         /// <summary>
-        /// Gets how long the <see cref="IAudioSource{TSample,TFormat}"/> lasts in specific types.
-        /// -1 Means Infinity.
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
         /// </summary>
-        public long Length => Source?.Length ?? -1;
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport => Source?.SeekSupport;
+
+        /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
+        /// </value>
+        public ulong? Length => Source?.Length;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public ulong? TotalLength => Source?.TotalLength;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
+        /// </value>
+        public ulong? Position => Source?.Position;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioSocket{TSample, TFormat}"/> class with the specified <paramref name="format"/>.
@@ -69,7 +89,7 @@ namespace MonoAudio
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        public ReadResult Read(Span<TSample> buffer) => Source.Read(buffer);
+        public ReadResult Read(Span<TSample> buffer) => Source?.Read(buffer) ?? ReadResult.WaitingForSource;
 
         /// <summary>
         /// Replaces the source to the <paramref name="newSource"/>.
@@ -77,7 +97,7 @@ namespace MonoAudio
         /// <param name="newSource">The new source.</param>
         /// <returns>The <see cref="Source"/> that was previously set.</returns>
         /// <exception cref="ArgumentException">The Format is not same as newSource's Format!</exception>
-        public IReadableAudioSource<TSample, TFormat> ReplaceSource(IReadableAudioSource<TSample, TFormat> newSource)
+        public IReadableAudioSource<TSample, TFormat>? ReplaceSource(IReadableAudioSource<TSample, TFormat> newSource)
         {
             if (newSource.Format.Equals(Format) && Format.Equals(newSource.Format))
             {
@@ -95,7 +115,7 @@ namespace MonoAudio
         /// De-plugs the source.
         /// </summary>
         /// <returns>The old <see cref="Source"/>.</returns>
-        public IReadableAudioSource<TSample, TFormat> DeplugSource() => ReplaceSource(new SilenceSource<TSample, TFormat>(Format));
+        public IReadableAudioSource<TSample, TFormat>? DeplugSource() => ReplaceSource(new SilenceSource<TSample, TFormat>(Format));
 
         #region IDisposable Support
 

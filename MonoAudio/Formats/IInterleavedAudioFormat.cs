@@ -12,6 +12,7 @@ namespace MonoAudio
     /// <typeparamref name="TSample"/> must not be affected by the number of <see cref="IAudioFormat{TSample}.Channels"/>.
     /// </summary>
     public interface IInterleavedAudioFormat<TSample> : IAudioFormat<TSample>
+        where TSample : unmanaged
     {
         /// <summary>
         /// Gets the value indicates how many <typeparamref name="TSample"/>s are required per whole frame.<br/>

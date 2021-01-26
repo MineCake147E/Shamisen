@@ -123,7 +123,7 @@ namespace MonoAudio.Conversion.WaveToSampleConverters
                     Source.Dispose();
                     bufferWrapper.Dispose();
                 }
-                bufferWrapper = null;
+                //bufferWrapper = null;
             }
             disposedValue = true;
         }

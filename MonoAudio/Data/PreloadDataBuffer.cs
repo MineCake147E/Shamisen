@@ -34,7 +34,7 @@ namespace MonoAudio.Data
         private IDataSource<TSample> dataSource;
 
         /// <summary>
-        /// Gets the current position of this <see cref="T:MonoAudio.Data.IDataSource`1" />.
+        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
         /// </summary>
         /// <value>
         /// The position.
@@ -204,16 +204,16 @@ namespace MonoAudio.Data
                 cancellationTokenSource.Cancel();
                 fillFlag.Set(); //Resume Buffering Thread
                 writeTask.Dispose();
-                writeTask = null;
+                //writeTask = null;
                 if (disposing)
                 {
                     // Block intentionally left empty.
                 }
 
                 fillFlag.Dispose();
-                fillFlag = null;
+                //fillFlag = null;
                 cancellationTokenSource.Dispose();
-                cancellationTokenSource = null;
+                //cancellationTokenSource = null;
                 while (buffersFilled.TryDequeue(out var buffer))
                 {
                     buffer.Dispose();
@@ -226,11 +226,11 @@ namespace MonoAudio.Data
                 {
                     buffer.buffer.Dispose();
                 }
-                buffersFilled = null;
-                buffersEmpty = null;
+                //buffersFilled = null;
+                //buffersEmpty = null;
                 if (dataSource is IDisposable disposable) disposable.Dispose();
-                dataSource = null;
-                buffersNeededToBeResized = null;
+                //dataSource = null;
+                //buffersNeededToBeResized = null;
                 disposedValue = true;
             }
         }

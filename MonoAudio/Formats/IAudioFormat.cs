@@ -8,7 +8,7 @@ namespace MonoAudio
     /// <typeparamref name="TSample"/> must not be affected by the number of <see cref="Channels"/>.
     /// </summary>
     /// <typeparam name="TSample">The type of sample.</typeparam>
-    public interface IAudioFormat<TSample> : IEquatable<IAudioFormat<TSample>>
+    public interface IAudioFormat<TSample> : IEquatable<IAudioFormat<TSample>> where TSample : unmanaged
     {
         /// <summary>
         /// Gets the number of channels.<br/>

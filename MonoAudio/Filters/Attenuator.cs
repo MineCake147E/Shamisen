@@ -34,14 +34,6 @@ namespace MonoAudio.Filters
         public float Scale { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can seek.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance can seek; otherwise, <c>false</c>.
-        /// </value>
-        public bool CanSeek => Source.CanSeek;
-
-        /// <summary>
         /// Gets the format.
         /// </summary>
         /// <value>
@@ -50,20 +42,47 @@ namespace MonoAudio.Filters
         public SampleFormat Format => Source.Format;
 
         /// <summary>
-        /// Gets or sets the position.
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
         /// </summary>
         /// <value>
-        /// The position.
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public long Position { get => Source.Position; set => Source.Position = value; }
+        public ulong? Length { get => Source.Length; }
 
         /// <summary>
-        /// Gets the length.
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
         /// </summary>
         /// <value>
-        /// The length.
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public long Length => Source.Length;
+        public ulong? TotalLength { get => Source.TotalLength; }
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public ulong? Position { get => Source.Position; }
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
 
         /// <summary>
         /// Reads the specified buffer.

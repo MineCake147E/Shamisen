@@ -105,7 +105,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is WaveFormat format && Equals(format);
         }
@@ -134,7 +134,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(IAudioFormat<byte> other) => other is WaveFormat format && Equals(format);
+        public bool Equals(IAudioFormat<byte>? other) => other is WaveFormat format && Equals(format);
 
         /// <summary>
         /// Returns a hash code for this instance.

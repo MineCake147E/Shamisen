@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoAudio", "MonoAudio\Mono
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{448D17C3-9E81-4896-BCE4-6706AFFA145C}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -44,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoAudio.BenchmarkRunner",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoAudio.Tests.IO.Droid", "Tests\MonoAudio.Tests.IO.Droid\MonoAudio.Tests.IO.Droid.csproj", "{CBC9C972-F946-484F-9ADF-1BA1906ABF86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoAudio.CodeGenDependencies", "MonoAudio.CodeGenDependencies\MonoAudio.CodeGenDependencies.csproj", "{909B6A2F-D762-469A-9ECD-FCE7653978C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoAudio.CodeGenDependencies", "MonoAudio.CodeGenDependencies\MonoAudio.CodeGenDependencies.csproj", "{909B6A2F-D762-469A-9ECD-FCE7653978C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

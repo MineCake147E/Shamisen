@@ -12,6 +12,7 @@ namespace MonoAudio
     /// Represents a contiguous region of channel-interleaved memory that contains audio data.
     /// </summary>
     public readonly struct InterleavedAudioMemory<TSample, TFormat>
+        where TSample : unmanaged
         where TFormat : IInterleavedAudioFormat<TSample>
     {
         /// <summary>
@@ -180,7 +181,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => false;
+        public override bool Equals(object? obj) => false;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

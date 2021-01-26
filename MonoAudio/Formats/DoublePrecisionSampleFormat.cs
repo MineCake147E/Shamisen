@@ -71,7 +71,7 @@ namespace MonoAudio
         /// <param name="obj">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is DoublePrecisionSampleFormat format && Equals(format);
         }
@@ -90,9 +90,9 @@ namespace MonoAudio
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(IAudioFormat<double> other)
+        public bool Equals(IAudioFormat<double>? other)
         {
-            return other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
+            return !(other is null) && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
         }
 
         /// <summary>Returns a hash code for this instance.</summary>

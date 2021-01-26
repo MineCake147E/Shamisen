@@ -251,7 +251,7 @@ namespace MonoAudio
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => obj is Fixed16 @fixed && Equals(@fixed);
+        public override bool Equals(object? obj) => obj is Fixed16 @fixed && Equals(@fixed);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

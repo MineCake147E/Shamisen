@@ -17,7 +17,7 @@ namespace MonoAudio.Filters.Mixing
         /// <value>
         /// The source.
         /// </value>
-        public ISampleSource Source { get; }
+        public ISampleSource? Source { get; }
 
         /// <summary>
         /// Gets the volume of this <see cref="MixerItem"/>.

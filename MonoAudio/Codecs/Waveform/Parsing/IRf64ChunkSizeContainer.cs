@@ -15,7 +15,7 @@ namespace MonoAudio.Codecs.Waveform.Parsing
         /// <value>
         /// The size of the RF64 chunk.
         /// </value>
-        ulong RiffSize { get; }
+        ulong? RiffSize { get; }
 
         /// <summary>
         /// Gets the size of the data chunk.
@@ -23,7 +23,7 @@ namespace MonoAudio.Codecs.Waveform.Parsing
         /// <value>
         /// The size of the data chunk.
         /// </value>
-        ulong DataSize { get; }
+        ulong? DataSize { get; }
 
         /// <summary>
         /// Gets the sample count in the fact chunk.
@@ -31,7 +31,7 @@ namespace MonoAudio.Codecs.Waveform.Parsing
         /// <value>
         /// The sample count in the fact chunk.
         /// </value>
-        ulong SampleCount { get; }
+        ulong? SampleCount { get; }
 
         /// <summary>
         /// Gets the chunk size table.
@@ -39,7 +39,7 @@ namespace MonoAudio.Codecs.Waveform.Parsing
         /// <value>
         /// The chunk size table.
         /// </value>
-        IReadOnlyList<ChunkSizeTableEntry> ChunkSizeTable { get; }
+        IReadOnlyList<ChunkSizeTableEntry>? ChunkSizeTable { get; }
 
         /// <summary>
         /// Gets the size for next chunk with specified <paramref name="id"/>.<br/>

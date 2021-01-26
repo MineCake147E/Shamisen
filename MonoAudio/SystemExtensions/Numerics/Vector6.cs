@@ -204,7 +204,7 @@ namespace System.Numerics
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Vector6 vector && Equals(vector);
         }
