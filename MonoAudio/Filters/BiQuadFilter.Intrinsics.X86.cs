@@ -80,6 +80,89 @@ namespace MonoAudio.Filters
             }
         }
 
+        private void ProcessStereoAvx(Span<float> buffer)
+        {
+            unsafe
+            {
+                //Factor localization greatly improved performance
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var ist = internalStates;
+                var iState = Unsafe.As<Vector2, Vector128<float>>(ref ist[0]);
+                var vBuffer128 = MemoryUtils.CastSplit<float, Vector128<float>>(buffer, out var res);
+                var vBuffer64 = MemoryUtils.CastSplit<float, Vector2>(res, out _);
+                var vzero128 = Vector128<float>.Zero;
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fBx = Vector256.Create(fB, fB);
+                var fA = Sse.LoadLow(vzero128, (float*)Unsafe.AsPointer(ref factorA));
+                var fAx = Vector256.Create(fA, fA);
+                var iSL = Sse.Shuffle(iState, vzero128, 0b1111_0100);
+                var iSR = Sse.Shuffle(iState, vzero128, 0b1111_1110);
+                var iSx = Vector256.Create(iSL, iSR);
+                for (int i = 0; i < vBuffer128.Length; i++)
+                {
+                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
+                    //Transformed for SIMD awareness.
+                    ref var v = ref vBuffer128[i];
+                    Vector128<float> sum;
+                    {
+                        var vvL = Vector128.CreateScalar(v.GetElement(0));
+                        var vvR = Vector128.CreateScalar(v.GetElement(1));
+                        var vvx = Vector256.Create(vvL, vvR);
+                        vvx = Avx.Permute(vvx, 0b1100_0000);
+                        vvx = Avx.Multiply(vvx, fBx);   //Decreased performance on Haswell Refresh in benchmarks but still usable in low load
+                        vvx = Avx.Add(vvx, iSx);
+                        sum = Vector128.CreateScalarUnsafe(vvx.GetElement(0));
+                        sum = sum.WithElement(1, vvx.GetElement(4));
+                        var sum1xv = Avx.Permute(vvx, 0b1111_0000);
+                        sum1xv = Avx.Multiply(sum1xv, fAx);
+                        var ffvx = Avx.Permute(vvx, 0b1111_1001);
+                        iSx = Avx.Add(ffvx, sum1xv);
+                    }
+                    {
+                        var vvL = Vector128.CreateScalar(v.GetElement(2));
+                        var vvR = Vector128.CreateScalar(v.GetElement(3));
+                        var vvx = Vector256.Create(vvL, vvR);
+                        vvx = Avx.Permute(vvx, 0b1100_0000);
+                        vvx = Avx.Multiply(vvx, fBx);
+                        vvx = Avx.Add(vvx, iSx);
+                        sum = sum.WithElement(2, vvx.GetElement(0));
+                        sum = sum.WithElement(3, vvx.GetElement(4));
+                        Sse.Store((float*)Unsafe.AsPointer(ref v), sum);
+                        var sum1xv = Avx.Permute(vvx, 0b1111_0000);
+                        sum1xv = Avx.Multiply(sum1xv, fAx);
+                        var ffvx = Avx.Permute(vvx, 0b1111_1001);
+                        iSx = Avx.Add(ffvx, sum1xv);
+                    }
+                }
+                for (int i = 0; i < vBuffer64.Length; i++)
+                {
+                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
+                    //Transformed for SIMD awareness.
+                    ref var v = ref vBuffer64[i];
+                    Vector128<float> sum = Vector128<float>.Zero;
+                    sum = Sse.LoadLow(sum, (float*)Unsafe.AsPointer(ref v));
+                    var vvL = Vector128.CreateScalar(sum.GetElement(0));
+                    var vvR = Vector128.CreateScalar(sum.GetElement(1));
+                    var vvx = Vector256.Create(vvL, vvR);
+                    vvx = Avx.Permute(vvx, 0b1100_0000);
+                    vvx = Avx.Multiply(vvx, fBx);
+                    vvx = Avx.Add(vvx, iSx);
+                    sum = Vector128.CreateScalarUnsafe(vvx.GetElement(0));
+                    sum = sum.WithElement(1, vvx.GetElement(4));
+                    Sse.StoreLow((float*)Unsafe.AsPointer(ref v), sum);
+                    var sum1xv = Avx.Permute(vvx, 0b1111_0000);
+                    sum1xv = Avx.Multiply(sum1xv, fAx);
+                    var ffvx = Avx.Permute(vvx, 0b1111_1001);
+                    iSx = Avx.Add(ffvx, sum1xv);
+                }
+                var l = iSx.GetLower();
+                var u = iSx.GetUpper();
+                iState = Sse.Shuffle(l, u, 0b0100_0100);
+                Unsafe.As<Vector2, Vector128<float>>(ref internalStates.AsSpan()[0]) = iState;
+            }
+        }
+
         private void ProcessStereoSse(Span<float> buffer)
         {
             unsafe
@@ -93,7 +176,7 @@ namespace MonoAudio.Filters
                 var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
                 var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
                 var iSL = Vector128.Create(iStateL.X, iStateL.Y, 0, 0);
-                var iSR = Vector128.Create(iStateL.X, iStateL.Y, 0, 0);
+                var iSR = Vector128.Create(iStateR.X, iStateR.Y, 0, 0);
                 var zero = Vector128<float>.Zero;
                 for (int i = 0; i < buffer.Length; i += 2)
                 {
@@ -122,6 +205,8 @@ namespace MonoAudio.Filters
                     iSL = Sse.Add(ffvL, sum1Lv);
                     iSR = Sse.Add(ffvR, sum1Rv);
                 }
+                iStateL = new Vector2(iSL.GetElement(0), iSL.GetElement(1));
+                iStateR = new Vector2(iSR.GetElement(0), iSR.GetElement(1));
                 ist[0] = iStateL;
                 ist[1] = iStateR;
             }

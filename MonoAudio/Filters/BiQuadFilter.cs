@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-using System.Text;
-
 #if NET5_0 || NETCOREAPP3_1
 
 using System.Runtime.Intrinsics;
@@ -17,6 +15,10 @@ using System.Runtime.Intrinsics.Arm;
 
 #endif
 
+using System.Text;
+
+using MonoAudio.Optimization;
+
 namespace MonoAudio.Filters
 {
     /// <summary>
@@ -26,6 +28,8 @@ namespace MonoAudio.Filters
     {
         private bool disposedValue = false; //
         private readonly bool enableIntrinsics;
+        private readonly X86Intrinsics enabledX86Intrinsics;
+        private readonly ArmIntrinsics enabledArmIntrinsics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BiQuadFilter"/> class.
@@ -38,12 +42,19 @@ namespace MonoAudio.Filters
         }
 
         internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics)
+            : this(source, parameter, enableIntrinsics, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics)
+        {
+        }
+
+        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
             Parameter = parameter;
             internalStates = new Vector2[Format.Channels];
             internalStates.AsSpan().Fill(new Vector2(0, 0));
             this.enableIntrinsics = enableIntrinsics;
+            this.enabledX86Intrinsics = enabledX86Intrinsics;
+            this.enabledArmIntrinsics = enabledArmIntrinsics;
         }
 
         /// <summary>
@@ -242,13 +253,12 @@ namespace MonoAudio.Filters
 #if NET5_0 || NETCOREAPP3_1
             if (enableIntrinsics)
             {
-                /*if (Avx.IsSupported)
+                if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
                 {
-                    ProcessMonauralAvx(buffer);
+                    ProcessStereoAvx(buffer);
                     return;
                 }
-                else */
-                if (Sse.IsSupported)
+                else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                 {
                     ProcessStereoSse(buffer);
                     return;
@@ -297,12 +307,12 @@ namespace MonoAudio.Filters
 #if NET5_0 || NETCOREAPP3_1
                 if (enableIntrinsics)
                 {
-                    if (Avx.IsSupported)
+                    if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
                     {
                         ProcessMonauralAvx(buffer);
                         return;
                     }
-                    else if (Sse.IsSupported)
+                    else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                     {
                         ProcessMonauralSse(buffer);
                         return;
@@ -349,7 +359,7 @@ namespace MonoAudio.Filters
                         return;
                     }
                     else */
-                    if (Sse.IsSupported)
+                    if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                     {
                         ProcessMultipleSse(buffer);
                         return;

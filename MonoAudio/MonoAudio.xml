@@ -8890,6 +8890,434 @@
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:MonoAudio.Optimization.X86Intrinsics">
+            <summary>
+            Defines some X86 intrinsics.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.None">
+            <summary>
+            Not X86(e.g. ARMv8-A) or X86 Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.X86Base">
+            <summary>
+            X86Base
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.X64">
+            <summary>
+            X64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Bmi1">
+            <summary>
+            BMI1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Bmi2">
+            <summary>
+            BMI2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Lzcnt">
+            <summary>
+            LZCNT
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Sse">
+            <summary>
+            SSE
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Sse2">
+            <summary>
+            SSE2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Pclmulqdq">
+            <summary>
+            PCLMULQDQ
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Sse3">
+            <summary>
+            SSE3
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Ssse3">
+            <summary>
+            SSSE3
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Sse41">
+            <summary>
+            SSE4.1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Sse42">
+            <summary>
+            SSE4.2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Avx">
+            <summary>
+            AVX
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Popcnt">
+            <summary>
+            POPCNT
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Avx2">
+            <summary>
+            AVX2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86Intrinsics.Fma">
+            <summary>
+            FMA
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Optimization.ArmIntrinsics">
+            <summary>
+            Defines some ARM intrinsics.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.None">
+            <summary>
+            Not ARM(e.g. x86-64) or ARM Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.ArmBase">
+            <summary>
+            ArmBase
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Arm64">
+            <summary>
+            Arm64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.AdvSimd">
+            <summary>
+            AdvSIMD
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Crc32">
+            <summary>
+            CRC32
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Sha1">
+            <summary>
+            SHA1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Sha256">
+            <summary>
+            SHA256
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Dp">
+            <summary>
+            DotProduct
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsics.Rdm">
+            <summary>
+            MultiplyRoundedDoubling
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Optimization.X86IntrinsicsMask">
+            <summary>
+            Defines some <see cref="T:MonoAudio.Optimization.X86Intrinsics"/> masks.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.None">
+            <summary>
+            The none
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.X86Base">
+            <summary>
+            X86Base
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.X64">
+            <summary>
+            X64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Bmi1">
+            <summary>
+            BMI1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Bmi2">
+            <summary>
+            BMI2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Lzcnt">
+            <summary>
+            LZCNT
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Sse">
+            <summary>
+            SSE
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Sse2">
+            <summary>
+            SSE2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Pclmulqdq">
+            <summary>
+            PCLMULQDQ
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Sse3">
+            <summary>
+            SSE3
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Ssse3">
+            <summary>
+            SSSE3
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Sse41">
+            <summary>
+            SSE4.1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Sse42">
+            <summary>
+            SSE4.2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Avx">
+            <summary>
+            AVX
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Popcnt">
+            <summary>
+            POPCNT
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Avx2">
+            <summary>
+            AVX2
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.X86IntrinsicsMask.Fma">
+            <summary>
+            FMA
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Optimization.ArmIntrinsicsMask">
+            <summary>
+            Defines some <see cref="T:MonoAudio.Optimization.X86Intrinsics"/> masks.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.None">
+            <summary>
+            Not ARM(e.g. x86-64) or ARM Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.ArmBase">
+            <summary>
+            ArmBase
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Arm64">
+            <summary>
+            Arm64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.AdvSimd">
+            <summary>
+            AdvSIMD
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Crc32">
+            <summary>
+            CRC32
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Sha1">
+            <summary>
+            SHA1
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Sha256">
+            <summary>
+            SHA256
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Dp">
+            <summary>
+            DotProduct
+            </summary>
+        </member>
+        <member name="F:MonoAudio.Optimization.ArmIntrinsicsMask.Rdm">
+            <summary>
+            MultiplyRoundedDoubling
+            </summary>
+        </member>
+        <member name="T:MonoAudio.Optimization.IntrinsicsUtils">
+            <summary>
+            Contains some utilities about Hardware Intrinsics
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Optimization.IntrinsicsUtils.X86Intrinsics">
+            <summary>
+            Gets the X86 intrinsics available on this CPU.
+            </summary>
+            <value>
+            The X86 intrinsics.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Optimization.IntrinsicsUtils.ArmIntrinsics">
+            <summary>
+            Gets the ARM intrinsics available on this CPU.
+            </summary>
+            <value>
+            The arm intrinsics.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.GetAvailableX86Intrinsics">
+            <summary>
+            Gets the available X86 intrinsics.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.GetAvailableArmIntrinsics">
+            <summary>
+            Gets the available arm intrinsics.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAllFeatures(MonoAudio.Optimization.X86Intrinsics,MonoAudio.Optimization.X86IntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAllFeatures(MonoAudio.Optimization.X86Intrinsics,MonoAudio.Optimization.X86Intrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAllFeatures(MonoAudio.Optimization.ArmIntrinsics,MonoAudio.Optimization.ArmIntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAllFeatures(MonoAudio.Optimization.ArmIntrinsics,MonoAudio.Optimization.ArmIntrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(MonoAudio.Optimization.X86Intrinsics,MonoAudio.Optimization.X86IntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(MonoAudio.Optimization.X86Intrinsics,MonoAudio.Optimization.X86Intrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(MonoAudio.Optimization.ArmIntrinsics,MonoAudio.Optimization.ArmIntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(MonoAudio.Optimization.ArmIntrinsics,MonoAudio.Optimization.ArmIntrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.OptimizationUtils">
+            <summary>
+            Contains some utility for optimization.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.OptimizationUtils.AggressiveOptimizationIfPossible">
+            <summary>
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
+        <member name="F:MonoAudio.OptimizationUtils.InlineAndOptimizeIfPossible">
+            <summary>
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
         <member name="T:MonoAudio.Pipeline.AudioPipe`2">
             <summary>
             Transfers audio buffers between two components.
@@ -10979,20 +11407,20 @@
             The value.
             </value>
         </member>
-        <member name="T:MonoAudio.OptimizationUtils">
+        <member name="T:MonoAudio.MemoryUtils">
             <summary>
-            Contains some utility for optimization.
+            Provides useful methods to interoperate with <see cref="T:System.Span`1"/> and <see cref="T:System.Memory`1"/>.
             </summary>
         </member>
-        <member name="F:MonoAudio.OptimizationUtils.AggressiveOptimizationIfPossible">
+        <member name="M:MonoAudio.MemoryUtils.CastSplit``2(System.Span{``0},System.Span{``0}@)">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Casts and splits the specified span.
             </summary>
-        </member>
-        <member name="F:MonoAudio.OptimizationUtils.InlineAndOptimizeIfPossible">
-            <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
-            </summary>
+            <typeparam name="TFrom">The type of from.</typeparam>
+            <typeparam name="TTo">The type of to.</typeparam>
+            <param name="span">The span.</param>
+            <param name="residue">The residue part of <paramref name="span"/></param>
+            <returns></returns>
         </member>
         <member name="T:System.ThrowHelper">
             <summary>
@@ -12116,6 +12544,12 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
@@ -12282,7 +12716,120 @@
         </member>
     </members>
 </doc>
-)">
+aram>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.PointerExtensions">
+            <summary>
+            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
+            </summary>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
             <summary>
             Increments the specified <see cref="T:System.UIntPtr"/> value.
             </summary>

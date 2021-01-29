@@ -7,6 +7,7 @@ using BenchmarkDotNet.Jobs;
 
 using MonoAudio.Conversion.Resampling.Sample;
 using MonoAudio.Filters;
+using MonoAudio.Optimization;
 using MonoAudio.Synthesis;
 
 namespace MonoAudio.Benchmarks
@@ -22,17 +23,20 @@ namespace MonoAudio.Benchmarks
         private float[] buffer;
         private const int SampleRate = 192000;
 
-        [Params(1, 2, 4, 5)]
+        [Params(2)]
         public int Channels { get; set; }
 
         [Params(true)]
         public bool EnableIntrinsics { get; set; }
 
+        [Params(/*(X86Intrinsics)X86IntrinsicsMask.None, */(X86Intrinsics)X86IntrinsicsMask.Sse42, (X86Intrinsics)X86IntrinsicsMask.Avx2)]
+        public X86Intrinsics EnabledX86Intrinsics { get; set; }
+
         [GlobalSetup]
         public void Setup()
         {
             source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
-            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1), EnableIntrinsics);
+            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1), EnableIntrinsics, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics);
             buffer = new float[1024 * Channels];
         }
 

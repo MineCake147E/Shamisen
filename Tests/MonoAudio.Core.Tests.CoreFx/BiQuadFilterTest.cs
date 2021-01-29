@@ -9,6 +9,7 @@ using NUnit.Framework;
 using System.Numerics;
 using System.Diagnostics;
 using MonoAudio.Filters;
+using MonoAudio.Optimization;
 
 namespace MonoAudio.Core.Tests.CoreFx
 {
@@ -187,15 +188,17 @@ namespace MonoAudio.Core.Tests.CoreFx
 
         #region Intrinsics Consistency
 
-        private static void CheckIntrinsicsConsistency(int sampleRate, int channels, BiQuadParameter parameter)
+        private static void CheckIntrinsicsConsistency(int sampleRate, int channels, BiQuadParameter parameter, X86Intrinsics x86Intrinsics, ArmIntrinsics armIntrinsics)
         {
+            Console.WriteLine($"Enabled x86-64 intrinsics: {x86Intrinsics}");
+            Console.WriteLine($"Enabled ARM intrinsics: {armIntrinsics}");
             const int Frequency = 2000;
             var format = new SampleFormat(channels, sampleRate);
-            using var srcNoIntrinsics = new SquareWaveSource(format) { Frequency = Frequency };
-            using var srcIntrinsics = new SquareWaveSource(format) { Frequency = Frequency };
+            using var srcNoIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
+            using var srcIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
             using var filterNoIntrinsics = new BiQuadFilter(srcNoIntrinsics, parameter, false);
-            using var filterIntrinsics = new BiQuadFilter(srcIntrinsics, parameter, true);
-            var bufferNoIntrinsics = new float[128 * channels];
+            using var filterIntrinsics = new BiQuadFilter(srcIntrinsics, parameter, true, x86Intrinsics, armIntrinsics);
+            var bufferNoIntrinsics = new float[128];
             var bufferIntrinsics = new float[bufferNoIntrinsics.Length];
 
             filterNoIntrinsics.Read(bufferNoIntrinsics);
@@ -215,16 +218,20 @@ namespace MonoAudio.Core.Tests.CoreFx
             Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
         }
 
-        [TestCase(1)]
-        [TestCase(2)]
+        [TestCase(1, (X86Intrinsics)X86IntrinsicsMask.Sse42)]
+        [TestCase(1, (X86Intrinsics)X86IntrinsicsMask.Avx2)]
+        [TestCase(2, (X86Intrinsics)X86IntrinsicsMask.Sse42)]
+        [TestCase(2, (X86Intrinsics)X86IntrinsicsMask.Avx2)]
         /*[TestCase(3)]
         [TestCase(4)]*/
         [TestCase(5)]
         [TestCase(6)]
-        public void BiQuadLPFIntrinsicsConsistency(int channels)
+        public void BiQuadLPFIntrinsicsConsistency(int channels, X86Intrinsics x86Intrinsics = (X86Intrinsics)~0ul, ArmIntrinsics armIntrinsics = (ArmIntrinsics)~0ul)
         {
             const int SampleRate = 48000;
-            CheckIntrinsicsConsistency(SampleRate, channels, BiQuadParameter.CreateLPFParameter(SampleRate, 4000, Math.Sqrt(0.5)));
+            x86Intrinsics &= IntrinsicsUtils.X86Intrinsics;
+            armIntrinsics &= IntrinsicsUtils.ArmIntrinsics;
+            CheckIntrinsicsConsistency(SampleRate, channels, BiQuadParameter.CreateLPFParameter(SampleRate, 4000, Math.Sqrt(0.5)), x86Intrinsics, armIntrinsics);
             Assert.Pass();
         }
 

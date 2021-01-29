@@ -26,10 +26,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[Channels * 1024];
-            Assert.DoesNotThrow(() =>
-            {
-                resampler.Read(buffer);
-            });
+            Assert.DoesNotThrow(() => resampler.Read(buffer));
             resampler.Dispose();
         }
 
@@ -42,10 +39,7 @@ namespace MonoAudio.Core.Tests.CoreFx
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             var buffer = new float[Channels * 1024];
-            Assert.DoesNotThrow(() =>
-            {
-                resampler.Read(buffer);
-            });
+            Assert.DoesNotThrow(() => resampler.Read(buffer));
             resampler.Dispose();
         }
 
