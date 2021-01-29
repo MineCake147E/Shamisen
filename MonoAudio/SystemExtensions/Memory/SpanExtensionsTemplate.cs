@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using DivideSharp;
+using MonoAudio;
+
 namespace System
 {
     /// <summary>

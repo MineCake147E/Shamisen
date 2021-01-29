@@ -128,6 +128,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </Compile>
+        <Compile Update="SystemExtensions\MathITemplate.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MathITemplate.tt</DependentUpon>
+        </Compile>
         <Compile Update="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>

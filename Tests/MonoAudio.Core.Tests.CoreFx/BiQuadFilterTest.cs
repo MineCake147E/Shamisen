@@ -15,9 +15,9 @@ namespace MonoAudio.Core.Tests.CoreFx
     [TestFixture]
     public class BiQuadFilterTest
     {
-        private void BiQuadFilterDump(int SampleRate, BiQuadParameter parameter)
+        private void BiQuadFilterDump(int sampleRate, BiQuadParameter parameter)
         {
-            var src = new SquareWaveSource(new SampleFormat(1, SampleRate)) { Frequency = 2000 };
+            var src = new SquareWaveSource(new SampleFormat(1, sampleRate)) { Frequency = 2000 };
             var filter = new BiQuadFilter(src, parameter);
             var buffer = new float[128];
             filter.Read(buffer);
@@ -37,6 +37,7 @@ namespace MonoAudio.Core.Tests.CoreFx
         public void BiQuadLPFTwoFrameDump()
         {
             const int SampleRate = 48000;
+
             BiQuadFilterDump(SampleRate, BiQuadParameter.CreateLPFParameter(SampleRate, 4000, Math.Sqrt(0.5)));
             Assert.Pass();
         }

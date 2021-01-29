@@ -2,27 +2,48 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+
 using System.Text;
+
+#if NET5_0 || NETCOREAPP3_1
+
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+#endif
+#if NET5_0
+
+using System.Runtime.Intrinsics.Arm;
+
+#endif
 
 namespace MonoAudio.Filters
 {
     /// <summary>
     /// Provides a function of filtering with Digital BiQuad Filter.
     /// </summary>
-    public sealed class BiQuadFilter : IAudioFilter<float, SampleFormat>
+    public sealed partial class BiQuadFilter : IAudioFilter<float, SampleFormat>
     {
+        private bool disposedValue = false; //
+        private readonly bool enableIntrinsics;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BiQuadFilter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameter">The parameter.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter)
+        public BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter) : this(source, parameter, true)
+        {
+        }
+
+        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
             Parameter = parameter;
             internalStates = new Vector2[Format.Channels];
             internalStates.AsSpan().Fill(new Vector2(0, 0));
+            this.enableIntrinsics = enableIntrinsics;
         }
 
         /// <summary>
@@ -84,7 +105,7 @@ namespace MonoAudio.Filters
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport { get => Source.SkipSupport; }
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -92,7 +113,7 @@ namespace MonoAudio.Filters
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport { get => Source.SeekSupport; }
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -122,7 +143,7 @@ namespace MonoAudio.Filters
                     ProcessQuadruple(buffer);
                     break;
                 default:
-                    ProcessOrdinal(buffer, channels);
+                    ProcessMultiple(buffer);
                     break;
             }
             return len;
@@ -135,10 +156,11 @@ namespace MonoAudio.Filters
                 //Factor localization greatly improved performance
                 Vector3 factorB = Parameter.B;
                 Vector2 factorA = Parameter.A;
-                Vector2 iStateL = internalStates[0];
-                Vector2 iStateR = internalStates[1];
-                Vector2 iStateC = internalStates[2];
-                Vector2 iStateLFE = internalStates[3];
+                Vector2[] ist = internalStates;
+                Vector2 iStateL = ist[0];
+                Vector2 iStateR = ist[1];
+                Vector2 iStateC = ist[2];
+                Vector2 iStateLFE = ist[3];
                 for (int i = 0; i < buffer.Length; i += 4)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -168,10 +190,10 @@ namespace MonoAudio.Filters
                     iStateC = new Vector2(feedForwardC.Y + feedBackC.X + aYC, feedForwardC.Z + feedBackC.Y);
                     iStateLFE = new Vector2(feedForwardLFE.Y + feedBackLFE.X + aYLFE, feedForwardLFE.Z + feedBackLFE.Y);
                 }
-                internalStates[0] = iStateL;
-                internalStates[1] = iStateR;
-                internalStates[2] = iStateC;
-                internalStates[3] = iStateLFE;
+                ist[0] = iStateL;
+                ist[1] = iStateR;
+                ist[2] = iStateC;
+                ist[3] = iStateLFE;
             }
         }
 
@@ -182,9 +204,10 @@ namespace MonoAudio.Filters
                 //Factor localization greatly improved performance
                 Vector3 factorB = Parameter.B;
                 Vector2 factorA = Parameter.A;
-                Vector2 iStateL = internalStates[0];
-                Vector2 iStateR = internalStates[1];
-                Vector2 iStateC = internalStates[2];
+                Vector2[] ist = internalStates;
+                Vector2 iStateL = ist[0];
+                Vector2 iStateR = ist[1];
+                Vector2 iStateC = ist[2];
                 for (int i = 0; i < buffer.Length; i += 3)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -208,9 +231,9 @@ namespace MonoAudio.Filters
                     iStateR = new Vector2(feedForwardR.Y + feedBackR.X + aYR, feedForwardR.Z + feedBackR.Y);
                     iStateC = new Vector2(feedForwardC.Y + feedBackC.X + aYC, feedForwardC.Z + feedBackC.Y);
                 }
-                internalStates[0] = iStateL;
-                internalStates[1] = iStateR;
-                internalStates[2] = iStateC;
+                ist[0] = iStateL;
+                ist[1] = iStateR;
+                ist[2] = iStateC;
             }
         }
 
@@ -221,8 +244,9 @@ namespace MonoAudio.Filters
                 //Factor localization greatly improved performance
                 Vector3 factorB = Parameter.B;
                 Vector2 factorA = Parameter.A;
-                Vector2 iStateL = internalStates[0];
-                Vector2 iStateR = internalStates[1];
+                Vector2[] ist = internalStates;
+                Vector2 iStateL = ist[0];
+                Vector2 iStateR = ist[1];
                 for (int i = 0; i < buffer.Length; i += 2)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -240,12 +264,35 @@ namespace MonoAudio.Filters
                     iStateL = new Vector2(feedForwardL.Y + feedBackL.X + aYL, feedForwardL.Z + feedBackL.Y);
                     iStateR = new Vector2(feedForwardR.Y + feedBackR.X + aYR, feedForwardR.Z + feedBackR.Y);
                 }
-                internalStates[0] = iStateL;
-                internalStates[1] = iStateR;
+                ist[0] = iStateL;
+                ist[1] = iStateR;
             }
         }
 
         private void ProcessMonaural(Span<float> buffer)
+        {
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                if (enableIntrinsics)
+                {
+                    if (Avx.IsSupported)
+                    {
+                        ProcessMonauralAvx(buffer);
+                        return;
+                    }
+                    else if (Sse.IsSupported)
+                    {
+                        ProcessMonauralSse(buffer);
+                        return;
+                    }
+                }
+#endif
+                ProcessMonauralOrdinal(buffer);
+            }
+        }
+
+        private void ProcessMonauralOrdinal(Span<float> buffer)
         {
             unsafe
             {
@@ -268,7 +315,31 @@ namespace MonoAudio.Filters
             }
         }
 
-        private void ProcessOrdinal(Span<float> buffer, int channels)
+        private void ProcessMultiple(Span<float> buffer)
+        {
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                if (enableIntrinsics)
+                {
+                    /*if (Avx.IsSupported)
+                    {
+                        ProcessMonauralAvx(buffer);
+                        return;
+                    }
+                    else */
+                    if (Sse.IsSupported)
+                    {
+                        ProcessMultipleSse(buffer);
+                        return;
+                    }
+                }
+#endif
+                ProcessMultipleOrdinal(buffer);
+            }
+        }
+
+        private void ProcessMultipleOrdinal(Span<float> buffer)
         {
             unsafe
             {
@@ -277,7 +348,7 @@ namespace MonoAudio.Filters
                 Vector2 factorA = Parameter.A;
                 Span<Vector2> iState = stackalloc Vector2[internalStates.Length];
                 internalStates.AsSpan().CopyTo(iState);
-                for (int i = 0; i < buffer.Length; i += channels)
+                for (int i = 0; i < buffer.Length; i += iState.Length)
                 {
                     ref var pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);
@@ -299,8 +370,6 @@ namespace MonoAudio.Filters
         }
 
         #region IDisposable Support
-
-        private bool disposedValue = false; //
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

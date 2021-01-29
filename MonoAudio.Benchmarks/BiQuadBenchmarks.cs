@@ -11,7 +11,10 @@ using MonoAudio.Synthesis;
 
 namespace MonoAudio.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.NetCoreApp50, baseline: true)]
+    /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
+    [SimpleJob(RuntimeMoniker.Mono)]*/
+    [DisassemblyDiagnoser(maxDepth: 16)]
     public class BiQuadBenchmarks
     {
         private IReadableAudioSource<float, SampleFormat> source;
@@ -19,15 +22,18 @@ namespace MonoAudio.Benchmarks
         private float[] buffer;
         private const int SampleRate = 192000;
 
-        [Params(1, 2, 3, 4, 8)]
+        [Params(1, 2, 4, 5)]
         public int Channels { get; set; }
+
+        [Params(true)]
+        public bool EnableIntrinsics { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
             source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
-            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1));
-            buffer = new float[2560];
+            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1), EnableIntrinsics);
+            buffer = new float[1024 * Channels];
         }
 
         [Benchmark]

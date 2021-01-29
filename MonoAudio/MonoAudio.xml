@@ -10690,6 +10690,190 @@
             <param name="theta">The theta(from 0 to 2*pi).</param>
             <returns></returns>
         </member>
+        <member name="T:MonoAudio.MathI">
+            <summary>
+            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.MathI.FloorStep(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.FloorStepRem(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.Rectify(System.Int32)">
+            <summary>
+            Rectifies the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to rectify.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathI.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MonoAudio.MathIFallbacks">
+             <summary>
+             WARNING: This class is exposed only for testing purposes.<br/>
+             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions as MathI does.<br/>
+             This class contains hand-written software fallbacks for the places that the HW Intrinsics are not available.<br/>
+            
+             </summary>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 64.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bits of the specified value in 32bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MonoAudio.MathIFallbacks.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bits of the specified value in 64bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
         <member name="T:MonoAudio.AudioSourceExtensions">
             <summary>
             Contains some utility functions about <see cref="T:MonoAudio.IAudioSource`2"/>
@@ -10919,59 +11103,6 @@
             </summary>
             <typeparam name="T">The type of exception.</typeparam>
             <param name="exception">The exception.</param>
-        </member>
-        <member name="T:System.MathI">
-            <summary>
-            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
-            </summary>
-            <summary>
-            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
-            </summary>
-        </member>
-        <member name="M:System.MathI.FloorStep(System.Int32,System.Int32)">
-            <summary>
-            Aligns the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.MathI.FloorStepRem(System.Int32,System.Int32)">
-            <summary>
-            Aligns the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.MathI.Rectify(System.Int32)">
-            <summary>
-            Rectifies the specified <paramref name="value"/>.
-            </summary>
-            <param name="value">The value to rectify.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.MathI.CountConsecutiveZeros(System.UInt32)">
-            <summary>
-            Counts the consecutive zero bits on the right.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.MathI.LogBase2(System.UInt32)">
-            <summary>
-            Finds last 1's position from LSB.<br/>
-            When the value is 0, it returns 0.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.MathI.LargestPowerOfTwoLessThanOrEqualsTo(System.UInt32)">
-            <summary>
-            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
         </member>
         <member name="T:System.SpanExtensions">
             <summary>

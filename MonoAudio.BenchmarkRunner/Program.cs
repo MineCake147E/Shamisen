@@ -1,4 +1,5 @@
 ﻿using System;
+
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
@@ -13,7 +14,8 @@ namespace MonoAudio.Benchmarks.Running
             BenchmarkSwitcher
             .FromAssembly(typeof(ResamplerBenchmarks).Assembly)
             .Run(args);
-            Console.ReadLine();
+            Console.Write("Press any key to exit:");
+            Console.ReadKey();
         }
     }
 }

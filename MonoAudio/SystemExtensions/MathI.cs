@@ -4,9 +4,20 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Numerics;
-using MonoAudio;
 
-namespace System
+#if NET5_0 || NETCOREAPP3_1
+
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+#endif
+#if NET5_0
+
+using System.Runtime.Intrinsics.Arm;
+
+#endif
+
+namespace MonoAudio
 {
     /// <summary>
     /// Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
@@ -19,7 +30,7 @@ namespace System
         /// <param name="value">The value.</param>
         /// <param name="step">The step.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static int FloorStep(int value, int step) => value - (value % step);
 
         /// <summary>
@@ -28,7 +39,7 @@ namespace System
         /// <param name="value">The value.</param>
         /// <param name="step">The step.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static (int newLength, int remainder) FloorStepRem(int value, int step)
         {
             var m = value % step;
@@ -47,22 +58,15 @@ namespace System
             return value & ~h;
         }
 
-#if !(NET5_0 || NETCOREAPP3_1)
-        private static ReadOnlySpan<byte> TrailingZeroCountDeBruijn => new byte[32]
-        {
-            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
-            0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-            31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-        };
-#endif
+        #region TrailingZeroCount
 
         /// <summary>
         /// Counts the consecutive zero bits on the right.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CountConsecutiveZeros(uint value)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int TrailingZeroCount(uint value)
         {
 #if NET5_0 || NETCOREAPP3_1
 #pragma warning disable IDE0022
@@ -72,19 +76,33 @@ namespace System
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-                if (value == 0)
-                {
-                    return 32;
-                }
-                long v2 = -value;
-                var index = (((uint)v2 & value) * 0x077C_B531u) >> 27;
-
-                return Unsafe.AddByteOffset(
-                    ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn),
-                    (IntPtr)(int)index);
+                return MathIFallbacks.TrailingZeroCount(value);
             }
 #endif
         }
+
+        /// <summary>
+        /// Counts the consecutive zero bits on the right.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int TrailingZeroCount(ulong value)
+        {
+#if NET5_0 || NETCOREAPP3_1
+#pragma warning disable IDE0022
+            return BitOperations.TrailingZeroCount(value);
+#pragma warning restore IDE0022
+#else
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+                return MathIFallbacks.TrailingZeroCount(value);
+            }
+#endif
+        }
+
+        #endregion TrailingZeroCount
 
         /// <summary>
         /// Finds last 1's position from LSB.<br/>
@@ -92,6 +110,7 @@ namespace System
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static int LogBase2(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -100,17 +119,67 @@ namespace System
 #if NET5_0 || NETCOREAPP3_1
                 return BitOperations.Log2(value);
 #else
-                var v = value;
-                v |= v >> 1;
-                v |= v >> 2;
-                v |= v >> 4;
-                v |= v >> 8;
-                v |= v >> 16;
-                var index = (v * 0x07C4ACDDU) >> 27;
+                return MathIFallbacks.LogBase2(value);
+#endif
+            }
+        }
 
-                return Unsafe.AddByteOffset(
-                    ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn),
-                    (IntPtr)(int)index);
+        /// <summary>
+        /// Finds last 1's position from LSB.<br/>
+        /// When the value is 0, it returns 0.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int LogBase2(ulong value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                return BitOperations.Log2(value);
+#else
+                return MathIFallbacks.LogBase2(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Finds last 0's position from MSB.<br/>
+        /// When the value is 0, it returns 32.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int LeadingZeroCount(uint value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                return BitOperations.LeadingZeroCount(value);
+#else
+                return MathIFallbacks.LeadingZeroCount(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Finds last 0's position from MSB.<br/>
+        /// When the value is 0, it returns 32.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int LeadingZeroCount(ulong value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                return BitOperations.LeadingZeroCount(value);
+#else
+                return MathIFallbacks.LeadingZeroCount(value);
 #endif
             }
         }
@@ -120,6 +189,75 @@ namespace System
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static uint LargestPowerOfTwoLessThanOrEqualsTo(uint value) => 1u << LogBase2(value);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ExtractHighestSetBit(uint value)
+        {
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                return (uint)(0x8000_0000ul >> BitOperations.LeadingZeroCount(value));
+#else
+                return MathIFallbacks.ExtractHighestSetBit(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ExtractHighestSetBit(ulong value)
+        {
+            unchecked
+            {
+#if NET5_0 || NETCOREAPP3_1
+                return value == 0 ? 0 : (uint)(0x8000_0000_0000_0000ul >> BitOperations.LeadingZeroCount(value));
+#else
+                return MathIFallbacks.ExtractHighestSetBit(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Reverses the bit order of the specified <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ReverseBitOrder(uint value)
+        {
+            unchecked
+            {
+#if NET5_0
+                if (ArmBase.IsSupported)
+                {
+                    return ArmBase.ReverseElementBits(value);
+                }
+#endif
+                return MathIFallbacks.ReverseBitOrder(value);
+            }
+        }
+
+        /// <summary>
+        /// Reverses the bit order of the specified <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ReverseBitOrder(ulong value)
+        {
+            unchecked
+            {
+#if NET5_0
+                if (ArmBase.Arm64.IsSupported)
+                {
+                    return ArmBase.Arm64.ReverseElementBits(value);
+                }
+#endif
+                return MathIFallbacks.ReverseBitOrder(value);
+            }
+        }
     }
 }
