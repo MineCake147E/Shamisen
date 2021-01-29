@@ -19,12 +19,12 @@ namespace MonoAudio.Filters
         {
             unsafe
             {
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
                 var iState = internalStates[0];
-                Vector128<float> fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
-                Vector128<float> fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
-                Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
+                var iS = Vector128.Create(iState.X, iState.Y, 0, 0);
                 //Factor localization greatly improved performance
                 for (int i = 0; i < buffer.Length; i++)
                 {
@@ -51,12 +51,12 @@ namespace MonoAudio.Filters
         {
             unsafe
             {
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
                 var iState = internalStates[0];
-                Vector128<float> fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
-                Vector128<float> fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
-                Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
+                var iS = Vector128.Create(iState.X, iState.Y, 0, 0);
                 //Factor localization greatly improved performance
                 for (int i = 0; i < buffer.Length; i++)
                 {
@@ -80,6 +80,53 @@ namespace MonoAudio.Filters
             }
         }
 
+        private void ProcessStereoSse(Span<float> buffer)
+        {
+            unsafe
+            {
+                //Factor localization greatly improved performance
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var ist = internalStates;
+                var iStateL = ist[0];
+                var iStateR = ist[1];
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
+                var iSL = Vector128.Create(iStateL.X, iStateL.Y, 0, 0);
+                var iSR = Vector128.Create(iStateL.X, iStateL.Y, 0, 0);
+                var zero = Vector128<float>.Zero;
+                for (int i = 0; i < buffer.Length; i += 2)
+                {
+                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
+                    //Transformed for SIMD awareness.
+                    ref float vL = ref buffer[i];
+                    ref float vR = ref buffer[i + 1];
+                    var vvL = Vector128.CreateScalar(vL);
+                    var vvR = Vector128.CreateScalar(vR);
+                    vvL = Sse.Shuffle(vvL, vvL, 0b1100_0000);
+                    vvR = Sse.Shuffle(vvR, vvR, 0b1100_0000);
+                    vvL = Sse.Multiply(vvL, fB);
+                    vvR = Sse.Multiply(vvR, fB);
+                    vvL = Sse.Add(vvL, iSL);
+                    vvR = Sse.Add(vvR, iSR);
+                    var sum1L = vvL.GetElement(0);
+                    var sum1R = vvR.GetElement(0);
+                    vL = sum1L;
+                    vR = sum1R;
+                    var sum1Lv = Sse.Shuffle(vvL, vvL, 0b1111_0000);
+                    var sum1Rv = Sse.Shuffle(vvR, vvR, 0b1111_0000);
+                    sum1Lv = Sse.Multiply(sum1Lv, fA);
+                    sum1Rv = Sse.Multiply(sum1Rv, fA);
+                    var ffvL = Sse.Shuffle(vvL, vvL, 0b1111_1001);
+                    var ffvR = Sse.Shuffle(vvR, vvR, 0b1111_1001);
+                    iSL = Sse.Add(ffvL, sum1Lv);
+                    iSR = Sse.Add(ffvR, sum1Rv);
+                }
+                ist[0] = iStateL;
+                ist[1] = iStateR;
+            }
+        }
+
         private void ProcessMultipleSse(Span<float> buffer)
         {
             if ((internalStates.Length & 1) > 0)
@@ -97,11 +144,11 @@ namespace MonoAudio.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
                 Span<Vector128<float>> iState = stackalloc Vector128<float>[internalStates.Length];
-                Vector128<float> fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
-                Vector128<float> fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
                 //Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
                 for (int ch = 0; ch < iState.Length; ch++)
                 {
@@ -145,11 +192,11 @@ namespace MonoAudio.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
                 Span<Vector128<float>> iState = stackalloc Vector128<float>[internalStates.Length];
-                Vector128<float> fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
-                Vector128<float> fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
+                var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
+                var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
                 //Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
                 for (int ch = 0; ch < iState.Length; ch++)
                 {

@@ -134,7 +134,7 @@ namespace MonoAudio.Filters
                     ProcessMonaural(buffer);
                     break;
                 case 2:
-                    ProcessDouble(buffer);
+                    ProcessStereo(buffer);
                     break;
                 case 3:
                     ProcessTriple(buffer);
@@ -185,10 +185,10 @@ namespace MonoAudio.Filters
                     var aYR = iStateR.Y;
                     var aYC = iStateC.Y;
                     var aYLFE = iStateLFE.Y;
-                    iStateL = new Vector2(feedForwardL.Y + feedBackL.X + aYL, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + feedBackR.X + aYR, feedForwardR.Z + feedBackR.Y);
-                    iStateC = new Vector2(feedForwardC.Y + feedBackC.X + aYC, feedForwardC.Z + feedBackC.Y);
-                    iStateLFE = new Vector2(feedForwardLFE.Y + feedBackLFE.X + aYLFE, feedForwardLFE.Z + feedBackLFE.Y);
+                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
+                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
+                    iStateC = new Vector2(feedForwardC.Y + aYC + feedBackC.X, feedForwardC.Z + feedBackC.Y);
+                    iStateLFE = new Vector2(feedForwardLFE.Y + aYLFE + feedBackLFE.X, feedForwardLFE.Z + feedBackLFE.Y);
                 }
                 ist[0] = iStateL;
                 ist[1] = iStateR;
@@ -227,9 +227,9 @@ namespace MonoAudio.Filters
                     var aYL = iStateL.Y;   //Needed backup
                     var aYR = iStateR.Y;
                     var aYC = iStateC.Y;
-                    iStateL = new Vector2(feedForwardL.Y + feedBackL.X + aYL, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + feedBackR.X + aYR, feedForwardR.Z + feedBackR.Y);
-                    iStateC = new Vector2(feedForwardC.Y + feedBackC.X + aYC, feedForwardC.Z + feedBackC.Y);
+                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
+                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
+                    iStateC = new Vector2(feedForwardC.Y + aYC + feedBackC.X, feedForwardC.Z + feedBackC.Y);
                 }
                 ist[0] = iStateL;
                 ist[1] = iStateR;
@@ -237,7 +237,28 @@ namespace MonoAudio.Filters
             }
         }
 
-        private void ProcessDouble(Span<float> buffer)
+        private void ProcessStereo(Span<float> buffer)
+        {
+#if NET5_0 || NETCOREAPP3_1
+            if (enableIntrinsics)
+            {
+                /*if (Avx.IsSupported)
+                {
+                    ProcessMonauralAvx(buffer);
+                    return;
+                }
+                else */
+                if (Sse.IsSupported)
+                {
+                    ProcessStereoSse(buffer);
+                    return;
+                }
+            }
+#endif
+            ProcessStereoOrdinal(buffer);
+        }
+
+        private void ProcessStereoOrdinal(Span<float> buffer)
         {
             unsafe
             {
@@ -261,8 +282,8 @@ namespace MonoAudio.Filters
                     var feedBackR = sumR * factorA;
                     var aYL = iStateL.Y;   //Needed backup
                     var aYR = iStateR.Y;
-                    iStateL = new Vector2(feedForwardL.Y + feedBackL.X + aYL, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + feedBackR.X + aYR, feedForwardR.Z + feedBackR.Y);
+                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
+                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
                 }
                 ist[0] = iStateL;
                 ist[1] = iStateR;
@@ -309,7 +330,7 @@ namespace MonoAudio.Filters
                     var sum1 = v = feedForward.X + iState.X;
                     var feedBack = sum1 * factorA;  //Multiply in one go
                     var aY = iState.Y;   //Needed backup
-                    iState = new Vector2(feedForward.Y + feedBack.X + aY, feedForward.Z + feedBack.Y);
+                    iState = new Vector2(feedForward.Y + aY + feedBack.X, feedForward.Z + feedBack.Y);
                 }
                 internalStates[0] = iState;
             }
@@ -362,7 +383,7 @@ namespace MonoAudio.Filters
                         var sum1 = v = feedForward.X + a.X;
                         var feedBack = sum1 * factorA;  //Multiply in one go
                         var aY = a.Y;   //Needed backup
-                        a = new Vector2(feedForward.Y + feedBack.X + aY, feedForward.Z + feedBack.Y);
+                        a = new Vector2(feedForward.Y + aY + feedBack.X, feedForward.Z + feedBack.Y);
                     }
                 }
                 iState.CopyTo(internalStates.AsSpan());
