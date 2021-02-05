@@ -1,4 +1,4 @@
-![Shamisen Logo](Shamisen-Logo.png)
+![Shamisen Logo](Shamisen-Logo.svg)
 
 # Shamisen - .NET Audio Library
 
