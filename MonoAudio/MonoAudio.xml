@@ -7099,6 +7099,114 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
+        <member name="T:MonoAudio.Formats.HalfPrecisionSampleFormat">
+            <summary>
+            Represents a format of a half-precision sample source.
+            </summary>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:MonoAudio.Formats.HalfPrecisionSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Formats.HalfPrecisionSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Formats.HalfPrecisionSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:MonoAudio.Formats.HalfPrecisionSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Formats.HalfPrecisionSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:MonoAudio.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Formats.HalfPrecisionSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:MonoAudio.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Half"/>s.
+            </value>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.Equals(MonoAudio.Formats.HalfPrecisionSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.Equals(MonoAudio.IAudioFormat{System.Half})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.op_Equality(MonoAudio.Formats.HalfPrecisionSampleFormat,MonoAudio.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:MonoAudio.Formats.HalfPrecisionSampleFormat.op_Inequality(MonoAudio.Formats.HalfPrecisionSampleFormat,MonoAudio.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:MonoAudio.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MonoAudio.Formats.IChannelMaskedFormat">
+            <summary>
+            Defines a base structure of an <see cref="T:MonoAudio.IAudioFormat`1"/> that has an information of channel masks.
+            </summary>
+        </member>
+        <member name="P:MonoAudio.Formats.IChannelMaskedFormat.ChannelCombination">
+            <summary>
+            Gets the value which indicates how the speakers are used.
+            </summary>
+        </member>
         <member name="T:MonoAudio.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.<br/>
@@ -7134,16 +7242,6 @@
             <value>
             The bit depth.
             </value>
-        </member>
-        <member name="T:MonoAudio.Formats.IChannelMaskedFormat">
-            <summary>
-            Defines a base structure of an <see cref="T:MonoAudio.IAudioFormat`1"/> that has an information of channel masks.
-            </summary>
-        </member>
-        <member name="P:MonoAudio.Formats.IChannelMaskedFormat.ChannelCombination">
-            <summary>
-            Gets the value which indicates how the speakers are used.
-            </summary>
         </member>
         <member name="T:MonoAudio.IInterleavedAudioFormat`1">
             <summary>
@@ -8545,135 +8643,7 @@
             <typeparam name="TFormat">The format of audio data.</typeparam>
             <seealso cref="T:MonoAudio.IAudioSource`2" />
         </member>
-        <member name="M:MonoAudio.IReadableAudioSource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="T:MonoAudio.IAsyncReadableAudioSource`2">
-            <summary>
-            Defines a base infrastructure of an asynchronously readable audio source.
-            </summary>
-            <typeparam name="TSample">The type of audio data.</typeparam>
-            <typeparam name="TFormat">The format of audio data.</typeparam>
-            <seealso cref="T:MonoAudio.IAudioSource`2" />
-        </member>
-        <member name="M:MonoAudio.IAsyncReadableAudioSource`2.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the audio to the specified buffer asynchronously.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="T:MonoAudio.ISampleSource">
-            <summary>
-            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio source.
-            </summary>
-            <seealso cref="T:MonoAudio.IReadableAudioSource`2" />
-        </member>
-        <member name="T:MonoAudio.ISampleAggregator">
-            <summary>
-            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio filter.
-            </summary>
-            <seealso cref="T:MonoAudio.IAggregator`3" />
-        </member>
-        <member name="T:MonoAudio.IWaveSource">
-            <summary>
-            Defines a base infrastructure of a raw audio data source.
-            </summary>
-            <seealso cref="T:MonoAudio.IReadableAudioSource`2" />
-        </member>
-        <member name="T:MonoAudio.IAsyncWaveSource">
-            <summary>
-            Defines a base infrastructure of an asynchronously-readable raw audio data source.
-            </summary>
-            <seealso cref="T:MonoAudio.IAsyncReadableAudioSource`2" />
-        </member>
-        <member name="T:MonoAudio.IWaveAggregator">
-            <summary>
-            Defines a base infrastructure of a raw audio data filter.
-            </summary>
-            <seealso cref="T:MonoAudio.IAggregator`3" />
-        </member>
-        <member name="T:MonoAudio.Mathematics.Fraction32">
-            <summary>
-            Represents a 32bit/32bit fractions.
-            Supports high-precision arithmetics over fractions.
-            Its total size is 64bit.
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Mathematics.Fraction32.Numerator">
-            <summary>
-            The numerator.
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Mathematics.Fraction32.Denominator">
-            <summary>
-            The denominator.
-            </summary>
-        </member>
-        <member name="T:MonoAudio.Mathematics.MathHelper">
-            <summary>
-            Helps some calculations.
-            </summary>
-        </member>
-        <member name="F:MonoAudio.Mathematics.MathHelper.DoublePI">
-            <summary>
-            The double pi.
-            </summary>
-        </member>
-        <member name="M:MonoAudio.Mathematics.MathHelper.MinimizeDivisor(System.Int32,System.Int32)">
-            <summary>
-            Minimizes the divisor.
-            </summary>
-            <param name="mul">The multiplier.</param>
-            <param name="div">The divisor.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
-        </member>
-        <member name="M:MonoAudio.Mathematics.MathHelper.MinimizeDivisor(System.UInt64,System.UInt64)">
-            <summary>
-            Minimizes the divisor.
-            </summary>
-            <param name="mul">The multiplier.</param>
-            <param name="div">The divisor.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
-        </member>
-        <member name="M:MonoAudio.Mathematics.MathHelper.Gcd(System.Int32,System.Int32)">
-            <summary>
-            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
-            </summary>
-            <param name="a">a.</param>
-            <param name="b">The b.</param>
-            <returns></returns>
-        </member>
-        <member name="M:MonoAudio.Mathematics.MathHelper.Gcd(System.UInt64,System.UInt64)">
-            <summary>
-            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
-            </summary>
-            <param name="a">a.</param>
-            <param name="b">The b.</param>
-            <returns></returns>
-        </member>
-        <member name="T:MonoAudio.Modifier.FractionalSeekSupport">
-            <summary>
-            Implements an <see cref="T:MonoAudio.ISkipSupport"/> with fraction and source.
-            </summary>
-            <seealso cref="T:MonoAudio.ISkipSupport" />
-        </member>
-        <member name="M:MonoAudio.Modifier.FractionalSeekSupport.#ctor(MonoAudio.ISeekSupport,System.UInt64,System.UInt64)">
-            <summary>
-            Initializes a new instance of the <see cref="T:MonoAudio.Modifier.FractionalSeekSupport"/> struct.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="divisor">The divisor.</param>
-            <param name="multiplier">The multiplier.</param>
-            <exception cref="T:System.ArgumentNullException">source</exception>
-        </member>
-        <member name="M:MonoAudio.Modifier.FractionalSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+        <membestem.IO.SeekOrigin)">
             <summary>
             Seeks the <see cref="T:MonoAudio.IAudioSource`2" /> with the specified offset in frames.
             </summary>
@@ -9310,12 +9280,12 @@
         </member>
         <member name="F:MonoAudio.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="F:MonoAudio.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="T:MonoAudio.Pipeline.AudioPipe`2">
@@ -9324,6 +9294,48 @@
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="T:MonoAudio.Pipeline.AudioSourceProperties`2">
+            <summary>
+            Represents properties of corresponding <see cref="T:MonoAudio.IAudioSource`2"/>
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="M:MonoAudio.Pipeline.AudioSourceProperties`2.#ctor(MonoAudio.IAudioSource{`0,`1},System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MonoAudio.Pipeline.AudioSourceProperties`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="preferredLatency">The preferred latency.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:MonoAudio.Pipeline.AudioSourceProperties`2.PreferredLatency">
+            <summary>
+            Gets the preferred latency in seconds.<br/>
+            0, negative values(including <see cref="F:System.Double.NegativeInfinity"/>), and <see cref="F:System.Double.NaN"/> means the source is dynamic.<br/>
+            <see cref="F:System.Double.PositiveInfinity"/> means the source is available locally(inside RAM).<br/>
+            Otherwise, the source is either available online (over the network), decoding or processing another source, or loading data from a high-latency storage(like HDD).
+            </summary>
+            <value>
+            The preferred latency.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Pipeline.AudioSourceProperties`2.IsStatic">
+            <summary>
+            Gets a value indicating whether the source is static.
+            </summary>
+            <value>
+              <c>true</c> if the source is static; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:MonoAudio.Pipeline.AudioSourceProperties`2.IsDynamic">
+            <summary>
+            Gets a value indicating whether the source is dynamic.
+            </summary>
+            <value>
+              <c>true</c> if the source is dynamic; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="T:MonoAudio.Pipeline.IAudioPipelineComponent`2">
             <summary>
@@ -12544,12 +12556,6 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
@@ -12716,7 +12722,12 @@
         </member>
     </members>
 </doc>
-aram>
+<member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
             <returns>
             The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
             </returns>

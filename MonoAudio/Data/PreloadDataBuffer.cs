@@ -83,9 +83,9 @@ namespace MonoAudio.Data
             bufferSize = Math.Max(destination.Length, bufferSize);
             int written = 0;
             var remBuffer = destination;
-#pragma warning disable IDE0068 // 推奨される dispose パターンを使用する
+#pragma warning disable IDE0068
             while (!remBuffer.IsEmpty && buffersFilled.TryPeek(out var internalBuffer))
-#pragma warning restore IDE0068 // 推奨される dispose パターンを使用する
+#pragma warning restore IDE0068
             {
                 if (!internalBuffer.IsFilled)
                 {
