@@ -1,4 +1,4 @@
-# Contributing [MonoAudio](https://github.com/MineCake147E/MonoAudio/)
+# Contributing [Shamisen](https://github.com/MineCake147E/Shamisen/)
 
 ## Issues
 - The Issues should be described in English or Japanese.
@@ -6,16 +6,16 @@
   - When an issue is written in another language, the owner **MUST** close it as invalid one.
 ### Found Bugs
 - Write some minimal representation code first.
-- Create a new Issue with [Bug Report](https://github.com/MineCake147E/MonoAudio/issues/new?assignees=&labels=&template=bug_report.md&title=) Template
+- Create a new Issue with [Bug Report](https://github.com/MineCake147E/Shamisen/issues/new?assignees=&labels=&template=bug_report.md&title=) Template
 
 ### Feature Request(WIP)
 - Make sure your proposal doesn't collide any existing features.
   - Feel free to suggest some syntax sugar like fatures.
-- Create a new Issue with [Feature Request](https://github.com/MineCake147E/MonoAudio/issues/new?assignees=&labels=&template=feature_request.md&title=) Template.
+- Create a new Issue with [Feature Request](https://github.com/MineCake147E/Shamisen/issues/new?assignees=&labels=&template=feature_request.md&title=) Template.
 
 ## Coding(WIP)
 - You should not commit directly to branches.
-- Use [Pull Request](https://github.com/MineCake147E/MonoAudio/compare) instead.
+- Use [Pull Request](https://github.com/MineCake147E/Shamisen/compare) instead.
 ### Code Rules(WIP)
 #### C\#
 - ***DO NOT USE ANY ~~EXTREMELY SUCKING~~ `T[] buffer, int offset, int count` patterns!***

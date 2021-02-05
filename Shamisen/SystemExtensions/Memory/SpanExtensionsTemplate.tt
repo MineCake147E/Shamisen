@@ -1,0 +1,183 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#    var typesVectorable = new string[]{"float","double","byte","ushort","uint","ulong","sbyte","short","int","long"};#>
+<#    var typesMemoryReadable = new string[]{"Span","Memory","ReadOnlySpan","ReadOnlyMemory"};#>
+<#    var typesMemoryWritable = new string[]{"Span","Memory"};#>
+<#    var typesMemoryReadOnly = new string[]{"ReadOnlySpan","ReadOnlyMemory"};#>
+<#    var typesMemoryHeapable = new string[]{"Memory","ReadOnlyMemory"};#>
+<#    var typesMemoryStackOnly = new string[]{"Span","ReadOnlySpan"};#>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using DivideSharp;
+using Shamisen;
+
+namespace System
+{
+    /// <summary>
+    /// Provides some extension functions.
+    /// </summary>
+    public static partial class SpanExtensions
+    {
+#region FastFill
+<#
+    foreach(var item in typesVectorable){#>
+		/// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void FastFill(this Span<<#=            item#>> span, <#=            item#> value = default)
+        {
+            if(Vector<<#=            item#>>.Count > span.Length)
+			{
+				span.Fill(value);
+			}
+			else
+			{
+				var spanV = MemoryMarshal.Cast<<#=            item#>, Vector<<#=            item#>>>(span);
+				spanV.Fill(new Vector<<#=            item#>>(value));
+				var spanR = span.Slice(spanV.Length * Vector<<#=            item#>>.Count);
+				spanR.Fill(value);
+			}
+        }
+<#
+    }#>
+#endregion FastFill
+<#
+    foreach(var item in typesMemoryReadable)
+    {
+        var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
+#>
+#region Extensions for <#=            item#><T>
+        /// <summary>
+        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
+        /// <param name="channels">The align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, int channels) => <#=nameCamel#>.Slice(0, MathI.FloorStep(<#=nameCamel#>.Length, channels));
+
+        /// <summary>
+        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, UInt32Divisor channelsDivisor) => <#=nameCamel#>.Slice(0, (int)channelsDivisor.Floor((uint)<#=nameCamel#>.Length));
+
+        /// <summary>
+        /// Slices the <paramref name="<#=            nameCamel#>"/> with the specified length.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="<#=            nameCamel#>">The <see cref="<#=            item#>{T}"/> to slice.</param>
+        /// <param name="length">The length to read.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static <#=            item#><T> SliceWhile<T>(this <#=            item#><T> <#=            nameCamel#>, int length) => <#=            nameCamel#>.Slice(0, length);
+<#
+        foreach(var item2 in typesMemoryReadable)
+        {
+#>
+
+        /// <summary>
+        /// Slices the <paramref name="<#=                nameCamel#>"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="<#=                item#>{T}"/></typeparam>
+        /// <param name="<#=                nameCamel#>">The <see cref="<#=                item#>{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static <#=                item#><T> AlignWith<T>(this <#=                item#><T> <#=                nameCamel#>, <#=                item2#><T> criterion) => <#=                nameCamel#>.Slice(0, criterion.Length);
+
+<#
+        }#>
+#endregion Extensions for <#=            item#><T>
+<#
+    }#>
+#region CopyTo alternatives
+<#
+    foreach(var item in typesMemoryHeapable)
+    {
+        var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
+#>
+        /// <summary>
+        /// Copies the contents of this <see cref="<#=            item#>{T}"/> into a destination <see cref="Span{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Span{T}"/></typeparam>
+        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo<T>(this <#=            item#><T> source, Span<T> destination) => source.Span.CopyTo(destination);
+
+<#
+    }#>
+<#
+    foreach(var item in typesMemoryStackOnly)
+    {
+        var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
+#>
+        /// <summary>
+        /// Copies the contents of this <see cref="<#=            item#>{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
+        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo<T>(this <#=            item#><T> source, Memory<T> destination) => source.CopyTo(destination.Span);
+
+<#
+    }#>
+#endregion CopyTo alternatives
+#region TryCopyTo alternatives
+<#
+    foreach(var item in typesMemoryHeapable)
+    {
+        var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
+#>
+        /// <summary>
+        /// Attempts to copy the current <see cref="<#=            item#>{T}"/> to a destination <see cref="Span{T}"/> and returns a value that indicates whether the copy operation succeeded.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Span{T}"/></typeparam>
+        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="destination">The target of the copy operation.</param>
+        /// <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryCopyTo<T>(this <#=            item#><T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
+
+<#
+    }#>
+<#
+    foreach(var item in typesMemoryStackOnly)
+    {
+        var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
+#>
+        /// <summary>
+        /// Copies the contents of current <see cref="<#=            item#>{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
+        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="destination">The target of the copy operation.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryCopyTo<T>(this <#=            item#><T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
+
+<#
+    }#>
+#endregion TryCopyTo alternatives
+    }
+}

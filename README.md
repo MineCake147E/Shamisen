@@ -1,16 +1,20 @@
-![MonoAudio Logo](MonoAudio-Logo.png)
+![Shamisen Logo](Shamisen-Logo.png)
 
-# MonoAudio - .NET Audio Library
+# Shamisen - .NET Audio Library
+
 A Cross-Platform Audio Library for:
-+ .NET 5
-+ .NET Core 3.1
-+ .NET Standard 2.1
-+ .NET Standard 2.0
 
-#### Usage of MonoAudio
-- An audio output abstraction layer `MonoAudio.Core`
+- .NET 5
+- .NET Core 3.1
+- .NET Standard 2.1
+- .NET Standard 2.0
+
+#### Usage of Shamisen
+
+- An audio output abstraction layer `Shamisen.Core`
 
 ### Currently implemented features
+
 - Audio outputs
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
@@ -31,21 +35,24 @@ A Cross-Platform Audio Library for:
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.
 
 ### Dependencies and system requirements
+
 - The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
   - Divides by "almost constant" number, about 2x faster than ordinal division(idiv instruction)!
   - Implements the same technology that is used in `RyuJIT` constant division optimization, ported to C#!
   - Improved `SplineResampler`'s performance greatly, about **1.5x** faster on Stereo!
-- Currently, ***Unity IS NOT SUPPORTED AT ALL!***
+- Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
   - Because Unity uses older version of `Mono`.
 - Faster resampling requires `.NET Core` or later version of `Mono`.
   - Unfortunately, `.NET Framework` does not support Fast `Span<T>`s.
 - The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
-### Useful external library for MonoAudio
+### Useful external library for Shamisen
+
 - [CSCodec](https://github.com/MineCake147E/CSCodec) that supports more signal processing like FFT and DWT.
 
 ### Features under development
+
 - Xamarin.Android `AudioTrack` output
 - Xamarin.iOS `AudioUnit` output
 - OpenTK `AL` output

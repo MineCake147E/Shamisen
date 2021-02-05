@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net472</TargetFrameworks>
+        <AssemblyName>Shamisen.Benchmarks.Running</AssemblyName>
+        <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Shamisen.Benchmarks\Shamisen.Benchmarks.csproj" />
+        <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>Shamisen.IO</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+      <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+      <DocumentationFile>Shamisen.IO.CSCore.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+      <DocumentationFile>Shamisen.IO.CSCore.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CSCore" Version="1.2.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+</Project>
