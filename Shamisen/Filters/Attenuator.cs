@@ -7,7 +7,7 @@ namespace Shamisen.Filters
     /// <summary>
     /// Modifies the velocity of <see cref="Source"/>
     /// </summary>
-    /// <seealso cref="Filters.IAudioFilter{TSample, TFormat}" />
+    /// <seealso cref="IAudioFilter{TSample, TFormat}" />
     public sealed class Attenuator : IAudioFilter<float, SampleFormat>
     {
         /// <summary>
@@ -48,7 +48,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Length { get => Source.Length; }
+        public ulong? Length => Source.Length;
 
         /// <summary>
         /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -57,7 +57,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? TotalLength { get => Source.TotalLength; }
+        public ulong? TotalLength => Source.TotalLength;
 
         /// <summary>
         /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -66,7 +66,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Position { get => Source.Position; }
+        public ulong? Position => Source.Position;
 
         /// <summary>
         /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -74,7 +74,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => Source.SkipSupport;
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -82,7 +82,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => Source.SeekSupport;
 
         /// <summary>
         /// Reads the specified buffer.
@@ -91,7 +91,7 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public ReadResult Read(Span<float> buffer)
         {
-            ReadResult rr = Source.Read(buffer);
+            var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
             var r = rr.Length;
             buffer.Slice(0, r).FastScalarMultiply(Scale);

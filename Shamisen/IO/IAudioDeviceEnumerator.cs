@@ -15,5 +15,12 @@ namespace Shamisen.IO
         /// <param name="dataFlow">The <see cref="DataFlow"/> kind to enumerate devices of.</param>
         /// <returns>The <see cref="IEnumerable{T}"/> of audio devices.</returns>
         IEnumerable<IAudioDevice> EnumerateDevices(DataFlow dataFlow);
+
+        /// <summary>
+        /// Enumerates devices of specified <paramref name="dataFlow"/> asynchronously.
+        /// </summary>
+        /// <param name="dataFlow">The <see cref="DataFlow"/> kind to enumerate devices of.</param>
+        /// <returns>The <see cref="IAsyncEnumerable{T}"/> of audio devices.</returns>
+        IAsyncEnumerable<IAudioDevice> EnumerableDevicesAsync(DataFlow dataFlow);
     }
 }

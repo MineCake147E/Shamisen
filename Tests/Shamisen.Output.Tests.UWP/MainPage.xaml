@@ -6,10 +6,40 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Unloaded="Page_Unloaded">
-
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Unloaded="Page_Unloaded" Loaded="Page_LoadedAsync">
     <Grid>
-        <Button Content="Button" Height="90" Margin="162,164,0,0" VerticalAlignment="Top" Width="212" Click="Button_ClickAsync" />
-        <TextBlock x:Name="TextBlock1" Margin="392,10,10,10" Text="TextBlock" TextWrapping="Wrap" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Width="Auto">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="BInit" Content="Initialize" Margin="10" Click="BInit_ClickAsync" />
+                <Button x:Name="BPlay" Content="Play" Click="Button_ClickAsync" Margin="10" />
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Path: "  Margin="10" />
+                <TextBox Grid.Column="1" x:Name="TBPath" Margin="10" />
+                <Button Grid.Column="2" x:Name="BSelect" Content="..." Margin="10" Click="BSelect_ClickAsync" />
+            </Grid>
+            <Slider x:Name="SliderFrequency" Margin="10" ValueChanged="Slider_ValueChanged" Maximum="22050" Value="2000">
+                <Slider.Header>
+                    <TextBlock>
+                        <Run Text="Frequency: " />
+                        <Run Text="{Binding Value, ElementName=SliderFrequency}" />
+                        <Run Text="[Hz]" />
+                    </TextBlock>
+                </Slider.Header>
+            </Slider>
+        </StackPanel>
+        <TextBox x:Name="TextBlock1" Grid.Column="1" Margin="10" Width="Auto" Height="Auto" Text="TextBlock" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" />
     </Grid>
 </Page>

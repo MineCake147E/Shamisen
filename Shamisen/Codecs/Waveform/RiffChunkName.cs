@@ -85,15 +85,7 @@ namespace Shamisen.Codecs.Waveform
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        public override int GetHashCode()
-        {
-            var hashCode = 2137603762;
-            hashCode = (hashCode * -1521134295) + b0.GetHashCode();
-            hashCode = (hashCode * -1521134295) + b1.GetHashCode();
-            hashCode = (hashCode * -1521134295) + b2.GetHashCode();
-            hashCode = (hashCode * -1521134295) + b3.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(b0, b1, b2, b3);
 
         /// <summary>
         /// Converts to string.

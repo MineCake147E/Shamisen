@@ -117,10 +117,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             return buffer.Length;
         }
 
-        private static int Convert(float srcval)
-        {
-            return (int)Math.Min(int.MaxValue, Math.Max(srcval * Multiplier, int.MinValue));
-        }
+        private static int Convert(float srcval) => (int)Math.Min(int.MaxValue, Math.Max(srcval * Multiplier, int.MinValue));
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

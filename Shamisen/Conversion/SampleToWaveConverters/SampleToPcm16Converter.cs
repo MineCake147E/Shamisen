@@ -1,9 +1,20 @@
 ﻿using Shamisen.Extensions;
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
 using System.Text;
+using Shamisen.Optimization;
+using System.Runtime.CompilerServices;
+
+#if NET5_0 || NETCOREAPP3_1
+
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+#endif
 
 namespace Shamisen.Conversion.SampleToWaveConverters
 {
@@ -11,7 +22,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     /// Converts samples to 16-bit PCM.
     /// </summary>
     /// <seealso cref="SampleToWaveConverterBase" />
-    public sealed class SampleToPcm16Converter : SampleToWaveConverterBase
+    public sealed partial class SampleToPcm16Converter : SampleToWaveConverterBase
     {
         private const float Multiplier = 32768.0f;
         private const int ActualBytesPerSample = sizeof(short);
@@ -22,6 +33,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private Memory<float> dsmAccumulator;
         private int dsmChannelPointer = 0;
         private Memory<float> readBuffer;
+
+        private readonly bool enableIntrinsics;
+        private readonly X86Intrinsics enabledX86Intrinsics;
+        private readonly ArmIntrinsics enabledArmIntrinsics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SampleToPcm16Converter"/> class.
@@ -40,6 +55,23 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             AccuracyMode = accuracyNeeded;
             Endianness = endianness;
             readBuffer = new float[ActualBufferMax];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SampleToPcm16Converter"/> class.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="enableIntrinsics"></param>
+        /// <param name="enabledX86Intrinsics"></param>
+        /// <param name="enabledArmIntrinsics"></param>
+        /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
+        /// <param name="endianness">The destination endianness.</param>
+        internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
+            : this(source, accuracyNeeded, endianness)
+        {
+            this.enableIntrinsics = enableIntrinsics;
+            this.enabledX86Intrinsics = enabledX86Intrinsics;
+            this.enabledArmIntrinsics = enabledArmIntrinsics;
         }
 
         /// <summary>
@@ -77,7 +109,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </returns>
         public override ReadResult Read(Span<byte> buffer)
         {
-            Span<short> outBuffer = MemoryMarshal.Cast<byte, short>(buffer).SliceAlign(Format.Channels);
+            int channels = Format.Channels;
+            Span<short> outBuffer = MemoryMarshal.Cast<byte, short>(buffer).SliceAlign(channels);
             var cursor = outBuffer;
             while (cursor.Length > 0)
             {
@@ -85,11 +118,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var rr = Source.Read(reader.Span);
                 if (rr.HasNoData) return buffer.Length - cursor.Length;
                 int u = rr.Length;
-                var wrote = reader.Span.Slice(0, u).SliceAlign(Format.Channels);
+                var wrote = reader.Span.Slice(0, u).SliceAlign(channels);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
+                {
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
+                }
+
                 if (AccuracyMode)
                 {
                     var dsmAcc = dsmAccumulator.Span;
@@ -106,11 +142,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 }
                 else
                 {
-                    for (int i = 0; i < dest.Length; i++)
-                    {
-                        var v = Convert(wrote[i]);
-                        dest[i] = IsEndiannessConversionRequired ? BinaryPrimitives.ReverseEndianness(v) : v;
-                    }
+                    ProcessNormal(wrote, dest);
                 }
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
@@ -118,10 +150,66 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             return outBuffer.Length * sizeof(ushort);
         }
 
-        private static short Convert(float srcval)
+        private void ProcessNormal(Span<float> wrote, Span<short> dest)
         {
-            return (short)Math.Min(short.MaxValue, Math.Max(srcval * Multiplier, short.MinValue));
+            if (IsEndiannessConversionRequired)
+            {
+#if NET5_0 || NETCOREAPP3_1
+                if (enableIntrinsics)
+                {
+                    if (Avx2.IsSupported)
+                    {
+                        //
+                    }
+                    if (Ssse3.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Ssse3))
+                    {
+                        ProcessReversedSsse3(wrote, dest);
+                        return;
+                    }
+                }
+#endif
+                ProcessReversedOrdinal(wrote, dest);
+            }
+            else
+            {
+#if NET5_0 || NETCOREAPP3_1
+                if (enableIntrinsics)
+                {
+                    if (Avx2.IsSupported)
+                    {
+                        //
+                    }
+                    if (Sse2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse2))
+                    {
+                        ProcessNormalSse2(wrote, dest);
+                        return;
+                    }
+                }
+#endif
+                ProcessNormalOrdinal(wrote, dest);
+            }
         }
+
+        private static void ProcessReversedOrdinal(Span<float> wrote, Span<short> dest)
+        {
+            for (int i = 0; i < dest.Length; i++)
+            {
+                var v = Convert(wrote[i]);
+                dest[i] = BinaryPrimitives.ReverseEndianness(v);
+            }
+        }
+
+        private static void ProcessNormalOrdinal(Span<float> wrote, Span<short> dest)
+        {
+            for (int i = 0; i < dest.Length; i++)
+            {
+                var v = (short)Math.Min(short.MaxValue, Math.Max(wrote[i] * Multiplier, short.MinValue));
+                dest[i] = v;
+            }
+        }
+
+        //[MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static short Convert(float srcval) => (short)Math.Min(short.MaxValue, Math.Max(srcval * Multiplier, short.MinValue));
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

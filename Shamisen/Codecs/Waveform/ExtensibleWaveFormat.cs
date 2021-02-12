@@ -172,16 +172,7 @@ namespace Shamisen.Codecs.Waveform
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -1566803767;
-            hashCode = hashCode * -1521134295 + EqualityComparer<StandardWaveFormat>.Default.GetHashCode(Format);
-            hashCode = hashCode * -1521134295 + ExtensionSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + ValidBitsPerSample.GetHashCode();
-            hashCode = hashCode * -1521134295 + ChannelMask.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(SubFormat);
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Format, ExtensionSize, ValidBitsPerSample, ChannelMask, SubFormat);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="ExtensibleWaveFormat"/> objects are equal.

@@ -105,10 +105,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is WaveFormat format && Equals(format);
-        }
+        public override bool Equals(object? obj) => obj is WaveFormat format && Equals(format);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -117,15 +114,12 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(WaveFormat other)
-        {
-            return BlockSize == other.BlockSize &&
+        public bool Equals(WaveFormat other) => BlockSize == other.BlockSize &&
                    Encoding == other.Encoding &&
                    ExtraSize == other.ExtraSize &&
                    Channels == other.Channels &&
                    SampleRate == other.SampleRate &&
                    BitDepth == other.BitDepth;
-        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -142,17 +136,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -16010822;
-            hashCode = hashCode * -1521134295 + BlockSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + Encoding.GetHashCode();
-            hashCode = hashCode * -1521134295 + ExtraSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitDepth.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(BlockSize, Encoding, ExtraSize, Channels, SampleRate, BitDepth);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="WaveFormat"/> objects are equal.

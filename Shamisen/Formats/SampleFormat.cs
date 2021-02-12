@@ -69,48 +69,33 @@ namespace Shamisen
         /// <param name="obj">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is SampleFormat format && Equals(format);
-        }
+        public override bool Equals(object? obj) => obj is SampleFormat format && Equals(format);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(SampleFormat other)
-        {
-            return Channels == other.Channels &&
+        public bool Equals(SampleFormat other) => Channels == other.Channels &&
                    SampleRate == other.SampleRate;
-        }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(IAudioFormat<float>? other)
-        {
-            return !(other is null) && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
-        }
+        public bool Equals(IAudioFormat<float>? other) => !(other is null) && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
 
         /// <summary>
-		/// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are equal.
-		/// </summary>
-		/// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
-		/// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
-		/// <returns>
-		///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-		/// </returns>
+        /// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are equal.
+        /// </summary>
+        /// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
+        /// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
+        /// <returns>
+        ///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator ==(SampleFormat left, SampleFormat right)
         {
             return left.Equals(right);

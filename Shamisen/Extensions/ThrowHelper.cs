@@ -16,9 +16,6 @@ namespace System
         /// <typeparam name="T">The type of exception.</typeparam>
         /// <param name="exception">The exception.</param>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void Throw<T>(this T exception) where T : Exception
-        {
-            throw exception;
-        }
+        public static void Throw<T>(this T exception) where T : Exception => throw exception;
     }
 }

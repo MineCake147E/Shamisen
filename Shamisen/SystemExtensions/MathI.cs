@@ -58,6 +58,18 @@ namespace Shamisen
             return value & ~h;
         }
 
+        #region ReadResult functions
+
+        /// <summary>
+        /// Determines the maximum of the parameters.
+        /// </summary>
+        /// <param name="a">The value a.</param>
+        /// <param name="b">The value b.</param>
+        /// <returns></returns>
+        public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
+
+        #endregion ReadResult functions
+
         #region TrailingZeroCount
 
         /// <summary>

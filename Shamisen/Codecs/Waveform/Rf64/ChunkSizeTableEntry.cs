@@ -58,13 +58,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            int hashCode = 1414532747;
-            hashCode = hashCode * -1521134295 + Id.GetHashCode();
-            hashCode = hashCode * -1521134295 + ChunkSize.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Id, ChunkSize);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="ChunkSizeTableEntry"/> objects are equal.

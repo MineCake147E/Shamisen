@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using CSCore.CoreAudioAPI;
 using CSCore.SoundOut;
+
 using Shamisen.IO.Devices;
+
 using CCDataFlow = CSCore.CoreAudioAPI.DataFlow;
 
 namespace Shamisen.IO
@@ -16,6 +19,24 @@ namespace Shamisen.IO
     /// <seealso cref="IAudioDeviceEnumerator" />
     public sealed class CSCoreDeviceEnumerator : IAudioDeviceEnumerator
     {
+        /// <summary>
+        /// Enumerates devices of specified <paramref name="dataFlow" /> asynchronously.
+        /// </summary>
+        /// <param name="dataFlow">The <see cref="DataFlow" /> kind to enumerate devices of.</param>
+        /// <returns>
+        /// The <see cref="IAsyncEnumerable{T}" /> of audio devices.
+        /// </returns>
+#pragma warning disable CS1998 //
+
+        public async IAsyncEnumerable<IAudioDevice> EnumerableDevicesAsync(DataFlow dataFlow)
+#pragma warning restore CS1998 //
+        {
+            foreach (var item in EnumerateDevices(dataFlow))
+            {
+                yield return item;
+            }
+        }
+
         /// <summary>
         /// Enumerates devices of specified <paramref name="dataFlow" />.
         /// </summary>

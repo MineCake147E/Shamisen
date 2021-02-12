@@ -73,20 +73,14 @@ namespace Shamisen.Formats
         /// <param name="obj">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is HalfPrecisionSampleFormat format && Equals(format);
-        }
+        public override bool Equals(object? obj) => obj is HalfPrecisionSampleFormat format && Equals(format);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(HalfPrecisionSampleFormat other)
-        {
-            return Channels == other.Channels &&
+        public bool Equals(HalfPrecisionSampleFormat other) => Channels == other.Channels &&
                    SampleRate == other.SampleRate;
-        }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -97,10 +91,7 @@ namespace Shamisen.Formats
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Channels, SampleRate);
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="HalfPrecisionSampleFormat"/> objects are equal.

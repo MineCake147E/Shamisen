@@ -15,24 +15,16 @@ namespace Shamisen.Pipeline
         where TSample : unmanaged where TFormat : IAudioFormat<TSample>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AudioSourceProperties{TSample, TFormat}"/> class.
+        /// Gets a value indicating whether the source is dynamic.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="preferredLatency">The preferred latency.</param>
-        /// <exception cref="ArgumentNullException">source</exception>
-        public AudioSourceProperties(IAudioSource<TSample, TFormat> source, double preferredLatency = 1.0)
-        {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            PreferredLatency = preferredLatency;
-        }
-
-        private IAudioSource<TSample, TFormat> Source { get; }
+        /// <value>
+        ///   <c>true</c> if the source is dynamic; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsDynamic { get; }
 
         /// <summary>
         /// Gets the preferred latency in seconds.<br/>
-        /// 0, negative values(including <see cref="double.NegativeInfinity"/>), and <see cref="double.NaN"/> means the source is dynamic.<br/>
-        /// <see cref="double.PositiveInfinity"/> means the source is available locally(inside RAM).<br/>
-        /// Otherwise, the source is either available online (over the network), decoding or processing another source, or loading data from a high-latency storage(like HDD).
+        /// Only positive non-infinity values are accepted.
         /// </summary>
         /// <value>
         /// The preferred latency.
@@ -40,19 +32,23 @@ namespace Shamisen.Pipeline
         public double PreferredLatency { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the source is static.
+        /// Initializes a new instance of the <see cref="AudioSourceProperties{TSample, TFormat}"/> class.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if the source is static; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsStatic => double.IsPositiveInfinity(PreferredLatency);
+        /// <param name="source">The source.</param>
+        /// <param name="isDynamic">The value which indicates whether the source is either synthetic or changed in real-time, or not.</param>
+        /// <param name="preferredLatency">The preferred latency.</param>
+        /// <exception cref="ArgumentNullException">source</exception>
+        public AudioSourceProperties(IAudioSource<TSample, TFormat> source, bool isDynamic, double preferredLatency = 1.0)
+        {
+            _ = source ?? throw new ArgumentNullException(nameof(source));
+            PreferredLatency = double.IsNaN(preferredLatency) || double.IsInfinity(preferredLatency) || preferredLatency <= 0 ? throw new ArgumentOutOfRangeException(nameof(preferredLatency), "Only positive non-infinity values are accepted!") : preferredLatency;
+            IsDynamic = isDynamic;
+        }
 
         /// <summary>
-        /// Gets a value indicating whether the source is dynamic.
+        /// Gets the size of the required buffer.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if the source is dynamic; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsDynamic => PreferredLatency <= 0 || double.IsNaN(PreferredLatency);
+        /// <returns></returns>
+        public int GetRequiredBufferSize(IInterleavedAudioFormat<TSample> format) => format.BlockSize * (int)Math.Ceiling(format.SampleRate * PreferredLatency);
     }
 }

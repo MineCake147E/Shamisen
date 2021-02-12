@@ -21,6 +21,7 @@ namespace Shamisen
         /// <param name="span">The span.</param>
         /// <param name="residue">The residue part of <paramref name="span"/></param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<TTo> CastSplit<TFrom, TTo>(Span<TFrom> span, out Span<TFrom> residue)
             where TFrom : struct
             where TTo : struct

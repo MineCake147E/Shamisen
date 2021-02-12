@@ -105,10 +105,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             return internalBufferLengthRequired;
         }
 
-        private void ExpandBuffer(int internalBufferLengthRequired)
-        {
-            bufferWrapper.Resize(internalBufferLengthRequired);
-        }
+        private void ExpandBuffer(int internalBufferLengthRequired) => bufferWrapper.Resize(internalBufferLengthRequired);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using Microsoft.Xna.Framework.Audio;
+
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Conversion.WaveToSampleConverters;
@@ -119,7 +121,7 @@ namespace Shamisen.IO.MonoGame
                     }
                     break;
                 default:
-                    throw new NotSupportedException($"The format \"{actualSource.Format.BitDepth}bit {actualSource.Format.Encoding.ToString()}\" is not supported!");
+                    throw new NotSupportedException($"The format \"{actualSource.Format.BitDepth}bit {actualSource.Format.Encoding}\" is not supported!");
             }
             //Sample rate is capped between 8k~48k : https://github.com/MonoGame/MonoGame/blob/develop/MonoGame.Framework/Audio/DynamicSoundEffectInstance.cs#L83
             ValidateSampleRate(source, ref actualSource, ref sampleSource);

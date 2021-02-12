@@ -136,17 +136,7 @@ namespace Shamisen.Codecs.Waveform
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -1775714179;
-            hashCode = hashCode * -1521134295 + encoding.GetHashCode();
-            hashCode = hashCode * -1521134295 + channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + sampleRate.GetHashCode();
-            hashCode = hashCode * -1521134295 + bytesPerSecond.GetHashCode();
-            hashCode = hashCode * -1521134295 + blockSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + bitDepth.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(encoding, channels, sampleRate, bytesPerSecond, blockSize, bitDepth);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="StandardWaveFormat"/> objects are equal.

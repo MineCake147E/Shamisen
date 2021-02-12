@@ -5,9 +5,9 @@ using System.Text;
 namespace Shamisen.Pipeline
 {
     /// <summary>
-    ///
+    /// Provides some utility functions for dealing with pipeline system.
     /// </summary>
-    public static class PipelineExtensions
+    public static class PipelineUtils
     {
     }
 }

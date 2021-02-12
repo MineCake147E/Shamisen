@@ -78,10 +78,7 @@ namespace Shamisen.Output.Tests.UWP
         /// </summary>
         /// <param name="sender">移動に失敗したフレーム</param>
         /// <param name="e">ナビゲーション エラーの詳細</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-        {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        }
+        void OnNavigationFailed(object sender, NavigationFailedEventArgs e) => throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
 
         /// <summary>
         /// アプリケーションの実行が中断されたときに呼び出されます。

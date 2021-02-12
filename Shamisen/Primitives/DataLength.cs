@@ -131,7 +131,7 @@ namespace Shamisen
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode() => -1584136870 + Length.GetHashCode();
+        public override int GetHashCode() => HashCode.Combine(Length);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="DataLength" /> objects are equal.

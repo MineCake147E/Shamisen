@@ -210,10 +210,7 @@ namespace System.Numerics
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is Vector7 vector && Equals(vector);
-        }
+        public override bool Equals(object? obj) => obj is Vector7 vector && Equals(vector);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -222,11 +219,8 @@ namespace System.Numerics
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(Vector7 other)
-        {
-            return front.Equals(other.front) &&
+        public bool Equals(Vector7 other) => front.Equals(other.front) &&
                    back.Equals(other.back);
-        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -234,12 +228,6 @@ namespace System.Numerics
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -1890742534;
-            hashCode = hashCode * -1521134295 + front.GetHashCode();
-            hashCode = hashCode * -1521134295 + back.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(front, back);
     }
 }

@@ -102,13 +102,8 @@ namespace Shamisen
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
+
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int16LinearPcmSampleFormat"/> objects are equal.
@@ -230,13 +225,8 @@ namespace Shamisen
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
+
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int24LinearPcmSampleFormat"/> objects are equal.
@@ -358,13 +348,8 @@ namespace Shamisen
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
+
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int32LinearPcmSampleFormat"/> objects are equal.
@@ -486,13 +471,8 @@ namespace Shamisen
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
+
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int64LinearPcmSampleFormat"/> objects are equal.
@@ -614,13 +594,8 @@ namespace Shamisen
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -709472342;
-            hashCode = hashCode * -1521134295 + Channels.GetHashCode();
-            hashCode = hashCode * -1521134295 + SampleRate.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
+
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="OffsetSByteLinearPcmSampleFormat"/> objects are equal.

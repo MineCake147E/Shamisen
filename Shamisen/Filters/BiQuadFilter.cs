@@ -135,7 +135,7 @@ namespace Shamisen.Filters
         {
             int channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            ReadResult rr = Source.Read(buffer);
+            var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
             var len = rr.Length;
             buffer = buffer.Slice(0, len);
@@ -165,13 +165,13 @@ namespace Shamisen.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
-                Vector2[] ist = internalStates;
-                Vector2 iStateL = ist[0];
-                Vector2 iStateR = ist[1];
-                Vector2 iStateC = ist[2];
-                Vector2 iStateLFE = ist[3];
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var ist = internalStates;
+                var iStateL = ist[0];
+                var iStateR = ist[1];
+                var iStateC = ist[2];
+                var iStateLFE = ist[3];
                 for (int i = 0; i < buffer.Length; i += 4)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -213,12 +213,12 @@ namespace Shamisen.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
-                Vector2[] ist = internalStates;
-                Vector2 iStateL = ist[0];
-                Vector2 iStateR = ist[1];
-                Vector2 iStateC = ist[2];
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var ist = internalStates;
+                var iStateL = ist[0];
+                var iStateR = ist[1];
+                var iStateC = ist[2];
                 for (int i = 0; i < buffer.Length; i += 3)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -273,11 +273,11 @@ namespace Shamisen.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
-                Vector2[] ist = internalStates;
-                Vector2 iStateL = ist[0];
-                Vector2 iStateR = ist[1];
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var ist = internalStates;
+                var iStateL = ist[0];
+                var iStateR = ist[1];
                 for (int i = 0; i < buffer.Length; i += 2)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -328,9 +328,9 @@ namespace Shamisen.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
-                Vector2 iState = internalStates[0];
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
+                var iState = internalStates[0];
                 for (int i = 0; i < buffer.Length; i++)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
@@ -375,8 +375,8 @@ namespace Shamisen.Filters
             unsafe
             {
                 //Factor localization greatly improved performance
-                Vector3 factorB = Parameter.B;
-                Vector2 factorA = Parameter.A;
+                var factorB = Parameter.B;
+                var factorA = Parameter.A;
                 Span<Vector2> iState = stackalloc Vector2[internalStates.Length];
                 internalStates.AsSpan().CopyTo(iState);
                 for (int i = 0; i < buffer.Length; i += iState.Length)
