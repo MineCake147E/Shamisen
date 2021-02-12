@@ -19,6 +19,8 @@ A Cross-Platform Audio Library for:
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
   - UWP `AudioGraph` output
 - Fast and smooth Up-sampling using Catmull-Rom Spline
+  - Utilizes `Vector4` for resampling calculation.
+  - Uses Direct/Wrapped caching for Catmull-Rom spline coefficients. 
   - Benchmarks on .Net Core, Intel Core i7 4790
     Note that the results are not inversely proportional due to differences in caching strategies.
     - About 170x faster than playback in 44.1kHz→192kHz **10ch**(e.g. 9.1ch).
@@ -33,6 +35,8 @@ A Cross-Platform Audio Library for:
 - `FastFill` for some types that fills quickly using `Vector<T>`.
 - Optimized BiQuad Filters that supports some filtering
   - Uses `Vector2` and `Vector3` for filter calculations in each channels.
+  - Unrolls channel loop for Monaural and <5ch filter calculation.
+  - For some special cases, it utilizes SSEx.x and AVX(2) intrinsics for the calculation.
 
 ### Dependencies and system requirements
 

@@ -2,8 +2,8 @@
 name: Bug report
 about: Create a report to help us improve
 title: "[BUG]"
-labels: 'Kind: Bug'
-assignees: ''
+labels: ''
+assignees: MineCake147E
 
 ---
 
@@ -24,14 +24,14 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - Device: [e.g. DIY]
+ - Device: [e.g. Home-made PC]
    - CPU: [e.g. Intel Core i7-4790]
      - Architecture: [e.g. AMD64]
    - RAM: [e.g. DDR3 16GB]
    - Storage: [e.g. WDC WD10EZEX-22MFCA0 1TB SATA HDD]
- - OS: [e.g. Windows 10 Home x64 1903]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+ - OS: [e.g. Windows 10 Home x64 20H2]
+ - Browser [e.g. Mozilla Firefox]
+ - Version [e.g. 85.0]
 
 **Additional context**
 Add any other context about the problem here.
