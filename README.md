@@ -46,7 +46,7 @@ A Cross-Platform Audio Library for:
   - Improved `SplineResampler`'s performance greatly, about **1.5x** faster on Stereo!
 - Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
   - Because Unity uses older version of `Mono`.
-- Faster resampling requires `.NET Core` or later version of `Mono`.
+- Faster resampling requires `.NET 5` or `.NET Core 3.1`.
   - Unfortunately, `.NET Framework` does not support Fast `Span<T>`s.
 - The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
