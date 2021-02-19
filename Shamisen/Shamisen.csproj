@@ -4,9 +4,17 @@
         <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
         <RootNamespace>Shamisen</RootNamespace>
         <AssemblyName>Shamisen</AssemblyName>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
+        <Authors>MineCake1.4.7</Authors>
+        <Copyright>Copyright 2021 MineCake1.4.7</Copyright>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/MineCake147E/Shamisen</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/MineCake147E/Shamisen.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Version>0.0.1</Version>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -42,9 +50,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DivideSharp" Version="0.0.3" />
+        <PackageReference Include="DivideSharp" Version="0.0.4" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
-        <PackageReference  Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+        <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+        <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO" Version="4.3.0" />
         <PackageReference Include="System.Memory" Version="4.5.4" />
