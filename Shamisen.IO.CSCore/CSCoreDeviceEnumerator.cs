@@ -28,7 +28,7 @@ namespace Shamisen.IO
         /// </returns>
 #pragma warning disable CS1998 //
 
-        public async IAsyncEnumerable<IAudioDevice> EnumerableDevicesAsync(DataFlow dataFlow)
+        public async IAsyncEnumerable<IAudioDevice> EnumerateDevicesAsync(DataFlow dataFlow)
 #pragma warning restore CS1998 //
         {
             foreach (var item in EnumerateDevices(dataFlow))

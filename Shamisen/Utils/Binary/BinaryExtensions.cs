@@ -10,7 +10,7 @@ namespace Shamisen
     /// <summary>
     /// Provides some functions that helps you about binary things.
     /// </summary>
-    public static class BinaryExtensions
+    public static partial class BinaryExtensions
     {
         /// <summary>
         /// Gets the system endianness.

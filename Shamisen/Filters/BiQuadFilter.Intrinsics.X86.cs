@@ -178,7 +178,7 @@ namespace Shamisen.Filters
                 var iSL = Vector128.Create(iStateL.X, iStateL.Y, 0, 0);
                 var iSR = Vector128.Create(iStateR.X, iStateR.Y, 0, 0);
                 var zero = Vector128<float>.Zero;
-                for (int i = 0; i < buffer.Length; i += 2)
+                for (int i = 0; i < buffer.Length - 1; i += 2)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
@@ -235,17 +235,18 @@ namespace Shamisen.Filters
                 var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
                 var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
                 //Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
-                for (int ch = 0; ch < iState.Length; ch++)
+                int channels = iState.Length;
+                for (int ch = 0; ch < channels; ch++)
                 {
                     var g = internalStates[ch];
                     iState[ch] = Vector128.Create(g.X, g.Y, 0, 0);
                 }
                 ref var iS = ref MemoryMarshal.GetReference(iState);
-                for (int i = 0; i < buffer.Length; i += iState.Length)
+                for (int i = 0; i < buffer.Length - channels + 1; i += channels)
                 {
                     ref var pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);
-                    for (int ch = 0; ch < iState.Length; ch++)
+                    for (int ch = 0; ch < channels; ch++)
                     {
                         //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                         //Transformed for SIMD awareness.
@@ -264,7 +265,7 @@ namespace Shamisen.Filters
                         a = Sse.Add(ffv, sum1v);
                     }
                 }
-                for (int ch = 0; ch < iState.Length; ch++)
+                for (int ch = 0; ch < channels; ch++)
                 {
                     var f = iState[ch];
                     internalStates[ch] = new Vector2(f.GetElement(0), f.GetElement(1));
@@ -283,17 +284,18 @@ namespace Shamisen.Filters
                 var fB = Vector128.Create(factorB.X, factorB.Y, factorB.Z, 0);
                 var fA = Vector128.Create(factorA.X, factorA.Y, 0, 0);
                 //Vector128<float> iS = Vector128.Create(iState.X, iState.Y, 0, 0);
-                for (int ch = 0; ch < iState.Length; ch++)
+                int channels = iState.Length;
+                for (int ch = 0; ch < channels; ch++)
                 {
                     var g = internalStates[ch];
                     iState[ch] = Vector128.Create(g.X, g.Y, 0, 0);
                 }
                 ref var iS = ref MemoryMarshal.GetReference(iState);
-                for (int i = 0; i < buffer.Length; i += iState.Length)
+                for (int i = 0; i < buffer.Length - channels + 1; i += channels)
                 {
                     ref var pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);
-                    for (int ch = 0; ch < iState.Length; ch++)
+                    for (int ch = 0; ch < channels; ch++)
                     {
                         //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                         //Transformed for SIMD awareness.
@@ -312,7 +314,7 @@ namespace Shamisen.Filters
                         a = Sse.Add(ffv, sum1v);
                     }
                 }
-                for (int ch = 0; ch < iState.Length; ch++)
+                for (int ch = 0; ch < channels; ch++)
                 {
                     var f = iState[ch];
                     internalStates[ch] = new Vector2(f.GetElement(0), f.GetElement(1));

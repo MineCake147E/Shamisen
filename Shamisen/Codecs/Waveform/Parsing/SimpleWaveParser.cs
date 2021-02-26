@@ -176,25 +176,37 @@ namespace Shamisen.Codecs.Waveform.Parsing
             {
                 case ChunkId.Rf64:
                 case ChunkId.Bw64:
-                    var ds64 = mainReader.ReadSubChunk();
-                    if (ds64.ChunkId != ChunkId.Rf64DataSize) throw new InvalidDataException("The first chunk wasn't \"ds64\"!");
-                    ulong riffSize, dataSize, sampleCountOrDummySize;
-                    uint tableLength;
-                    riffSize = ds64.ReadUInt64LittleEndian();
-                    dataSize = ds64.ReadUInt64LittleEndian();
-                    sampleCountOrDummySize = ds64.ReadUInt64LittleEndian();
-                    tableLength = ds64.ReadUInt32LittleEndian();
-                    if (tableLength > 0)
                     {
-                        var table = new ChunkSizeTableEntry[tableLength];
-                        var span = MemoryMarshal.Cast<ChunkSizeTableEntry, byte>(table.AsSpan());
-                        ds64.ReadAll(span);
-                        ChunkSizeTable = new List<ChunkSizeTableEntry>(table);
+                        using var ds64 = mainReader.ReadSubChunk();
+                        if (ds64.ChunkId != ChunkId.Rf64DataSize) throw new InvalidDataException("The first chunk wasn't \"ds64\"!");
+                        ulong riffSize, dataSize, sampleCountOrDummySize;
+                        uint tableLength;
+                        Span<byte> bufferDs64;
+                        (ulong riffSize, ulong dataSize, ulong sampleCountOrDummySize) a = default;
+                        unsafe
+                        {
+                            bufferDs64 = new Span<byte>(&a, sizeof(ulong) * 3);
+                        }
+                        ds64.CheckRead(bufferDs64);
+                        riffSize = BinaryExtensions.ConvertToLittleEndian(a.riffSize);
+                        dataSize = BinaryExtensions.ConvertToLittleEndian(a.dataSize);
+                        sampleCountOrDummySize = BinaryExtensions.ConvertToLittleEndian(a.sampleCountOrDummySize);
+                        if (ds64.RemainingBytes > sizeof(uint))
+                        {
+                            tableLength = ds64.ReadUInt32LittleEndian();
+                            if (tableLength > 0)
+                            {
+                                var table = new ChunkSizeTableEntry[tableLength];
+                                var span = MemoryMarshal.Cast<ChunkSizeTableEntry, byte>(table.AsSpan());
+                                ds64.ReadAll(span);
+                                ChunkSizeTable = new List<ChunkSizeTableEntry>(table);
+                            }
+                        }
+                        RiffSize = riffSize;
+                        setter.Invoke(riffSize);
+                        DataSize = dataSize;
+                        SampleCount = sampleCountOrDummySize;
                     }
-                    RiffSize = riffSize;
-                    setter.Invoke(riffSize);
-                    DataSize = dataSize;
-                    SampleCount = sampleCountOrDummySize;
                     break;
                 default:    //RIFF
                     RiffSize = mainReader.TotalSize;
@@ -252,6 +264,10 @@ namespace Shamisen.Codecs.Waveform.Parsing
                 var reader = ReadNextSubChunk();
                 switch (reader.ChunkId)
                 {
+                    case ChunkId.Fact when !fmt.RequireFactChunk:
+                        fmt.ParseFactChunk(reader);
+                        reader.Dispose();
+                        continue;
                     case ChunkId.WaveList:
                     case ChunkId.Silent:
                         throw new InvalidDataException("The \"wavl\" and \"slnt\" chunks are not currently supported!");
@@ -325,7 +341,6 @@ namespace Shamisen.Codecs.Waveform.Parsing
         /// </summary>
         public void Dispose()
         {
-            // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

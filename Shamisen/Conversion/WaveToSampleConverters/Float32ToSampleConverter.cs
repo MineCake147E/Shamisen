@@ -17,7 +17,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="source">The source.</param>
         public Float32ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source)
-            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels))
+            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate))
         {
         }
 
@@ -28,6 +28,49 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// The bytes consumed per sample.
         /// </value>
         protected override int BytesPerSample => 4;
+
+        /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Length => Source.Length / 4;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? TotalLength => Source.TotalLength / 4;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Position => Source.TotalLength / 4;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public override ISkipSupport? SkipSupport => Source.SkipSupport?.WithFraction(4, 1);
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public override ISeekSupport? SeekSupport => Source.SeekSupport?.WithFraction(4, 1);
 
         /// <summary>
         /// Reads the audio to the specified buffer.

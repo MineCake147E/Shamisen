@@ -33,8 +33,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         private float[][] sampleCache;
         private int samplesRemaining = 0;
 
-        [Obsolete("", true)]
-        private bool IsCatmullRomOptimized { get; }
+        private bool isEndOfStream = false;
 
         private ResampleStrategy Strategy { get; }
 
@@ -102,6 +101,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         public override ReadResult Read(Span<float> buffer)
         {
             int channels = Channels;
+            if (buffer.Length < channels) throw new InvalidOperationException($"The length of buffer is less than {channels}!");
+            if (isEndOfStream) return ReadResult.EndOfStream;
 
             #region Initialize and Read
 
@@ -112,46 +113,67 @@ namespace Shamisen.Conversion.Resampling.Sample
             int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
 
             //Resampling start
-            Span<float> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            var srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
             int lengthReserved = channels * framesReserved;
-            Span<float> readBuffer = srcBuffer.Slice(lengthReserved).SliceAlign(ChannelsDivisor);
+            var readBuffer = srcBuffer.Slice(lengthReserved).SliceAlign(ChannelsDivisor);
             var rr = Source.Read(readBuffer);
 
             #endregion Initialize and Read
 
             if (rr.HasData)
             {
-                if (rr.Length < readBuffer.Length)   //The input result was not as long as the buffer we gave
+                return Process(buffer, channels, SampleLengthOut, srcBuffer, lengthReserved, readBuffer, rr);
+            }
+            else
+            {
+                if (rr.IsEndOfStream)
                 {
-                    int v = SampleLengthOut * RateDiv + conversionGradient;
-                    var h = RateMulDivisor.DivRem((uint)v, out var b);
-                    int readSamples = rr.Length + lengthReserved;
-                    srcBuffer = srcBuffer.SliceWhile(readSamples).SliceAlign(ChannelsDivisor);
-                    var framesAvailable = (int)((uint)readSamples / ChannelsDivisor);
-                    var bA = framesAvailable - 3 - (h > 0 ? 1 : 0);
-                    var vA = h + bA * RateMul;
-                    var outLenFrames = (int)((uint)vA / RateDivDivisor);
-                    buffer = buffer.SliceWhile(outLenFrames * channels).SliceAlign(ChannelsDivisor);
+                    isEndOfStream = true;
+                    readBuffer.FastFill(0);
+                    //Process the last block with silence connected behind it.
+                    return Process(buffer, channels, SampleLengthOut, srcBuffer, lengthReserved, readBuffer, readBuffer.Length);
                 }
-                int lastInputSampleIndex = -1;
-                switch (Strategy)
+                else
                 {
-                    case ResampleStrategy.Direct:
-                        lastInputSampleIndex = ResampleDirect(buffer, channels, srcBuffer);
-                        break;
-                    case ResampleStrategy.CachedDirect:
-                        lastInputSampleIndex = ResampleCachedDirect(buffer, channels, srcBuffer);
-                        break;
-                    case ResampleStrategy.CachedWrappedOdd:
-                        lastInputSampleIndex = ResampleCachedWrappedOdd(buffer, channels, srcBuffer);
-                        break;
-                    case ResampleStrategy.CachedWrappedEven:
-                        lastInputSampleIndex = ResampleCachedWrappedEven(buffer, channels, srcBuffer);
-                        break;
+                    return ReadResult.WaitingForSource;
                 }
-                Span<float> reservingRegion = srcBuffer.Slice(lastInputSampleIndex * channels);
-                reservingRegion.CopyTo(srcBuffer);
-                framesReserved = (int)((uint)reservingRegion.Length / ChannelsDivisor);
+            }
+        }
+
+        private ReadResult Process(Span<float> buffer, int channels, int sampleLengthOut, Span<float> srcBuffer, int lengthReserved, Span<float> readBuffer, ReadResult rr)
+        {
+            if (rr.Length < readBuffer.Length)   //The input result was not as long as the buffer we gave
+            {
+                int v = sampleLengthOut * RateDiv + conversionGradient;
+                var h = RateMulDivisor.DivRem((uint)v, out var b);
+                int readSamples = rr.Length + lengthReserved;
+                srcBuffer = srcBuffer.SliceWhile(readSamples).SliceAlign(ChannelsDivisor);
+                var framesAvailable = (int)((uint)readSamples / ChannelsDivisor);
+                var bA = framesAvailable - 3 - (h > 0 ? 1 : 0);
+                var vA = h + bA * RateMul;
+                var outLenFrames = (int)((uint)vA / RateDivDivisor);
+                buffer = buffer.SliceWhile(outLenFrames * channels).SliceAlign(ChannelsDivisor);
+            }
+            int lastInputSampleIndex = -1;
+
+            switch (Strategy)
+            {
+                case ResampleStrategy.Direct:
+                    lastInputSampleIndex = ResampleDirect(buffer, channels, srcBuffer);
+                    break;
+                case ResampleStrategy.CachedDirect:
+                    lastInputSampleIndex = ResampleCachedDirect(buffer, channels, srcBuffer);
+                    break;
+                case ResampleStrategy.CachedWrappedOdd:
+                    lastInputSampleIndex = ResampleCachedWrappedOdd(buffer, channels, srcBuffer);
+                    break;
+                case ResampleStrategy.CachedWrappedEven:
+                    lastInputSampleIndex = ResampleCachedWrappedEven(buffer, channels, srcBuffer);
+                    break;
+            }
+            Span<float> reservingRegion = srcBuffer.Slice(lastInputSampleIndex * channels);
+            reservingRegion.CopyTo(srcBuffer);
+            framesReserved = (int)((uint)reservingRegion.Length / ChannelsDivisor);
 #if false   //For Test purpose only
                 int lisi_tail = lastInputSampleIndex + 3 - (conversionGradient < RateDiv ? 1 : 0);
                 Console.WriteLine($"inputLength:{srcBuffer.Length}, " +
@@ -161,12 +183,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     $"framesReserved:{framesReserved}");
 #endif
 
-                return buffer.Length;
-            }
-            else
-            {
-                return ReadResult.WaitingForSource;
-            }
+            return buffer.Length;
         }
 
         /// <summary>

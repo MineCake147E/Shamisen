@@ -69,7 +69,7 @@ namespace System
         public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, int channels) => <#=nameCamel#>.Slice(0, MathI.FloorStep(<#=nameCamel#>.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>

@@ -4,8 +4,8 @@
 <#@ import namespace = "System.Text"#>
 <#@ import namespace = "System.Collections.Generic"#>
 <#@ output extension = ".cs"#>
-<#var channelsAndTypes = new [] {(2, "Vector2"), (3, "Vector3"), (4, "Vector4")};#>
-
+<#    var channelsAndTypes = new [] {(2, "Vector2"), (3, "Vector3"), (4, "Vector4")};#>
+<#var attributes = new [] {(2, "Vector2", "Stereo"), (3, "Vector3", "Triple"), (4, "Vector4", "Quadruple")};#>
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -110,6 +110,7 @@ namespace Shamisen.Conversion.Resampling.Sample {
             conversionGradient = x;
             return inputSampleIndex;
         }
+
         private int ResampleCachedWrappedOdd (Span<float> buffer, int channels, Span<float> srcBuffer) {
             ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;

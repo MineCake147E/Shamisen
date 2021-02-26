@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,12 +65,22 @@ namespace Shamisen.IO
 
         private void Node_QuantumStarted(AudioFrameInputNode sender, FrameInputNodeQuantumStartedEventArgs args)
         {
-            uint numSamplesNeeded = (uint)args.RequiredSamples;
-
-            if (numSamplesNeeded != 0)
+            var oldMode = GCSettings.LatencyMode;
+            RuntimeHelpers.PrepareConstrainedRegions();
+            try
             {
-                AudioFrame audioData = GenerateAudioData(numSamplesNeeded);
-                frameInputNode.AddFrame(audioData);
+                GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+                uint numSamplesNeeded = (uint)args.RequiredSamples;
+
+                if (numSamplesNeeded != 0)
+                {
+                    var audioData = GenerateAudioData(numSamplesNeeded);
+                    frameInputNode.AddFrame(audioData);
+                }
+            }
+            finally
+            {
+                GCSettings.LatencyMode = oldMode;
             }
         }
 
@@ -122,7 +134,7 @@ namespace Shamisen.IO
         /// <param name="sampleRate">The sample rate. Default: 192000Hz</param>
         /// <returns></returns>
         /// <exception cref="Exception">AudioGraph creation error</exception>
-        public static async Task<AudioGraphOutput> CreateAudioGraphOutputAsync(uint channelCount = 2, uint sampleRate = 192000, AudioRenderCategory category = AudioRenderCategory.GameEffects)
+        public static async Task<AudioGraphOutput> CreateAudioGraphOutputAsync(uint channelCount = 2, uint sampleRate = 192000, AudioRenderCategory category = AudioRenderCategory.Media)
         {
             var settings = new AudioGraphSettings(category)
             {
@@ -216,7 +228,14 @@ namespace Shamisen.IO
         /// </summary>
         public void Pause()
         {
-            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot pause without playing!");
+            if (PlaybackState != PlaybackState.Playing)
+            {
+#if DEBUG
+                throw new InvalidOperationException($"Cannot pause without playing!");
+#else
+                return;
+#endif
+            }
             frameInputNode.Stop();
             AudioGraph.Stop();
             PlaybackState = PlaybackState.Paused;
@@ -227,7 +246,11 @@ namespace Shamisen.IO
         /// </summary>
         public void Play()
         {
-            if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException($"Cannot start playback without stopping or initializing!");
+            if (PlaybackState != PlaybackState.Stopped)
+            {
+                Resume();
+                return;
+            }
             AudioGraph.Start();
             frameInputNode.Start();
             PlaybackState = PlaybackState.Playing;
@@ -238,7 +261,14 @@ namespace Shamisen.IO
         /// </summary>
         public void Resume()
         {
-            if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException($"Cannot resume without pausing!");
+            if (PlaybackState != PlaybackState.Paused)
+            {
+#if DEBUG
+                throw new InvalidOperationException($"Cannot resume without pausing!");
+#else
+                return;
+#endif
+            }
             AudioGraph.Start();
             frameInputNode.Start();
             PlaybackState = PlaybackState.Playing;

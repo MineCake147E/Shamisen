@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using DivideSharp;
+
 namespace Shamisen.Conversion.WaveToSampleConverters
 {
     /// <summary>
@@ -40,7 +42,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <value>
         /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Length { get => Source.Length; }
+        public abstract ulong? Length { get; }
 
         /// <summary>
         /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -49,7 +51,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <value>
         /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? TotalLength { get => Source.TotalLength; }
+        public abstract ulong? TotalLength { get; }
 
         /// <summary>
         /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -58,7 +60,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <value>
         /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Position { get => Source.Position; }
+        public abstract ulong? Position { get; }
 
         /// <summary>
         /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -66,7 +68,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public abstract ISkipSupport? SkipSupport { get; }
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -74,7 +76,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public abstract ISeekSupport? SeekSupport { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaveToSampleConverterBase"/> class.

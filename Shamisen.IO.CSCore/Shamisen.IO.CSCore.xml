@@ -10,6 +10,15 @@
             </summary>
             <seealso cref="T:Shamisen.IO.IAudioDeviceEnumerator" />
         </member>
+        <member name="M:Shamisen.IO.CSCoreDeviceEnumerator.EnumerateDevicesAsync(Shamisen.IO.DataFlow)">
+            <summary>
+            Enumerates devices of specified <paramref name="dataFlow" /> asynchronously.
+            </summary>
+            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow" /> kind to enumerate devices of.</param>
+            <returns>
+            The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> of audio devices.
+            </returns>
+        </member>
         <member name="M:Shamisen.IO.CSCoreDeviceEnumerator.EnumerateDevices(Shamisen.IO.DataFlow)">
             <summary>
             Enumerates devices of specified <paramref name="dataFlow" />.

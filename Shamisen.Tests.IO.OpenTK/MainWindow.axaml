@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+        x:Class="Shamisen.Tests.IO.OpenTK.MainWindow"
+        Title="Shamisen.Tests.IO.OpenTK">
+    <Grid ColumnDefinitions="1*, 1*" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical">
+            <Button Content="Initialize" Command="{Binding Initialize}" />
+            <Button Content="Play" Command="{Binding Play}" />
+            <Button Content="Pause" Command="{Binding Pause}" />
+            <Button Content="Resume" Command="{Binding Resume}" />
+            <Button Content="Stop" Command="{Binding Stop}" />
+            <Grid ColumnDefinitions="Auto, 96,1*" HorizontalAlignment="Stretch">
+                <Label Grid.Column="0" Content="Frequency: " VerticalContentAlignment="Center" />
+                <Label Grid.Column="1" Content="{Binding ElementName=Freq, Path=Value, StringFormat=\{0:N\} [Hz]}" FontFamily="monospace" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                <Slider Grid.Column="2" x:Name="Freq" Minimum="0" Maximum="24000" Value="{Binding Frequency.Value}" />
+            </Grid>
+        </StackPanel>
+        <Border Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,1*">
+                <Label Grid.Column="0" Content="Device: "  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Border Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ListBox Items="{Binding Devices}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Checked}" Content="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

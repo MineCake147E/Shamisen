@@ -19,11 +19,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// Initializes a new instance of the <see cref="ALawToSampleConverter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="format">The format.</param>
-        public ALawToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, SampleFormat format) : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels))
-        {
-            bufferWrapper = new ResizablePooledBufferWrapper<byte>(1);
-        }
+        public ALawToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source)
+            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate)) => bufferWrapper = new ResizablePooledBufferWrapper<byte>(1);
 
         /// <summary>
         /// Gets the bytes consumed per sample.
@@ -34,6 +31,49 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         protected override int BytesPerSample { get => 1; }
 
         /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Length => Source.Length;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? TotalLength => Source.TotalLength;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Position => Source.TotalLength;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public override ISkipSupport? SkipSupport => Source.SkipSupport;
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public override ISeekSupport? SeekSupport => Source.SeekSupport;
+
+        /// <summary>
         /// Reads the audio to the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
@@ -42,7 +82,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            buffer = buffer.SliceAlign(Format.Channels);
+            buffer = buffer.SliceAlign(2);
             int internalBufferLengthRequired = CheckBuffer(buffer.Length);
 
             //Resampling start
@@ -53,8 +93,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 unchecked
                 {
-                    var rb = readBuffer.Slice(rr.Length);
-                    var wb = buffer.Slice(rb.Length);
+                    var rb = readBuffer.SliceWhile(rr.Length);
+                    var wb = buffer.SliceWhile(rb.Length);
                     for (int i = 0; i < rb.Length; i++)
                     {
                         byte v = rb[i];
@@ -66,12 +106,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
             else
             {
-                return ReadResult.WaitingForSource;
+                return rr;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static short ConvertALawToInt16(byte value)
+        internal static short ConvertALawToInt16(byte value)
         {
             unchecked
             {

@@ -1,4 +1,5 @@
 ﻿using Shamisen.Extensions;
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -13,10 +14,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
     /// <seealso cref="WaveToSampleConverterBase" />
     public sealed class Pcm16ToSampleConverter : WaveToSampleConverterBase
     {
-        private const float Multiplier = 1 / 32768.0f;
+        private const float Multiplier = 1 / 32767.0f;
         private const int ActualBytesPerSample = sizeof(short);
         private const int BufferMax = 2048;
-        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
+        private int ActualBufferMax => BufferMax * Source.Format.Channels;
+
+        private Memory<short> readBuffer;
 
         /// <summary>
         /// Gets the endianness of <see cref="WaveToSampleConverterBase.Source"/>.
@@ -34,7 +37,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <param name="source">The source.</param>
         /// <param name="endianness">The endianness of <paramref name="source"/>.</param>
         public Pcm16ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, Endianness endianness = Endianness.Little)
-            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels)) => Endianness = endianness;
+            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate))
+        {
+            Endianness = endianness;
+            readBuffer = new short[ActualBufferMax];
+        }
 
         /// <summary>
         /// Gets the bytes consumed per sample.
@@ -45,6 +52,49 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         protected override int BytesPerSample => ActualBytesPerSample;
 
         /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Length => Source.Length / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? TotalLength => Source.TotalLength / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Position => Source.TotalLength / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public override ISkipSupport? SkipSupport => Source.SkipSupport?.WithFraction(ActualBytesPerSample, 1);
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public override ISeekSupport? SeekSupport => Source.SeekSupport?.WithFraction(ActualBytesPerSample, 1);
+
+        /// <summary>
         /// Reads the audio to the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
@@ -53,22 +103,26 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            Span<short> span = stackalloc short[buffer.Length > ActualBufferMax ? ActualBufferMax : buffer.Length];
+            Span<short> span = readBuffer.Span;
             var cursor = buffer;
             while (cursor.Length > 0)
             {
-                var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                var rr = Source.Read(MemoryMarshal.AsBytes(span));
-                if (!rr.HasData)
+                var reader = span.SliceWhileIfLongerThan(cursor.Length);
+                var rr = Source.Read(MemoryMarshal.AsBytes(reader));
+                if (rr.HasNoData)
                 {
-                    return buffer.Length - cursor.Length;
+                    int len = buffer.Length - cursor.Length;
+                    return rr.IsEndOfStream && len <= 0 ? rr : len;
                 }
                 int u = rr.Length / ActualBytesPerSample;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
+                {
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
+                }
+
                 if (IsEndiannessConversionRequired)
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)

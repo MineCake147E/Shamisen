@@ -87,7 +87,7 @@ namespace Shamisen.Data.Binary
                 ushort rawUInt16;
                 Span<byte> span = new Span<byte>(&rawUInt16, sizeof(ushort));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawUInt16);
+                return BinaryExtensions.ConvertToBigEndian(rawUInt16);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Shamisen.Data.Binary
                 short rawInt16;
                 Span<byte> span = new Span<byte>(&rawInt16, sizeof(short));
                 dataReader.CheckRead(span);
-                return rawInt16;
+                return BinaryExtensions.ConvertToLittleEndian(rawInt16);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Shamisen.Data.Binary
                 short rawInt16;
                 Span<byte> span = new Span<byte>(&rawInt16, sizeof(short));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawInt16);
+                return BinaryExtensions.ConvertToBigEndian(rawInt16);
             }
         }
 
@@ -142,7 +142,7 @@ namespace Shamisen.Data.Binary
                 uint rawUInt32;
                 Span<byte> span = new Span<byte>(&rawUInt32, sizeof(uint));
                 dataReader.CheckRead(span);
-                return rawUInt32;
+                return BinaryExtensions.ConvertToLittleEndian(rawUInt32);
             }
         }
 
@@ -159,7 +159,7 @@ namespace Shamisen.Data.Binary
                 uint rawUInt32;
                 Span<byte> span = new Span<byte>(&rawUInt32, sizeof(uint));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawUInt32);
+                return BinaryExtensions.ConvertToBigEndian(rawUInt32);
             }
         }
 
@@ -176,7 +176,7 @@ namespace Shamisen.Data.Binary
                 int rawInt32;
                 Span<byte> span = new Span<byte>(&rawInt32, sizeof(int));
                 dataReader.CheckRead(span);
-                return rawInt32;
+                return BinaryExtensions.ConvertToLittleEndian(rawInt32);
             }
         }
 
@@ -193,7 +193,7 @@ namespace Shamisen.Data.Binary
                 int rawInt32;
                 Span<byte> span = new Span<byte>(&rawInt32, sizeof(int));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawInt32);
+                return BinaryExtensions.ConvertToBigEndian(rawInt32);
             }
         }
 
@@ -214,7 +214,7 @@ namespace Shamisen.Data.Binary
                 ulong rawUInt64;
                 Span<byte> span = new Span<byte>(&rawUInt64, sizeof(ulong));
                 dataReader.CheckRead(span);
-                return rawUInt64;
+                return BinaryExtensions.ConvertToLittleEndian(rawUInt64);
             }
         }
 
@@ -231,7 +231,7 @@ namespace Shamisen.Data.Binary
                 ulong rawUInt64;
                 Span<byte> span = new Span<byte>(&rawUInt64, sizeof(ulong));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawUInt64);
+                return BinaryExtensions.ConvertToBigEndian(rawUInt64);
             }
         }
 
@@ -248,7 +248,7 @@ namespace Shamisen.Data.Binary
                 long rawInt64;
                 Span<byte> span = new Span<byte>(&rawInt64, sizeof(long));
                 dataReader.CheckRead(span);
-                return rawInt64;
+                return BinaryExtensions.ConvertToLittleEndian(rawInt64);
             }
         }
 
@@ -265,7 +265,7 @@ namespace Shamisen.Data.Binary
                 long rawInt64;
                 Span<byte> span = new Span<byte>(&rawInt64, sizeof(long));
                 dataReader.CheckRead(span);
-                return BinaryPrimitives.ReverseEndianness(rawInt64);
+                return BinaryExtensions.ConvertToBigEndian(rawInt64);
             }
         }
 
@@ -535,6 +535,36 @@ namespace Shamisen.Data.Binary
                 }
                 lastResult = result;
             } while (!bufRemain.IsEmpty);
+        }
+
+        /// <summary>
+        /// Tries to read some data from <paramref name="dataSource"/> to fill <paramref name="buffer"/> while the <paramref name="dataSource"/> doesn't run out of data.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataSource">The data source.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadResult TryReadAll<T>(this IDataSource<T> dataSource, Span<T> buffer) where T : unmanaged
+        {
+            var bufRemain = buffer;
+            ReadResult lastResult = 0;
+            do
+            {
+                var result = dataSource.Read(bufRemain);
+                if (result.IsEndOfStream) return result;
+                if (result.HasData)
+                {
+                    if (result.Length == bufRemain.Length) return buffer.Length;
+                    bufRemain = bufRemain.Slice(result.Length);
+                }
+                else if (lastResult.HasNoData)
+                {
+                    return buffer.Length - bufRemain.Length;
+                }
+                lastResult = result;
+            } while (!bufRemain.IsEmpty);
+            return buffer.Length;
         }
 
         /// <summary>

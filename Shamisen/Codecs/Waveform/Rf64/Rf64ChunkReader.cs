@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -92,8 +93,10 @@ namespace Shamisen.Codecs.Waveform.Rf64
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             Parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            ChunkId = (ChunkId)dataSource.ReadUInt32LittleEndian();
-            TotalSize = RemainingBytes = dataSource.ReadUInt32LittleEndian();
+            Span<byte> buffer = stackalloc byte[8];
+            dataSource.CheckRead(buffer);
+            ChunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);
+            TotalSize = RemainingBytes = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4));
             totalSizeSetter = TotalSize == uint.MaxValue
                 ? new StackOnlyActionContainer<ulong>((size) =>
                 {
@@ -114,17 +117,21 @@ namespace Shamisen.Codecs.Waveform.Rf64
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             Parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            ChunkId = (ChunkId)dataSource.ReadUInt32LittleEndian();
-            TotalSize = RemainingBytes = dataSource.ReadUInt32LittleEndian();
+            Span<byte> buffer = stackalloc byte[8];
+            dataSource.CheckRead(buffer);
+            ChunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);
+            TotalSize = RemainingBytes = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4));
         }
 
         private Rf64ChunkReader(Rf64ChunkReader parent, IRf64Parser parser)
         {
             DataSource = Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            var chunkId = (ChunkId)parent.ReadUInt32LittleEndian();
+            Span<byte> buffer = stackalloc byte[8];
+            parent.CheckRead(buffer);
+            var chunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);
             ChunkId = chunkId;
-            ulong size = parent.ReadUInt32LittleEndian();
+            ulong size = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4));
             if (size == uint.MaxValue)
             {
                 size = parser.GetSizeForNextChunk(chunkId);

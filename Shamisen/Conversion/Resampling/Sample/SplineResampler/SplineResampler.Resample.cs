@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -139,6 +138,7 @@ namespace Shamisen.Conversion.Resampling.Sample {
             conversionGradient = x;
             return inputSampleIndex;
         }
+
         private int ResampleCachedWrappedOdd (Span<float> buffer, int channels, Span<float> srcBuffer) {
             ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;

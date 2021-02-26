@@ -235,7 +235,14 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ReadResult operator +(ReadResult left, int right) => new ReadResult(left.Length + right);
 
-        private string GetDebuggerDisplay()
-            => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
+        private string GetDebuggerDisplay() => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// The fully qualified type name.
+        /// </returns>
+        public override string? ToString() => GetDebuggerDisplay();
     }
 }

@@ -28,14 +28,11 @@ using Shamisen.Codecs.Waveform;
 using Shamisen.Codecs.Waveform.Parsing;
 using Shamisen.Data;
 using Shamisen.Conversion.WaveToSampleConverters;
-
-// 空白ページの項目テンプレートについては、https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x411 を参照してください
+using System.Threading.Tasks;
+using Shamisen.Conversion.ChannelConverters;
 
 namespace Shamisen.Output.Tests.UWP
 {
-    /// <summary>
-    /// それ自体で使用できる空白ページまたはフレーム内に移動できる空白ページ。
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
@@ -54,7 +51,24 @@ namespace Shamisen.Output.Tests.UWP
         //private BiQuadFilter biQuadFilter;
         private SimpleMixer mixer;
 
-        private async void Button_ClickAsync(object sender, RoutedEventArgs e) => soundOut.Play();
+        private async void Button_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            if (soundOut is null)
+            {
+                var notInitializedDialog = new ContentDialog
+                {
+                    Title = "The Output is not initialized!",
+                    Content = "Click \"Initialize\" and click again.",
+                    CloseButtonText = "OK"
+                };
+
+                _ = await notInitializedDialog.ShowAsync();
+            }
+            else
+            {
+                soundOut.Play();
+            }
+        }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e) => soundOut?.Dispose();
 
@@ -63,6 +77,9 @@ namespace Shamisen.Output.Tests.UWP
             if (!(source is null))
             {
                 source.Frequency = e.NewValue;
+            }
+            if (!(source2 is null))
+            {
                 source2.Frequency = e.NewValue * 3;
             }
         }
@@ -122,51 +139,54 @@ namespace Shamisen.Output.Tests.UWP
         {
             if (file is null)
             {
-                ContentDialog noFileDialog = new ContentDialog
+                var noFileDialog = new ContentDialog
                 {
                     Title = "No file selected!",
                     Content = "Select file and click again.",
-                    CloseButtonText = "Ok"
+                    CloseButtonText = "OK"
                 };
 
-                ContentDialogResult result = await noFileDialog.ShowAsync();
+                _ = await noFileDialog.ShowAsync();
                 return;
             }
-            soundOut?.Dispose();
-            soundOut = await AudioGraphOutput.CreateAudioGraphOutputAsync(2, SampleRate);
-            var h = await file.OpenReadAsync();
-            var f = new SimpleWaveParser(new SimpleChunkParserFactory(), new StreamDataSource(h.AsStream()));
-            switch (f.Format.BitDepth)
+            await Task.Run(async () =>
             {
-                case 8 when f.Format.Encoding == AudioEncoding.LinearPcm:
-                    sampleSource = new Pcm8ToSampleConverter(f);
-                    break;
-                case 16 when f.Format.Encoding == AudioEncoding.LinearPcm:
-                    sampleSource = new Pcm16ToSampleConverter(f);
-                    break;
-                case 32 when f.Format.Encoding == AudioEncoding.LinearPcm:
-                    sampleSource = new Pcm32ToSampleConverter(f);
-                    break;
-                case 32 when f.Format.Encoding == AudioEncoding.IeeeFloat:
-                    sampleSource = new Float32ToSampleConverter(f);
-                    break;
-                case 24 when f.Format.Encoding == AudioEncoding.LinearPcm:
-                    sampleSource = new Pcm24ToSampleConverter(f);
-                    break;
-                default:
-                    {
-                        var notSupportedDialog = new ContentDialog
-                        {
-                            Title = "Not supported!",
-                            Content = $"{f.Format} is not supported!",
-                            CloseButtonText = "Ok"
-                        };
+                soundOut?.Dispose();
+                soundOut = await AudioGraphOutput.CreateAudioGraphOutputAsync(2, SampleRate);
+                var h = await file.OpenReadAsync();
+                var waveParser = new SimpleWaveParser(new SimpleChunkParserFactory(), new StreamDataSource(h.AsStream())/*.Preload(2048 * 4, 16, true)*/);
+                var f = waveParser/*.Preload(2048)*/.Loop().ToWaveSource();
+                sampleSource = f.ConvertToSample();
+                if (sampleSource is null)
+                {
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                     {
+                         var notSupportedDialog = new ContentDialog
+                         {
+                             Title = "Not supported!",
+                             Content = $"{f.Format} is not supported!",
+                             CloseButtonText = "OK"
+                         };
 
-                        _ = await notSupportedDialog.ShowAsync();
-                        return;
-                    }
-            }
-            soundOut.Initialize(new SampleToFloat32Converter(sampleSource));
+                         _ = await notSupportedDialog.ShowAsync();
+                     });
+                    return;
+                }
+                if (sampleSource.Format.Channels == 1)
+                {
+                    sampleSource = new MonauralToStrereoSampleConverter(sampleSource);
+                }
+                if (sampleSource.Format.SampleRate != SampleRate)
+                {
+                    sampleSource = new SplineResampler(sampleSource, SampleRate);
+                }
+
+                source = new SinusoidSource(sampleSource.Format) { Frequency = 1000 };
+                var playlist = new SimplePlaylistSource<float, SampleFormat>(new ISampleSource[] {
+                sampleSource, source
+                , new SilenceSource<float, SampleFormat>(sampleSource.Format).ToSampleSource() });
+                soundOut.Initialize(new SampleToFloat32Converter(playlist));
+            }).ConfigureAwait(false);
         }
     }
 }

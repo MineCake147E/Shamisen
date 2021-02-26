@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using Shamisen.Formats;
@@ -11,6 +12,7 @@ namespace Shamisen.IO
     /// Indicates how the <see cref="IWaveFormat"/> is supported by the <see cref="Shamisen"/>.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = sizeof(TFlags))]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct FormatSupportStatus : IEquatable<FormatSupportStatus>
     {
         [FieldOffset(0)]
@@ -122,5 +124,15 @@ namespace Shamisen.IO
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(FormatSupportStatus left, FormatSupportStatus right) => !(left == right);
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string? ToString() => $"({nameof(IsChecked)} : {IsChecked}, {nameof(IsNativelySupported)} : {IsNativelySupported}, {nameof(IsSupported)} : {IsSupported})";
+
+        private string GetDebuggerDisplay() => ToString() ?? "null";
     }
 }

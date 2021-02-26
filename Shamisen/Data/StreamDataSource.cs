@@ -41,7 +41,11 @@ namespace Shamisen.Data
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <returns>The number of <see cref="byte"/>s read from this <see cref="IDataSource{TSample}"/>.</returns>
-        public ReadResult Read(Span<byte> destination) => source.Read(destination);
+        public ReadResult Read(Span<byte> destination)
+        {
+            var rr = source.Read(destination);
+            return rr < 1 ? ReadResult.EndOfStream : rr;
+        }
 
         /// <summary>
         /// Reads the data asynchronously to the specified destination.
@@ -63,8 +67,14 @@ namespace Shamisen.Data
             if (destination.Length < buffer.Length)
             {
                 var res = source.Read(buffer, 0, destination.Length);
-                buffer.AsSpan().SliceWhile(res).CopyTo(destination);
-                return res;
+                switch (res)
+                {
+                    case > 0:
+                        buffer.AsSpan().SliceWhile(res).CopyTo(destination);
+                        return res;
+                    default:
+                        return ReadResult.EndOfStream;
+                }
             }
             else
             {
@@ -78,7 +88,7 @@ namespace Shamisen.Data
                     res += rres;
                     if (rres == 0)
                     {
-                        return res;
+                        return res == 0 ? ReadResult.EndOfStream : res;
                     }
                 }
                 return res;

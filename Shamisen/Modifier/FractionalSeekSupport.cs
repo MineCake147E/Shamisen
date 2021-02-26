@@ -39,6 +39,21 @@ namespace Shamisen.Modifier
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FractionalSeekSupport"/> struct.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="divisor">The divisor.</param>
+        /// <param name="multiplier">The multiplier.</param>
+        /// <exception cref="ArgumentNullException">source</exception>
+        public FractionalSeekSupport(ISeekSupport source, UInt64Divisor divisor, ulong multiplier)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            this.divisor = divisor;
+            signedDivisor = new Int64Divisor((long)divisor.Divisor);
+            this.multiplier = multiplier;
+        }
+
+        /// <summary>
         /// Seeks the <see cref="IAudioSource{TSample, TFormat}" /> with the specified offset in frames.
         /// </summary>
         /// <param name="offset">The offset in frames.</param>

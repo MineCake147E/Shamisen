@@ -27,7 +27,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private const float Multiplier = 32768.0f;
         private const int ActualBytesPerSample = sizeof(short);
         private const int BufferMax = 1024;
-        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
+        private int ActualBufferMax => BufferMax * Source.Format.Channels;
 
         private Memory<short> dsmLastOutput;
         private Memory<float> dsmAccumulator;
@@ -45,7 +45,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
         public SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
-            : base(source, new WaveFormat(source.Format.SampleRate, 16, source.Format.Channels, AudioEncoding.LinearPcm))
+            : this(source, true, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, accuracyNeeded, endianness)
         {
             if (accuracyNeeded)
             {
@@ -67,7 +67,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
         internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
-            : this(source, accuracyNeeded, endianness)
+             : base(source, new WaveFormat(source.Format.SampleRate, 16, source.Format.Channels, AudioEncoding.LinearPcm))
         {
             this.enableIntrinsics = enableIntrinsics;
             this.enabledX86Intrinsics = enabledX86Intrinsics;

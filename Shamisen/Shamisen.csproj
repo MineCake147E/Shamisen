@@ -53,10 +53,6 @@
         <PackageReference Include="DivideSharp" Version="0.0.4" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
         <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-        <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO" Version="4.3.0" />
         <PackageReference Include="System.Memory" Version="4.5.4" />
@@ -97,6 +93,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         </None>
+        <None Include="Utils\Binary\BinaryExtensions.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Update="Codecs\Waveform\InfoSubChunkId.g.tt">
@@ -122,6 +123,10 @@
         <None Update="SystemExtensions\Memory\SpanExtensionsTemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Binary\BinaryExtensions.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
         </None>
     </ItemGroup>
     <ItemGroup>
@@ -158,6 +163,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         </Compile>
+        <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
@@ -165,6 +175,7 @@
         <Folder Include="Codecs\Waveform\Formats\ALaw\" />
         <Folder Include="Codecs\Flac\" />
         <Folder Include="Codecs\Waveform\Composing\" />
+        <Folder Include="Codecs\Waveform\Headers\" />
         <Folder Include="Metadata\Id3\" />
         <Folder Include="Utils\Samples\" />
     </ItemGroup>

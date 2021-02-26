@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using DivideSharp;
+
 using Shamisen.Data;
 using Shamisen.Formats;
 using Shamisen.Utils;
@@ -82,6 +84,8 @@ namespace Shamisen.Filters
         /// </value>
         public ISeekSupport? SeekSupport => null;
 
+        private UInt32Divisor blockSizeDivisor;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamBuffer{TSample, TFormat}"/> class.
         /// </summary>
@@ -91,15 +95,20 @@ namespace Shamisen.Filters
         /// The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
         /// </param>
         /// <param name="internalBufferNumber">The number of internal buffer.</param>
+        /// <param name="allowWaitForRead">The value which indicates whether the <see cref="StreamBuffer{TSample, TFormat}"/> should wait for another sample block or not.</param>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 0.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 2.</exception>
-        public StreamBuffer(IReadableAudioSource<TSample, TFormat> source, int initialBlockSize, int internalBufferNumber = 4)
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+        public StreamBuffer(IReadableAudioSource<TSample, TFormat> source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            if (initialBlockSize < 0) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
-            if (internalBufferNumber < 2) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
+            if (initialBlockSize < 2048) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
+            if (internalBufferNumber < 16) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
             dataBuffer = new PreloadDataBuffer<TSample>(new SampleDataSource<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);
+            if (Format is IInterleavedAudioFormat<TSample> nformat)
+            {
+                blockSizeDivisor = new((uint)nformat.BlockSize);
+            }
         }
 
         /// <summary>
@@ -109,7 +118,7 @@ namespace Shamisen.Filters
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<TSample> buffer)
         {
-            buffer = buffer.SliceAlign(Format.Channels);
+            buffer = buffer.SliceAlign(blockSizeDivisor);
             return dataBuffer.Read(buffer);
         }
 

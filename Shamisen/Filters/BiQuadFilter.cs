@@ -48,7 +48,7 @@ namespace Shamisen.Filters
 
         internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Source = source?.EnsureBlocks() ?? throw new ArgumentNullException(nameof(source));
             Parameter = parameter;
             internalStates = new Vector2[Format.Channels];
             internalStates.AsSpan().Fill(new Vector2(0, 0));
@@ -172,7 +172,7 @@ namespace Shamisen.Filters
                 var iStateR = ist[1];
                 var iStateC = ist[2];
                 var iStateLFE = ist[3];
-                for (int i = 0; i < buffer.Length; i += 4)
+                for (int i = 0; i < buffer.Length - 3; i += 4)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
@@ -219,7 +219,7 @@ namespace Shamisen.Filters
                 var iStateL = ist[0];
                 var iStateR = ist[1];
                 var iStateC = ist[2];
-                for (int i = 0; i < buffer.Length; i += 3)
+                for (int i = 0; i < buffer.Length - 2; i += 3)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
@@ -278,7 +278,7 @@ namespace Shamisen.Filters
                 var ist = internalStates;
                 var iStateL = ist[0];
                 var iStateR = ist[1];
-                for (int i = 0; i < buffer.Length; i += 2)
+                for (int i = 0; i < buffer.Length - 1; i += 2)
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
@@ -378,8 +378,9 @@ namespace Shamisen.Filters
                 var factorB = Parameter.B;
                 var factorA = Parameter.A;
                 Span<Vector2> iState = stackalloc Vector2[internalStates.Length];
+                var channels = iState.Length;
                 internalStates.AsSpan().CopyTo(iState);
-                for (int i = 0; i < buffer.Length; i += iState.Length)
+                for (int i = 0; i < buffer.Length - channels + 1; i += channels)
                 {
                     ref var pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);

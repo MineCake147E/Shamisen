@@ -1,4 +1,5 @@
 ﻿using Shamisen.Extensions;
+
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -10,10 +11,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
     /// <summary>
     /// Converts 32-bit PCM to Sample.
     /// </summary>
-    /// <seealso cref="Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase" />
+    /// <seealso cref="WaveToSampleConverterBase" />
     public sealed class Pcm32ToSampleConverter : WaveToSampleConverterBase
     {
         private const float Divisor = 2147483648.0f;
+        private const float Multiplier = 1.0f / Divisor;
         private const int ActualBytesPerSample = sizeof(int);
         private const int BufferMax = 1024;
         private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
@@ -34,7 +36,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <param name="source">The source.</param>
         /// <param name="endianness">The endianness of <paramref name="source"/>.</param>
         public Pcm32ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, Endianness endianness = Endianness.Little)
-            : base(source, new SampleFormat(source.Format.SampleRate, source.Format.Channels)) => Endianness = endianness;
+            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate)) => Endianness = endianness;
 
         /// <summary>
         /// Gets the bytes consumed per sample.
@@ -45,6 +47,49 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         protected override int BytesPerSample => ActualBytesPerSample;
 
         /// <summary>
+        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Length => Source.Length / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? TotalLength => Source.TotalLength / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
+        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
+        /// </value>
+        public override ulong? Position => Source.TotalLength / ActualBytesPerSample;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public override ISkipSupport? SkipSupport => Source.SkipSupport?.WithFraction(ActualBytesPerSample, 1);
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}" />.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public override ISeekSupport? SeekSupport => Source.SeekSupport?.WithFraction(ActualBytesPerSample, 1);
+
+        /// <summary>
         /// Reads the audio to the specified buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
@@ -53,35 +98,28 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            Span<int> span = stackalloc int[buffer.Length > ActualBufferMax ? ActualBufferMax : buffer.Length];
-            var cursor = buffer;
-            while (cursor.Length > 0)
+            //Since sizeof(float) is the same as sizeof(int), no external buffer is required.
+            buffer = buffer.SliceAlign(sizeof(int));
+            var rr = Source.Read(MemoryMarshal.Cast<float, byte>(buffer));
+            if (rr.HasNoData)
             {
-                var reader = cursor.Length >= span.Length ? span : span.Slice(0, cursor.Length);
-                var rr = Source.Read(MemoryMarshal.AsBytes(span));
-                if (rr.HasNoData) return buffer.Length - cursor.Length;
-                int u = rr.Length / ActualBytesPerSample;
-                var wrote = reader.Slice(0, u);
-                var dest = cursor.Slice(0, wrote.Length);
-                if (wrote.Length != dest.Length)
-                    new InvalidOperationException(
-                        $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
-                if (IsEndiannessConversionRequired)
+                return rr;
+            }
+            buffer = buffer.SliceWhile(rr.Length).SliceAlign(sizeof(int));
+            var wrote = MemoryMarshal.Cast<float, int>(buffer);
+            if (IsEndiannessConversionRequired)
+            {
+                for (int i = 0; i < wrote.Length && i < buffer.Length; i++)
                 {
-                    for (int i = 0; i < wrote.Length && i < dest.Length; i++)
-                    {
-                        dest[i] = BinaryPrimitives.ReverseEndianness(wrote[i]) / Divisor;
-                    }
+                    buffer[i] = BinaryPrimitives.ReverseEndianness(wrote[i]) * Multiplier;
                 }
-                else
+            }
+            else
+            {
+                for (int i = 0; i < wrote.Length && i < buffer.Length; i++)
                 {
-                    for (int i = 0; i < wrote.Length && i < dest.Length; i++)
-                    {
-                        dest[i] = wrote[i] / Divisor;
-                    }
+                    buffer[i] = wrote[i] * Multiplier;
                 }
-                cursor = cursor.Slice(u);
-                if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
             return buffer.Length;
         }

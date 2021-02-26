@@ -228,7 +228,7 @@ namespace System
         public static Span<T> SliceAlign<T>(this Span<T> span, int channels) => span.Slice(0, MathI.FloorStep(span.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
@@ -303,7 +303,7 @@ namespace System
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, int channels) => memory.Slice(0, MathI.FloorStep(memory.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
@@ -378,7 +378,7 @@ namespace System
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, int channels) => readOnlySpan.Slice(0, MathI.FloorStep(readOnlySpan.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
@@ -453,7 +453,7 @@ namespace System
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, int channels) => readOnlyMemory.Slice(0, MathI.FloorStep(readOnlyMemory.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
