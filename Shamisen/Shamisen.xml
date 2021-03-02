@@ -559,185 +559,6 @@
             Initializes a new instance of the <see cref="T:Shamisen.FixedBitDepthAttribute"/> class.
             </summary>
         </member>
-        <member name="T:Shamisen.AudioSocket`2">
-            <summary>
-            The re-pluggable socket receiving audio from <see cref="T:Shamisen.IReadableAudioSource`2"/>
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The type of the format.</typeparam>
-            <seealso cref="T:Shamisen.Filters.IAudioFilter`2" />
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.Source">
-            <summary>
-            Gets the source to read the samples from.
-            </summary>
-            <value>
-            The source.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
-        </member>
-        <member name="P:Shamisen.AudioSocket`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.#ctor(`1)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.AudioSocket`2"/> class with the specified <paramref name="format"/>.
-            </summary>
-            <param name="format">The format.</param>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.ReplaceSource(Shamisen.IReadableAudioSource{`0,`1})">
-            <summary>
-            Replaces the source to the <paramref name="newSource"/>.
-            </summary>
-            <param name="newSource">The new source.</param>
-            <returns>The <see cref="P:Shamisen.AudioSocket`2.Source"/> that was previously set.</returns>
-            <exception cref="T:System.ArgumentException">The Format is not same as newSource's Format!</exception>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.DeplugSource">
-            <summary>
-            De-plugs the source.
-            </summary>
-            <returns>The old <see cref="P:Shamisen.AudioSocket`2.Source"/>.</returns>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:Shamisen.AudioSocket`2.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="T:Shamisen.AudioSourceUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.EnsureBlocks``2(Shamisen.IReadableAudioSource{``0,``1})">
-            <summary>
-            Ensures the blocks are aligned for the <paramref name="source"/>.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The type of the format.</typeparam>
-            <param name="source">The source.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.ToSampleSource(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat})">
-            <summary>
-            Converts the <paramref name="source"/> to <see cref="T:Shamisen.ISampleSource"/>.
-            </summary>
-            <param name="source">The source to convert.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.ToWaveSource(Shamisen.IReadableAudioSource{System.Byte,Shamisen.IWaveFormat})">
-            <summary>
-            Converts the <paramref name="source"/> to <see cref="T:Shamisen.IWaveSource"/>.
-            </summary>
-            <param name="source">The source to convert.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.ISampleSource,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="initialBlockSize">
-            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-            </param>
-            <param name="internalBufferNumber">The number of internal buffer.</param>
-            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.IWaveSource,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="initialBlockSize">
-            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-            </param>
-            <param name="internalBufferNumber">The number of internal buffer.</param>
-            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.Loop``2(Shamisen.IReadableAudioSource{``0,``1})">
-            <summary>
-            Loops the specified source.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <typeparam name="TFormat">The type of the format.</typeparam>
-            <param name="source">The source.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.AudioSourceUtils.ConvertToSample(Shamisen.IWaveSource)">
-            <summary>
-            Converts the <paramref name="source"/> to <see cref="T:Shamisen.ISampleSource"/>.
-            </summary>
-            <param name="source">The source.</param>
-            <returns></returns>
-        </member>
         <member name="T:Shamisen.AudioMemory`2">
             <summary>
             Represents an audio buffer.
@@ -2010,22 +1831,22 @@
             Defines a base infrastructure of an audio decoder.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.IDecoder.DetermineDecodabilityAsync(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.IDecoder.DetermineDecodabilityAsync(Shamisen.IDataSource{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="dataSource"/> can be decoded by this decoder asynchronously.<br/>
             The actual decoding stream must be opened after seeking the source <see cref="T:System.IO.Stream"/> to head.
             </summary>
-            <param name="dataSource">The <see cref="T:Shamisen.Data.IDataSource`1"/> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:Shamisen.IDataSource`1"/> to read the data from.</param>
             <returns>
             The whole verification task which returns the value below:<br/>
             <c>true</c> if the data from <paramref name="dataSource"/> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Codecs.IDecoder.TryCreateDecoderAsync(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.IDecoder.TryCreateDecoderAsync(Shamisen.IDataSource{System.Byte})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource"/>.
             </summary>
-            <param name="dataSource">The <see cref="T:Shamisen.Data.IDataSource`1"/> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:Shamisen.IDataSource`1"/> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:Shamisen.IWaveSource"/>.
@@ -2616,7 +2437,7 @@
             <summary>
             Defines a base infrastructure of a chunk reader.
             </summary>
-            <seealso cref="T:Shamisen.Data.IDataSource`1" />
+            <seealso cref="T:Shamisen.IDataSource`1" />
         </member>
         <member name="P:Shamisen.Codecs.Waveform.IChunkReader.ChunkId">
             <summary>
@@ -2652,7 +2473,7 @@
         </member>
         <member name="P:Shamisen.Codecs.Waveform.IChunkReader.CanPubliclyRead">
             <summary>
-            Gets a value indicating whether this instance can be read by <see cref="M:Shamisen.Data.IDataSource`1.Read(System.Span{`0})"/> and <see cref="M:Shamisen.Data.IDataSource`1.ReadAsync(System.Memory{`0})"/>.
+            Gets a value indicating whether this instance can be read by <see cref="M:Shamisen.IReadSupport`1.Read(System.Span{`0})"/> and <see cref="M:Shamisen.IAsyncReadSupport`1.ReadAsync(System.Memory{`0})"/>.
             </summary>
             <value>
               <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.
@@ -3003,7 +2824,7 @@
         <member name="T:Shamisen.Codecs.Waveform.Parsing.IWaveParser">
             <summary>
             Decodes a ".wav" file from <see cref="T:Shamisen.Codecs.Waveform.IChunkReader"/>.<br/>
-            The instance of <see cref="T:Shamisen.Codecs.Waveform.Parsing.IWaveParser"/> must be ready to <see cref="M:Shamisen.IReadableAudioSource`2.Read(System.Span{`0})"/> after the instance is initialized with its constructor.
+            The instance of <see cref="T:Shamisen.Codecs.Waveform.Parsing.IWaveParser"/> must be ready to <see cref="M:Shamisen.IReadSupport`1.Read(System.Span{`0})"/> after the instance is initialized with its constructor.
             </summary>
             <seealso cref="T:Shamisen.IWaveSource" />
         </member>
@@ -3167,7 +2988,7 @@
             The seek support.
             </value>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.#ctor(Shamisen.Codecs.Waveform.Parsing.IChunkParserFactory,Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.#ctor(Shamisen.Codecs.Waveform.Parsing.IChunkParserFactory,Shamisen.IReadableDataSource{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser" /> class.
             </summary>
@@ -3327,13 +3148,58 @@
             The parser.
             </value>
         </member>
-        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.Position">
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.Length">
             <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The position.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
             </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.TotalSize">
             <summary>
@@ -3343,7 +3209,7 @@
             The total size.
             </value>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(Shamisen.Data.IDataSource{System.Byte},Shamisen.Codecs.Waveform.Parsing.IRf64Parser,Shamisen.StackOnlyActionContainer{System.UInt64}@)">
+        <member name="M:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Waveform.Parsing.IRf64Parser,Shamisen.StackOnlyActionContainer{System.UInt64}@)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader" /> class that reads <see cref="F:Shamisen.Codecs.Waveform.ChunkId.Riff" /> and <see cref="F:Shamisen.Codecs.Waveform.ChunkId.Rf64" /> chunk.
             </summary>
@@ -3352,7 +3218,7 @@
             <param name="totalSizeSetter">A method to set the <see cref="P:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.TotalSize"/>.</param>
             <exception cref="T:System.ArgumentNullException">dataSource</exception>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(Shamisen.Data.IDataSource{System.Byte},Shamisen.Codecs.Waveform.Parsing.IRf64Parser)">
+        <member name="M:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Waveform.Parsing.IRf64Parser)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader" /> class that reads <see cref="F:Shamisen.Codecs.Waveform.ChunkId.Riff" /> and <see cref="F:Shamisen.Codecs.Waveform.ChunkId.Rf64" /> chunk.
             </summary>
@@ -3373,7 +3239,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Rf64.Rf64ChunkReader.ReadSubChunk">
@@ -3427,7 +3293,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.RiffChunkHeader.ReadChunkHeader(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.RiffChunkHeader.ReadChunkHeader(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads the chunk header from the specified <paramref name="dataSource"/>.
             </summary>
@@ -3553,6 +3419,59 @@
             The remaining bytes.
             </value>
         </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
         <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.TotalSize">
             <summary>
             Gets the total size of this chunk.
@@ -3561,15 +3480,7 @@
             The total size.
             </value>
         </member>
-        <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.Position">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1" />.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="M:Shamisen.Codecs.Waveform.RiffChunkReader.#ctor(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.RiffChunkReader.#ctor(Shamisen.IReadableDataSource{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.RiffChunkReader"/> class that reads <see cref="F:Shamisen.Codecs.Waveform.ChunkId.Riff"/> chunk.
             </summary>
@@ -3580,7 +3491,7 @@
             <summary>
             Reads the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
+            <param name="buffer">The destination.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.RiffChunkReader.ReadAsync(System.Memory{System.Byte})">
@@ -3589,7 +3500,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.RiffChunkReader.ReadSubChunk">
@@ -3747,21 +3658,21 @@
             Encodes and decodes some ".wav" files in certain formats.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.WaveCodec.DetermineDecodabilityAsync(Shamisen.IDataSource{System.Byte})">
             <summary>
             Determines whether the data from <paramref name="dataSource" /> can be decoded by this decoder asynchronously.<br/>
             The actual decoding stream must be opened after seeking the source <see cref="T:System.IO.Stream"/> to head.
             </summary>
-            <param name="dataSource">The <see cref="T:Shamisen.Data.IDataSource`1" /> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:Shamisen.IDataSource`1" /> to read the data from.</param>
             <returns>
             The whole verification task which returns the value below:<br /><c>true</c> if the data from <paramref name="dataSource" /> can be supported by this decoder, otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.WaveCodec.TryCreateDecoderAsync(Shamisen.IDataSource{System.Byte})">
             <summary>
             Tries to create a decoder that asynchronously decodes the data asynchronously read from <paramref name="dataSource" />.
             </summary>
-            <param name="dataSource">The <see cref="T:Shamisen.Data.IDataSource`1" /> to read the data from.</param>
+            <param name="dataSource">The <see cref="T:Shamisen.IDataSource`1" /> to read the data from.</param>
             <returns>
             success: The value which indicates whether the data is decodable, and the decoder is created.
             decoder: The decoding <see cref="T:Shamisen.IWaveSource" />.
@@ -4364,6 +4275,91 @@
             <summary>
             The <see cref="P:Shamisen.Units.Sample"/> is a smallest unit of the multi-channel discrete(digital) audio data.<br/>
             The <see cref="P:Shamisen.Units.Sample"/> besides channel-by-channel, so the length of frame in bytes is the size of the sample itself, multiplied by the number of channels.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter">
+            <summary>
+            Converts monaural audio to stereo.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter"/> class.
+            </summary>
+            <param name="source">The source.</param>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.TotalLength">
+            <summary>
+            Gets the total length.
+            </summary>
+            <value>
+            The total length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Position">
+            <summary>
+            Gets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SkipSupport">
+            <summary>
+            Gets the skip support.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SeekSupport">
+            <summary>
+            Gets the seek support.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
         <member name="T:Shamisen.Conversion.IAudioConverter`4">
@@ -5714,111 +5710,375 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
+        <member name="T:Shamisen.IAudioSource`2">
+            <summary>
+            Defines a base infrastructure for all audio sources.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioSource`2.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="T:Shamisen.IDataSource`1">
+            <summary>
+            Defines a base infrastructure of a source of binary data.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSource`1.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="T:Shamisen.ISkippableDataSource`1">
+            <summary>
+            Defines a base infrastructure of a source of binary data, which supports skipping.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:Shamisen.IDataSource`1" />
+        </member>
+        <member name="T:Shamisen.ISeekableDataSource`1">
+            <summary>
+            Defines a base infrastructure of a source of binary data, which supports seeking.
+            </summary>
+            <seealso cref="T:Shamisen.IDataSource`1" />
+        </member>
+        <member name="T:Shamisen.IReadableAudioSource`2">
+            <summary>
+            Defines a base infrastructure of a readable audio source.
+            </summary>
+            <typeparam name="TSample">The type of audio data.</typeparam>
+            <typeparam name="TFormat">The format of audio data.</typeparam>
+            <seealso cref="T:Shamisen.IAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.IAsyncReadableAudioSource`2">
+            <summary>
+            Defines a base infrastructure of an asynchronously readable audio source.
+            </summary>
+            <typeparam name="TSample">The type of audio data.</typeparam>
+            <typeparam name="TFormat">The format of audio data.</typeparam>
+            <seealso cref="T:Shamisen.IAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.IReadableDataSource`1">
+            <summary>
+            Defines a base infrastructure of a readable data source.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:Shamisen.IDataSource`1" />
+            <seealso cref="T:Shamisen.IReadSupport`1" />
+        </member>
+        <member name="T:Shamisen.IAsyncReadableDataSource`1">
+            <summary>
+            Defines a base infrastructure of an asynchronously readable data source.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <seealso cref="T:Shamisen.IDataSource`1" />
+            <seealso cref="T:Shamisen.IReadSupport`1" />
+        </member>
+        <member name="T:Shamisen.IReadSupport`1">
+            <summary>
+            Defines a base infrastructure of a read support of <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+        </member>
+        <member name="M:Shamisen.IReadSupport`1.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:Shamisen.IAsyncReadSupport`1">
+            <summary>
+            Defines a base infrastructure of an asynchronous read support of <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+        </member>
+        <member name="M:Shamisen.IAsyncReadSupport`1.ReadAsync(System.Memory{`0})">
+            <summary>
+            Reads the data to the specified buffer asynchronously.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:Shamisen.ISampleSource">
+            <summary>
+            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio source.
+            </summary>
+            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.IAsyncSampleSource">
+            <summary>
+            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio source.
+            </summary>
+            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.ISampleAggregator">
+            <summary>
+            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio filter.
+            </summary>
+            <seealso cref="T:Shamisen.IAggregator`3" />
+        </member>
+        <member name="T:Shamisen.ISeekSupport">
+            <summary>
+            Defines a base infrastructure that contains seek support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.ISeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
+            </summary>
+            <param name="offset">The offset in frames.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="M:Shamisen.ISeekSupport.SeekTo(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames.
+            </summary>
+            <param name="index">The index in frames.</param>
+        </member>
+        <member name="M:Shamisen.ISeekSupport.StepBack(System.UInt64)">
+            <summary>
+            Steps this data source the specified step back in frames.
+            </summary>
+            <param name="step">The number of frames to step back.</param>
+        </member>
+        <member name="M:Shamisen.ISeekSupport.SeekLast(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
+            </summary>
+            <param name="offset">The offset.</param>
+        </member>
+        <member name="T:Shamisen.ISkipSupport">
+            <summary>
+            Defines a base infrastructure that contains skip support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.ISkipSupport.Skip(System.UInt64)">
+            <summary>
+            Skips the source the specified step in frames.
+            </summary>
+            <param name="step">The number of frames to skip.</param>
+        </member>
+        <member name="T:Shamisen.IWaveSource">
+            <summary>
+            Defines a base infrastructure of a raw audio data source.
+            </summary>
+            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.IAsyncWaveSource">
+            <summary>
+            Defines a base infrastructure of an asynchronously-readable raw audio data source.
+            </summary>
+            <seealso cref="T:Shamisen.IAsyncReadableAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.IWaveAggregator">
+            <summary>
+            Defines a base infrastructure of a raw audio data filter.
+            </summary>
+            <seealso cref="T:Shamisen.IAggregator`3" />
+        </member>
         <member name="T:Shamisen.Data.Binary.DataReaderExtensions">
             <summary>
             Provides some functions that helps you to analyze data input binary.
             </summary>
-            <seealso cref="T:Shamisen.Data.IDataSource`1" />
+            <seealso cref="T:Shamisen.IDataSource`1" />
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadByte(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadByte(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadSignedByte(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadSignedByte(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt16LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt16LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt16BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt16BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt16LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt16LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt16BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt16BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt32LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt32LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt32BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt32BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt32LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt32LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt32BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt32BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt64LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt64LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt64BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadUInt64BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt64LittleEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt64LittleEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt64BigEndian(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadInt64BigEndian(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadStruct``1(Shamisen.Data.IDataSource{System.Byte})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadStruct``1(Shamisen.IDataSource{System.Byte})">
             <summary>
             Reads single <typeparamref name="TStruct"/> value from <paramref name="dataReader"/>.
             </summary>
@@ -5826,105 +6086,105 @@
             <param name="dataReader">The data reader.</param>
             <returns>The deserialized <typeparamref name="TStruct"/> value.</returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadByte(Shamisen.Data.IDataSource{System.Byte},System.Byte@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadByte(Shamisen.IDataSource{System.Byte},System.Byte@)">
             <summary>
             Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadSignedByte(Shamisen.Data.IDataSource{System.Byte},System.SByte@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadSignedByte(Shamisen.IDataSource{System.Byte},System.SByte@)">
             <summary>
             Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns>The value read.</returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt16@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt16@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt16@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(Shamisen.IDataSource{System.Byte},System.UInt16@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.Int16@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(Shamisen.IDataSource{System.Byte},System.Int16@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(Shamisen.Data.IDataSource{System.Byte},System.Int16@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(Shamisen.IDataSource{System.Byte},System.Int16@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt32@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt32@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt32@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(Shamisen.IDataSource{System.Byte},System.UInt32@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.Int32@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(Shamisen.IDataSource{System.Byte},System.Int32@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(Shamisen.Data.IDataSource{System.Byte},System.Int32@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(Shamisen.IDataSource{System.Byte},System.Int32@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt64@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt64@)">
             <summary>
             Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(Shamisen.Data.IDataSource{System.Byte},System.UInt64@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(Shamisen.IDataSource{System.Byte},System.UInt64@)">
             <summary>
             Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(Shamisen.Data.IDataSource{System.Byte},System.Int64@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(Shamisen.IDataSource{System.Byte},System.Int64@)">
             <summary>
             Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(Shamisen.Data.IDataSource{System.Byte},System.Int64@)">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(Shamisen.IDataSource{System.Byte},System.Int64@)">
             <summary>
             Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadAll``1(Shamisen.Data.IDataSource{``0},System.Span{``0})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadAll``1(Shamisen.IDataSource{``0},System.Span{``0})">
             <summary>
             Reads some data from <paramref name="dataSource"/> to fill <paramref name="buffer"/>.
             </summary>
@@ -5933,7 +6193,7 @@
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadAll``1(Shamisen.Data.IDataSource{``0},System.Span{``0})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadAll``1(Shamisen.IDataSource{``0},System.Span{``0})">
             <summary>
             Tries to read some data from <paramref name="dataSource"/> to fill <paramref name="buffer"/> while the <paramref name="dataSource"/> doesn't run out of data.
             </summary>
@@ -5942,7 +6202,7 @@
             <param name="buffer">The buffer.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.CheckRead``1(Shamisen.Data.IDataSource{``0},System.Span{``0})">
+        <member name="M:Shamisen.Data.Binary.DataReaderExtensions.CheckRead``1(Shamisen.IDataSource{``0},System.Span{``0})">
             <summary>
             Reads some data from <paramref name="dataSource"/> to <paramref name="buffer"/>.
             </summary>
@@ -5961,7 +6221,7 @@
         </member>
         <member name="T:Shamisen.Data.BufferingException">
             <summary>
-            The exception that is thrown when a reader of <see cref="T:Shamisen.Data.IDataSource`1"/> has ran out of buffered data.
+            The exception that is thrown when a reader of <see cref="T:Shamisen.IDataSource`1"/> has ran out of buffered data.
             </summary>
             <seealso cref="T:System.IO.IOException" />
         </member>
@@ -6017,13 +6277,58 @@
             The read position.
             </value>
         </member>
-        <member name="P:Shamisen.Data.DataCache`1.Shamisen#Data#IDataSource{TSample}#Position">
+        <member name="P:Shamisen.Data.DataCache`1.Length">
             <summary>
-            Gets the READING position.
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The position.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
             </value>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.Shamisen#IDataSource{TSample}#Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.DataCache`1.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
         </member>
         <member name="M:Shamisen.Data.DataCache`1.#ctor(System.Int32)">
             <summary>
@@ -6037,7 +6342,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <typeparamref name="TSample"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <typeparamref name="TSample"/>s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Data.DataCache`1.ReadAsync(System.Memory{`0})">
@@ -6046,7 +6351,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <see cref="T:System.Byte" />s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Data.DataCache`1.Write(System.ReadOnlySpan{`0})">
@@ -6105,10 +6410,10 @@
         </member>
         <member name="T:Shamisen.Data.DataSourceUtils">
             <summary>
-            Contains some utility functions for <see cref="T:Shamisen.Data.IDataSource`1"/>.
+            Contains some utility functions for <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.DataSourceUtils.Preload``1(Shamisen.Data.IDataSource{``0},System.Int32,System.Int32,System.Boolean)">
+        <member name="M:Shamisen.Data.DataSourceUtils.Preload``1(Shamisen.IDataSource{``0},System.Int32,System.Int32,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.PreloadDataBuffer`1"/> class.
             </summary>
@@ -6121,58 +6426,6 @@
             <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Data.PreloadDataBuffer`1"/> should wait for another sample block or not.</param>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
-        </member>
-        <member name="T:Shamisen.Data.DataUtils">
-            <summary>
-            Provides some extensions for <see cref="T:Shamisen.Data.IDataSource`1"/>s.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Data.DataUtils.SkipWithFallback``1(Shamisen.Data.IDataSource{``0},System.UInt64)">
-            <summary>
-            Skips this data source the specified number of elements to skip.
-            </summary>
-            <param name="dataSource"></param>
-            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
-        </member>
-        <member name="T:Shamisen.Data.IDataSource`1">
-            <summary>
-            Defines a base infrastructure of a source of binary data.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Data.IDataSource`1.Read(System.Span{`0})">
-            <summary>
-            Reads the data to the specified destination.
-            </summary>
-            <param name="destination">The destination.</param>
-            <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Data.IDataSource`1.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the data asynchronously to the specified destination.
-            </summary>
-            <param name="destination">The destination.</param>
-            <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1"/>.</returns>
-        </member>
-        <member name="P:Shamisen.Data.IDataSource`1.Position">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1"/>.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="T:Shamisen.Data.ISkippableDataSource`1">
-            <summary>
-            Defines a base infrastructure of a source of binary data, which supports skipping.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <seealso cref="T:Shamisen.Data.IDataSource`1" />
-        </member>
-        <member name="T:Shamisen.Data.ISeekableDataSource`1">
-            <summary>
-            Defines a base infrastructure of a source of binary data, which supports seeking.
-            </summary>
-            <seealso cref="T:Shamisen.Data.IDataSource`1" />
         </member>
         <member name="T:Shamisen.Data.IDataSink`1">
             <summary>
@@ -6218,15 +6471,7 @@
             It is more efficient than <see cref="T:Shamisen.Data.Binary.DataReaderExtensions"/>'s methods.<br/>
             The <see cref="T:Shamisen.Data.Parsing.BufferedBinaryParser"/> won't <see cref="M:System.IDisposable.Dispose"/> the <see cref="P:Shamisen.Data.Parsing.BufferedBinaryParser.Source"/> even if the parser gets disposed.
             </summary>
-            <seealso cref="T:Shamisen.Data.IDataSource`1" />
-        </member>
-        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Position">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1" />.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <seealso cref="T:Shamisen.IDataSource`1" />
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Source">
             <summary>
@@ -6241,7 +6486,7 @@
             The minimum buffer length
             </summary>
         </member>
-        <member name="M:Shamisen.Data.Parsing.BufferedBinaryParser.#ctor(Shamisen.Data.IDataSource{System.Byte},System.Int32)">
+        <member name="M:Shamisen.Data.Parsing.BufferedBinaryParser.#ctor(Shamisen.IReadableDataSource{System.Byte},System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.Parsing.BufferedBinaryParser"/> class.
             </summary>
@@ -6249,22 +6494,75 @@
             <param name="bufferLength">The length of internal buffer, which must be larger than or equals to <see cref="F:Shamisen.Data.Parsing.BufferedBinaryParser.MinimumBufferLength"/>.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
         <member name="M:Shamisen.Data.Parsing.BufferedBinaryParser.Read(System.Span{System.Byte})">
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
+            <param name="buffer">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Data.Parsing.BufferedBinaryParser.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
+            <param name="buffer">The destination.</param>
             <returns>
-            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Data.Parsing.BufferedBinaryParser.Dispose">
@@ -6400,7 +6698,7 @@
         </member>
         <member name="T:Shamisen.Data.Parsing.IBinaryParser">
             <summary>
-            Defines a base infrastructure to parse binary data from <see cref="T:Shamisen.Data.IDataSource`1"/>.
+            Defines a base infrastructure to parse binary data from <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
         </member>
         <member name="P:Shamisen.Data.Parsing.IBinaryParser.Source">
@@ -6525,20 +6823,17 @@
             It reads a little more than required, and prevents waiting for IOs.
             </summary>
         </member>
-        <member name="P:Shamisen.Data.PreloadDataBuffer`1.Position">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1" />.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
         <member name="P:Shamisen.Data.PreloadDataBuffer`1.AllowWaitForRead">
             <summary>
             Gets or sets the value which indicates whether the <see cref="T:Shamisen.Data.PreloadDataBuffer`1"/> should wait for another sample block or not.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.PreloadDataBuffer`1.#ctor(Shamisen.Data.IDataSource{`0},System.Int32,System.Int32,System.Boolean)">
+        <member name="P:Shamisen.Data.PreloadDataBuffer`1.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Data.PreloadDataBuffer`1.#ctor(Shamisen.IDataSource{`0},System.Int32,System.Int32,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.PreloadDataBuffer`1"/> class.
             </summary>
@@ -6567,7 +6862,7 @@
             </summary>
             <param name="destination">The destination.</param>
             <returns>
-            The number of <typeparamref name="TSample" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            The number of <typeparamref name="TSample" />s read from this <see cref="T:Shamisen.IDataSource`1" />.
             </returns>
         </member>
         <member name="M:Shamisen.Data.PreloadDataBuffer`1.Dispose(System.Boolean)">
@@ -6583,7 +6878,7 @@
         </member>
         <member name="T:Shamisen.Data.SampleDataSource`2">
             <summary>
-            Translates calls between <see cref="T:Shamisen.Data.IDataSource`1"/> and <see cref="T:Shamisen.IReadableAudioSource`2"/>.
+            Translates calls between <see cref="T:Shamisen.IDataSource`1"/> and <see cref="T:Shamisen.IReadableAudioSource`2"/>.
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <typeparam name="TFormat">The type of the format.</typeparam>
@@ -6595,31 +6890,58 @@
             <param name="source">The source.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
-        <member name="P:Shamisen.Data.SampleDataSource`2.Position">
+        <member name="P:Shamisen.Data.SampleDataSource`2.Length">
             <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1" />.
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The position.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="M:Shamisen.Data.SampleDataSource`2.Read(System.Span{`0})">
+        <member name="P:Shamisen.Data.SampleDataSource`2.TotalLength">
             <summary>
-            Reads the data to the specified destination.
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>
-            The number of <typeparamref name="TSample" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
-            </returns>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
         </member>
-        <member name="M:Shamisen.Data.SampleDataSource`2.ReadAsync(System.Memory{`0})">
+        <member name="P:Shamisen.Data.SampleDataSource`2.Position">
             <summary>
-            Reads the data asynchronously to the specified destination.
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>
-            The number of <typeparamref name="TSample" />s read from this <see cref="T:Shamisen.Data.IDataSource`1" />.
-            </returns>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.SampleDataSource`2.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.SampleDataSource`2.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.SampleDataSource`2.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.SampleDataSource`2.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
         </member>
         <member name="M:Shamisen.Data.SampleDataSource`2.Dispose">
             <summary>
@@ -6635,66 +6957,140 @@
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.StreamDataSource"/> class.
             </summary>
-            <param name="steram">The steram.</param>
-            <exception cref="T:System.ArgumentNullException">steram</exception>
+            <param name="stream">The stream.</param>
+            <exception cref="T:System.ArgumentNullException">stream</exception>
         </member>
-        <member name="P:Shamisen.Data.StreamDataSource.Position">
+        <member name="P:Shamisen.Data.StreamDataSource.PositionOld">
             <summary>
-            Gets the current position of this <see cref="T:Shamisen.Data.IDataSource`1"/>.
+            Gets the current position of this <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
             <value>
             The position.
             </value>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.Dispose">
+        <member name="P:Shamisen.Data.StreamDataSource.Length">
             <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.ReadSupport">
+            <summary>
+            Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSource.AsyncReadSupport">
+            <summary>
+            Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
             </summary>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.Read(System.Span{System.Byte})">
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.Data.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.Seek(System.Int64,System.IO.SeekOrigin)">
+        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
             </summary>
             <param name="offset">The offset in frames.</param>
             <param name="origin">The origin.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.SeekLast(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.SeekLast(System.UInt64)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
             </summary>
             <param name="offset">The offset.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.SeekTo(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.SeekTo(System.UInt64)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames.
             </summary>
             <param name="index">The index in frames.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.Skip(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.Skip(System.UInt64)">
             <summary>
             Skips the source the specified step in frames.
             </summary>
             <param name="step">The number of frames to skip.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StepBack(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.StepBack(System.UInt64)">
             <summary>
             Steps this data source the specified step back in frames.
             </summary>
             <param name="step">The number of frames to step back.</param>
+        </member>
+        <member name="M:Shamisen.Data.StreamDataSource.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.DataUtils">
+            <summary>
+            Provides some extensions for <see cref="T:Shamisen.IDataSource`1"/>s.
+            </summary>
+        </member>
+        <member name="M:Shamisen.DataUtils.SkipWithFallback``1(Shamisen.IDataSource{``0},System.UInt64)">
+            <summary>
+            Skips this data source the specified number of elements to skip.
+            </summary>
+            <param name="dataSource"></param>
+            <param name="numberOfElementsToSkip">The number of elements to skip.</param>
+        </member>
+        <member name="M:Shamisen.DataUtils.Read``1(Shamisen.IDataSource{``0},System.Span{``0})">
+            <summary>
+            Reads the specified data source.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="dataSource">The data source.</param>
+            <param name="span">The span.</param>
+            <returns></returns>
         </member>
         <member name="T:Shamisen.ReadAsyncFunc`1">
             <summary>
@@ -7943,6 +8339,111 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Shamisen.AudioSocket`2">
+            <summary>
+            The re-pluggable socket receiving audio from <see cref="T:Shamisen.IReadableAudioSource`2"/>
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:Shamisen.Filters.IAudioFilter`2" />
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.Source">
+            <summary>
+            Gets the source to read the samples from.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.AudioSocket`2.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.#ctor(`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.AudioSocket`2"/> class with the specified <paramref name="format"/>.
+            </summary>
+            <param name="format">The format.</param>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.Read(System.Span{`0})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.ReplaceSource(Shamisen.IReadableAudioSource{`0,`1})">
+            <summary>
+            Replaces the source to the <paramref name="newSource"/>.
+            </summary>
+            <param name="newSource">The new source.</param>
+            <returns>The <see cref="P:Shamisen.AudioSocket`2.Source"/> that was previously set.</returns>
+            <exception cref="T:System.ArgumentException">The Format is not same as newSource's Format!</exception>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.DeplugSource">
+            <summary>
+            De-plugs the source.
+            </summary>
+            <returns>The old <see cref="P:Shamisen.AudioSocket`2.Source"/>.</returns>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Shamisen.AudioSocket`2.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
         <member name="T:Shamisen.ChannelMaskUtils">
             <summary>
             Provides several utilities for manipulating <see cref="T:Shamisen.Speakers"/>.
@@ -9067,64 +9568,6 @@
             The base source.
             </value>
         </member>
-        <member name="T:Shamisen.IAudioSource`2">
-            <summary>
-            Defines a base infrastructure for all audio sources.
-            </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
-            <typeparam name="TFormat">The type of audio format.</typeparam>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioSource`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
-        </member>
         <member name="T:Shamisen.InternalExtensions">
             <summary>
             Provides some functions that supports implementing some functions.
@@ -9529,72 +9972,6 @@
             </summary>
             <param name="exception">The exception.</param>
         </member>
-        <member name="T:Shamisen.IReadableAudioSource`2">
-            <summary>
-            Defines a base infrastructure of a readable audio source.
-            </summary>
-            <typeparam name="TSample">The type of audio data.</typeparam>
-            <typeparam name="TFormat">The format of audio data.</typeparam>
-            <seealso cref="T:Shamisen.IAudioSource`2" />
-        </member>
-        <member name="M:Shamisen.IReadableAudioSource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="T:Shamisen.IAsyncReadableAudioSource`2">
-            <summary>
-            Defines a base infrastructure of an asynchronously readable audio source.
-            </summary>
-            <typeparam name="TSample">The type of audio data.</typeparam>
-            <typeparam name="TFormat">The format of audio data.</typeparam>
-            <seealso cref="T:Shamisen.IAudioSource`2" />
-        </member>
-        <member name="M:Shamisen.IAsyncReadableAudioSource`2.ReadAsync(System.Memory{`0})">
-            <summary>
-            Reads the audio to the specified buffer asynchronously.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="T:Shamisen.ISampleSource">
-            <summary>
-            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio source.
-            </summary>
-            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
-        </member>
-        <member name="T:Shamisen.IAsyncSampleSource">
-            <summary>
-            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio source.
-            </summary>
-            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
-        </member>
-        <member name="T:Shamisen.ISampleAggregator">
-            <summary>
-            Defines a base infrastructure of a IEEE 754 Floating-Point PCM audio filter.
-            </summary>
-            <seealso cref="T:Shamisen.IAggregator`3" />
-        </member>
-        <member name="T:Shamisen.IWaveSource">
-            <summary>
-            Defines a base infrastructure of a raw audio data source.
-            </summary>
-            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
-        </member>
-        <member name="T:Shamisen.IAsyncWaveSource">
-            <summary>
-            Defines a base infrastructure of an asynchronously-readable raw audio data source.
-            </summary>
-            <seealso cref="T:Shamisen.IAsyncReadableAudioSource`2" />
-        </member>
-        <member name="T:Shamisen.IWaveAggregator">
-            <summary>
-            Defines a base infrastructure of a raw audio data filter.
-            </summary>
-            <seealso cref="T:Shamisen.IAggregator`3" />
-        </member>
         <member name="T:Shamisen.Mathematics.Fraction32">
             <summary>
             Represents a 32bit/32bit fractions.
@@ -9736,47 +10113,6 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="M:Shamisen.Modifier.FractionalSkipSupport.Skip(System.UInt64)">
-            <summary>
-            Skips the source the specified step in frames.
-            </summary>
-            <param name="step">The number of frames to skip.</param>
-        </member>
-        <member name="T:Shamisen.ISeekSupport">
-            <summary>
-            Defines a base infrastructure that contains seek support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.Data.IDataSource`1"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.ISeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
-            </summary>
-            <param name="offset">The offset in frames.</param>
-            <param name="origin">The origin.</param>
-        </member>
-        <member name="M:Shamisen.ISeekSupport.SeekTo(System.UInt64)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames.
-            </summary>
-            <param name="index">The index in frames.</param>
-        </member>
-        <member name="M:Shamisen.ISeekSupport.StepBack(System.UInt64)">
-            <summary>
-            Steps this data source the specified step back in frames.
-            </summary>
-            <param name="step">The number of frames to step back.</param>
-        </member>
-        <member name="M:Shamisen.ISeekSupport.SeekLast(System.UInt64)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
-            </summary>
-            <param name="offset">The offset.</param>
-        </member>
-        <member name="T:Shamisen.ISkipSupport">
-            <summary>
-            Defines a base infrastructure that contains skip support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.Data.IDataSource`1"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.ISkipSupport.Skip(System.UInt64)">
             <summary>
             Skips the source the specified step in frames.
             </summary>
@@ -11366,7 +11702,7 @@
         </member>
         <member name="T:Shamisen.ReadResult">
             <summary>
-            Represents a result of <see cref="M:Shamisen.IReadableAudioSource`2.Read(System.Span{`0})"/> operation.
+            Represents a result of <see cref="M:Shamisen.IReadSupport`1.Read(System.Span{`0})"/> operation.
             </summary>
         </member>
         <member name="P:Shamisen.ReadResult.EndOfStream">
@@ -12286,6 +12622,80 @@
             <param name="source"></param>
             <param name="destination">The buffer.</param>
             <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:Shamisen.AudioSourceUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.EnsureBlocks``2(Shamisen.IReadableAudioSource{``0,``1})">
+            <summary>
+            Ensures the blocks are aligned for the <paramref name="source"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ToSampleSource(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat})">
+            <summary>
+            Converts the <paramref name="source"/> to <see cref="T:Shamisen.ISampleSource"/>.
+            </summary>
+            <param name="source">The source to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ToWaveSource(Shamisen.IReadableAudioSource{System.Byte,Shamisen.IWaveFormat})">
+            <summary>
+            Converts the <paramref name="source"/> to <see cref="T:Shamisen.IWaveSource"/>.
+            </summary>
+            <param name="source">The source to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.ISampleSource,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="initialBlockSize">
+            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
+            </param>
+            <param name="internalBufferNumber">The number of internal buffer.</param>
+            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.IWaveSource,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="initialBlockSize">
+            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
+            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
+            </param>
+            <param name="internalBufferNumber">The number of internal buffer.</param>
+            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.Loop``2(Shamisen.IReadableAudioSource{``0,``1})">
+            <summary>
+            Loops the specified source.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ConvertToSample(Shamisen.IWaveSource)">
+            <summary>
+            Converts the <paramref name="source"/> to <see cref="T:Shamisen.ISampleSource"/>.
+            </summary>
+            <param name="source">The source.</param>
+            <returns></returns>
         </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
@@ -13764,127 +14174,6 @@
             <param name="left">The first vector.</param>
             <param name="right">The second vector.</param>
             <returns>
-            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The element-wise product vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Divides the first vector by the second.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The vector that results from dividing left by right.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The scalar value.</param>
-            <param name="right">The vector.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Divides the specified vector by a specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The result of the division.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether two specified vectors are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="T:System.PointerExtensions">
-            <summary>
-            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
-            </summary>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.IntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.UIntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
-        </member>
-    </members>
-</doc>
-
             The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
             </returns>
         </member>

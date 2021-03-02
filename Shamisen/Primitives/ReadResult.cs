@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Shamisen
 {
     /// <summary>
-    /// Represents a result of <see cref="IReadableAudioSource{TSample, TFormat}.Read(Span{TSample})"/> operation.
+    /// Represents a result of <see cref="IReadSupport{TSample}.Read(Span{TSample})"/> operation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]

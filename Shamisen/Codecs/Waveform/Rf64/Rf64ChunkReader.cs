@@ -14,7 +14,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
     /// <summary>
     /// Parses and reads RF64 Chunks.
     /// </summary>
-    public sealed class Rf64ChunkReader : IChunkReader
+    public sealed class Rf64ChunkReader : IChunkReader, IAsyncReadSupport<byte>
     {
         private bool disposedValue = false;
 
@@ -50,7 +50,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// </value>
         public ulong RemainingBytes { get; private set; }
 
-        private IDataSource<byte> DataSource { get; set; }
+        private IReadableDataSource<byte> DataSource { get; set; }
 
         /// <summary>
         /// Gets the parser.
@@ -65,12 +65,57 @@ namespace Shamisen.Codecs.Waveform.Rf64
         private Rf64ChunkReader? Parent { get; set; }
 
         /// <summary>
-        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The position.
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
         /// </value>
-        public ulong Position => TotalSize - RemainingBytes;
+        public ulong? Length => RemainingBytes;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? TotalLength => TotalSize;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? Position => TotalSize - RemainingBytes;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport => null;
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport => null;
+
+        /// <summary>
+        /// Gets the read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IReadSupport<byte>? ReadSupport => this;
+
+        /// <summary>
+        /// Gets the asynchronous read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IAsyncReadSupport<byte>? AsyncReadSupport => this;
 
         /// <summary>
         /// Gets the total size of this chunk.
@@ -89,7 +134,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <param name="parser">The RF64 parser instance.</param>
         /// <param name="totalSizeSetter">A method to set the <see cref="TotalSize"/>.</param>
         /// <exception cref="ArgumentNullException">dataSource</exception>
-        public Rf64ChunkReader(IDataSource<byte> dataSource, IRf64Parser parser, out StackOnlyActionContainer<ulong> totalSizeSetter)
+        public Rf64ChunkReader(IReadableDataSource<byte> dataSource, IRf64Parser parser, out StackOnlyActionContainer<ulong> totalSizeSetter)
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             Parser = parser ?? throw new ArgumentNullException(nameof(parser));
@@ -113,7 +158,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <param name="dataSource">The data source.</param>
         /// <param name="parser">The RF64 parser instance.</param>
         /// <exception cref="ArgumentNullException">dataSource</exception>
-        public Rf64ChunkReader(IDataSource<byte> dataSource, IRf64Parser parser)
+        public Rf64ChunkReader(IReadableDataSource<byte> dataSource, IRf64Parser parser)
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             Parser = parser ?? throw new ArgumentNullException(nameof(parser));
@@ -175,7 +220,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
             => !(Parent is null) ? Parent.ReadInternal(destination) : DataSource.Read(destination);
 
         private async ValueTask<ReadResult> ReadFromSourceAsync(Memory<byte> destination)
-            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : await DataSource.ReadAsync(destination);
+            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
 
         private ReadResult ReadInternal(Span<byte> destination)
         {
@@ -288,6 +333,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
 #pragma warning restore S1066 // Collapsible "if" statements should be merged
                     {
                         Parent.Skip(RemainingBytes);
+                        RemainingBytes = 0;
                     }
                 }
 

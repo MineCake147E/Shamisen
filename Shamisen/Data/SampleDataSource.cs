@@ -26,30 +26,57 @@ namespace Shamisen.Data
         public SampleDataSource(IReadableAudioSource<TSample, TFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
 
         /// <summary>
-        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The position.
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
         /// </value>
-        public ulong Position { get => (ulong)source.Position; }
+        public ulong? Length => source.Length;
 
         /// <summary>
-        /// Reads the data to the specified destination.
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <returns>
-        /// The number of <typeparamref name="TSample" />s read from this <see cref="IDataSource{TSample}" />.
-        /// </returns>
-        public ReadResult Read(Span<TSample> destination) => source.Read(destination);
+        /// <value>
+        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? TotalLength => source.TotalLength;
 
         /// <summary>
-        /// Reads the data asynchronously to the specified destination.
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
         /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <returns>
-        /// The number of <typeparamref name="TSample" />s read from this <see cref="IDataSource{TSample}" />.
-        /// </returns>
-        public async ValueTask<ReadResult> ReadAsync(Memory<TSample> destination) => await source.ReadAsAsync(destination);
+        /// <value>
+        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? Position => source.Position;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport => source.SkipSupport;
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport => source.SeekSupport;
+
+        /// <summary>
+        /// Gets the read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IReadSupport<TSample>? ReadSupport => source;
+
+        /// <summary>
+        /// Gets the asynchronous read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IAsyncReadSupport<TSample>? AsyncReadSupport => source as IAsyncReadSupport<TSample>;
 
         private void Dispose(bool disposing)
         {
@@ -69,7 +96,6 @@ namespace Shamisen.Data
         /// </summary>
         public void Dispose()
         {
-            // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

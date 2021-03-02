@@ -13,7 +13,7 @@ namespace Shamisen.Data
     /// Caches data into managed memory region.
     /// </summary>
     /// <seealso cref="IDisposable" />
-    public sealed partial class DataCache<TSample> : ISeekableDataSource<TSample> where TSample : unmanaged
+    public sealed partial class DataCache<TSample> : IReadableDataSource<TSample>, ISeekSupport, IAsyncReadSupport<TSample> where TSample : unmanaged
     {
         private int allocUnit = 1024;
 
@@ -36,12 +36,57 @@ namespace Shamisen.Data
         public ulong ReadPosition { get; set; } = 0;
 
         /// <summary>
-        /// Gets the READING position.
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The position.
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
         /// </value>
-        ulong IDataSource<TSample>.Position => ReadPosition;
+        public ulong? Length => BytesWritten - ReadPosition;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? TotalLength => BytesWritten;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        ulong? IDataSource<TSample>.Position => ReadPosition;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport => this;
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport => this;
+
+        /// <summary>
+        /// Gets the read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IReadSupport<TSample>? ReadSupport => this;
+
+        /// <summary>
+        /// Gets the asynchronous read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IAsyncReadSupport<TSample>? AsyncReadSupport => this;
 
         private List<BufferInstance> buffers;
 

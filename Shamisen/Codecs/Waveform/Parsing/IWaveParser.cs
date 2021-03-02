@@ -8,7 +8,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
 {
     /// <summary>
     /// Decodes a ".wav" file from <see cref="IChunkReader"/>.<br/>
-    /// The instance of <see cref="IWaveParser"/> must be ready to <see cref="IReadableAudioSource{TSample, TFormat}.Read(Span{TSample})"/> after the instance is initialized with its constructor.
+    /// The instance of <see cref="IWaveParser"/> must be ready to <see cref="IReadSupport{TSample}.Read(Span{TSample})"/> after the instance is initialized with its constructor.
     /// </summary>
     /// <seealso cref="IWaveSource" />
     public interface IWaveParser : IWaveSource

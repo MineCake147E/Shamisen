@@ -11,6 +11,8 @@ namespace Shamisen.Data.Parsing
 {
     public sealed partial class BufferedBinaryParser : IBinaryParser
     {
+        IDataSource<byte> IBinaryParser.Source => Source;
+
         private void Advance(int length)
         {
             remainingData = remainingData.Slice(length);

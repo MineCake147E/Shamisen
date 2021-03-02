@@ -9,7 +9,7 @@ namespace Shamisen.Codecs.Waveform
     /// Defines a base infrastructure of a chunk reader.
     /// </summary>
     /// <seealso cref="IDataSource{TSample}" />
-    public interface IChunkReader : ISkippableDataSource<byte>
+    public interface IChunkReader : IReadableDataSource<byte>, ISkipSupport
     {
         /// <summary>
         /// Gets the current chunk identifier.
@@ -44,7 +44,7 @@ namespace Shamisen.Codecs.Waveform
         IChunkReader? CurrentSubChunk { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can be read by <see cref="IDataSource{TSample}.Read(Span{TSample})"/> and <see cref="IDataSource{TSample}.ReadAsync(Memory{TSample})"/>.
+        /// Gets a value indicating whether this instance can be read by <see cref="IReadSupport{TSample}.Read(Span{TSample})"/> and <see cref="IAsyncReadSupport{TSample}.ReadAsync(Memory{TSample})"/>.
         /// </summary>
         /// <value>
         ///   <c>true</c> if this instance can publicly read; otherwise, <c>false</c>.

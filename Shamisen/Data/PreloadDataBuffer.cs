@@ -14,7 +14,7 @@ namespace Shamisen.Data
     /// Buffers the data asynchronously like YouTube does.<br/>
     /// It reads a little more than required, and prevents waiting for IOs.
     /// </summary>
-    public sealed class PreloadDataBuffer<TSample> : IDataSource<TSample> where TSample : unmanaged
+    public sealed class PreloadDataBuffer<TSample> : IReadableDataSource<TSample> where TSample : unmanaged
     {
         private ManualResetEventSlim fillFlag = new ManualResetEventSlim(true);
         private ManualResetEventSlim readFlag = new(true);
@@ -42,17 +42,27 @@ namespace Shamisen.Data
         private IDataSource<TSample> dataSource;
 
         /// <summary>
-        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
-        public ulong Position { get; }
-
-        /// <summary>
         /// Gets or sets the value which indicates whether the <see cref="PreloadDataBuffer{TSample}"/> should wait for another sample block or not.
         /// </summary>
         public bool AllowWaitForRead { get; }
+
+        /// <summary>
+        /// Gets the read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IReadSupport<TSample>? ReadSupport => this;
+
+        //TODO: Seek support
+        IAsyncReadSupport<TSample>? IDataSource<TSample>.AsyncReadSupport { get; }
+
+        ulong? IDataSource<TSample>.Length { get; }
+
+        ulong? IDataSource<TSample>.TotalLength { get; }
+
+        ulong? IDataSource<TSample>.Position { get; }
+
+        ISkipSupport? IDataSource<TSample>.SkipSupport { get; }
+
+        ISeekSupport? IDataSource<TSample>.SeekSupport { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PreloadDataBuffer{TSample}"/> class.

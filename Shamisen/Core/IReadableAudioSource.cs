@@ -11,16 +11,10 @@ namespace Shamisen
     /// <typeparam name="TSample">The type of audio data.</typeparam>
     /// <typeparam name="TFormat">The format of audio data.</typeparam>
     /// <seealso cref="IAudioSource{TSample,TFormat}" />
-    public interface IReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
+    public interface IReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>, IReadSupport<TSample>
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
-        ReadResult Read(Span<TSample> buffer);
     }
 
     /// <summary>
@@ -29,15 +23,9 @@ namespace Shamisen
     /// <typeparam name="TSample">The type of audio data.</typeparam>
     /// <typeparam name="TFormat">The format of audio data.</typeparam>
     /// <seealso cref="IAudioSource{TSample,TFormat}" />
-    public interface IAsyncReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>
+    public interface IAsyncReadableAudioSource<TSample, TFormat> : IAudioSource<TSample, TFormat>, IAsyncReadSupport<TSample>
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-        /// <summary>
-        /// Reads the audio to the specified buffer asynchronously.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
-        ValueTask<ReadResult> ReadAsync(Memory<TSample> buffer);
     }
 }

@@ -46,7 +46,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
         [Test]
         public void ReadsRf64WaveCorrectly()
         {
-            using (DataCache<byte> ms = GetDataFromResource("Test_rf64.wav"))
+            using (var ms = GetDataFromResource("Test_rf64.wav"))
             {
                 using (var parser = new SimpleWaveParser(new SimpleChunkParserFactory(), ms))
                 {

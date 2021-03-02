@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Shamisen.Data
+namespace Shamisen
 {
     /// <summary>
     /// Provides some extensions for <see cref="IDataSource{TSample}"/>s.
@@ -18,21 +18,39 @@ namespace Shamisen.Data
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void SkipWithFallback<TSample>(this IDataSource<TSample> dataSource, ulong numberOfElementsToSkip) where TSample : unmanaged
         {
-            if (dataSource is ISkippableDataSource<byte> src)
+            if (dataSource.ReadSupport is not { } source)
             {
-                src.Skip(numberOfElementsToSkip);
+                throw new NotSupportedException("");
             }
             else
             {
-                Span<TSample> buffer = new TSample[Math.Min(numberOfElementsToSkip, 2048)];
-                ulong h = numberOfElementsToSkip;
-                while (h > 0)
+                if (dataSource.SkipSupport is { } src)
                 {
-                    var result = dataSource.Read(buffer);
-                    if (result.IsEndOfStream) return;
-                    h -= (uint)result.Length;
+                    src.Skip(numberOfElementsToSkip);
+                }
+                else
+                {
+                    Span<TSample> buffer = new TSample[Math.Min(numberOfElementsToSkip, 2048)];
+                    ulong h = numberOfElementsToSkip;
+                    while (h > 0)
+                    {
+                        var result = source.Read(buffer);
+                        if (result.IsEndOfStream) return;
+                        h -= (uint)result.Length;
+                    }
                 }
             }
         }
+
+        /// <summary>
+        /// Reads the specified data source.
+        /// </summary>
+        /// <typeparam name="TSample">The type of the sample.</typeparam>
+        /// <param name="dataSource">The data source.</param>
+        /// <param name="span">The span.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadResult Read<TSample>(this IDataSource<TSample> dataSource, Span<TSample> span) where TSample : unmanaged
+            => dataSource.ReadSupport is { } src ? src.Read(span) : throw new NotSupportedException("Reading is not supported!");
     }
 }

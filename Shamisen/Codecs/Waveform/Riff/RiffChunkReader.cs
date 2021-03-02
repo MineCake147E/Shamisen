@@ -49,7 +49,60 @@ namespace Shamisen.Codecs.Waveform
         /// </value>
         public ulong RemainingBytes { get; private set; }
 
-        private IDataSource<byte> DataSource { get; set; }
+        /// <summary>
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? Length => RemainingBytes;
+
+        /// <summary>
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
+        /// </summary>
+        /// <value>
+        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? TotalLength => TotalSize;
+
+        /// <summary>
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
+        /// </summary>
+        /// <value>
+        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// </value>
+        public ulong? Position => TotalSize - RemainingBytes;
+
+        /// <summary>
+        /// Gets the skip support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The skip support.
+        /// </value>
+        public ISkipSupport? SkipSupport => null;
+
+        /// <summary>
+        /// Gets the seek support of the <see cref="IDataSource{TSample}"/>.
+        /// </summary>
+        /// <value>
+        /// The seek support.
+        /// </value>
+        public ISeekSupport? SeekSupport => null;
+
+        /// <summary>
+        /// Gets the read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IReadSupport<byte>? ReadSupport => this;
+
+        /// <summary>
+        /// Gets the asynchronous read support of the <see cref="IDataSource{TSample}" />.
+        /// </summary>
+        public IAsyncReadSupport<byte>? AsyncReadSupport => null;
+
+        private IReadableDataSource<byte> DataSource { get; set; }
 
         private bool HasParent => !(Parent is null);
 
@@ -63,14 +116,6 @@ namespace Shamisen.Codecs.Waveform
         /// </value>
         public ulong TotalSize { get; }
 
-        /// <summary>
-        /// Gets the current position of this <see cref="IDataSource{TSample}" />.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
-        public ulong Position => TotalSize - RemainingBytes;
-
         private static readonly string ExceptionMessageOnIllegalRead = $"The {nameof(RiffChunkReader)} is occupied by subchunk reader!";
 
         /// <summary>
@@ -78,7 +123,7 @@ namespace Shamisen.Codecs.Waveform
         /// </summary>
         /// <param name="dataSource">The data source.</param>
         /// <exception cref="ArgumentNullException">dataSource</exception>
-        public RiffChunkReader(IDataSource<byte> dataSource)
+        public RiffChunkReader(IReadableDataSource<byte> dataSource)
         {
             DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
             ChunkId = (ChunkId)DataSource.ReadUInt32LittleEndian();
@@ -100,10 +145,10 @@ namespace Shamisen.Codecs.Waveform
         /// <summary>
         /// Reads the specified destination.
         /// </summary>
-        /// <param name="destination">The destination.</param>
+        /// <param name="buffer">The destination.</param>
         /// <returns></returns>
-        public ReadResult Read(Span<byte> destination)
-            => CanPubliclyRead ? ReadInternal(destination)
+        public ReadResult Read(Span<byte> buffer)
+            => CanPubliclyRead ? ReadInternal(buffer)
             : throw new InvalidOperationException(ExceptionMessageOnIllegalRead);
 
         /// <summary>
@@ -133,7 +178,7 @@ namespace Shamisen.Codecs.Waveform
             => !(Parent is null) ? Parent.ReadInternal(destination) : DataSource.Read(destination);
 
         private async ValueTask<ReadResult> ReadFromSourceAsync(Memory<byte> destination)
-            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : await DataSource.ReadAsync(destination);
+            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
 
         private ReadResult ReadInternal(Span<byte> destination)
         {

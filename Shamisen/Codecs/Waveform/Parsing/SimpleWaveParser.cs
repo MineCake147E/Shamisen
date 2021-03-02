@@ -156,7 +156,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
         /// or
         /// The "wavl" and "slnt" chunks are not currently supported!
         /// </exception>
-        public SimpleWaveParser(IChunkParserFactory chunkParserFactory, IDataSource<byte> dataSource)
+        public SimpleWaveParser(IChunkParserFactory chunkParserFactory, IReadableDataSource<byte> dataSource)
         {
             //All preparation must be done in this constructor.
             ChunkParserFactory = chunkParserFactory ?? throw new ArgumentNullException(nameof(chunkParserFactory));
@@ -176,10 +176,10 @@ namespace Shamisen.Codecs.Waveform.Parsing
             {
                 case ChunkId.Rf64:
                 case ChunkId.Bw64:
+                    using (var ds64 = mainReader.ReadSubChunk())
                     {
-                        using var ds64 = mainReader.ReadSubChunk();
                         if (ds64.ChunkId != ChunkId.Rf64DataSize) throw new InvalidDataException("The first chunk wasn't \"ds64\"!");
-                        ulong riffSize, dataSize, sampleCountOrDummySize;
+                        ulong riffSize, newDataSize, sampleCountOrDummySize;
                         uint tableLength;
                         Span<byte> bufferDs64;
                         (ulong riffSize, ulong dataSize, ulong sampleCountOrDummySize) a = default;
@@ -189,7 +189,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
                         }
                         ds64.CheckRead(bufferDs64);
                         riffSize = BinaryExtensions.ConvertToLittleEndian(a.riffSize);
-                        dataSize = BinaryExtensions.ConvertToLittleEndian(a.dataSize);
+                        newDataSize = BinaryExtensions.ConvertToLittleEndian(a.dataSize);
                         sampleCountOrDummySize = BinaryExtensions.ConvertToLittleEndian(a.sampleCountOrDummySize);
                         if (ds64.RemainingBytes > sizeof(uint))
                         {
@@ -204,7 +204,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
                         }
                         RiffSize = riffSize;
                         setter.Invoke(riffSize);
-                        DataSize = dataSize;
+                        DataSize = newDataSize;
                         SampleCount = sampleCountOrDummySize;
                     }
                     break;

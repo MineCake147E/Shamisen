@@ -11,15 +11,27 @@ using Shamisen.Data;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
-    public sealed class RandomDataSource : IDataSource<byte>
+    public sealed class RandomDataSource : IReadableDataSource<byte>
     {
         private bool disposedValue;
-
-        public ulong Position { get; }
 
         public ulong DebugID { get; }
 
         public bool DoDumpRead { get; }
+
+        public IReadSupport<byte> ReadSupport => this;
+
+        public IAsyncReadSupport<byte> AsyncReadSupport { get; }
+
+        public ulong? Length { get; }
+
+        public ulong? TotalLength { get; }
+
+        public ulong? Position { get; }
+
+        public ISkipSupport SkipSupport { get; }
+
+        public ISeekSupport SeekSupport { get; }
 
         private ulong state;
         private readonly ulong increment;
