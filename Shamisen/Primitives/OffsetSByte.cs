@@ -156,6 +156,15 @@ namespace Shamisen
         public static explicit operator int(OffsetSByte value) => (sbyte)value;
 
         /// <summary>
+        /// Performs an explicit conversion from <see cref="OffsetSByte"/> to <see cref="byte"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator byte(OffsetSByte value) => value.value;
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="sbyte"/> to <see cref="OffsetSByte"/>.
         /// </summary>
         /// <param name="value">The value.</param>

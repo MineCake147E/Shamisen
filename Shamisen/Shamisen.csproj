@@ -63,6 +63,11 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>BinaryContent.g.tt</DependentUpon>
+        </None>
         <None Include="Codecs\Waveform\InfoSubChunkId.g.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -77,6 +82,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
+        </None>
+        <None Include="Data\Binary\DataSinkUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
         </None>
         <None Include="Formats\PcmSampleFormats.g.cs">
             <DesignTime>True</DesignTime>
@@ -100,6 +110,10 @@
         </None>
     </ItemGroup>
     <ItemGroup>
+        <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
+        </None>
         <None Update="Codecs\Waveform\InfoSubChunkId.g.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>InfoSubChunkId.g.cs</LastGenOutput>
@@ -111,6 +125,10 @@
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
+        </None>
+        <None Update="Data\Binary\DataSinkUtils.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>DataSinkUtils.g.cs</LastGenOutput>
         </None>
         <None Update="Formats\PcmSampleFormats.g.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -133,6 +151,11 @@
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>BinaryContent.g.tt</DependentUpon>
+        </Compile>
         <Compile Update="Codecs\Waveform\InfoSubChunkId.g.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -147,6 +170,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Data\Binary\DataSinkUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
         </Compile>
         <Compile Update="Formats\PcmSampleFormats.g.cs">
             <DesignTime>True</DesignTime>
@@ -174,8 +202,8 @@
         <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
         <Folder Include="Codecs\Waveform\Formats\ALaw\" />
         <Folder Include="Codecs\Flac\" />
-        <Folder Include="Codecs\Waveform\Composing\" />
         <Folder Include="Codecs\Waveform\Headers\" />
+        <Folder Include="Data\Composing\" />
         <Folder Include="Metadata\Id3\" />
         <Folder Include="Utils\Samples\" />
     </ItemGroup>

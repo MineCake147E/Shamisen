@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using Shamisen.Codecs.Composing;
+using Shamisen.Codecs.Waveform.Composing;
 
 namespace Shamisen.Codecs.Waveform
 {
@@ -11,7 +15,7 @@ namespace Shamisen.Codecs.Waveform
     /// </summary>
     /// <seealso cref="IWaveFormat" />
     [StructLayout(LayoutKind.Explicit)]
-    public readonly struct StandardWaveFormat : IWaveFormat, IEquatable<StandardWaveFormat>
+    public readonly struct StandardWaveFormat : IWaveFormat, IEquatable<StandardWaveFormat>, IRf64Content
     {
         [FieldOffset(0)]
         private readonly AudioEncoding encoding;
@@ -104,6 +108,22 @@ namespace Shamisen.Codecs.Waveform
         public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
 
         /// <summary>
+        /// Gets the size.
+        /// </summary>
+        /// <value>
+        /// The size.
+        /// </value>
+        public ulong Size => 16ul;
+
+        /// <summary>
+        /// Gets the extra data.
+        /// </summary>
+        /// <value>
+        /// The extra data.
+        /// </value>
+        public ReadOnlyMemory<byte> ExtraData => default;
+
+        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="obj">The object to compare with the current instance.</param>
@@ -137,6 +157,31 @@ namespace Shamisen.Codecs.Waveform
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         public override int GetHashCode() => HashCode.Combine(encoding, channels, sampleRate, bytesPerSecond, blockSize, bitDepth);
+
+        /// <summary>
+        /// Writes this <see cref="IComposable" /> instance to <see cref="IDataSink{TSample}" />.
+        /// </summary>
+        /// <param name="sink">The sink.</param>
+        public void WriteTo(IDataSink<byte> sink)
+        {
+            Span<byte> span = stackalloc byte[16];
+            if (BitConverter.IsLittleEndian)
+            {
+                Unsafe.As<byte, StandardWaveFormat>(ref span[0]) = this;
+            }
+            else
+            {
+                Unsafe.As<byte, StandardWaveFormat>(ref span[0])
+                    = new StandardWaveFormat(
+                        (AudioEncoding)BinaryExtensions.ConvertToLittleEndian((ushort)encoding),
+                        BinaryExtensions.ConvertToLittleEndian(channels),
+                        BinaryExtensions.ConvertToLittleEndian(sampleRate),
+                        BinaryExtensions.ConvertToLittleEndian(bytesPerSecond),
+                        BinaryExtensions.ConvertToLittleEndian(blockSize),
+                        BinaryExtensions.ConvertToLittleEndian(bitDepth));
+            }
+            sink.Write(span);
+        }
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="StandardWaveFormat"/> objects are equal.

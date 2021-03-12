@@ -153,5 +153,48 @@ namespace Shamisen
             return cl;
         }
 #endif
+#if !NETSTANDARD
+
+        /// <summary>
+        /// Converts a single-precision floating-point value into an integer.
+        /// </summary>
+        /// <param name="value">The single-precision floating-point value to convert.</param>
+        /// <returns>An integer representing the converted single-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int SingleToInt32Bits(float value) => BitConverter.SingleToInt32Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 32-bit integer as a single-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The integer to convert.</param>
+        /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Int32BitsToSingle(int value) => BitConverter.Int32BitsToSingle(value);
+
+#else
+        /// <summary>
+        /// Converts a single-precision floating-point value into an integer.
+        /// </summary>
+        /// <param name="value">The single-precision floating-point value to convert.</param>
+        /// <returns>An integer representing the converted single-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int SingleToInt32Bits(float value)
+        {
+            var v = value;
+            return Unsafe.As<float, int>(ref v);  //assuming ulong and double is stored as same endianness.
+        }
+
+        /// <summary>
+        /// Reinterprets the specified 32-bit integer as a single-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The integer to convert.</param>
+        /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Int32BitsToSingle(int value)
+        {
+            var v = value;
+            return Unsafe.As<int, float>(ref v);  //assuming ulong and double is stored as same endianness.
+        }
+#endif
     }
 }

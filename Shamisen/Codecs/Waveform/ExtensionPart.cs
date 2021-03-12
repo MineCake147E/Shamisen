@@ -7,7 +7,7 @@ namespace Shamisen.Codecs.Waveform
     /// <summary>
     /// Represents an "extension" part of <see cref="ExtensibleWaveFormat"/>.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public readonly struct ExtensionPart : IEndiannessReversible<ExtensionPart>
     {
         [FieldOffset(0)]

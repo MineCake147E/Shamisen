@@ -26,7 +26,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     {
         private const float Multiplier = 32768.0f;
         private const int ActualBytesPerSample = sizeof(short);
-        private const int BufferMax = 1024;
+        private const int BufferMax = 4096;
         private int ActualBufferMax => BufferMax * Source.Format.Channels;
 
         private Memory<short> dsmLastOutput;
@@ -116,7 +116,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             {
                 var reader = cursor.Length >= readBuffer.Length ? readBuffer : readBuffer.Slice(0, cursor.Length);
                 var rr = Source.Read(reader.Span);
-                if (rr.HasNoData) return buffer.Length - cursor.Length;
+                if (rr.IsEndOfStream && outBuffer.Length == cursor.Length) return rr;
+                if (rr.HasNoData) return (outBuffer.Length - cursor.Length) * sizeof(ushort);
                 int u = rr.Length;
                 var wrote = reader.Span.Slice(0, u).SliceAlign(channels);
                 var dest = cursor.Slice(0, wrote.Length);
@@ -145,7 +146,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     ProcessNormal(wrote, dest);
                 }
                 cursor = cursor.Slice(dest.Length);
-                if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
+                if (u != reader.Length) return (outBuffer.Length - cursor.Length) * sizeof(ushort);  //The Source doesn't fill whole reader so return here.
             }
             return outBuffer.Length * sizeof(ushort);
         }

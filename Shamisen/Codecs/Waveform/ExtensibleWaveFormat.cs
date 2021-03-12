@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using Shamisen.Codecs.Waveform.Composing;
+using Shamisen.Formats;
 
 namespace Shamisen.Codecs.Waveform
 {
     /// <summary>
     /// Represents an "extensible" wave format.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
-    public readonly struct ExtensibleWaveFormat : IWaveFormat, IEquatable<ExtensibleWaveFormat>
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    public readonly struct ExtensibleWaveFormat : IWaveFormat, IEquatable<ExtensibleWaveFormat>, IExtensibleWaveFormat, IRf64Content
     {
         [FieldOffset(0)]
         private readonly StandardWaveFormat format;
@@ -73,12 +78,12 @@ namespace Shamisen.Codecs.Waveform
         public ushort ValidBitsPerSample => validBitsPerSample;
 
         /// <summary>
-        /// Gets the channel mask.
+        /// Gets the channel combination.
         /// </summary>
         /// <value>
-        /// The channel mask.
+        /// The channel combination.
         /// </value>
-        public Speakers ChannelMask => channelMask;
+        public Speakers ChannelCombination => channelMask;
 
         /// <summary>
         /// Gets the sub format.
@@ -140,6 +145,22 @@ namespace Shamisen.Codecs.Waveform
         public int SampleSize => Format.SampleSize;
 
         /// <summary>
+        /// Gets the extra data.
+        /// </summary>
+        /// <value>
+        /// The extra data.
+        /// </value>
+        public ReadOnlyMemory<byte> ExtraData => extraData;
+
+        /// <summary>
+        /// Gets the size.
+        /// </summary>
+        /// <value>
+        /// The size.
+        /// </value>
+        public ulong Size => 40ul + (ulong)extraData.Length;
+
+        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="obj">An object to compare with this object.</param>
@@ -155,7 +176,7 @@ namespace Shamisen.Codecs.Waveform
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(ExtensibleWaveFormat other) => Format.Equals(other.Format) && ExtensionSize == other.ExtensionSize && ValidBitsPerSample == other.ValidBitsPerSample && ChannelMask == other.ChannelMask && SubFormat.Equals(other.SubFormat);
+        public bool Equals(ExtensibleWaveFormat other) => Format.Equals(other.Format) && ExtensionSize == other.ExtensionSize && ValidBitsPerSample == other.ValidBitsPerSample && ChannelCombination == other.ChannelCombination && SubFormat.Equals(other.SubFormat);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -172,7 +193,27 @@ namespace Shamisen.Codecs.Waveform
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode() => HashCode.Combine(Format, ExtensionSize, ValidBitsPerSample, ChannelMask, SubFormat);
+        public override int GetHashCode() => HashCode.Combine(Format, ExtensionSize, ValidBitsPerSample, ChannelCombination, SubFormat);
+
+        /// <summary>
+        /// Writes this <see cref="IComparable" /> instance to <see cref="IDataSink{TSample}" />.
+        /// </summary>
+        /// <param name="sink">The sink.</param>
+        public void WriteTo(IDataSink<byte> sink)
+        {
+            format.WriteTo(sink);
+            Span<byte> span = stackalloc byte[40 - 16];
+            var w = BitConverter.IsLittleEndian
+                ? new ExtensionPart(extensionSize, ValidBitsPerSample, (uint)ChannelCombination, SubFormat)
+                : new ExtensionPart(
+                    BinaryExtensions.ConvertToLittleEndian(extensionSize),
+                    BinaryExtensions.ConvertToLittleEndian(ValidBitsPerSample),
+                    BinaryExtensions.ConvertToLittleEndian((uint)ChannelCombination),
+                    BinaryExtensions.ReverseEndianness(SubFormat));
+            MemoryMarshal.Write(span, ref w);
+            sink.Write(span);
+            sink.Write(extraData.Span);
+        }
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="ExtensibleWaveFormat"/> objects are equal.

@@ -205,6 +205,19 @@ namespace Shamisen.Data
         }
 
         /// <summary>
+        /// Copies all of the content of <see cref="DataCache{TSample}"/> to the specified <paramref name="sink"/>.
+        /// </summary>
+        /// <param name="sink">The sink.</param>
+        public void CopyTo(IDataSink<TSample> sink)
+        {
+            foreach (var item in buffers)
+            {
+                item.ReadPosition = 0;
+                sink.Write(item.ReadHead.Span);
+            }
+        }
+
+        /// <summary>
         /// Asynchronously writes the data inside specified buffer to this instance.
         /// </summary>
         /// <param name="buffer">The buffer.</param>

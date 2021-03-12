@@ -64,6 +64,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             {
                 var reader = cursor.Length >= readBuffer.Length ? readBuffer : readBuffer.Slice(0, cursor.Length);
                 var rr = Source.Read(reader.Span);
+                if (rr.IsEndOfStream && buffer.Length == cursor.Length) return rr;
                 if (rr.HasNoData) return buffer.Length - cursor.Length;
                 int u = rr.Length;
                 var wrote = reader.Span.Slice(0, u);

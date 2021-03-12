@@ -283,3 +283,9 @@ dotnet_naming_style.asyncで終わる.required_prefix =
 dotnet_naming_style.asyncで終わる.required_suffix = Async
 dotnet_naming_style.asyncで終わる.word_separator = 
 dotnet_naming_style.asyncで終わる.capitalization = pascal_case
+
+# CS1591: 公開されている型またはメンバーの XML コメントがありません
+dotnet_diagnostic.CS1591.severity = error
+
+# CS1998: 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
+dotnet_diagnostic.CS1998.severity = suggestion

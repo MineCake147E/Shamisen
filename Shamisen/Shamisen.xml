@@ -1823,8 +1823,52 @@
         </member>
         <member name="T:Shamisen.Codecs.CodecUtils">
             <summary>
-            Provides some utility functions for <see cref="T:Shamisen.Codecs.IEncoder"/> and <see cref="T:Shamisen.Codecs.IDecoder"/>.
+            Provides some utility functions for <see cref="T:Shamisen.Codecs.IEncoder`1"/> and <see cref="T:Shamisen.Codecs.IDecoder"/>.
             </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Composing.IComposable">
+            <summary>
+            Defines a base infrastructure of a composable object.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Composing.IComposable.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:Shamisen.Codecs.Composing.IComposable"/> instance to <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.Composing.IAsyncComposable">
+            <summary>
+            Defines a base infrastructure of an asynchronously composable object.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Composing.IAsyncComposable.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:System.IComparable"/> instance to <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.IComposer`2">
+            <summary>
+            Defines a base infrastructure of an instance of encoder.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.IComposer`2.FramesWritten">
+            <summary>
+            Gets the frames written to the <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The frames written.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.IComposer`2.TheoreticalMaxCapacity">
+            <summary>
+            Gets the theoretical maximum capacity of the codec.<br/>
+            The <see langword="null"/> means the codec doesn't have any limitation of size.
+            </summary>
+            <value>
+            The theoretical maximum capacity of the file format.
+            </value>
         </member>
         <member name="T:Shamisen.Codecs.IDecoder">
             <summary>
@@ -1852,48 +1896,35 @@
             decoder: The decoding <see cref="T:Shamisen.IWaveSource"/>.
             </returns>
         </member>
-        <member name="T:Shamisen.Codecs.IEncoder">
+        <member name="T:Shamisen.Codecs.IEncoder`1">
             <summary>
             Defines a base infrastructure of an audio encoder.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.IEncoder.IsEncodable(Shamisen.WaveFormat)">
+        <member name="M:Shamisen.Codecs.IEncoder`1.IsEncodable(Shamisen.IWaveSource,Shamisen.IDataSink{System.Byte},`0)">
             <summary>
-            Determines whether the <paramref name="format"/> can be encoded by this codec.
-            </summary>
-            <param name="format">The input data's format.</param>
-            <returns><c>true</c> if the <paramref name="format"/> can be supported by this encoder, otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Codecs.IEncoder.Encode(Shamisen.IWaveSource,Shamisen.WriteAction{System.Byte})">
-            <summary>
-            Encodes <paramref name="source"/> with the given <paramref name="writeAction"/>.
+            Determines whether the <paramref name="source"/> can be encoded to <paramref name="sink"/> by this codec.
             </summary>
             <param name="source">The <see cref="T:Shamisen.IWaveSource"/> to read the data to encode from.</param>
-            <param name="writeAction">The destination.</param>
+            <param name="sink">The destination.</param>
+            <param name="options">The encoding options.</param>
+            <returns><c>true</c> if the <paramref name="source"/> is supported by this encoder and <paramref name="sink"/> meets the requirement of encoding, otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:Shamisen.Codecs.IEncoder.Encode``1(Shamisen.IWaveSource,``0,Shamisen.WriteWithParameterAction{System.Byte,``0})">
+        <member name="M:Shamisen.Codecs.IEncoder`1.Encode(Shamisen.IWaveSource,Shamisen.IDataSink{System.Byte},`0)">
             <summary>
-            Encodes <paramref name="source"/> with the given <paramref name="writeAction"/>.
+            Encodes <paramref name="source"/> to the specified <paramref name="sink"/>.
             </summary>
             <param name="source">The <see cref="T:Shamisen.IWaveSource"/> to read the data to encode from.</param>
-            <param name="parameter">The <typeparamref name="TParam"/> value to call the <paramref name="writeAction"/> with.</param>
-            <param name="writeAction">The destination.</param>
+            <param name="sink">The destination.</param>
+            <param name="options">The encoding options.</param>
         </member>
-        <member name="M:Shamisen.Codecs.IEncoder.EncodeAsync(Shamisen.IAsyncWaveSource,Shamisen.WriteAsyncFunc{System.Byte})">
+        <member name="M:Shamisen.Codecs.IEncoder`1.EncodeAsync(Shamisen.IAsyncWaveSource,Shamisen.IDataSink{System.Byte},`0)">
             <summary>
-            Encodes <paramref name="source"/> with the given <paramref name="writeAsyncFunc"/> asynchronously.
+            Encodes <paramref name="source"/> to the specified <paramref name="sink"/> asynchronously.
             </summary>
             <param name="source">The <see cref="T:Shamisen.IAsyncWaveSource"/> to read the data to encode from.</param>
-            <param name="writeAsyncFunc">The destination.</param>
-            <returns>The whole encoding task.</returns>
-        </member>
-        <member name="M:Shamisen.Codecs.IEncoder.EncodeAsync``1(Shamisen.IAsyncWaveSource,``0,Shamisen.WriteAsyncFunc{System.Byte})">
-            <summary>
-            Encodes <paramref name="source"/> with the given <paramref name="writeAsyncFunc"/> asynchronously.
-            </summary>
-            <param name="source">The <see cref="T:Shamisen.IAsyncWaveSource"/> to read the data to encode from.</param>
-            <param name="parameter">The <typeparamref name="TParam"/> value to call the <paramref name="writeAsyncFunc"/> with.</param>
-            <param name="writeAsyncFunc">The destination.</param>
+            <param name="sink">The destination.</param>
+            <param name="options">The encoding options.</param>
             <returns>The whole encoding task.</returns>
         </member>
         <member name="T:Shamisen.Codecs.Waveform.ChunkId">
@@ -2040,6 +2071,607 @@
               <c>true</c> if the specified <paramref name="chunkId"/> represents JUNK chunk; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Represents a binary content like <see cref="T:System.Int32"/> and <see cref="T:System.Single"/>.
+            </summary>
+            <seealso cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content" />
+            <summary>
+            Represents a binary content like <see cref="T:System.Int32"/> and <see cref="T:System.Single"/>.
+            </summary>
+            <seealso cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content" />
+        </member>
+        <member name="F:Shamisen.Codecs.Waveform.Composing.BinaryContent.BinaryObject">
+            <summary>
+            The binary object
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.#ctor(System.Memory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct.
+            </summary>
+            <param name="binaryObject">The binary object.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.BinaryContent.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:System.IComparable"/> instance to <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.UInt16)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.UInt16"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.Int16)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int16"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.UInt32)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.UInt32"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.Int32)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int32"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.UInt64)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.UInt64"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.op_Explicit(System.Int64)~Shamisen.Codecs.Waveform.Composing.BinaryContent">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int64"/> to <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.UInt16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.Int16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateLittleEndian(System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.UInt16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.Int16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.BinaryContent.CreateBigEndian(System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.FactChunk">
+            <summary>
+            Represents a "fact" chunk.
+            </summary>
+            <seealso cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Chunk" />
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.#ctor(System.UInt32,Shamisen.Codecs.Waveform.ChunkId,System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.FactChunk"/> struct.
+            </summary>
+            <param name="sampleCountInFrames">The sample count in frames.</param>
+            <param name="chunkId">The chunk identifier.</param>
+            <param name="riffSize">Size of the riff.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.ContentSize">
+            <summary>
+            Gets the size of the content.
+            </summary>
+            <value>
+            The size of the content.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.ActualSize">
+            <summary>
+            Gets the actual size.
+            </summary>
+            <value>
+            The actual size.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.RiffSize">
+            <summary>
+            Gets the size of the riff.
+            </summary>
+            <value>
+            The size of the riff.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.Contents">
+            <summary>
+            Gets the contents.
+            </summary>
+            <value>
+            The contents.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.FactChunk.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.Equals(Shamisen.Codecs.Waveform.Composing.FactChunk)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:Shamisen.Codecs.Composing.IComposable" /> instance to <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.op_Equality(Shamisen.Codecs.Waveform.Composing.FactChunk,Shamisen.Codecs.Waveform.Composing.FactChunk)">
+            <summary>
+            Implements the operator op_Equality.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.FactChunk.op_Inequality(Shamisen.Codecs.Waveform.Composing.FactChunk,Shamisen.Codecs.Waveform.Composing.FactChunk)">
+            <summary>
+            Implements the operator op_Inequality.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.IRf64Chunk">
+            <summary>
+            Defines a base infrastructure of an RF64 chunk.
+            </summary>
+            <seealso cref="T:Shamisen.IDataSource`1" />
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Chunk.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Chunk.ContentSize">
+            <summary>
+            Gets the size of the content excluding header.
+            </summary>
+            <value>
+            The size of the content.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Chunk.ActualSize">
+            <summary>
+            Gets the actual size including RIFF chunk header.
+            </summary>
+            <value>
+            The actual size.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Chunk.RiffSize">
+            <summary>
+            Gets the size of the riff.
+            </summary>
+            <value>
+            The size of the riff.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Chunk.Contents">
+            <summary>
+            Gets the contents.
+            </summary>
+            <value>
+            The contents.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.IRf64Content">
+            <summary>
+            Defines a base infrastructure of a content of RF64 chunk.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.IRf64Content.Size">
+            <summary>
+            Gets the size of this <see cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content"/>.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk">
+            <summary>
+            Represents a mutable RF64 chunk.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.#ctor(Shamisen.Codecs.Waveform.ChunkId,System.Nullable{System.UInt32})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk"/> class.
+            </summary>
+            <param name="chunkId">The chunk identifier.</param>
+            <param name="size">The size value to overwrite.</param>
+            <exception cref="T:System.ArgumentNullException">dataCache</exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.#ctor(Shamisen.Codecs.Waveform.ChunkId,System.Collections.Generic.List{Shamisen.Codecs.Waveform.Composing.IRf64Content},System.Nullable{System.UInt32})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk"/> class.
+            </summary>
+            <param name="chunkId">The chunk identifier.</param>
+            <param name="contents">The contents.</param>
+            <param name="size">The size value to overwrite.</param>
+            <exception cref="T:System.ArgumentNullException">contents</exception>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.ChunkId">
+            <summary>
+            Gets the chunk identifier.
+            </summary>
+            <value>
+            The chunk identifier.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.ActualSize">
+            <summary>
+            Gets the actual size including RIFF chunk header.
+            </summary>
+            <value>
+            The actual size.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.ContentSize">
+            <summary>
+            Gets the size of the content excluding header.
+            </summary>
+            <value>
+            The size of the content.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.RiffSize">
+            <summary>
+            Gets the size of the riff.
+            </summary>
+            <value>
+            The size of the riff.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Contents">
+            <summary>
+            Gets the contents.
+            </summary>
+            <value>
+            The contents.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Item(System.Int32)">
+            <summary>
+            Gets or sets the <see cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content"/> at the specified index.
+            </summary>
+            <value>
+            The <see cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content"/>.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:System.IComparable"/> instance to <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.IndexOf(Shamisen.Codecs.Waveform.Composing.IRf64Content)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Insert(System.Int32,Shamisen.Codecs.Waveform.Composing.IRf64Content)">
+            <summary>
+            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Add(Shamisen.Codecs.Waveform.Composing.IRf64Content)">
+            <summary>
+            Adds the specified item.
+            </summary>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Clear">
+            <summary>
+            Clears this instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Contains(Shamisen.Codecs.Waveform.Composing.IRf64Content)">
+            <summary>
+            Determines whether this instance contains the object.
+            </summary>
+            <param name="item">The item.</param>
+            <returns>
+              <c>true</c> if the specified item exists; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.CopyTo(Shamisen.Codecs.Waveform.Composing.IRf64Content[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+            </summary>
+            <param name="array">The array.</param>
+            <param name="arrayIndex">Index of the array.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.Remove(Shamisen.Codecs.Waveform.Composing.IRf64Content)">
+            <summary>
+            Removes the specified item.
+            </summary>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.MutableRf64Chunk.GetEnumerator">
+            <summary>
+            Gets the enumerator.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder">
+            <summary>
+            Provides functionality of encoding WAVE file format.
+            </summary>
+            <seealso cref="T:Shamisen.Codecs.IEncoder`1" />
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder.Instance">
+            <summary>
+            Gets the global instance of <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder"/>.
+            </summary>
+            <value>
+            The instance.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder.Encode(Shamisen.IWaveSource,Shamisen.IDataSink{System.Byte},Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Encodes <paramref name="source" /> to the specified <paramref name="sink" />.
+            </summary>
+            <param name="source">The <see cref="T:Shamisen.IWaveSource" /> to read the data to encode from.</param>
+            <param name="sink">The destination.</param>
+            <param name="options">The encoding options.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder.EncodeAsync(Shamisen.IAsyncWaveSource,Shamisen.IDataSink{System.Byte},Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Encodes <paramref name="source" /> to the specified <paramref name="sink" /> asynchronously.
+            </summary>
+            <param name="source">The <see cref="T:Shamisen.IAsyncWaveSource" /> to read the data to encode from.</param>
+            <param name="sink">The destination.</param>
+            <param name="options">The encoding options.</param>
+            <returns>
+            The whole encoding task.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder.IsEncodable(Shamisen.IWaveSource,Shamisen.IDataSink{System.Byte},Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Determines whether the <paramref name="source" /> can be encoded to <paramref name="sink" /> by this codec.
+            </summary>
+            <param name="source">The <see cref="T:Shamisen.IWaveSource" /> to read the data to encode from.</param>
+            <param name="sink">The destination.</param>
+            <returns>
+              <c>true</c> if the <paramref name="source" /> is supported by this encoder and <paramref name="sink" /> meets the requirement of encoding, otherwise, <c>false</c>.
+            </returns>
+            <param name="options">The encoding options.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions">
+            <summary>
+            Represents an option for <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoder"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> struct.
+            </summary>
+            <param name="preferRiff">if set to <c>true</c> you prefer RIFF over RF64.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.PreferRiff">
+            <summary>
+            Gets a value indicating whether to prefer RIFF over RF64 or not.
+            </summary>
+            <value>
+              <c>true</c> if you prefer RIFF over RF64; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.Equals(Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.op_Equality(Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions,Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions.op_Inequality(Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions,Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Waveform.Composing.SimpleWaveEncoderOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:Shamisen.Codecs.Waveform.ExtensibleWaveFormat">
             <summary>
             Represents an "extensible" wave format.
@@ -2080,12 +2712,12 @@
             The valid bits per sample.
             </value>
         </member>
-        <member name="P:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.ChannelMask">
+        <member name="P:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.ChannelCombination">
             <summary>
-            Gets the channel mask.
+            Gets the channel combination.
             </summary>
             <value>
-            The channel mask.
+            The channel combination.
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.SubFormat">
@@ -2147,6 +2779,22 @@
             The size of the frame.
             </value>
         </member>
+        <member name="P:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
         <member name="M:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.Equals(System.Object)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
@@ -2181,6 +2829,12 @@
             <returns>
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:System.IComparable" /> instance to <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <param name="sink">The sink.</param>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.op_Equality(Shamisen.Codecs.Waveform.ExtensibleWaveFormat,Shamisen.Codecs.Waveform.ExtensibleWaveFormat)">
             <summary>
@@ -3598,6 +4252,22 @@
             The size of the frame.
             </value>
         </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormat.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormat.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
+            </value>
+        </member>
         <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormat.Equals(System.Object)">
             <summary>
             Indicates whether this instance and a specified object are equal.
@@ -3633,6 +4303,12 @@
             A 32-bit signed integer that is the hash code for this instance.
             </returns>
         </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormat.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:Shamisen.Codecs.Composing.IComposable" /> instance to <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
         <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormat.op_Equality(Shamisen.Codecs.Waveform.StandardWaveFormat,Shamisen.Codecs.Waveform.StandardWaveFormat)">
             <summary>
             Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormat"/> objects are equal.
@@ -3649,6 +4325,143 @@
             </summary>
             <param name="left">The first <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormat"/> to compare.</param>
             <param name="right">The second  <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData">
+            <summary>
+            Represents an "extended" wave format.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.#ctor(Shamisen.Codecs.Waveform.StandardWaveFormat,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> struct.
+            </summary>
+            <param name="format"></param>
+            <param name="extraData"></param>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Encoding">
+            <summary>
+            Gets the encoding.
+            </summary>
+            <value>
+            The encoding.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.BlockSize">
+            <summary>
+            Gets the size of the block.
+            </summary>
+            <value>
+            The size of the block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.SampleSize">
+            <summary>
+            Gets the size of the sample.
+            </summary>
+            <value>
+            The size of the sample.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Channels">
+            <summary>
+            Gets the channels.
+            </summary>
+            <value>
+            The channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.SampleRate">
+            <summary>
+            Gets the sample rate.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.BitDepth">
+            <summary>
+            Gets the bit depth.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Equals(Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.Equals(Shamisen.IAudioFormat{System.Byte})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.WriteTo(Shamisen.IDataSink{System.Byte})">
+            <summary>
+            Writes this <see cref="T:Shamisen.Codecs.Composing.IComposable" /> instance to <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.op_Equality(Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData,Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData.op_Inequality(Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData,Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Waveform.StandardWaveFormatWithExtraData"/> to compare.</param>
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
@@ -6219,6 +7032,147 @@
             <param name="lengthRequired">The least length required.</param>
             <param name="situation">The situation of reading some required data.</param>
         </member>
+        <member name="T:Shamisen.Data.DataSinkUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt16LittleEndian(Shamisen.IDataSink{System.Byte},System.UInt16)">
+            <summary>
+            Writes the <see cref="T:System.UInt16"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt16BigEndian(Shamisen.IDataSink{System.Byte},System.UInt16)">
+            <summary>
+            Writes the <see cref="T:System.UInt16"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt16LittleEndian(Shamisen.IDataSink{System.Byte},System.Int16)">
+            <summary>
+            Writes the <see cref="T:System.Int16"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt16BigEndian(Shamisen.IDataSink{System.Byte},System.Int16)">
+            <summary>
+            Writes the <see cref="T:System.Int16"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt32LittleEndian(Shamisen.IDataSink{System.Byte},System.UInt32)">
+            <summary>
+            Writes the <see cref="T:System.UInt32"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt32BigEndian(Shamisen.IDataSink{System.Byte},System.UInt32)">
+            <summary>
+            Writes the <see cref="T:System.UInt32"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt32LittleEndian(Shamisen.IDataSink{System.Byte},System.Int32)">
+            <summary>
+            Writes the <see cref="T:System.Int32"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt32BigEndian(Shamisen.IDataSink{System.Byte},System.Int32)">
+            <summary>
+            Writes the <see cref="T:System.Int32"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt64LittleEndian(Shamisen.IDataSink{System.Byte},System.UInt64)">
+            <summary>
+            Writes the <see cref="T:System.UInt64"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteUInt64BigEndian(Shamisen.IDataSink{System.Byte},System.UInt64)">
+            <summary>
+            Writes the <see cref="T:System.UInt64"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt64LittleEndian(Shamisen.IDataSink{System.Byte},System.Int64)">
+            <summary>
+            Writes the <see cref="T:System.Int64"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteInt64BigEndian(Shamisen.IDataSink{System.Byte},System.Int64)">
+            <summary>
+            Writes the <see cref="T:System.Int64"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteByte(Shamisen.IDataSink{System.Byte},System.Byte)">
+            <summary>
+            Writes the byte to the specified <paramref name="sink"/>.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteSByte(Shamisen.IDataSink{System.Byte},System.SByte)">
+            <summary>
+            Writes the <see cref="T:System.SByte"/> value to the specified <paramref name="sink"/>.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteSByte(Shamisen.IDataSink{System.Byte},Shamisen.OffsetSByte)">
+            <summary>
+            Writes the <see cref="T:Shamisen.OffsetSByte"/> value to the specified <paramref name="sink"/>.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteSingleLittleEndian(Shamisen.IDataSink{System.Byte},System.Single)">
+            <summary>
+            Writes the <see cref="T:System.Single"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteSingleBigEndian(Shamisen.IDataSink{System.Byte},System.Single)">
+            <summary>
+            Writes the <see cref="T:System.Single"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteDoubleLittleEndian(Shamisen.IDataSink{System.Byte},System.Double)">
+            <summary>
+            Writes the <see cref="T:System.Single"/> value to the specified <paramref name="sink"/> with little endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Shamisen.Data.DataSinkUtils.WriteDoubleBigEndian(Shamisen.IDataSink{System.Byte},System.Double)">
+            <summary>
+            Writes the <see cref="T:System.Single"/> value to the specified <paramref name="sink"/> with BIG endian.
+            </summary>
+            <param name="sink">The sink to write to.</param>
+            <param name="value">The value to write.</param>
+        </member>
         <member name="T:Shamisen.Data.BufferingException">
             <summary>
             The exception that is thrown when a reader of <see cref="T:Shamisen.IDataSource`1"/> has ran out of buffered data.
@@ -6360,6 +7314,12 @@
             </summary>
             <param name="buffer">The data buffer.</param>
         </member>
+        <member name="M:Shamisen.Data.DataCache`1.CopyTo(Shamisen.IDataSink{`0})">
+            <summary>
+            Copies all of the content of <see cref="T:Shamisen.Data.DataCache`1"/> to the specified <paramref name="sink"/>.
+            </summary>
+            <param name="sink">The sink.</param>
+        </member>
         <member name="M:Shamisen.Data.DataCache`1.WriteAsync(System.ReadOnlyMemory{`0})">
             <summary>
             Asynchronously writes the data inside specified buffer to this instance.
@@ -6427,43 +7387,101 @@
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
         </member>
-        <member name="T:Shamisen.Data.IDataSink`1">
+        <member name="T:Shamisen.Data.OffsetSeekableDataSink`1">
             <summary>
-            Defines a base infrastructure for writing data.
+            Writes some data with specified offset.
             </summary>
-            <typeparam name="TSample">The type of writing data.</typeparam>
-            <seealso cref="T:System.IDisposable" />
         </member>
-        <member name="M:Shamisen.Data.IDataSink`1.WriteAsync(System.ReadOnlyMemory{`0})">
+        <member name="M:Shamisen.Data.OffsetSeekableDataSink`1.#ctor(Shamisen.IDataSink{`0},System.UInt64)">
             <summary>
-            Writes the specified <paramref name="data"/> asynchronously.
+            Initializes a new instance of the <see cref="T:Shamisen.Data.OffsetSeekableDataSink`1"/> class.
             </summary>
-            <param name="data">The writing data.</param>
-            <returns></returns>
+            <param name="sink">The sink.</param>
+            <param name="offset">The offset.</param>
         </member>
-        <member name="M:Shamisen.Data.IDataSink`1.Write(System.ReadOnlySpan{`0})">
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.Offset">
+            <summary>
+            Gets the offset.
+            </summary>
+            <value>
+            The offset.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.AsyncWriteSupport">
+            <summary>
+            Gets the asynchronous write support.
+            </summary>
+            <value>
+            The asynchronous write support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.CurrentSize">
+            <summary>
+            Gets the current size of written data.
+            </summary>
+            <value>
+            The current size of written data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.RemainingSpace">
+            <summary>
+            Gets the remaining space of this <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <value>
+            The remaining space.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.MaxSize">
+            <summary>
+            Gets the maximum size of this <see cref="T:Shamisen.IDataSink`1" />.<br />
+            The <see langword="null" /> means that maximum size is either not available, beyond <see cref="F:System.UInt64.MaxValue" />, or infinity.
+            </summary>
+            <value>
+            The maximum size.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.Position">
+            <summary>
+            Gets the current position of this <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.SkipSupport">
+            <summary>
+            Gets the skip support of this <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.SeekSupport">
+            <summary>
+            Gets the seek support of this <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.OffsetSeekableDataSink`1.Sink">
+            <summary>
+            Gets the sink.
+            </summary>
+            <value>
+            The sink.
+            </value>
+        </member>
+        <member name="M:Shamisen.Data.OffsetSeekableDataSink`1.Write(System.ReadOnlySpan{`0})">
             <summary>
             Writes the specified data.
             </summary>
             <param name="data">The writing data.</param>
         </member>
-        <member name="T:Shamisen.Data.IDataWriter`1">
+        <member name="M:Shamisen.Data.OffsetSeekableDataSink`1.Dispose">
             <summary>
-            Defines a base infrastructure for writing data, with seek functionality.
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
-        </member>
-        <member name="M:Shamisen.Data.IDataWriter`1.SeekTo(System.UInt64)">
-            <summary>
-            Seeks this data writer to the specified index.
-            </summary>
-            <param name="position">The position to seek to, from the very first written <typeparamref name="TSample"/>.</param>
-        </member>
-        <member name="M:Shamisen.Data.IDataWriter`1.Seek(System.Int64,System.IO.SeekOrigin)">
-            <summary>
-            Seeks this data writer with the specified offset and origin.
-            </summary>
-            <param name="offset">The offset.</param>
-            <param name="origin">The origin.</param>
         </member>
         <member name="T:Shamisen.Data.Parsing.BufferedBinaryParser">
             <summary>
@@ -6948,9 +7966,91 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
+        <member name="T:Shamisen.Data.StreamDataSink">
+            <summary>
+            Writes data to <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <seealso cref="T:Shamisen.IDataSink`1" />
+        </member>
+        <member name="M:Shamisen.Data.StreamDataSink.#ctor(System.IO.Stream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.StreamDataSink"/> class.
+            </summary>
+            <param name="destination">The destination.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.AsyncWriteSupport">
+            <summary>
+            Gets the asynchronous write support.
+            </summary>
+            <value>
+            The asynchronous write support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IDataSink`1" /> in number of <see cref="T:System.Byte"/>s.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IDataSink`1"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IDataSink`1" /> in number of <see cref="T:System.Byte"/>s.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.CurrentSize">
+            <summary>
+            Gets the current size of written data.
+            </summary>
+            <value>
+            The current size of written data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.RemainingSpace">
+            <summary>
+            Gets the remaining space of this <see cref="T:Shamisen.IDataSink`1" />.
+            </summary>
+            <value>
+            The remaining space.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.StreamDataSink.MaxSize">
+            <summary>
+            Gets the maximum size of this <see cref="T:Shamisen.IDataSink`1" />.<br />
+            The <see langword="null" /> means that maximum size is either not available, beyond <see cref="F:System.UInt64.MaxValue" />, or infinity.
+            </summary>
+            <value>
+            The maximum size.
+            </value>
+        </member>
+        <member name="M:Shamisen.Data.StreamDataSink.Write(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Writes the specified data.
+            </summary>
+            <param name="data">The writing data.</param>
+        </member>
+        <member name="M:Shamisen.Data.StreamDataSink.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
         <member name="T:Shamisen.Data.StreamDataSource">
             <summary>
-            Reads data from <see cref="T:System.IO.Stream"/>
+            Reads data from <see cref="T:System.IO.Stream"/>.
             </summary>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.#ctor(System.IO.Stream)">
@@ -6959,14 +8059,6 @@
             </summary>
             <param name="stream">The stream.</param>
             <exception cref="T:System.ArgumentNullException">stream</exception>
-        </member>
-        <member name="P:Shamisen.Data.StreamDataSource.PositionOld">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.IDataSource`1"/>.
-            </summary>
-            <value>
-            The position.
-            </value>
         </member>
         <member name="P:Shamisen.Data.StreamDataSource.Length">
             <summary>
@@ -7035,41 +8127,41 @@
             <param name="buffer">The destination.</param>
             <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+        <member name="M:Shamisen.Data.StreamDataSource.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Data.StreamSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
             </summary>
             <param name="offset">The offset in frames.</param>
             <param name="origin">The origin.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.SeekLast(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamSeekSupport.SeekLast(System.UInt64)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
             </summary>
             <param name="offset">The offset.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.SeekTo(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamSeekSupport.SeekTo(System.UInt64)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames.
             </summary>
             <param name="index">The index in frames.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.Skip(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamSeekSupport.Skip(System.UInt64)">
             <summary>
             Skips the source the specified step in frames.
             </summary>
             <param name="step">The number of frames to skip.</param>
         </member>
-        <member name="M:Shamisen.Data.StreamDataSource.StreamSeekSupport.StepBack(System.UInt64)">
+        <member name="M:Shamisen.Data.StreamSeekSupport.StepBack(System.UInt64)">
             <summary>
             Steps this data source the specified step back in frames.
             </summary>
             <param name="step">The number of frames to step back.</param>
-        </member>
-        <member name="M:Shamisen.Data.StreamDataSource.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
         </member>
         <member name="T:Shamisen.DataUtils">
             <summary>
@@ -7091,6 +8183,95 @@
             <param name="dataSource">The data source.</param>
             <param name="span">The span.</param>
             <returns></returns>
+        </member>
+        <member name="T:Shamisen.IAsyncWriteSupport`1">
+            <summary>
+            Defines a base infrastructure of an asynchronous write support of <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+        </member>
+        <member name="M:Shamisen.IAsyncWriteSupport`1.WriteAsync(System.ReadOnlyMemory{`0})">
+            <summary>
+            Writes the specified data asynchronously.
+            </summary>
+            <param name="data">The data.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.IDataSink`1">
+            <summary>
+            Defines a base infrastructure for writing data.
+            </summary>
+            <typeparam name="TSample">The type of writing data.</typeparam>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="P:Shamisen.IDataSink`1.AsyncWriteSupport">
+            <summary>
+            Gets the asynchronous write support.
+            </summary>
+            <value>
+            The asynchronous write support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.CurrentSize">
+            <summary>
+            Gets the current size of written data.
+            </summary>
+            <value>
+            The current size of written data.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.RemainingSpace">
+            <summary>
+            Gets the remaining space of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The remaining space.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.MaxSize">
+            <summary>
+            Gets the maximum size of this <see cref="T:Shamisen.IDataSink`1"/>.<br/>
+            The <see langword="null"/> means that maximum size is either not available, beyond <see cref="F:System.UInt64.MaxValue"/>, or infinity.
+            </summary>
+            <value>
+            The maximum size.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.Position">
+            <summary>
+            Gets the current position of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.SkipSupport">
+            <summary>
+            Gets the skip support of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.SeekSupport">
+            <summary>
+            Gets the seek support of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="T:Shamisen.IWriteSupport`1">
+            <summary>
+            Defines a base infrastructure of a write support of <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+        </member>
+        <member name="M:Shamisen.IWriteSupport`1.Write(System.ReadOnlySpan{`0})">
+            <summary>
+            Writes the specified data.
+            </summary>
+            <param name="data">The writing data.</param>
         </member>
         <member name="T:Shamisen.ReadAsyncFunc`1">
             <summary>
@@ -7868,6 +9049,87 @@
             </summary>
             <param name="source">The source to add.</param>
         </member>
+        <member name="T:Shamisen.Filters.LengthTruncationSource`2">
+            <summary>
+            Truncates some infinitely-long <see cref="T:Shamisen.IReadableAudioSource`2"/> with specified length.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.LengthTruncationSource`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Filters.LengthTruncationSource`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="totalLength">The total length.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.TotalLength">
+            <summary>
+            Gets the total length.
+            </summary>
+            <value>
+            The total length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.Position">
+            <summary>
+            Gets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.SkipSupport">
+            <summary>
+            Gets the skip support.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.LengthTruncationSource`2.SeekSupport">
+            <summary>
+            Gets the seek support.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.Filters.LengthTruncationSource`2.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.LengthTruncationSource`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
         <member name="T:Shamisen.Filters.LoopSource`2">
             <summary>
             Provides a looping source for <see cref="T:Shamisen.IReadableAudioSource`2"/> with non-<see langword="null"/> <see cref="P:Shamisen.IAudioSource`2.TotalLength"/>.
@@ -8623,6 +9885,48 @@
             Gets the value which indicates how the speakers are used.
             </summary>
         </member>
+        <member name="T:Shamisen.Formats.IConvertivleWaveFormat">
+            <summary>
+            Defines a base infrastructure of a <see cref="T:Shamisen.IAudioFormat`1"/> that can be represented in <see cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content"/>
+            </summary>
+        </member>
+        <member name="T:Shamisen.Formats.IExtensibleWaveFormat">
+            <summary>
+            Represents a base infrastructure of an extensible wave format.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Formats.IExtensibleWaveFormat.ExtensionSize">
+            <summary>
+            Gets the size of the extension.
+            </summary>
+            <value>
+            The size of the extension.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.IExtensibleWaveFormat.ValidBitsPerSample">
+            <summary>
+            Gets the valid bits per sample.
+            </summary>
+            <value>
+            The valid bits per sample.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.IExtensibleWaveFormat.SubFormat">
+            <summary>
+            Gets the sub format.
+            </summary>
+            <value>
+            The sub format.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.IExtensibleWaveFormat.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
+            </value>
+        </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.<br/>
@@ -8658,6 +9962,14 @@
             </summary>
             <value>
             The sample encoding.
+            </value>
+        </member>
+        <member name="P:Shamisen.IWaveFormat.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
             </value>
         </member>
         <member name="T:Shamisen.Int16LinearPcmSampleFormat">
@@ -9438,6 +10750,16 @@
             <param name="encoding">The encoding.</param>
             <param name="extraSize">Size of the extra.</param>
         </member>
+        <member name="M:Shamisen.WaveFormat.#ctor(Shamisen.AudioEncoding,System.Int32,System.Int32,System.Int32,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.WaveFormat"/> struct.
+            </summary>
+            <param name="encoding">The encoding.</param>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="bitDepth">The bit depth.</param>
+            <param name="extraData">The extra data.</param>
+        </member>
         <member name="P:Shamisen.WaveFormat.BlockSize">
             <summary>
             Gets the value indicates how many bytes are required per whole sample.
@@ -9495,6 +10817,14 @@
             </summary>
             <value>
             The size of the frame.
+            </value>
+        </member>
+        <member name="P:Shamisen.WaveFormat.ExtraData">
+            <summary>
+            Gets the extra data.
+            </summary>
+            <value>
+            The extra data.
             </value>
         </member>
         <member name="M:Shamisen.WaveFormat.Equals(System.Object)">
@@ -10117,6 +11447,58 @@
             Skips the source the specified step in frames.
             </summary>
             <param name="step">The number of frames to skip.</param>
+        </member>
+        <member name="T:Shamisen.Modifier.OffsetSeekSupport">
+            <summary>
+            Implements an <see cref="T:Shamisen.ISeekSupport"/> with offset.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.#ctor(Shamisen.ISeekSupport,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Modifier.OffsetSeekSupport"/> class.
+            </summary>
+            <param name="seekSupport">The seek support.</param>
+            <param name="offset">The offset.</param>
+            <exception cref="T:System.ArgumentNullException">seekSupport</exception>
+        </member>
+        <member name="P:Shamisen.Modifier.OffsetSeekSupport.Offset">
+            <summary>
+            Gets the offset.
+            </summary>
+            <value>
+            The offset.
+            </value>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> with the specified offset in frames.
+            </summary>
+            <param name="offset">The offset in frames.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.SeekLast(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames from the end of stream.
+            </summary>
+            <param name="offset">The offset.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.SeekTo(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames.
+            </summary>
+            <param name="index">The index in frames.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.Skip(System.UInt64)">
+            <summary>
+            Skips the source the specified step in frames.
+            </summary>
+            <param name="step">The number of frames to skip.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.StepBack(System.UInt64)">
+            <summary>
+            Steps this data source the specified step back in frames.
+            </summary>
+            <param name="step">The number of frames to step back.</param>
         </member>
         <member name="T:Shamisen.ModifierUtils">
             <summary>
@@ -11614,6 +12996,15 @@
             The result of the conversion.
             </returns>
         </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(Shamisen.OffsetSByte)~System.Byte">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.OffsetSByte"/> to <see cref="T:System.Byte"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
         <member name="M:Shamisen.OffsetSByte.op_Explicit(System.SByte)~Shamisen.OffsetSByte">
             <summary>
             Performs an explicit conversion from <see cref="T:System.SByte"/> to <see cref="T:Shamisen.OffsetSByte"/>.
@@ -12756,6 +14147,20 @@
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Single"/>; otherwise, <c>false</c>.</returns>
         </member>
+        <member name="M:Shamisen.BinaryExtensions.SingleToInt32Bits(System.Single)">
+            <summary>
+            Converts a single-precision floating-point value into an integer.
+            </summary>
+            <param name="value">The single-precision floating-point value to convert.</param>
+            <returns>An integer representing the converted single-precision floating-point value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.Int32BitsToSingle(System.Int32)">
+            <summary>
+            Reinterprets the specified 32-bit integer as a single-precision floating-point value.
+            </summary>
+            <param name="value">The integer to convert.</param>
+            <returns>A single-precision floating-point value that represents the converted integer.</returns>
+        </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.UInt16)">
             <summary>
             Converts the specified <paramref name="systemEndianedValue"/> to little endian.
@@ -13077,6 +14482,15 @@
             <returns></returns>
         </member>
         <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -14122,12 +15536,6 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
@@ -14174,6 +15582,136 @@
             <param name="left">The first vector.</param>
             <param name="right">The second vector.</param>
             <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.PointerExtensions">
+            <summary>
+            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
+            </summary>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.UIntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
+        </member>
+    </members>
+</doc>
+)">
+            <summary>
+            Increments the specified <see cref="T:System.UIntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
+        </member>
+    </members>
+</doc>
+
             The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
             </returns>
         </member>

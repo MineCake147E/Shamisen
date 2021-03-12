@@ -98,10 +98,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator ==(DoublePrecisionSampleFormat left, DoublePrecisionSampleFormat right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(DoublePrecisionSampleFormat left, DoublePrecisionSampleFormat right) => left.Equals(right);
 
         /// <summary>
 		/// Indicates whether the values of two specified <see cref="DoublePrecisionSampleFormat"/> objects are different.
@@ -111,9 +108,6 @@ namespace Shamisen
 		/// <returns>
 		///   <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
 		/// </returns>
-        public static bool operator !=(DoublePrecisionSampleFormat left, DoublePrecisionSampleFormat right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(DoublePrecisionSampleFormat left, DoublePrecisionSampleFormat right) => !(left == right);
     }
 }

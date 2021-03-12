@@ -184,7 +184,7 @@ namespace System
         /// <typeparam name="TSample">The type of the sample.</typeparam>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        public static void QuickFill<TSample>(this Span<TSample> span, TSample value = default)
+        public static void QuickFill<TSample>(this Span<TSample> span, TSample value)
         {
             if (span.Length < 32)
             {
@@ -228,5 +228,16 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, int maxLength)
             => span.Length > maxLength ? span.SliceWhile(maxLength) : span;
+
+        /// <summary>
+        /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, ulong maxLength)
+            => maxLength > int.MaxValue ? span : span.SliceWhileIfLongerThan((int)maxLength);
     }
 }

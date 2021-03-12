@@ -127,20 +127,20 @@ namespace Shamisen.Tests.IO.Droid
             switch (requestCode)
             {
                 case FileWriteRequestCode:
-                    if (resultCode == Result.Ok)
+                    switch (resultCode)
                     {
-                        //OKボタンを押して戻ってきたときの処理
-                        var path = data.Data;
-                        Log.Verbose("Path", path.ToString());
-                        WriteLineToDump(await Task.Run(() => EncodeDump(path)));
-                    }
-                    else if (resultCode == Result.Canceled)
-                    {
-                        //キャンセルボタンを押して戻ってきたときの処理
-                    }
-                    else
-                    {
-                        //その他
+                        case Result.Canceled:
+                            break;
+                        case Result.FirstUser:
+                            break;
+                        case Result.Ok:
+                            //When the OK button is pressed
+                            var path = data.Data;
+                            Log.Verbose("Path", path.ToString());
+                            WriteLineToDump(await Task.Run(() => EncodeDump(path)));
+                            break;
+                        default:
+                            break;
                     }
                     break;
                 default:

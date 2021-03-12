@@ -1,0 +1,63 @@
+﻿<#@ template debug = "false" hostspecific = "false" language = "C#"#>
+<#@ assembly name = "System.Core"#>
+<#@ import namespace = "System.Linq"#>
+<#@ import namespace = "System.Text"#>
+<#@ import namespace = "System.Collections.Generic"#>
+<#@ output extension = ".cs"#>
+<#    var types = new [] {("ushort", "UInt16"),("short", "Int16"),("uint", "UInt32"),("int", "Int32"),("ulong", "UInt64"),("long", "Int64"), };#>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
+
+namespace Shamisen.Codecs.Waveform.Composing
+{
+    /// <summary>
+    /// Represents a binary content like <see cref="int"/> and <see cref="float"/>.
+    /// </summary>
+    /// <seealso cref="IRf64Content" />
+    public readonly partial struct BinaryContent : IRf64Content
+    {
+<#foreach ((var friendly, var full) in types) {#>
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="<#=friendly #>"/> to <see cref="BinaryContent"/> in little endian.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator BinaryContent(<#=friendly #> value) => CreateLittleEndian(value);
+
+<#}#>
+
+<#foreach ((var friendly, var full) in types) {#>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BinaryContent"/> struct with specified <paramref name="value"/> in little endian.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public static BinaryContent CreateLittleEndian(<#=friendly #> value)
+        {
+            var buffer = new byte[sizeof(<#=friendly #>)];
+            BinaryPrimitives.Write<#=full #>LittleEndian(buffer.AsSpan(), value);
+            return new BinaryContent(buffer.AsMemory());
+        }
+
+<#}#>
+
+<#foreach ((var friendly, var full) in types) {#>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BinaryContent"/> struct with specified <paramref name="value"/> in BIG endian.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public static BinaryContent CreateBigEndian(<#=friendly #> value)
+        {
+            var buffer = new byte[sizeof(<#=friendly #>)];
+            BinaryPrimitives.Write<#=full #>BigEndian(buffer.AsSpan(), value);
+            return new BinaryContent(buffer.AsMemory());
+        }
+
+<#}#>
+    }
+}

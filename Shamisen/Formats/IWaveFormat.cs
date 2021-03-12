@@ -16,5 +16,13 @@ namespace Shamisen
         /// The sample encoding.
         /// </value>
         AudioEncoding Encoding { get; }
+
+        /// <summary>
+        /// Gets the extra data.
+        /// </summary>
+        /// <value>
+        /// The extra data.
+        /// </value>
+        ReadOnlyMemory<byte> ExtraData { get; }
     }
 }

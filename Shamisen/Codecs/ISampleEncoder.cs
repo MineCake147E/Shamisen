@@ -7,46 +7,43 @@ using System.Threading.Tasks;
 namespace Shamisen.Codecs
 {
     /// <summary>
-    /// Defines a base infrastructure of an audio encoder that handles <see cref="IReadableAudioSource{TSample, TFormat}"/> and <see cref="ISampleSource"/>.
+    /// Defines a base infrastructure of an audio encoder that handles <see cref="ISampleSource"/>.
     /// </summary>
-    public interface IEncoder<TSample, TFormat, TEncodingOptions> : ISampleEncoder<TEncodingOptions>
-        where TEncodingOptions : struct
-        where TSample : unmanaged
-        where TFormat : IAudioFormat<TSample>
+    public interface ISampleEncoder<TEncodingOptions> where TEncodingOptions : struct
     {
         /// <summary>
         /// Determines whether the <paramref name="source"/> can be encoded to <paramref name="sink"/> by this codec.
         /// </summary>
-        /// <param name="source">The <see cref="IReadableAudioSource{TSample, TFormat}"/> to read the data to encode from.</param>
+        /// <param name="source">The <see cref="ISampleSource"/> to read the data to encode from.</param>
         /// <param name="sink">The destination.</param>
         /// <param name="options">The encoding options.</param>
         /// <returns><c>true</c> if the <paramref name="source"/> is supported by this encoder and <paramref name="sink"/> meets the requirement of encoding, otherwise, <c>false</c>.</returns>
-        bool IsEncodable(IReadableAudioSource<TSample, TFormat> source, IDataSink<byte> sink, TEncodingOptions options = default);
+        bool IsEncodable(ISampleSource source, IDataSink<byte> sink, TEncodingOptions options = default);
 
         /// <summary>
         /// Determines whether the <paramref name="source"/> can be encoded to <paramref name="sink"/> by this codec.
         /// </summary>
-        /// <param name="source">The <see cref="IAsyncReadableAudioSource{TSample, TFormat}"/> to read the data to encode from.</param>
+        /// <param name="source">The <see cref="IAsyncSampleSource"/> to read the data to encode from.</param>
         /// <param name="sink">The destination.</param>
         /// <param name="options">The encoding options.</param>
         /// <returns><c>true</c> if the <paramref name="source"/> is supported by this encoder and <paramref name="sink"/> meets the requirement of encoding, otherwise, <c>false</c>.</returns>
-        ValueTask<bool> IsEncodableAsync(IAsyncReadableAudioSource<TSample, TFormat> source, IDataSink<byte> sink, TEncodingOptions options = default);
+        ValueTask<bool> IsEncodableAsync(IAsyncSampleSource source, IDataSink<byte> sink, TEncodingOptions options = default);
 
         /// <summary>
         /// Encodes <paramref name="source"/> to the specified <paramref name="sink"/>.
         /// </summary>
-        /// <param name="source">The <see cref="IReadableAudioSource{TSample, TFormat}"/> to read the data to encode from.</param>
+        /// <param name="source">The <see cref="ISampleSource"/> to read the data to encode from.</param>
         /// <param name="sink">The destination.</param>
         /// <param name="options">The encoding options.</param>
-        void Encode(IReadableAudioSource<TSample, TFormat> source, IDataSink<byte> sink, TEncodingOptions options = default);
+        void Encode(ISampleSource source, IDataSink<byte> sink, TEncodingOptions options = default);
 
         /// <summary>
         /// Encodes <paramref name="source"/> to the specified <paramref name="sink"/> asynchronously.
         /// </summary>
-        /// <param name="source">The <see cref="IAsyncReadableAudioSource{TSample, TFormat}"/> to read the data to encode from.</param>
+        /// <param name="source">The <see cref="IAsyncSampleSource"/> to read the data to encode from.</param>
         /// <param name="sink">The destination.</param>
         /// <param name="options">The encoding options.</param>
         /// <returns>The whole encoding task.</returns>
-        ValueTask EncodeAsync(IAsyncReadableAudioSource<TSample, TFormat> source, IDataSink<byte> sink, TEncodingOptions options = default);
+        ValueTask EncodeAsync(IAsyncSampleSource source, IDataSink<byte> sink, TEncodingOptions options = default);
     }
 }

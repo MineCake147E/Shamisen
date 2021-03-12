@@ -13,11 +13,13 @@ namespace Shamisen.Codecs.Waveform
     /// <summary>
     /// Represents a header of RIFF chunks.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    [Obsolete("", true)]
-    public readonly struct RiffChunkHeader : IEndiannessReversible<RiffChunkHeader>
+    [StructLayout(LayoutKind.Explicit)]
+    public readonly struct RiffChunkHeader
     {
+        [FieldOffset(0)]
         private readonly ChunkId chunkId;
+
+        [FieldOffset(4)]
         private readonly uint length;
 
         /// <summary>
@@ -46,29 +48,5 @@ namespace Shamisen.Codecs.Waveform
         /// The length of this chunk.
         /// </value>
         public uint Length => length;
-
-        /// <summary>
-        /// Reverses endianness for all fields, and returns a new value.
-        /// </summary>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RiffChunkHeader ReverseEndianness()
-        {
-            var ckId = (ChunkId)BinaryPrimitives.ReverseEndianness((uint)chunkId);
-            var ckLen = BinaryPrimitives.ReverseEndianness(length);
-            return new RiffChunkHeader(ckId, ckLen);
-        }
-
-        /// <summary>
-        /// Reads the chunk header from the specified <paramref name="dataSource"/>.
-        /// </summary>
-        /// <param name="dataSource">The data source.</param>
-        /// <returns>The deserialized chunk header.</returns>
-        public static RiffChunkHeader ReadChunkHeader(IDataSource<byte> dataSource)
-        {
-            var ckId = (ChunkId)dataSource.ReadUInt32LittleEndian();
-            var ckLen = dataSource.ReadUInt32LittleEndian();
-            return new RiffChunkHeader(ckId, ckLen);
-        }
     }
 }

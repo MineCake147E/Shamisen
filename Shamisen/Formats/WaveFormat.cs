@@ -40,6 +40,24 @@ namespace Shamisen
         public WaveFormat(int sampleRate, int bitDepth, int channels, AudioEncoding encoding, int extraSize) : this(sampleRate, bitDepth, channels, encoding) => ExtraSize = extraSize;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="WaveFormat"/> struct.
+        /// </summary>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="channels">The channels.</param>
+        /// <param name="sampleRate">The sample rate.</param>
+        /// <param name="bitDepth">The bit depth.</param>
+        /// <param name="extraData">The extra data.</param>
+        public WaveFormat(AudioEncoding encoding, int channels, int sampleRate, int bitDepth, ReadOnlyMemory<byte> extraData) : this()
+        {
+            Encoding = encoding;
+            Channels = channels;
+            SampleRate = sampleRate;
+            BitDepth = bitDepth;
+            ExtraSize = ExtraData.Length;
+            ExtraData = extraData;
+        }
+
+        /// <summary>
         /// Gets the value indicates how many bytes are required per whole sample.
         /// It depends on <see cref="IAudioFormat{TSample}.Channels"/>.
         /// </summary>
@@ -97,6 +115,14 @@ namespace Shamisen
         /// The size of the frame.
         /// </value>
         public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
+
+        /// <summary>
+        /// Gets the extra data.
+        /// </summary>
+        /// <value>
+        /// The extra data.
+        /// </value>
+        public ReadOnlyMemory<byte> ExtraData { get; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
