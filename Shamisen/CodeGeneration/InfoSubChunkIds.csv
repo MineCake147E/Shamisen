@@ -1,4 +1,4 @@
-﻿"Description", "Name", "Reserved", "Subchunk Signature",
+﻿"Description", "Name", "Reserved", "Subchunk Signature"
 "The Archival Location subchunk ""IARL"" read in Little Endian.", "ArchivalLocation", "", "IARL"
 "The Artist subchunk ""IART"" read in Little Endian.", "Artist", "", "IART"
 "The Commissioned subchunk ""ICMS"" read in Little Endian.", "Commissioned", "", "ICMS"
