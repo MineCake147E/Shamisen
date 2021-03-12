@@ -14,7 +14,7 @@
 var regex = new Regex("^\"((?:(?<=\\\\)\"|[^\"])*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",", RegexOptions.Compiled);
 var text = File.ReadAllText(this.Host.ResolvePath("..\\CodeGeneration\\PcmSampleFormats.csv"));
 var lines = text.Split('\n').Where(a=>!string.IsNullOrWhiteSpace(a));
-var parsedCsv = lines.Select(a=>regex.Match(a).Groups.OfType<Group>().Skip(1).Select(j => j.Value).ToArray());
+var parsedCsv = lines.Skip(1).Select(a=>regex.Match(a).Groups.OfType<Group>().Skip(1).Select(j => j.Value).ToArray());
 IEnumerable<(string summary, string typeName, string sample, int bitDepth)> types = parsedCsv.Select(a => (a[0], a[1], a[2], int.Parse(a[3])));
 #>
 #nullable enable

@@ -15,7 +15,7 @@ static uint ToUInt32LittleEndian(string value) => BinaryPrimitives.ReadUInt32Lit
 var regex = new Regex("\"((\"\"|[^\"])*)\",\\s+\"([^\"]*)\",\\s+\"([^\"]*)\",\\s+\"([^\"]*)\"", RegexOptions.Compiled);
 var text = File.ReadAllText(this.Host.ResolvePath("..\\..\\CodeGeneration\\InfoSubChunkIds.csv"));
 var lines = text.Split('\n').Where(a=>!string.IsNullOrWhiteSpace(a));
-var parsedCsv = lines.Select(a=>regex.Match(a).Groups.OfType<Group>().Skip(1).Select(j => j.Value).ToArray());
+var parsedCsv = lines.Skip(1).Select(a=>regex.Match(a).Groups.OfType<Group>().Skip(1).Select(j => j.Value).ToArray());
 var scids = parsedCsv.Select(a => (a[0].Replace("\"\"","\""), a[2], a[3], a[4]));
 
 #>

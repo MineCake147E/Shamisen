@@ -1,4 +1,5 @@
-﻿"Unknown format", "Unknown", "", "0x0000",
+﻿"Description", "Name", "Attribute", "Value",
+"Unknown format", "Unknown", "", "0x0000",
 "Microsoft PCM Format", "LinearPcm", "FixedBitDepth", "0x0001",
 "Microsoft ADPCM Format", "MsAdpcm", "", "0x0002",
 "IEEE 754 Single Precision Floating-Point Number", "IeeeFloat", "", "0x0003",
