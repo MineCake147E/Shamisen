@@ -9,7 +9,7 @@ using Shamisen.Data;
 namespace Shamisen.Codecs
 {
     /// <summary>
-    /// Provides some utility functions for <see cref="IEncoder{TEncodingOptions}"/> and <see cref="IDecoder"/>.
+    /// Provides some utility functions for <see cref="IEncoder{TSample, TFormat, TEncodingOptions}"/> and <see cref="IDecoder"/>.
     /// </summary>
     public static class CodecUtils
     {

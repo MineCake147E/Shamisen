@@ -35,7 +35,7 @@ namespace Shamisen.Tests.IO.OpenTK
         public ObservableCollection<DeviceViewModel> Devices { get; } = new ObservableCollection<DeviceViewModel>();
 
         private readonly List<OpenALOutput> outputs = new();
-        private readonly List<SinusoidSource> sinusoidSources = new();
+        private readonly List<IFrequencyGeneratorSource> sinusoidSources = new();
 
         public MainWindowViewModel()
         {

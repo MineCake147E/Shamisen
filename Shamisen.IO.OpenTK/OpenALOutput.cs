@@ -137,33 +137,18 @@ namespace Shamisen.IO
         }
 
         private static ALFormat GetALFormat(IWaveFormat wf)
-        {
-            if (wf.Channels == 1)
+            => (wf.Channels, wf.Encoding, wf.BitDepth) switch
             {
-                if (wf.Encoding == AudioEncoding.LinearPcm)
-                {
-                    if (wf.BitDepth == 8) return ALFormat.Mono8;
-                    else if (wf.BitDepth == 16) return ALFormat.Mono16;
-                }
-                else if (wf.Encoding == AudioEncoding.IeeeFloat)
-                {
-                    if (wf.BitDepth == 32) return ALFormat.MonoFloat32Ext;
-                }
-            }
-            else if (wf.Channels == 2)
-            {
-                if (wf.Encoding == AudioEncoding.LinearPcm)
-                {
-                    if (wf.BitDepth == 8) return ALFormat.Stereo8;
-                    else if (wf.BitDepth == 16) return ALFormat.Stereo16;
-                }
-                else if (wf.Encoding == AudioEncoding.IeeeFloat)
-                {
-                    if (wf.BitDepth == 32) return ALFormat.StereoFloat32Ext;
-                }
-            }
-            throw new ArgumentException($"The format '{wf}' is not supported.");
-        }
+                (1, AudioEncoding.LinearPcm, 8) => ALFormat.Mono8,
+                (1, AudioEncoding.LinearPcm, 16) => ALFormat.Mono16,
+                (2, AudioEncoding.LinearPcm, 8) => ALFormat.Stereo8,
+                (2, AudioEncoding.LinearPcm, 16) => ALFormat.Stereo16,
+                (1, AudioEncoding.IeeeFloat, 32) when AL.IsExtensionPresent("AL_FORMAT_MONO_FLOAT32") => ALFormat.MonoFloat32Ext,
+                (1, AudioEncoding.IeeeFloat, 64) when AL.IsExtensionPresent("AL_FORMAT_MONO_DOUBLE_EXT") => ALFormat.MonoDoubleExt,
+                (2, AudioEncoding.IeeeFloat, 32) when AL.IsExtensionPresent("AL_FORMAT_STEREO_FLOAT32") => ALFormat.StereoFloat32Ext,
+                (2, AudioEncoding.IeeeFloat, 64) when AL.IsExtensionPresent("AL_FORMAT_STEREO_DOUBLE_EXT") => ALFormat.StereoDoubleExt,
+                _ => throw new ArgumentException($"The format '{wf}' is not supported."),
+            };
 
         [DebuggerNonUserCode]
         private void CheckErrors()
@@ -207,6 +192,16 @@ namespace Shamisen.IO
                         var cnt = Source.Read(inbuf.AsSpan());
                         AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sourceFormat.SampleRate); CheckErrors();
                     }
+                    if (AL.IsExtensionPresent("AL_SOFT_direct_channels_remix"))
+                    {
+                        AL.Source(src, (ALSourcei)0x1033, 2); CheckErrors();
+                    }
+                    else if (AL.IsExtensionPresent("AL_DIRECT_CHANNELS_SOFT"))
+                    {
+                        AL.Source(src, (ALSourcei)0x1033, 1); CheckErrors();
+                    }
+
+                    AL.Source(src, ALSourceb.SourceRelative, true); CheckErrors();
                     AL.SourceQueueBuffers(src, BUFNUM, bufferPointers); CheckErrors();
                     AL.Source(src, ALSourcef.Gain, 1); CheckErrors();
                     AL.Source(src, ALSource3f.Position, 0, 0, 0); CheckErrors();

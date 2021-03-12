@@ -7,6 +7,7 @@ namespace Shamisen
 {
     /// <summary>
     /// Represents a Fixed-Point Number in Signed Q0.15 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+    /// Useful for manipulating a 16-bit PCM waveform directly.<br/>
     /// For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 2)]
@@ -23,24 +24,24 @@ namespace Shamisen
         private const float V2FRatio = 0.000030517578125f;
 
         /// <summary>
-        /// Represents the largest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
+        /// Represents the largest possible value of <see cref="Fixed64"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed16 MaxValue = new Fixed16(short.MaxValue);
+        public static readonly Fixed16 MaxValue = new(short.MaxValue);
 
         /// <summary>
-        /// Represents the smallest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
+        /// Represents the smallest possible value of <see cref="Fixed64"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed16 MinValue = new Fixed16(short.MaxValue);
+        public static readonly Fixed16 MinValue = new(short.MaxValue);
 
         /// <summary>
         /// Represents the number zero (0).
         /// </summary>
-        public static readonly Fixed16 Zero = new Fixed16(0);
+        public static readonly Fixed16 Zero = new(0);
 
         /// <summary>
         /// Represents the smallest positive <see cref="Fixed16"/> value that is greater than zero. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed16 Epsilon = new Fixed16(1);
+        public static readonly Fixed16 Epsilon = new(1);
 
         #endregion Constants
 
@@ -71,7 +72,7 @@ namespace Shamisen
         /// <returns>
         /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        public static Fixed16 operator +(Fixed16 left, Fixed16 right) => new Fixed16((short)(left.Value + right.Value));
+        public static Fixed16 operator +(Fixed16 left, Fixed16 right) => new((short)(left.Value + right.Value));
 
         /// <summary>
         /// Subtracts two specified <see cref="Fixed16"/> values.
@@ -81,7 +82,7 @@ namespace Shamisen
         /// <returns>
         /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
-        public static Fixed16 operator -(Fixed16 left, Fixed16 right) => new Fixed16((short)(left.Value - right.Value));
+        public static Fixed16 operator -(Fixed16 left, Fixed16 right) => new((short)(left.Value - right.Value));
 
         /// <summary>
         /// Multiplies two specified <see cref="Fixed16"/> values.
@@ -91,7 +92,7 @@ namespace Shamisen
         /// <returns>
         /// The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new Fixed16((short)(left.Value * right.Value >> 15));
+        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new((short)(left.Value * right.Value >> 15));
 
         /// <summary>
         /// Divides two specified <see cref="Fixed16"/> values.
@@ -111,7 +112,7 @@ namespace Shamisen
         /// <returns>
         /// The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        public static Fixed16 operator %(Fixed16 left, Fixed16 right) => new Fixed16((short)(left.Value % right.Value));
+        public static Fixed16 operator %(Fixed16 left, Fixed16 right) => new((short)(left.Value % right.Value));
 
         /// <summary>
         /// Returns the value of the <see cref="Fixed16"/> operand (the sign of the operand is unchanged).
@@ -129,7 +130,7 @@ namespace Shamisen
         /// <returns>
         /// The value of <paramref name="value"/> incremented by <see cref="Epsilon"/>.
         /// </returns>
-        public static Fixed16 operator ++(Fixed16 value) => new Fixed16((short)(value.Value + 1));
+        public static Fixed16 operator ++(Fixed16 value) => new((short)(value.Value + 1));
 
         /// <summary>
         /// Negates the value of the specified <see cref="Fixed16"/> operand.
@@ -138,7 +139,7 @@ namespace Shamisen
         /// <returns>
         /// The result of <paramref name="value"/> multiplied by negative one (-1).
         /// </returns>
-        public static Fixed16 operator -(Fixed16 value) => new Fixed16((short)-value.Value);
+        public static Fixed16 operator -(Fixed16 value) => new((short)-value.Value);
 
         /// <summary>
         /// Decrements the <see cref="Fixed16"/> operand by <see cref="Epsilon"/>.
@@ -147,7 +148,7 @@ namespace Shamisen
         /// <returns>
         /// The value of <paramref name="value"/> decremented by <see cref="Epsilon"/>.
         /// </returns>
-        public static Fixed16 operator --(Fixed16 value) => new Fixed16((short)(value.Value - 1));
+        public static Fixed16 operator --(Fixed16 value) => new((short)(value.Value - 1));
 
         #endregion Arithmetics
 
@@ -178,7 +179,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator Fixed16(float value) => new Fixed16((short)(value * 32768.0f));
+        public static explicit operator Fixed16(float value) => new((short)(value * 32768.0f));
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="double"/> to <see cref="Fixed16"/>.
@@ -187,7 +188,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator Fixed16(double value) => new Fixed16((short)(value * 32768.0));
+        public static explicit operator Fixed16(double value) => new((short)(value * 32768.0));
 
         #endregion Conversion
 

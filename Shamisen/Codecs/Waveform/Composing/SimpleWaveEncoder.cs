@@ -17,7 +17,7 @@ namespace Shamisen.Codecs.Waveform.Composing
     /// <summary>
     /// Provides functionality of encoding WAVE file format.
     /// </summary>
-    /// <seealso cref="IEncoder{TEncodingOptions}" />
+    /// <seealso cref="IEncoder{TSample, TFormat, TEncodingOptions}" />
 #pragma warning disable S3453 // Classes should not have only "private" constructors
 
     public sealed partial class SimpleWaveEncoder : IWaveEncoder<SimpleWaveEncoderOptions>

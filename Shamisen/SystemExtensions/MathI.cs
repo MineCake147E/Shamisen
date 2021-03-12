@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Numerics;
+using DivideSharp;
+using DSUtils = DivideSharp.Utils;
 
 #if NET5_0 || NETCOREAPP3_1
 
@@ -56,6 +58,61 @@ namespace Shamisen
         {
             var h = value >> 31;
             return value & ~h;
+        }
+
+        /// <summary>
+        /// Returns the absolute value of the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static ulong Abs(long value) => DSUtils.Abs(value);
+
+        /// <summary>
+        /// Returns the absolute value of the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static uint Abs(int value) => DSUtils.Abs(value);
+
+        /// <summary>
+        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (ulong low, long high) BigMul(long x, long y)
+        {
+            unchecked
+            {
+#if NET5_0
+                var high = Math.BigMul(x, y, out var low);
+                return ((ulong)low, high);
+#else
+                var (low, high) = BigMul((ulong)x, (ulong)y);
+                return (low, (long)high - ((x >> 63) & y) - ((y >> 63) & x));
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (ulong low, ulong high) BigMul(ulong x, ulong y)
+        {
+            unchecked
+            {
+#if NET5_0
+                var high = Math.BigMul(x, y, out var low);
+                return (low, high);
+#else
+                return (x * y, DSUtils.MultiplyHigh(x, y));
+#endif
+            }
         }
 
         #region ReadResult functions

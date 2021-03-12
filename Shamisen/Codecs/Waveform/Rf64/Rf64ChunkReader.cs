@@ -65,29 +65,29 @@ namespace Shamisen.Codecs.Waveform.Rf64
         private Rf64ChunkReader? Parent { get; set; }
 
         /// <summary>
-        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <see cref="byte"/>s.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <see cref="byte"/>s.
         /// </value>
         public ulong? Length => RemainingBytes;
 
         /// <summary>
-        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <see cref="byte"/>s.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <see cref="byte"/>s.
         /// </value>
         public ulong? TotalLength => TotalSize;
 
         /// <summary>
-        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <see cref="byte"/>s.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
         /// </summary>
         /// <value>
-        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// The position of the <see cref="IDataSource{TSample}" /> in number of <see cref="byte"/>s.
         /// </value>
         public ulong? Position => TotalSize - RemainingBytes;
 

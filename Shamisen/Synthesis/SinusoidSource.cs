@@ -13,7 +13,7 @@ namespace Shamisen.Synthesis
     /// <summary>
     /// Generates a sinusoid wave with specified frequency.
     /// </summary>
-    public sealed class SinusoidSource : ISampleSource
+    public sealed class SinusoidSource : ISampleSource, IFrequencyGeneratorSource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SinusoidSource"/> class.
@@ -45,22 +45,15 @@ namespace Shamisen.Synthesis
             set
             {
                 frequency = value;
-                Omega = Math.Abs(MathHelper.DoublePI * value * SamplingFrequencyInverse);
+                Omega = (Fixed64)Math.Abs(2 * value * SamplingFrequencyInverse);
             }
         }
 
         private double SamplingFrequencyInverse { get; }
 
-        /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
-        /// Some implementation could not support this property.
-        /// </summary>
-        [Obsolete("Not Supported", true)]
-        public long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        private Fixed64 Theta { get; set; } = Fixed64.Zero;
 
-        private double Theta { get; set; } = 0;
-
-        private double Omega { get; set; }
+        private Fixed64 Omega { get; set; }
 
         /// <summary>
         /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -151,17 +144,7 @@ namespace Shamisen.Synthesis
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static double AppendTheta(double theta, double omega)
-        {
-            theta += omega;
-            if (theta > Math.PI)
-            {
-                theta += Math.PI;
-                theta %= MathHelper.DoublePI;
-                theta -= Math.PI;
-            }
-            return theta;
-        }
+        private static Fixed64 AppendTheta(Fixed64 theta, Fixed64 omega) => theta + omega;
 
         /// <summary>
         /// Generates the monaural sample.
@@ -169,7 +152,7 @@ namespace Shamisen.Synthesis
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float GenerateMonauralSample(double theta) => (float)Math.Sin(theta);
+        private static float GenerateMonauralSample(Fixed64 theta) => (float)MathX.SinCosPi(theta, ~0ul << 32).Imaginary;
 
         #region IDisposable Support
 
