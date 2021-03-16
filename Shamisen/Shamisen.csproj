@@ -63,6 +63,16 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="Codecs\Flac\Parsing\FlacCrc16.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+        </None>
+        <None Include="Codecs\Flac\Parsing\FlacCrc8.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+        </None>
         <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -110,6 +120,14 @@
         </None>
     </ItemGroup>
     <ItemGroup>
+        <None Update="Codecs\Flac\Parsing\FlacCrc16.table.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacCrc16.table.cs</LastGenOutput>
+        </None>
+        <None Update="Codecs\Flac\Parsing\FlacCrc8.table.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
+        </None>
         <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
@@ -151,6 +169,16 @@
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Update="Codecs\Flac\Parsing\FlacCrc16.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Flac\Parsing\FlacCrc8.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+        </Compile>
         <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -198,10 +226,10 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="Codecs\Flac\Composing\" />
         <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
         <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
         <Folder Include="Codecs\Waveform\Formats\ALaw\" />
-        <Folder Include="Codecs\Flac\" />
         <Folder Include="Codecs\Waveform\Headers\" />
         <Folder Include="Data\Composing\" />
         <Folder Include="Metadata\Id3\" />

@@ -328,5 +328,43 @@ namespace Shamisen
                 return MathIFallbacks.ReverseBitOrder(value);
             }
         }
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ExtractBitField(uint value, byte start, byte length)
+        {
+#if NET5_0 || NETCOREAPP3_1
+            if (Bmi1.IsSupported)
+            {
+                return Bmi1.BitFieldExtract(value, start, length);
+            }
+#endif
+            return (value >> start) & ((2u << length) - 1);
+        }
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ExtractBitField(ulong value, byte start, byte length)
+        {
+#if NET5_0 || NETCOREAPP3_1
+            if (Bmi1.X64.IsSupported)
+            {
+                return Bmi1.X64.BitFieldExtract(value, start, length);
+            }
+#endif
+            return (value >> start) & ((2ul << length) - 1);
+        }
     }
 }
