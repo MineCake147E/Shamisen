@@ -27,8 +27,9 @@
 - ***DO NOT USE `T[] buffer, int offset, int count` patterns at ANY places!***(when possible)
   - Range checks can be remained under this pattern!
   - You **MUST** use `Span<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `ReadOnlyMemory<T>` except for some needed places.
-- **Both `Unsafe` and `MemoryMarshal` should NEVER BE AVOIDED!**  
+- **Feel free to use `Unsafe` and `MemoryMarshal`.**  
   -  Don't forget that `Span<T>` can wrap any pointers thoguh.
+- **You should be extremely greedy about doing tricky optimizations.**
 - Manage memories yourself if appropriate.
 - Be careful when using `MemoryMarshal.Cast<T, (T2,T3,T4,T5)>(Span<T> span)` because `StructLayout` of `ValueTuple` is set to `Auto`.
 
