@@ -69,8 +69,8 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         private void FindNextFrame()
         {
-            ushort q = default;
-            while ((q & 0b1111_1111_1111_1100u) != 0b1111_1111_1111_1000u) q = Source.ReadUInt16BigEndian();
+            var frameParser = new FlacFrameParser(Source, streamInfoBlock);
+            frameParser.ParseNextFrame();
         }
 
         private void ReadSeekTable(FlacMetadataBlockHeader header, IReadableDataSource<byte> source)

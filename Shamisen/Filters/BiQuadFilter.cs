@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 #endif
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
 
@@ -250,7 +250,7 @@ namespace Shamisen.Filters
 
         private void ProcessStereo(Span<float> buffer)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             if (enableIntrinsics)
             {
                 if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
@@ -304,7 +304,7 @@ namespace Shamisen.Filters
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
                     if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
@@ -350,7 +350,7 @@ namespace Shamisen.Filters
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
                     /*if (Avx.IsSupported)

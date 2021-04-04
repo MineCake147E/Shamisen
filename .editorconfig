@@ -289,3 +289,9 @@ dotnet_diagnostic.CS1591.severity = error
 
 # CS1998: 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
 dotnet_diagnostic.CS1998.severity = suggestion
+
+# CS8618: null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+dotnet_diagnostic.CS8618.severity = error
+
+# CS8601: Null 参照代入の可能性があります。
+dotnet_diagnostic.CS8601.severity = error

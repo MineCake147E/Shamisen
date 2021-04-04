@@ -73,6 +73,11 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacCrc8.table.tt</DependentUpon>
         </None>
+        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+        </None>
         <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -128,6 +133,10 @@
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
         </None>
+        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
+        </None>
         <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
@@ -164,6 +173,10 @@
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
         </None>
+        <None Update="Utils\Tuples\Tuples.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>Tuples.g.cs</LastGenOutput>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -178,6 +191,11 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
         </Compile>
         <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
@@ -223,6 +241,16 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Tuples\Tuples.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Tuples.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Tuples\Tuples.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Tuples.g.tt</DependentUpon>
         </Compile>
     </ItemGroup>
     <ItemGroup>

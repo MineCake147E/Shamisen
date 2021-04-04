@@ -232,7 +232,7 @@ namespace Shamisen.IO.Android
                     return ChannelOut.Stereo;
                 case Speakers.ThreePointOne:
                     return ChannelOut.Stereo | ChannelOut.FrontCenter | ChannelOut.LowFrequency;
-                case Speakers.FivePointOne:
+                case Speakers.FrontFivePointOne:
                     return ChannelOut.FivePointOne;
                 case Speakers.SevenPointOne:
                     return ChannelOut.SevenPointOne;
@@ -243,7 +243,7 @@ namespace Shamisen.IO.Android
                     if ((speakers & Speakers.FrontLeft) > 0) result |= ChannelOut.FrontLeft;
                     if ((speakers & Speakers.FrontRight) > 0) result |= ChannelOut.FrontRight;
                     if ((speakers & Speakers.FrontCenter) > 0) result |= ChannelOut.FrontCenter;
-                    if ((speakers & Speakers.FrontLowFrequency) > 0) result |= ChannelOut.LowFrequency;
+                    if ((speakers & Speakers.FrontCenterLowFrequency) > 0) result |= ChannelOut.LowFrequency;
                     if ((speakers & Speakers.RearLeft) > 0) result |= ChannelOut.BackLeft;
                     if ((speakers & Speakers.RearRight) > 0) result |= ChannelOut.BackRight;
                     if ((speakers & Speakers.FrontLeftOfCenter) > 0) result |= ChannelOut.FrontLeftOfCenter;

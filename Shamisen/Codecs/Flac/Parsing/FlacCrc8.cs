@@ -47,13 +47,26 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC8.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static FlacCrc8 operator *(FlacCrc8 left, byte right) => new(GetTableAt(left.state ^ right));
+
+        /// <summary>
+        /// Calculates the next value of CRC-8-CCITT with <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The current CRC-8-CCITT value.</param>
+        /// <param name="right">The new byte.</param>
+        /// <returns>
+        /// The next value of CRC8.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc8 operator *(FlacCrc8 left, ushort right) => left * (byte)(right >> 8) * (byte)right;
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public FlacCrc8 GenerateNext(byte value) => new(GetTableAt(state ^ value));
 
         /// <summary>
@@ -64,6 +77,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC8.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static FlacCrc8 operator *(FlacCrc8 left, Span<byte> right)
         {
             var value = left;

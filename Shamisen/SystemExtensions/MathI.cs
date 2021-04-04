@@ -7,13 +7,13 @@ using System.Numerics;
 using DivideSharp;
 using DSUtils = DivideSharp.Utils;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 #endif
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
 
@@ -85,7 +85,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var high = Math.BigMul(x, y, out var low);
                 return ((ulong)low, high);
 #else
@@ -106,7 +106,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var high = Math.BigMul(x, y, out var low);
                 return (low, high);
 #else
@@ -137,7 +137,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static int TrailingZeroCount(uint value)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 #pragma warning disable IDE0022
             return BitOperations.TrailingZeroCount(value);
 #pragma warning restore IDE0022
@@ -158,7 +158,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static int TrailingZeroCount(ulong value)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 #pragma warning disable IDE0022
             return BitOperations.TrailingZeroCount(value);
 #pragma warning restore IDE0022
@@ -185,7 +185,7 @@ namespace Shamisen
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.Log2(value);
 #else
                 return MathIFallbacks.LogBase2(value);
@@ -205,7 +205,7 @@ namespace Shamisen
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.Log2(value);
 #else
                 return MathIFallbacks.LogBase2(value);
@@ -225,7 +225,7 @@ namespace Shamisen
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.LeadingZeroCount(value);
 #else
                 return MathIFallbacks.LeadingZeroCount(value);
@@ -245,7 +245,7 @@ namespace Shamisen
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.LeadingZeroCount(value);
 #else
                 return MathIFallbacks.LeadingZeroCount(value);
@@ -263,7 +263,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return (uint)(0x8000_0000ul >> BitOperations.LeadingZeroCount(value));
 #else
                 return MathIFallbacks.ExtractHighestSetBit(value);
@@ -281,7 +281,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return value == 0 ? 0 : (uint)(0x8000_0000_0000_0000ul >> BitOperations.LeadingZeroCount(value));
 #else
                 return MathIFallbacks.ExtractHighestSetBit(value);
@@ -299,7 +299,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 if (ArmBase.IsSupported)
                 {
                     return ArmBase.ReverseElementBits(value);
@@ -319,7 +319,7 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 if (ArmBase.Arm64.IsSupported)
                 {
                     return ArmBase.Arm64.ReverseElementBits(value);
@@ -339,13 +339,14 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static uint ExtractBitField(uint value, byte start, byte length)
         {
-#if NET5_0 || NETCOREAPP3_1
+            if (start == 0) return value & ~(~0u << length);
+#if NETCOREAPP3_1_OR_GREATER
             if (Bmi1.IsSupported)
             {
                 return Bmi1.BitFieldExtract(value, start, length);
             }
 #endif
-            return (value >> start) & ((2u << length) - 1);
+            return (value >> start) & ~(~0u << length);
         }
 
         /// <summary>
@@ -358,13 +359,14 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong ExtractBitField(ulong value, byte start, byte length)
         {
-#if NET5_0 || NETCOREAPP3_1
+            if (start == 0) return value & ~(~0ul << length);
+#if NETCOREAPP3_1_OR_GREATER
             if (Bmi1.X64.IsSupported)
             {
                 return Bmi1.X64.BitFieldExtract(value, start, length);
             }
 #endif
-            return (value >> start) & ((2ul << length) - 1);
+            return (value >> start) & ~(~0ul << length);
         }
     }
 }

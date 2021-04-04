@@ -18,6 +18,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Initializes a new instance of the <see cref="FlacCrc16"/> struct.
         /// </summary>
         /// <param name="state">The state.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public FlacCrc16(ushort state) => this.state = state;
 
         /// <summary>
@@ -26,7 +27,11 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <value>
         /// The state.
         /// </value>
-        public ushort State => state;
+        public ushort State
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => state;
+        }
 
         #region Operator overloads
 
@@ -48,6 +53,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static FlacCrc16 operator *(FlacCrc16 left, byte right) => left.GenerateNext(right);
 
         /// <summary>
@@ -58,7 +64,8 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        public static FlacCrc16 operator *(FlacCrc16 left, ulong right) => left.GenerateNext(right);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc16 operator *(FlacCrc16 left, ulong right) => GenerateNext(left, right);
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
@@ -68,7 +75,8 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        public static FlacCrc16 operator *(FlacCrc16 left, Span<byte> right)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc16 operator *(FlacCrc16 left, ReadOnlySpan<byte> right)
         {
             var value = left;
             var w = MemoryUtils.CastSplit<byte, ulong>(right, out var rem);
@@ -84,10 +92,41 @@ namespace Shamisen.Codecs.Flac.Parsing
         }
 
         /// <summary>
+        /// Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The current CRC-16-IBM value.</param>
+        /// <param name="right">The new bytes.</param>
+        /// <returns>
+        /// The next value of CRC16.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc16 operator *(FlacCrc16 left, ReadOnlySpan<ulong> right)
+        {
+            var value = left;
+            for (int i = 0; i < right.Length; i++)
+            {
+                value *= right[i];
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The current CRC-16-IBM value.</param>
+        /// <param name="right">The new bytes.</param>
+        /// <returns>
+        /// The next value of CRC16.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc16 operator *(FlacCrc16 left, ushort right) => left * (byte)(right >> 8) * (byte)right;
+
+        /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (Table0[value ^ (byte)state])));
 
         /// <summary>
@@ -95,7 +134,17 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public FlacCrc16 GenerateNext(ulong value)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public FlacCrc16 GenerateNext(ulong value) => GenerateNext(this, value);
+
+        /// <summary>
+        /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+        /// </summary>
+        /// <param name="left">The CRC16 to calculate the next value.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static FlacCrc16 GenerateNext(FlacCrc16 left, ulong value)
         {
             //The libFLAC code is used as a reference.
 
@@ -135,7 +184,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
             #endregion License notice
 
-            var t = state;
+            var t = left.state;
             t ^= (ushort)(value >> 48);
             t = (ushort)(
                 GetTable7At((byte)(t >> 8)) ^ GetTable6At((byte)t) ^
@@ -154,6 +203,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override bool Equals(object? obj) => obj is FlacCrc16 crc && Equals(crc);
 
         /// <summary>
@@ -163,6 +213,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool Equals(FlacCrc16 other) => state == other.state;
 
         /// <summary>
@@ -171,6 +222,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override int GetHashCode() => HashCode.Combine(state);
 
         /// <summary>
@@ -181,6 +233,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator ==(FlacCrc16 left, FlacCrc16 right) => left.Equals(right);
 
         /// <summary>
@@ -191,6 +244,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator !=(FlacCrc16 left, FlacCrc16 right) => !(left == right);
     }
 }
