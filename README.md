@@ -9,11 +9,11 @@ A Cross-Platform Audio Library for:
 - .NET Standard 2.1
 - .NET Standard 2.0
 
-#### Usage of Shamisen
+## Usage of Shamisen ##
 
 - An audio output abstraction layer `Shamisen.Core`
 
-### Currently implemented features
+## Currently implemented features ##
 
 - Audio outputs
   - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
@@ -38,7 +38,7 @@ A Cross-Platform Audio Library for:
   - Unrolls channel loop for Monaural and <5ch filter calculation.
   - For some special cases, it utilizes SSEx.x and AVX(2) intrinsics for the calculation.
 
-### Dependencies and system requirements
+## Dependencies and system requirements ##
 
 - The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
   - Divides by "almost constant" number, about 2x faster than ordinal division(idiv instruction)!
@@ -51,11 +51,11 @@ A Cross-Platform Audio Library for:
 - The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
-### Useful external library for Shamisen
+## Useful external library for Shamisen ##
 
 - [CSCodec](https://github.com/MineCake147E/CSCodec) that supports more signal processing like FFT and DWT.
 
-### Features under development
+## Features under development ##
 
 - Xamarin.Android `AudioTrack` output
 - Xamarin.iOS `AudioUnit` output
