@@ -109,5 +109,59 @@ namespace Shamisen
             }
             return value < Fixed64.Zero ? Complex.Conjugate(result) : result;
         }
+
+        /// <summary>
+        /// Calculates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static double Sin(Fixed64 value)
+        {
+            if (value < Fixed64.Zero) return -Sin(value);   //Wrap negative numbers
+            if ((long)value > 0x3fff_ffff_ffff_ffff)    //Wrap sinusoid
+            {
+                value = (Fixed64)(long)(0x8000_0000_0000_0000ul - (ulong)value);    //1 - value
+            }
+            return SinInternal(value);
+        }
+
+        private static double SinInternal(Fixed64 value) => Math.Sin((double)value);
+
+#if NETSTANDARD2_0
+        /// <summary>
+        /// Calculates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/> and converts the value to <see cref="float"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static float SinF(Fixed64 value)
+#else
+
+        /// <summary>
+        /// Calculates the <see cref="MathF.Sin(float)"/> of the <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static float SinF(Fixed64 value)
+#endif
+        {
+            if (value < Fixed64.Zero) return -SinF(value);   //Wrap negative numbers
+            if ((long)value > 0x3fff_ffff_ffff_ffff)    //Wrap sinusoid
+            {
+                value = (Fixed64)(long)(0x8000_0000_0000_0000ul - (ulong)value);    //1 - value
+            }
+            return SinFInternal(value);
+        }
+
+        private static float SinFInternal(Fixed64 value)
+        {
+            unchecked
+            {
+#if NETSTANDARD2_0
+                return (float)Math.Sin((double)value);
+#else
+                return MathF.Sin((float)(double)value);
+#endif
+            }
+        }
     }
 }

@@ -4378,29 +4378,29 @@
         </member>
         <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.Length">
             <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.TotalLength">
             <summary>
-            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.Position">
             <summary>
-            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
             </summary>
             <value>
-            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.RiffChunkReader.SkipSupport">
@@ -7207,6 +7207,7 @@
             Reads single <see cref="T:System.Byte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns>The value read.</returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadSignedByte(Shamisen.IDataSource{System.Byte},System.SByte@)">
@@ -7214,6 +7215,7 @@
             Reads single <see cref="T:System.SByte"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns>The value read.</returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt16@)">
@@ -7221,6 +7223,7 @@
             Reads single little-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt16BigEndian(Shamisen.IDataSource{System.Byte},System.UInt16@)">
@@ -7228,6 +7231,7 @@
             Reads single big-endianed <see cref="T:System.UInt16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16LittleEndian(Shamisen.IDataSource{System.Byte},System.Int16@)">
@@ -7235,6 +7239,7 @@
             Reads single little-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt16BigEndian(Shamisen.IDataSource{System.Byte},System.Int16@)">
@@ -7242,6 +7247,7 @@
             Reads single big-endianed <see cref="T:System.Int16"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt32@)">
@@ -7249,6 +7255,7 @@
             Reads single little-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt32BigEndian(Shamisen.IDataSource{System.Byte},System.UInt32@)">
@@ -7256,6 +7263,7 @@
             Reads single big-endianed <see cref="T:System.UInt32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32LittleEndian(Shamisen.IDataSource{System.Byte},System.Int32@)">
@@ -7263,6 +7271,7 @@
             Reads single little-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt32BigEndian(Shamisen.IDataSource{System.Byte},System.Int32@)">
@@ -7270,6 +7279,7 @@
             Reads single big-endianed <see cref="T:System.Int32"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64LittleEndian(Shamisen.IDataSource{System.Byte},System.UInt64@)">
@@ -7277,6 +7287,7 @@
             Reads single little-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadUInt64BigEndian(Shamisen.IDataSource{System.Byte},System.UInt64@)">
@@ -7284,6 +7295,7 @@
             Reads single big-endianed <see cref="T:System.UInt64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64LittleEndian(Shamisen.IDataSource{System.Byte},System.Int64@)">
@@ -7291,6 +7303,7 @@
             Reads single little-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.TryReadInt64BigEndian(Shamisen.IDataSource{System.Byte},System.Int64@)">
@@ -7298,6 +7311,7 @@
             Reads single big-endianed <see cref="T:System.Int64"/> from <paramref name="dataReader"/>.
             </summary>
             <param name="dataReader">The data reader.</param>
+            <param name="read">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Data.Binary.DataReaderExtensions.ReadAll``1(Shamisen.IDataSource{``0},System.Span{``0})">
@@ -7817,29 +7831,29 @@
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Length">
             <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.TotalLength">
             <summary>
-            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Position">
             <summary>
-            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
             </summary>
             <value>
-            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.SkipSupport">
@@ -8383,29 +8397,29 @@
         </member>
         <member name="P:Shamisen.Data.StreamDataSource.Length">
             <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
+            The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.StreamDataSource.TotalLength">
             <summary>
-            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
             </summary>
             <value>
-            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The total length of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.StreamDataSource.Position">
             <summary>
-            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
+            Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
             </summary>
             <value>
-            The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
+            The position of the <see cref="T:Shamisen.IDataSource`1" /> in bytes.
             </value>
         </member>
         <member name="P:Shamisen.Data.StreamDataSource.SkipSupport">
@@ -9065,6 +9079,86 @@
         <member name="F:Shamisen.Filters.BpfGainKind.ZeroDBPeakGain">
             <summary>
             Constant 0 dB peak gain.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Filters.Buffering.AudioCache`2">
+            <summary>
+            Caches some audio data like <see cref="T:Shamisen.Data.DataCache`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.Buffering.AudioCache`2.#ctor(`1)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Filters.Buffering.AudioCache`2"/> class.
+            </summary>
+            <param name="format">The format.</param>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Buffering.AudioCache`2.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.Filters.Buffering.AudioCache`2.Read(System.Span{`0})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.Buffering.AudioCache`2.Write(System.ReadOnlySpan{`0})">
+            <summary>
+            Writes the data inside specified buffer to this instance.
+            </summary>
+            <param name="buffer">The data buffer.</param>
+        </member>
+        <member name="M:Shamisen.Filters.Buffering.AudioCache`2.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
         <member name="T:Shamisen.Filters.Buffering.BlockSizeReservoir`2">
@@ -12364,12 +12458,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="T:Shamisen.Pipeline.AudioPipe`2">
@@ -12460,6 +12554,323 @@
         <member name="T:Shamisen.Pipeline.PipelineUtils">
             <summary>
             Provides some utility functions for dealing with pipeline system.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Primitives.Angle128">
+            <summary>
+            Represents an angle in 128-bit mixed-point value.<br/>
+            Can be used for some extremely-high-precision needs of angle and frequency.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Primitives.Angle128.low">
+            <summary>
+            The lower part.<br/>
+            Must be between 0 and 1.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Int32,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="frequency">The frequency.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="multiplesOfPi">The multiples of pi.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(Shamisen.Fixed64,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="high">The high part.</param>
+            <param name="low">The low part.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.High">
+            <summary>
+            Gets the higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Low">
+            <summary>
+            Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Value">
+            <summary>
+            Gets the value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInTurns">
+            <summary>
+            Gets the value in turns.
+            </summary>
+            <value>
+            The value in turns.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInRadians">
+            <summary>
+            Gets the value in radians.
+            </summary>
+            <value>
+            The value in radians.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInDegrees">
+            <summary>
+            Gets the value in degrees.
+            </summary>
+            <value>
+            The value in degrees.
+            </value>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Addition(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Adds specified <see cref="T:Shamisen.Primitives.Angle128"/> value and <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Subtraction(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Subtracts specified <see cref="T:Shamisen.Primitives.Angle128"/> value from <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <param name="left">The value to be subtracted by <paramref name="right"/>.</param>
+            <param name="right">The value to subtract from <paramref name="left"/>/</param>
+            <returns>
+            The result of subtracting <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            The value in string.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Equality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Inequality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.Equals(Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Primitives.AngleCounter">
+            <summary>
+            Implements a extreme-precision angle counter.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Angle">
+            <summary>
+            Gets the current angle.
+            </summary>
+            <value>
+            The angle.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Omega">
+            <summary>
+            Gets the omega.
+            </summary>
+            <value>
+            The omega.
+            </value>
+        </member>
+        <member name="T:Shamisen.Primitives.DisposableArray`1">
+            <summary>
+            Provides a disposable array.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+            <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the <typeparamref name="T"/> value at the specified index.
+            </summary>
+            <value>
+            The <typeparamref name="T"/> value.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
+            <summary>
+            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <param name="comparer">The comparer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
+            <summary>
+            Determines whether this instance contains the object.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+            </summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <param name="comparer">The comparer.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            An enumerator that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="comparer">The comparer.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            <returns>
+            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
         <member name="T:Shamisen.DataLength">
@@ -12633,151 +13044,10 @@
             The result of the operator.
             </returns>
         </member>
-        <member name="T:Shamisen.Primitives.DisposableArray`1">
-            <summary>
-            Provides a disposable array.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
-            </summary>
-            <param name="length">The length.</param>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
-            <summary>
-            Gets or sets the <typeparamref name="T"/> value at the specified index.
-            </summary>
-            <value>
-            The <typeparamref name="T"/> value.
-            </value>
-            <param name="index">The index.</param>
-            <returns></returns>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
-            <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
-            <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
-            <summary>
-            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
-            <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
-            <summary>
-            Compares to.
-            </summary>
-            <param name="other">The other.</param>
-            <param name="comparer">The comparer.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
-            <summary>
-            Determines whether this instance contains the object.
-            </summary>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-            <returns>
-            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
-            <summary>
-            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
-            </summary>
-            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
-            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <param name="comparer">The comparer.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
-            </summary>
-            <returns>
-            An enumerator that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <param name="comparer">The comparer.</param>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
-            <summary>
-            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
-            </summary>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
-            <returns>
-            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
-            <summary>
-            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
-            </summary>
-            <param name="index">The zero-based index at which item should be inserted.</param>
-            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
-            <summary>
-            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-            <returns>
-            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
-            <summary>
-            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
-            </summary>
-            <param name="index">The zero-based index of the item to remove.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through a collection.
-            </summary>
-            <returns>
-            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:Shamisen.Fixed16">
             <summary>
             Represents a Fixed-Point Number in Signed Q0.15 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+            Useful for manipulating a 16-bit PCM waveform directly.<br/>
             For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
             </summary>
         </member>
@@ -12788,12 +13058,12 @@
         </member>
         <member name="F:Shamisen.Fixed16.MaxValue">
             <summary>
-            Represents the largest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
         <member name="F:Shamisen.Fixed16.MinValue">
             <summary>
-            Represents the smallest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
         <member name="F:Shamisen.Fixed16.Zero">
@@ -13035,10 +13305,300 @@
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:Shamisen.Fixed32">
+            <summary>
+            Represents a Fixed-Point Number in Signed Q0.31 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+            Useful for manipulating a 32-bit PCM waveform directly.<br/>
+            For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Value">
+            <summary>
+            The internal value stored in memory.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed32.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Fixed32"/> struct.
+            </summary>
+            <param name="internalValue">The internal value stored in memory.</param>
+        </member>
+        <member name="P:Shamisen.Fixed32.FloatValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Single"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Fixed32.DoubleValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Double"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="F:Shamisen.Fixed32.MaxValue">
+            <summary>
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed32"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.MinValue">
+            <summary>
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed32"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Zero">
+            <summary>
+            Represents the number zero (0).
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Epsilon">
+            <summary>
+            Represents the smallest positive <see cref="T:Shamisen.Fixed32"/> value that is greater than zero. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Addition(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Adds two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Subtraction(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Subtracts two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The minuend.</param>
+            <param name="right">The subtrahend.</param>
+            <returns>
+            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Multiply(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Multiplies two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The first value to multiply.</param>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.PowerOfInteger(Shamisen.Fixed32,System.UInt32)">
+            <summary>
+            Returns the specified value to the <paramref name="power"/>th power.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="power">The power.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Square(Shamisen.Fixed32)">
+            <summary>
+            Squares the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Division(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Divides two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Modulus(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_UnaryPlus(Shamisen.Fixed32)">
+            <summary>
+            Returns the value of the <see cref="T:Shamisen.Fixed32"/> operand (the sign of the operand is unchanged).
+            </summary>
+            <param name="value">The operand to return.</param>
+            <returns>
+            The value of the operand, <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Increment(Shamisen.Fixed32)">
+            <summary>
+            Increments the <see cref="T:Shamisen.Fixed32"/> operand by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>
+            The value of <paramref name="value"/> incremented by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_UnaryNegation(Shamisen.Fixed32)">
+            <summary>
+            Negates the value of the specified <see cref="T:Shamisen.Fixed32"/> operand.
+            </summary>
+            <param name="value">The value to negate.</param>
+            <returns>
+            The result of <paramref name="value"/> multiplied by negative one (-1).
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Decrement(Shamisen.Fixed32)">
+            <summary>
+            Decrements the <see cref="T:Shamisen.Fixed32"/> operand by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </summary>
+            <param name="value">The value to decrement.</param>
+            <returns>
+            The value of <paramref name="value"/> decremented by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(Shamisen.Fixed32)~System.Single">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed32"/> to <see cref="T:System.Single"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(Shamisen.Fixed32)~System.Double">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed32"/> to <see cref="T:System.Double"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(System.Single)~Shamisen.Fixed32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(System.Double)~Shamisen.Fixed32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Double"/> to <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.CompareTo(Shamisen.Fixed32)">
+            <summary>
+            Compares this instance to a specified 16-bit signed fixed-point number and returns an indication of their relative values.
+            </summary>
+            <param name="other">An number to compare.</param>
+            <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_LessThan(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is less than another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_LessThanOrEqual(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is less than or equal to another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_GreaterThan(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is greater than another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_GreaterThanOrEqual(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is greater than or equal to another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Equals(Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Equality(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed32"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Inequality(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed32"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:Shamisen.Fixed64">
             <summary>
             Represents a Fixed-Point Number in Signed Q0.63 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
-            Suitable for counting angles.<br/>
+            Useful for precisely counting angles in multiples of <see cref="F:System.Math.PI"/>.<br/>
             For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
             </summary>
         </member>
@@ -13071,12 +13631,12 @@
         </member>
         <member name="F:Shamisen.Fixed64.MaxValue">
             <summary>
-            Represents the largest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
         <member name="F:Shamisen.Fixed64.MinValue">
             <summary>
-            Represents the smallest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
         <member name="F:Shamisen.Fixed64.Zero">
@@ -13119,7 +13679,7 @@
             The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed64.Pow(Shamisen.Fixed64,System.UInt32)">
+        <member name="M:Shamisen.Fixed64.PowerOfInteger(Shamisen.Fixed64,System.UInt32)">
             <summary>
             Returns the specified value to the <paramref name="power"/>th power.
             </summary>
@@ -13225,6 +13785,30 @@
             <returns>
             The result of the conversion.
             </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(Shamisen.Fixed64)~System.Int64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed64"/> to <see cref="T:System.Int64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The internal <see cref="T:System.Int64"/> value of specified <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(System.Int64)~Shamisen.Fixed64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int64"/> to <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Shamisen.Fixed64.CompareTo(Shamisen.Fixed64)">
             <summary>
@@ -14067,6 +14651,19 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
+        <member name="T:Shamisen.Synthesis.IFrequencyGeneratorSource">
+            <summary>
+            Defines a base infrastructure of a frequency waveform generator.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.IFrequencyGeneratorSource.Frequency">
+            <summary>
+            Gets or sets the frequency.
+            </summary>
+            <value>
+            The frequency.
+            </value>
+        </member>
         <member name="T:Shamisen.Synthesis.PseudoMonauralSignalSourceBase">
             <summary>
             Defines a base infrastructure of the source generates a deterministic pseudo-monaural wave with specified frequency.
@@ -14315,12 +14912,6 @@
             The frequency.
             </value>
         </member>
-        <member name="P:Shamisen.Synthesis.SinusoidSource.Position">
-            <summary>
-            Gets or sets where the <see cref="T:Shamisen.IAudioSource`2"/> is.
-            Some implementation could not support this property.
-            </summary>
-        </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.SkipSupport">
             <summary>
             Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
@@ -14463,6 +15054,20 @@
             Rectifies the specified <paramref name="value"/>.
             </summary>
             <param name="value">The value to rectify.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int64)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int32)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
@@ -14656,6 +15261,20 @@
             </summary>
             <param name="value">The value.</param>
             <param name="mask">The precision mask.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.Sin(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
             <returns></returns>
         </member>
         <member name="T:Shamisen.AudioSourceExtensions">
@@ -16193,12 +16812,6 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
@@ -16357,6 +16970,15 @@
             <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
         </member>
         <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.UIntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
+        </member>
+    </members>
+</doc>
+)">
             <summary>
             Increments the specified <see cref="T:System.UIntPtr"/> value.
             </summary>

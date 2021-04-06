@@ -19,6 +19,12 @@ namespace Shamisen.Primitives
         /// </value>
         public Angle128 Angle { get; private set; }
 
+        /// <summary>
+        /// Gets the omega.
+        /// </summary>
+        /// <value>
+        /// The omega.
+        /// </value>
         public Angle128 Omega { get; private set; }
     }
 }

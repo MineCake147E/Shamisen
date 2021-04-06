@@ -259,6 +259,24 @@ namespace Shamisen
         public static explicit operator Fixed64(double value) => new((long)(value * 9.223372036854776E+18));
 
         /// <summary>
+        /// Performs an explicit conversion from <see cref="Fixed64"/> to <see cref="long"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The internal <see cref="long"/> value of specified <paramref name="value"/>.
+        /// </returns>
+        public static explicit operator long(Fixed64 value) => value.Value;
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="long"/> to <see cref="Fixed64"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator Fixed64(long value) => new(value);
+
+        /// <summary>
         /// Converts to string.
         /// </summary>
         /// <returns></returns>

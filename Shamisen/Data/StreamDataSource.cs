@@ -28,29 +28,29 @@ namespace Shamisen.Data
         }
 
         /// <summary>
-        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in bytes.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.
+        /// The remaining length of the <see cref="IDataSource{TSample}"/> in bytes.
         /// </value>
         public ulong? Length => !source.CanSeek ? null : TotalLength - Position;
 
         /// <summary>
-        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the total length of the <see cref="IDataSource{TSample}" /> in bytes.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> continues infinitely.
         /// </summary>
         /// <value>
-        /// The total length of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// The total length of the <see cref="IDataSource{TSample}" /> in bytes.
         /// </value>
         public ulong? TotalLength => !source.CanSeek ? null : (ulong)source.Length;
 
         /// <summary>
-        /// Gets the position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.<br/>
+        /// Gets the position of the <see cref="IDataSource{TSample}" /> in bytes.<br/>
         /// The <c>null</c> means that the <see cref="IDataSource{TSample}"/> doesn't support this property.
         /// </summary>
         /// <value>
-        /// The position of the <see cref="IDataSource{TSample}" /> in number of <typeparamref name="TSample"/>.
+        /// The position of the <see cref="IDataSource{TSample}" /> in bytes.
         /// </value>
         public ulong? Position => !source.CanSeek ? null : (ulong)source.Position;
 
@@ -107,7 +107,7 @@ namespace Shamisen.Data
         /// Reads the data to the specified destination.
         /// </summary>
         /// <param name="destination">The destination.</param>
-        /// <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="IDataSource{TSample}"/>.</returns>
+        /// <returns>The bytess read from this <see cref="IDataSource{TSample}"/>.</returns>
         public ReadResult Read(Span<byte> destination)
         {
             if (destination.Length < buffer.Length)
@@ -145,7 +145,7 @@ namespace Shamisen.Data
         /// Reads the data asynchronously to the specified destination.
         /// </summary>
         /// <param name="destination">The destination.</param>
-        /// <returns>The number of <typeparamref name="TSample"/>s read from this <see cref="IDataSource{TSample}"/>.</returns>
+        /// <returns>The bytess read from this <see cref="IDataSource{TSample}"/>.</returns>
         public async ValueTask<ReadResult> ReadAsync(Memory<byte> destination) => Read(destination.Span);
 
 #endif

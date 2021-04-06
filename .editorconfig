@@ -289,3 +289,12 @@ dotnet_diagnostic.CS1591.severity = error
 
 # CS1998: 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
 dotnet_diagnostic.CS1998.severity = suggestion
+
+# CS8600: Null リテラルまたは Null の可能性がある値を Null 非許容型に変換しています。
+dotnet_diagnostic.CS8600.severity = error
+
+# CS1573: パラメーターには XML コメント内に対応する param タグがありませんが、他のパラメーターにはあります
+dotnet_diagnostic.CS1573.severity = error
+
+# CS1735: XML コメントに typeparamref タグが存在しますが、その名前に相当する型パラメーターはありません
+dotnet_diagnostic.CS1735.severity = error
