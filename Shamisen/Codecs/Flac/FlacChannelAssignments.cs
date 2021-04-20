@@ -11,23 +11,87 @@ namespace Shamisen.Codecs.Flac
     /// </summary>
     public enum FlacChannelAssignments : byte
     {
+        /// <summary>
+        /// The <see cref="Speakers.Monaural"/>.
+        /// </summary>
         Monaural = 0b0000,
+
+        /// <summary>
+        /// The <see cref="Speakers.SideStereo"/>.
+        /// </summary>
         OrdinalStereo = 0b0001,
-        ThreePointOne = 0b0010,
+
+        /// <summary>
+        /// The <see cref="Speakers.FrontThree"/>.
+        /// </summary>
+        FrontThree = 0b0010,
+
+        /// <summary>
+        /// The <see cref="Speakers.Quad"/>.
+        /// </summary>
         Quad = 0b0011,
+
+        /// <summary>
+        /// The <see cref="Speakers.FrontFive"/>.
+        /// </summary>
         FrontFive = 0b0100,
+
+        /// <summary>
+        /// The <see cref="Speakers.FrontFivePointOne"/>.
+        /// </summary>
         FivePointOne = 0b0101,
+
+        /// <summary>
+        /// The <see cref="Speakers.DolbySixPointOne"/>.
+        /// </summary>
         DolbySixPointOne = 0b0110,
+
+        /// <summary>
+        /// The <see cref="Speakers.SevenPointOne"/>.
+        /// </summary>
         SevenPointOne = 0b0111,
+
+        /// <summary>
+        /// The <see cref="Speakers.SideStereo"/> but with raw left and (left - right).
+        /// </summary>
         LeftAndDifference = 0b1000,
+
+        /// <summary>
+        /// The <see cref="Speakers.SideStereo"/> but with (left - right) and raw right.
+        /// </summary>
         RightAndDifference = 0b1001,
+
+        /// <summary>
+        /// The <see cref="Speakers.SideStereo"/> but with (left + right) >> 1 and (left - right).
+        /// </summary>
         CenterAndDifference = 0b1010,
+
+        /// <summary>
+        /// The Reserved space with bit pattern 1011.
+        /// </summary>
         Reserved1011 = 0b1011,
+
+        /// <summary>
+        /// The Reserved space with bit pattern 1100.
+        /// </summary>
         Reserved1100 = 0b1100,
+
+        /// <summary>
+        /// The Reserved space with bit pattern 1101.
+        /// </summary>
         Reserved1101 = 0b1101,
+
+        /// <summary>
+        /// The Reserved space with bit pattern 1110.
+        /// </summary>
         Reserved1110 = 0b1110,
+
+        /// <summary>
+        /// The Reserved space with bit pattern 1111.
+        /// </summary>
         Reserved1111 = 0b1111,
     }
+
     /// <summary>
     /// Contains some utility functions for <see cref="FlacChannelAssignments"/>.
     /// </summary>
@@ -43,7 +107,7 @@ namespace Shamisen.Codecs.Flac
          {
              FlacChannelAssignments.Monaural => 1,
              FlacChannelAssignments.OrdinalStereo => 2,
-             FlacChannelAssignments.ThreePointOne => 3,
+             FlacChannelAssignments.FrontThree => 3,
              FlacChannelAssignments.Quad => 4,
              FlacChannelAssignments.FrontFive => 5,
              FlacChannelAssignments.FivePointOne => 6,

@@ -60,6 +60,8 @@ namespace Shamisen
             return value & ~h;
         }
 
+        #region Abs
+
         /// <summary>
         /// Returns the absolute value of the specified value.
         /// </summary>
@@ -73,6 +75,10 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         public static uint Abs(int value) => DSUtils.Abs(value);
+
+        #endregion Abs
+
+        #region BigMul Polyfill
 
         /// <summary>
         /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
@@ -114,6 +120,8 @@ namespace Shamisen
 #endif
             }
         }
+
+        #endregion BigMul Polyfill
 
         #region ReadResult functions
 
@@ -173,6 +181,8 @@ namespace Shamisen
 
         #endregion TrailingZeroCount
 
+        #region LogBase2
+
         /// <summary>
         /// Finds last 1's position from LSB.<br/>
         /// When the value is 0, it returns 0.
@@ -212,6 +222,10 @@ namespace Shamisen
 #endif
             }
         }
+
+        #endregion LogBase2
+
+        #region LeadingZeroCount
 
         /// <summary>
         /// Finds last 0's position from MSB.<br/>
@@ -253,6 +267,52 @@ namespace Shamisen
             }
         }
 
+        #endregion LeadingZeroCount
+
+        #region PopCount
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int Pop(uint value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                return BitOperations.PopCount(value);
+#else
+                return MathIFallbacks.PopCount(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int PopCount(ulong value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                return BitOperations.PopCount(value);
+#else
+                return MathIFallbacks.PopCount(value);
+#endif
+            }
+        }
+
+        #endregion PopCount
+
+        #region ExtractHighestSetBit
+
         /// <summary>
         /// Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
         /// </summary>
@@ -288,6 +348,10 @@ namespace Shamisen
 #endif
             }
         }
+
+        #endregion ExtractHighestSetBit
+
+        #region ReverseBitOrder
 
         /// <summary>
         /// Reverses the bit order of the specified <paramref name="value"/>.
@@ -329,6 +393,10 @@ namespace Shamisen
             }
         }
 
+        #endregion ReverseBitOrder
+
+        #region ExtractBitField
+
         /// <summary>
         /// Extracts the bit field inside <paramref name="value"/>.
         /// </summary>
@@ -368,5 +436,7 @@ namespace Shamisen
 #endif
             return (value >> start) & ~(~0ul << length);
         }
+
+        #endregion ExtractBitField
     }
 }

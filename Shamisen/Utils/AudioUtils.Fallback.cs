@@ -83,6 +83,57 @@ namespace Shamisen.Utils
                     }
                 }
             }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void InterleaveThreeInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
+            {
+                unsafe
+                {
+                    if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
+                    if (left.Length > center.Length) throw new ArgumentException("center must be as long as left!", nameof(center));
+                    if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
+                    right = right.SliceWhile(left.Length);
+                    buffer = buffer.SliceWhile(left.Length * 2);
+                    //These pre-touches may avoid some range checks
+                    _ = right[left.Length - 1];
+                    _ = buffer[left.Length * 2 - 1];
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rC = ref MemoryMarshal.GetReference(center);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
+                    var length = ((IntPtr)(left.Length * sizeof(int))).ToPointer();
+                    var u8Length = ((IntPtr)((left.Length - 1) * sizeof(int))).ToPointer();
+                    var j = IntPtr.Zero;
+                    var i = IntPtr.Zero;
+                    for (; i.ToPointer() < u8Length; i += 2)
+                    {
+                        //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
+                        var a = Unsafe.Add(ref rL, i);
+                        Unsafe.Add(ref rB, j) = a;
+                        a = Unsafe.Add(ref rR, i);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
+                        a = Unsafe.Add(ref rC, i);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 2) = a;
+                        a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 3) = a;
+                        a = Unsafe.Add(ref Unsafe.Add(ref rR, i), 1);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 4) = a;
+                        a = Unsafe.Add(ref Unsafe.Add(ref rC, i), 1);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 5) = a;
+                        j += 3 * 2;
+                    }
+                    for (; i.ToPointer() < length; i += 1)
+                    {
+                        var a = Unsafe.Add(ref rL, i);
+                        Unsafe.Add(ref rB, j) = a;
+                        a = Unsafe.Add(ref rR, i);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
+                        a = Unsafe.Add(ref rC, i);
+                        Unsafe.Add(ref Unsafe.Add(ref rB, j), 2) = a;
+                        j += 3;
+                    }
+                }
+            }
         }
     }
 }

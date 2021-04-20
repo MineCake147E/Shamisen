@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using Shamisen.Codecs.Flac.SubFrames;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
+using Shamisen.Utils;
 
 namespace Shamisen.Codecs.Flac.Parsing
 {
@@ -40,6 +42,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         private FlacChannelAssignments channels = 0;
         private uint bitDepth = 0;
         private FlacCrc16 crc16 = new(0);
+        private int[]? samples;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacFrameParser"/> class.
@@ -59,65 +62,83 @@ namespace Shamisen.Codecs.Flac.Parsing
         public void ParseNextFrame()
         {
             ushort q = default;
+            Span<byte> rawHeader = stackalloc byte[16];
+            byte? lookahead = null;
             //Find next byte-aligned frame sync code.
             while (true)
             {
                 //Source.Pin();
                 while (MathI.ExtractBitField(q, 2, 14) != 0b1111_1111_1111_10u)
                 {
-                    q <<= 8;
-                    if (!Source.ReadByte(out var tt)) return;
-                    q |= tt;
+                    if (lookahead is { } la)
+                    {
+                        q <<= 8;
+                        q |= la;
+                    }
+                    else
+                    {
+                        q <<= 8;
+                        if (!Source.ReadByte(out var tt)) return;
+                        q |= tt;
+                    }
                 }
+                Unsafe.As<byte, ushort>(ref rawHeader[0]) = BinaryExtensions.ConvertToBigEndian(q);
                 var ncrc = new FlacCrc8(0);
                 var ncrc16 = new FlacCrc16(0);
+                Source.Crc16 = ncrc16;
                 ncrc *= q;
-                ncrc16 *= q;
                 ushort next16 = (ushort)(Source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!"));//Contains blockSize to Reserved before CRC
                 var (length, state) = ParseBlockSize((byte)MathI.ExtractBitField(next16, 12, 4));
                 var nSampleRate = ParseSampleRate((byte)MathI.ExtractBitField(next16, 8, 4));
                 var nChannels = (FlacChannelAssignments)MathI.ExtractBitField(next16, 4, 4);
                 var nBitDepth = ParseBitDepth((byte)MathI.ExtractBitField(next16, 1, 3));
+                Unsafe.As<byte, ushort>(ref rawHeader[2]) = BinaryExtensions.ConvertToBigEndian(next16);
                 ncrc *= next16;
-                ncrc16 *= next16;
+                int bytesRead = 4;
                 if ((q & 0b1) > 0)   //variable blocking
                 {
-                    var sn = Source.ReadUtf8UInt64(out var snum, default, out _);
+                    var sn = Source.ReadUtf8UInt64(out var snum, rawHeader.Slice(bytesRead), out int a);
+                    bytesRead += a;
                     if (sn)
                     {
                         sampleNumber = snum;
                     }
                     else
                     {
-                        Source.Rewind();
-                        _ = Source.ReadByte();
+                        lookahead = rawHeader[bytesRead - 1];
                         continue;
                     }
                 }
                 else
                 {
-                    var fn = FlacUtf8NumberUtils.ReadUtf8EncodedShortNumber(Source, ref ncrc, ref ncrc16);
-                    if (fn is { } fnum)
+                    var fn = Source.ReadUtf8UInt32(out var fnum, rawHeader.Slice(bytesRead), out int a);
+                    bytesRead += a;
+                    if (fn)
                     {
                         frameNumber = fnum;
                     }
                     else
                     {
-                        Source.Rewind();
-                        _ = Source.ReadByte();
+                        lookahead = rawHeader[bytesRead - 1];
                         continue;
                     }
                 }
                 switch (state)
                 {
                     case BlockSizeState.GetByteFromEnd:
-                        byte v = Source.ReadByte();
+                        if (!Source.ReadByte(out var v))
+                        {
+                            throw new FlacException("The decoder ran out of data!");
+                        }
+                        rawHeader[bytesRead++] = v;
                         ncrc *= v;
                         ncrc16 *= v;
                         nBitDepth.bitDepth = v + 1u;
                         break;
                     case BlockSizeState.GetUInt16FromEnd:
-                        ushort v2 = Source.ReadUInt16BigEndian();
+                        ushort v2 = (ushort?)Source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!");
+                        Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v2);
+                        bytesRead += 2;
                         ncrc *= v2;
                         ncrc16 *= v2;
                         nBitDepth.bitDepth = v2 + 1u;
@@ -131,33 +152,43 @@ namespace Shamisen.Codecs.Flac.Parsing
                         nSampleRate.sampleRate = StreamInfoBlock.SampleRate;
                         break;
                     case SampleRateState.GetByteKHzFromEnd:
-                        byte v = Source.ReadByte();
+                        if (!Source.ReadByte(out var v))
+                        {
+                            throw new FlacException("The decoder ran out of data!");
+                        }
+                        rawHeader[bytesRead++] = v;
                         ncrc *= v;
                         ncrc16 *= v;
                         nSampleRate.sampleRate = v * 1000u;
                         break;
                     case SampleRateState.GetUInt16HzFromEnd:
-                        ushort v2 = Source.ReadUInt16BigEndian();
+                        ushort v2 = (ushort?)Source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!");
+                        Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v2);
+                        bytesRead += 2;
                         ncrc *= v2;
                         ncrc16 *= v2;
                         nSampleRate.sampleRate = v2;
                         break;
                     case SampleRateState.GetUInt16TenHzFromEnd:
-                        ushort v3 = Source.ReadUInt16BigEndian();
+                        ushort v3 = (ushort?)Source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!");
+                        Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v3);
+                        bytesRead += 2;
                         ncrc *= v3;
                         ncrc16 *= v3;
                         nSampleRate.sampleRate = v3 * 10u;
                         break;
                     default:
-                        Source.Rewind();
-                        _ = Source.ReadByte();
+                        lookahead = rawHeader[bytesRead - 1];
                         continue;
                 }
-                var expectedCrc = Source.ReadByte();
+                if (!Source.ReadByte(out var expectedCrc))
+                {
+                    throw new FlacException("The decoder ran out of data!");
+                }
+                rawHeader[bytesRead++] = expectedCrc;
                 if (expectedCrc != ncrc)
                 {
-                    Source.Rewind();
-                    _ = Source.ReadByte();
+                    lookahead = rawHeader[bytesRead - 1];
                     continue;
                 }
                 sampleRate = nSampleRate.sampleRate;
@@ -167,7 +198,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 //Read sub frame
                 int chCount = nChannels.GetChannels();
                 subFrames = new IFlacSubFrame[chCount];
-                var bitReader = new FlacBitReader(Source, ncrc16);
+                var bitReader = Source;
                 for (int ch = 0; ch < subFrames.Length; ch++)
                 {
                     var result = ReadSubFrame(bitReader, (int)length, (int)nBitDepth.bitDepth);
@@ -179,37 +210,61 @@ namespace Shamisen.Codecs.Flac.Parsing
                 }
                 if (subFrames.Any(a => a is null))
                 {
-                    Source.Rewind();
-                    _ = Source.ReadByte();
+                    lookahead = rawHeader[bytesRead - 1];
                     continue;
                 }
+                if (!Source.ReadZeroPadding())
+                {
+                    throw new FlacException("The decoder ran out of data!");
+                }
+                if (!(Source.ReadBitsUInt32(16) is { } expectedCrc16) || expectedCrc16 != Source.Crc16)
+                {
+                    throw new FlacException("The decoder has detected CRC-16 mismatch!");
+                }
+                if (subFrames is null) throw new FlacException("The subFrames is null! This is a bug!");
+                samples = new int[length * nChannels.GetChannels()];
                 switch (nChannels)
                 {
-                    case FlacChannelAssignments.Monaural:
+                    case FlacChannelAssignments.Monaural when subFrames.Length == 1:
+                        var rr1 = subFrames[0].Read(samples);
+                        if (rr1.HasNoData)
+                        {
+                            throw new FlacException("Unknown error! This is a bug!");
+                        }
                         break;
-                    case FlacChannelAssignments.OrdinalStereo:
+                    case FlacChannelAssignments.OrdinalStereo when subFrames.Length == 2:
+                        {
+                            var left = new int[length];
+                            var right = new int[length];
+                            if (subFrames[0].Read(left).HasNoData || subFrames[1].Read(right).HasNoData)
+                            {
+                                throw new FlacException("Unknown error! This is a bug!");
+                            }
+                            AudioUtils.InterleaveStereo(samples, left, right);
+                        }
                         break;
-                    case FlacChannelAssignments.ThreePointOne:
+                    case FlacChannelAssignments.FrontThree when subFrames.Length == 3:
                         break;
-                    case FlacChannelAssignments.Quad:
+                    case FlacChannelAssignments.Quad when subFrames.Length == 4:
                         break;
-                    case FlacChannelAssignments.FrontFive:
+                    case FlacChannelAssignments.FrontFive when subFrames.Length == 5:
                         break;
-                    case FlacChannelAssignments.FivePointOne:
+                    case FlacChannelAssignments.FivePointOne when subFrames.Length == 6:
                         break;
-                    case FlacChannelAssignments.DolbySixPointOne:
+                    case FlacChannelAssignments.DolbySixPointOne when subFrames.Length == 7:
                         break;
-                    case FlacChannelAssignments.SevenPointOne:
+                    case FlacChannelAssignments.SevenPointOne when subFrames.Length == 8:
                         break;
-                    case FlacChannelAssignments.LeftAndDifference:
+                    case FlacChannelAssignments.LeftAndDifference when subFrames.Length == 2:
                         break;
-                    case FlacChannelAssignments.RightAndDifference:
+                    case FlacChannelAssignments.RightAndDifference when subFrames.Length == 2:
                         break;
-                    case FlacChannelAssignments.CenterAndDifference:
+                    case FlacChannelAssignments.CenterAndDifference when subFrames.Length == 2:
                         break;
                     default:
-                        break;
+                        throw new FlacException("The channel assignment is not supported!");
                 }
+
                 return;
             }
         }

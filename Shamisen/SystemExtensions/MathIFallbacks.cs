@@ -23,6 +23,13 @@ namespace Shamisen
                 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
         };
 
+        private static ReadOnlySpan<byte> Log2DeBruijn => new byte[32]
+        {
+                //https://graphics.stanford.edu/~seander/bithacks.html#IntegerLogDeBruijn
+                0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+                8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+        };
+
         /// <summary>
         /// Counts the consecutive zero bits on the right.
         /// </summary>
@@ -106,7 +113,11 @@ namespace Shamisen
                 value |= value >> 4;
                 value |= value >> 8;
                 value |= value >> 16;
-                return 32 - TrailingZeroCount(~value);
+                var index = (value * 0x077C_B531u) >> 27;
+
+                return Unsafe.AddByteOffset(
+                    ref MemoryMarshal.GetReference(Log2DeBruijn),
+                    (IntPtr)(int)index);
             }
         }
 
@@ -129,6 +140,32 @@ namespace Shamisen
                 value |= value >> 32;
                 return 64 - TrailingZeroCount(~value);
             }
+        }
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <returns></returns>
+        public static int PopCount(ulong x)
+        {
+            x -= (x >> 1) & 0x5555555555555555;
+            x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
+            x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0f;
+            return (int)((x * 0x0101010101010101) >> 56);
+        }
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <returns></returns>
+        public static int PopCount(uint x)
+        {
+            x -= (x >> 1) & 0x5555_5555;
+            x = (x & 0x3333_3333) + ((x >> 2) & 0x3333_3333);
+            x = (x + (x >> 4)) & 0x0f0f_0f0f;
+            return (int)((x * 0x0101_0101) >> 24);
         }
 
         /// <summary>

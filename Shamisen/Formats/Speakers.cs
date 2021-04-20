@@ -160,14 +160,19 @@ namespace Shamisen
         TopRearStereo = TopRearLeft | TopRearRight,
 
         /// <summary>
-        /// The 3.1ch combination.
+        /// The 2.1ch combination.
         /// </summary>
-        ThreePointOne = FrontStereo | FrontCenter | FrontCenterLowFrequency,
+        TwoPointOne = FrontStereo | FrontCenterLowFrequency,
 
         /// <summary>
         /// The 3ch surround combination.
         /// </summary>
-        ThreeSurround = FrontStereo | RearCenter,
+        FrontThree = FrontStereo | RearCenter,
+
+        /// <summary>
+        /// The 3.1ch combination.
+        /// </summary>
+        ThreePointOne = FrontStereo | FrontCenter | FrontCenterLowFrequency,
 
         /// <summary>
         /// The 4ch surround combination.
@@ -225,5 +230,18 @@ namespace Shamisen
         SevenPointOne = FrontFivePointOne | SideLeft | SideRight,
 
         #endregion Pre-Combined masks
+    }
+
+    /// <summary>
+    /// Contains some utility functions for <see cref="Speakers"/>.
+    /// </summary>
+    public static class SpeakersUtils
+    {
+        /// <summary>
+        /// Counts the number of channels of specified <paramref name="speakers"/>.
+        /// </summary>
+        /// <param name="speakers">The speakers.</param>
+        /// <returns></returns>
+        public static int CountChannels(this Speakers speakers) => MathI.PopCount((uint)speakers);
     }
 }

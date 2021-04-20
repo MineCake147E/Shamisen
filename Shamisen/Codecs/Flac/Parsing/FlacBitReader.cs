@@ -147,6 +147,13 @@ namespace Shamisen.Codecs.Flac.Parsing
             get => (words - consumedWords) * BitsPerWord + bytesOfIncompleteWord * 8 - consumedBits;
         }
 
+        /// <summary>
+        /// Gets the source.
+        /// </summary>
+        /// <value>
+        /// The source.
+        /// </value>
+        /// <exception cref="ObjectDisposedException">FlacBitReader</exception>
         public IReadableDataSource<byte> Source => source ?? throw new ObjectDisposedException(nameof(FlacBitReader));
 
         private ulong[] Buffer
@@ -665,10 +672,19 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
+        /// <summary>
+        /// Reads the zero padding.
+        /// </summary>
+        /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadZeroPadding()
         {
-            throw new NotImplementedException();
+            if (!IsByteAligned)
+            {
+                var q = ReadBitsUInt64((byte)RemainingUnalignedBits);
+                if (q is null || !IsByteAligned) return false;
+            }
+            return true;
         }
 
         /// <summary>
