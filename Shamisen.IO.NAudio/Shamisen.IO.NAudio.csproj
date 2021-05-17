@@ -1,25 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFrameworks>net5.0-windows;net472</TargetFrameworks>
         <RootNamespace>Shamisen.IO</RootNamespace>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <LangVersion>9.0</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <DocumentationFile>Shamisen.IO.NAudio.xml</DocumentationFile>
-      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+        <DocumentationFile>Shamisen.IO.NAudio.xml</DocumentationFile>
+        <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DocumentationFile>Shamisen.IO.NAudio.xml</DocumentationFile>
-      <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+        <DocumentationFile>Shamisen.IO.NAudio.xml</DocumentationFile>
+        <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NAudio" Version="2.0.0" />
+        <PackageReference Include="NAudio" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+        <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
     </ItemGroup>
 </Project>

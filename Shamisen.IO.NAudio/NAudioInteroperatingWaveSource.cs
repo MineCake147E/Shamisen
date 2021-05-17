@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using NAudio.Wave;
+
+using NWaveFormat = NAudio.Wave.WaveFormat;
 
 namespace Shamisen.IO
 {
@@ -24,7 +27,7 @@ namespace Shamisen.IO
         public NAudioInteroperatingWaveSource(IWaveSource source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            WaveFormat = NAudio.Wave.WaveFormat.CreateCustomFormat(
+            WaveFormat = NWaveFormat.CreateCustomFormat(
                 (WaveFormatEncoding)(short)source.Format.Encoding, source.Format.SampleRate, source.Format.Channels,
                 source.Format.BlockSize * source.Format.SampleRate, source.Format.BlockSize, source.Format.BitDepth);
         }
@@ -35,7 +38,7 @@ namespace Shamisen.IO
         /// <value>
         /// The wave format.
         /// </value>
-        public NAudio.Wave.WaveFormat WaveFormat { get; }
+        public NWaveFormat WaveFormat { get; }
 
         /// <summary>
         /// Gets the source to read the audio from.

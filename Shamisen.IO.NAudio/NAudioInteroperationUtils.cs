@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using NPlaybackState = NAudio.Wave.PlaybackState;
 
 namespace Shamisen.IO
@@ -12,34 +13,22 @@ namespace Shamisen.IO
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static NPlaybackState ConvertPlaybackState(PlaybackState playbackState)
-        {
-            switch (playbackState)
+            => playbackState switch
             {
-                case PlaybackState.Stopped:
-                    return NPlaybackState.Stopped;
-                case PlaybackState.Playing:
-                    return NPlaybackState.Playing;
-                case PlaybackState.Paused:
-                    return NPlaybackState.Paused;
-                default:
-                    return Unsafe.As<PlaybackState, NPlaybackState>(ref playbackState);
-            }
-        }
+                PlaybackState.Stopped or PlaybackState.NotInitialized => NPlaybackState.Stopped,
+                PlaybackState.Playing => NPlaybackState.Playing,
+                PlaybackState.Paused => NPlaybackState.Paused,
+                _ => Unsafe.As<PlaybackState, NPlaybackState>(ref playbackState),
+            };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static PlaybackState ConvertPlaybackState(NPlaybackState playbackState)
-        {
-            switch (playbackState)
+            => playbackState switch
             {
-                case NPlaybackState.Stopped:
-                    return PlaybackState.Stopped;
-                case NPlaybackState.Playing:
-                    return PlaybackState.Playing;
-                case NPlaybackState.Paused:
-                    return PlaybackState.Paused;
-                default:
-                    return Unsafe.As<NPlaybackState, PlaybackState>(ref playbackState);
-            }
-        }
+                NPlaybackState.Stopped => PlaybackState.Stopped,
+                NPlaybackState.Playing => PlaybackState.Playing,
+                NPlaybackState.Paused => PlaybackState.Paused,
+                _ => Unsafe.As<NPlaybackState, PlaybackState>(ref playbackState),
+            };
     }
 }
