@@ -11,20 +11,21 @@ using NWaveFormat = NAudio.Wave.WaveFormat;
 namespace Shamisen.IO
 {
     /// <summary>
-    /// Provides audio data to <see cref="IWavePlayer"/>.
+    /// Provides <see cref="IWaveSource"/>'s audio data to <see cref="NAudio"/>-styled consumer.
     /// </summary>
     /// <seealso cref="IWaveProvider" />
     /// <seealso cref="IDisposable" />
-    public sealed class NAudioInteroperatingWaveSource : IWaveProvider, IDisposable
+    public sealed class ShamisenWaveProvider
+        : IWaveProvider, IDisposable
     {
         private bool disposedValue = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NAudioInteroperatingWaveSource"/> class.
+        /// Initializes a new instance of the <see cref="ShamisenWaveProvider"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public NAudioInteroperatingWaveSource(IWaveSource source)
+        public ShamisenWaveProvider(IWaveSource source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
             WaveFormat = NWaveFormat.CreateCustomFormat(

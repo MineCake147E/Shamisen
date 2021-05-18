@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using NAudio.Wave;
 
 namespace Shamisen.IO
@@ -39,14 +40,13 @@ namespace Shamisen.IO
         /// <value>
         /// The state of the playback.
         /// </value>
-        public PlaybackState PlaybackState => NAudioInteroperationUtils.ConvertPlaybackState(Backend.PlaybackState);
+        public PlaybackState PlaybackState => NAudioInteroperationUtils.AsShamisenPlaybackState(Backend.PlaybackState);
 
         /// <summary>
         /// Initializes the <see cref="ISoundOut" /> for playing a <paramref name="source" />.
         /// </summary>
         /// <param name="source">The source to play.</param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void Initialize(IWaveSource source) => Backend.Init(new NAudioInteroperatingWaveSource(source));
+        public void Initialize(IWaveSource source) => Backend.Init(new ShamisenWaveProvider(source));
 
         /// <summary>
         /// Pauses the audio playback.
