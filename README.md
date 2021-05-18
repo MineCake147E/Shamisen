@@ -11,13 +11,28 @@ A Cross-Platform Audio Library for:
 
 ## Usage of Shamisen ##
 
-- An audio output abstraction layer `Shamisen.Core`
+- Abstraction Layer for Audio I/O
+- Digital Signal Processing
 
 ## Currently implemented features ##
 
-- Audio outputs
-  - [CSCore](https://github.com/filoe/cscore) Inter-Operating output
-  - UWP `AudioGraph` output
+### Audio I/O and bindings
+#### Managed backends
+
+| Name (Backend) | Author (Backend) | License (Binding) | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX | 
+|--|--|--|:--:|:--:|:--:|:--:|:--:|:--:|
+| [UWP](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ✅ | ❎ | ❎ | ❎ | ❎ |
+| [Xamarin.Android](https://github.com/xamarin/xamarin-android) | [Xamarin](https://github.com/xamarin) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ❎ | ✅ | ❎ | ❎ | ❎ |
+| [NAudio](https://github.com/naudio/NAudio) | [NAudio](https://github.com/naudio) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ❎ | ❎ | ❎ | ❎ | ❎ |
+| [CSCore](https://github.com/filoe/cscore) | [Florian](https://github.com/filoe) | [Ms-PL](https://github.com/filoe/cscore/blob/master/license.md) | ✅ | ❓ | ❎ | ❎ | ❎ | ❎ |
+| [OpenTK](https://github.com/opentk/opentk) | [OpenTK](https://github.com/opentk) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ❓ | ❓ | ❓ | ❓ | ❓ |
+
+❓: Not Tested or needs more information  
+✅: Tested  
+❎: Impossible  
+
+### Digital Signal Processing (Cross-Platform)
+
 - Fast and smooth Up-sampling using Catmull-Rom Spline
   - Utilizes `Vector4` for resampling calculation.
   - Uses Direct/Wrapped caching for Catmull-Rom spline coefficients. 
@@ -38,6 +53,18 @@ A Cross-Platform Audio Library for:
   - Unrolls channel loop for Monaural and <5ch filter calculation.
   - For some special cases, it utilizes SSEx.x and AVX(2) intrinsics for the calculation.
 
+### File Formats and Codecs
+
+#### Cross-Platform
+
+| Container Name | Typical File Extensions | Implemented Codec | Library contains Decoder/Encoder | License | Decoding | Encoding |
+|--|--|--|--|--|:--:|:--:|
+| Waveform | `.wav` | Linear PCM, IEEE 754 Floating-Point PCM, A-Law | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ |
+
+#### Platform-Dependent
+
+- Any formats supported by platform-dependent binding libraries
+
 ## Dependencies and system requirements ##
 
 - The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
@@ -55,8 +82,38 @@ A Cross-Platform Audio Library for:
 
 - [CSCodec](https://github.com/MineCake147E/CSCodec) that supports more signal processing like FFT and DWT.
 
-## Features under development ##
+## Features planned or under development ##
 
-- Xamarin.Android `AudioTrack` output
-- Xamarin.iOS `AudioUnit` output
-- OpenTK `AL` output
+
+### Audio I/O and bindings
+
+#### Native backends
+
+✅: Possible  
+❓: Needs more information  
+❎: Impossible   
+
+| Name of Backend | Author of Backend | License (binding) | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX | Status |
+|--|--|--|:--:|:--:|:--:|:--:|:--:|:--:|--|
+| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ❎ | ✅ | ❎ | ❎ | ❎ | Gathering Information |
+
+#### Managed backends
+
+✅: Possible  
+❓: Needs more information  
+❎: Impossible  
+
+| Name of Backend | Author of Backend | License (binding) | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX | Status |
+|--|--|--|:--:|:--:|:--:|:--:|:--:|:--:|--|
+| Xamarin.iOS | Microsoft | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ❎ | ❎ | ❎ | ✅ | ❎ | Planned |
+
+
+### File Formats and Codecs
+
+#### Cross-Platform
+
+| Container Name | Typical File Extensions | Implementing Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
+|--|--|--|--|--|:--:|:--:|--|
+| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implementing Decoder |
+| Opus | `.opus` | Opus | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Planned |
+| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Planned |
