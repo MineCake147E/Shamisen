@@ -1,28 +1,28 @@
-# 上位ディレクトリから .editorconfig 設定を継承する場合は、以下の行を削除します
+# this is root .editorconfig
 root = true
 
-# C# ファイル
+# C# source files
 [*.cs]
 
-#### コア EditorConfig オプション ####
+#### Core EditorConfig Options ####
 
-# インデントと間隔
+# Indentation and spacing
 indent_size = 4
 indent_style = space
 tab_width = 4
 
-# 改行設定
+# End of line
 end_of_line = crlf
 insert_final_newline = false
 
-#### .NET コーディング規則 ####
+#### .NET Coding Convention ####
 
-# using の整理
+# using
 dotnet_separate_import_directive_groups = true
 dotnet_sort_system_directives_first = true
 file_header_template = unset
 
-# this. と Me. の設定
+# this. and Me.
 dotnet_style_qualification_for_event = false:suggestion
 dotnet_style_qualification_for_field = false
 dotnet_style_qualification_for_method = false:suggestion
@@ -32,16 +32,16 @@ dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_predefined_type_for_locals_parameters_members = true
 dotnet_style_predefined_type_for_member_access = true
 
-# かっこの設定
+# Braces
 dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:suggestion
 dotnet_style_parentheses_in_other_binary_operators = never_if_unnecessary:suggestion
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary:suggestion
 dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:suggestion
 
-# 修飾子設定
+# Modifiers
 dotnet_style_require_accessibility_modifiers = for_non_interface_members
 
-# 式レベルの設定
+# Expressions
 dotnet_style_coalesce_expression = true:error
 dotnet_style_collection_initializer = true
 dotnet_style_explicit_tuple_names = true:error
@@ -58,23 +58,23 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
 dotnet_style_prefer_simplified_boolean_expressions = true
 dotnet_style_prefer_simplified_interpolation = true
 
-# フィールド設定
+# Fields
 dotnet_style_readonly_field = true
 
-# パラメーターの設定
+# Parameters
 dotnet_code_quality_unused_parameters = non_public
 
-# 抑制の設定
+# Suppression
 dotnet_remove_unnecessary_suppression_exclusions = none
 
-#### C# コーディング規則 ####
+#### C# Coding Convention ####
 
-# var を優先
+# Preference of var
 csharp_style_var_elsewhere = true:suggestion
 csharp_style_var_for_built_in_types = false
 csharp_style_var_when_type_is_apparent = true:suggestion
 
-# 式のようなメンバー
+# Expression-bodied Members
 csharp_style_expression_bodied_accessors = true:suggestion
 csharp_style_expression_bodied_constructors = false:suggestion
 csharp_style_expression_bodied_indexers = true:suggestion
@@ -84,25 +84,25 @@ csharp_style_expression_bodied_methods = true:suggestion
 csharp_style_expression_bodied_operators = true:suggestion
 csharp_style_expression_bodied_properties = true:suggestion
 
-# パターン マッチング設定
+# Pattern Matching
 csharp_style_pattern_matching_over_as_with_null_check = true:error
 csharp_style_pattern_matching_over_is_with_cast_check = true:error
 csharp_style_prefer_not_pattern = true
 csharp_style_prefer_pattern_matching = true
 csharp_style_prefer_switch_expression = true
 
-# Null チェック設定
+# Null checks
 csharp_style_conditional_delegate_call = true:error
 
-# 修飾子設定
+# Modifiers
 csharp_prefer_static_local_function = true
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
-# コード ブロックの設定
+# Code Blocks
 csharp_prefer_braces = when_multiline:suggestion
 csharp_prefer_simple_using_statement = true:silent
 
-# 式レベルの設定
+# Expressions
 csharp_prefer_simple_default_expression = true:warning
 csharp_style_deconstructed_variable_declaration = true
 csharp_style_implicit_object_creation_when_type_is_apparent = true
@@ -114,12 +114,12 @@ csharp_style_throw_expression = true:warning
 csharp_style_unused_value_assignment_preference = discard_variable
 csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
 
-# 'using' ディレクティブの基本設定
+# 'using' directives
 csharp_using_directive_placement = outside_namespace:suggestion
 
-#### C# 書式ルール ####
+#### C# Code Styles ####
 
-# 改行設定
+# New Line
 csharp_new_line_before_catch = true
 csharp_new_line_before_else = true
 csharp_new_line_before_finally = true
@@ -128,7 +128,7 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
 
-# インデント設定
+# Indentation
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
@@ -136,7 +136,7 @@ csharp_indent_case_contents_when_block = true
 csharp_indent_labels = one_less_than_current
 csharp_indent_switch_labels = true
 
-# スペース設定
+# Spacing
 csharp_space_after_cast = false
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_after_comma = true
@@ -160,13 +160,13 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
 
-# 折り返しの設定
+# Preserve single line
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
-#### 命名スタイル ####
+#### Naming ####
 
-# 名前付けルール
+# Naming Rules
 
 dotnet_naming_rule.interface_should_be_starts_with_i.severity = error
 dotnet_naming_rule.interface_should_be_starts_with_i.symbols = interface
@@ -212,7 +212,7 @@ dotnet_naming_rule.private_or_internal_field_should_be_camelcase.severity = warn
 dotnet_naming_rule.private_or_internal_field_should_be_camelcase.symbols = private_or_internal_field
 dotnet_naming_rule.private_or_internal_field_should_be_camelcase.style = camelcase
 
-# 記号の仕様
+# Symbols
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal
@@ -258,7 +258,7 @@ dotnet_naming_symbols.static_readonly_member.applicable_kinds = namespace, prope
 dotnet_naming_symbols.static_readonly_member.applicable_accessibilities = *
 dotnet_naming_symbols.static_readonly_member.required_modifiers = readonly, static
 
-# 命名スタイル
+# Naming Styles
 
 dotnet_naming_style.pascalcase.required_prefix =
 dotnet_naming_style.pascalcase.required_suffix =
@@ -284,6 +284,8 @@ dotnet_naming_style.ends_with_async.required_prefix =
 dotnet_naming_style.ends_with_async.required_suffix = Async
 dotnet_naming_style.ends_with_async.word_separator =
 dotnet_naming_style.ends_with_async.capitalization = pascal_case
+
+#### Global Suppressions and Severity Overrides
 
 # CS1591
 dotnet_diagnostic.CS1591.severity = error
