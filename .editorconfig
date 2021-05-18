@@ -287,20 +287,14 @@ dotnet_naming_style.ends_with_async.capitalization = pascal_case
 
 #### Global Suppressions and Severity Overrides
 
-# CS1591
-dotnet_diagnostic.CS1591.severity = error
-
-# CS1998
 dotnet_diagnostic.CS1998.severity = suggestion
 
-# CS8600
-dotnet_diagnostic.CS8600.severity = error
-
-# CS1573
 dotnet_diagnostic.CS1573.severity = error
-
-# CS1735
+dotnet_diagnostic.CS1574.severity = error
+dotnet_diagnostic.CS1591.severity = error
 dotnet_diagnostic.CS1735.severity = error
-
-# CS8602
+dotnet_diagnostic.CS8600.severity = error
 dotnet_diagnostic.CS8602.severity = error
+dotnet_diagnostic.CS8603.severity = error
+dotnet_diagnostic.CS8618.severity = error
+dotnet_diagnostic.CS8625.severity = error
