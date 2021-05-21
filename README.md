@@ -112,8 +112,12 @@ A Cross-Platform Audio Library for:
 
 #### Cross-Platform
 
+✅: Managed Implementation Planned  
+⭕: Implementation Planned but can be Native one  
+❎: Not Included in Plan 
+
 | Container Name | Typical File Extensions | Implementing Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
 |--|--|--|--|--|:--:|:--:|--|
 | FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implementing Decoder |
-| Opus | `.opus` | Opus | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Planned |
-| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Planned |
+| Opus | `.opus` | Opus | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
+| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
