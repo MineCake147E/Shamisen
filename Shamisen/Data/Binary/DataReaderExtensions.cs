@@ -298,6 +298,7 @@ namespace Shamisen.Data.Binary
         /// Reads single <see cref="byte"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns>The value read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadByte(this IDataSource<byte> dataReader, out byte read)
@@ -312,6 +313,7 @@ namespace Shamisen.Data.Binary
         /// Reads single <see cref="sbyte"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns>The value read.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadSignedByte(this IDataSource<byte> dataReader, out sbyte read)
@@ -330,6 +332,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="ushort"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt16LittleEndian(this IDataSource<byte> dataReader, out ushort read)
@@ -344,6 +347,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="ushort"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt16BigEndian(this IDataSource<byte> dataReader, out ushort read)
@@ -358,6 +362,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="short"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt16LittleEndian(this IDataSource<byte> dataReader, out short read)
@@ -372,6 +377,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="short"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt16BigEndian(this IDataSource<byte> dataReader, out short read)
@@ -390,6 +396,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="uint"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt32LittleEndian(this IDataSource<byte> dataReader, out uint read)
@@ -404,6 +411,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="uint"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt32BigEndian(this IDataSource<byte> dataReader, out uint read)
@@ -418,6 +426,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="int"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt32LittleEndian(this IDataSource<byte> dataReader, out int read)
@@ -432,6 +441,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="int"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt32BigEndian(this IDataSource<byte> dataReader, out int read)
@@ -450,6 +460,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="ulong"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt64LittleEndian(this IDataSource<byte> dataReader, out ulong read)
@@ -464,6 +475,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="ulong"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadUInt64BigEndian(this IDataSource<byte> dataReader, out ulong read)
@@ -478,6 +490,7 @@ namespace Shamisen.Data.Binary
         /// Reads single little-endianed <see cref="long"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt64LittleEndian(this IDataSource<byte> dataReader, out long read)
@@ -492,6 +505,7 @@ namespace Shamisen.Data.Binary
         /// Reads single big-endianed <see cref="long"/> from <paramref name="dataReader"/>.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="read">The value read.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadResult TryReadInt64BigEndian(this IDataSource<byte> dataReader, out long read)

@@ -214,7 +214,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
             }
             //Parsing other header chunks
             //Find and parse "fmt " chunk
-            IFormatChunkParser fmt = null;
+            IFormatChunkParser? fmt = null;
             do
             {
                 var reader = ReadNextSubChunk();

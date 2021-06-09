@@ -130,7 +130,8 @@ namespace Shamisen.Primitives
         /// <summary>
         /// Subtracts specified <see cref="Angle128"/> value from <see cref="Angle128"/> value.
         /// </summary>
-        /// <param name="left">The value to be subtract from <paramref name="left"/>.</param>
+        /// <param name="left">The value to be subtracted by <paramref name="right"/>.</param>
+        /// <param name="right">The value to subtract from <paramref name="left"/>/</param>
         /// <returns>
         /// The result of subtracting <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>

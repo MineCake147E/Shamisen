@@ -3,28 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using NAudio.Wave;
+
+using NWaveFormat = NAudio.Wave.WaveFormat;
 
 namespace Shamisen.IO
 {
     /// <summary>
-    /// Provides audio data to <see cref="IWavePlayer"/>.
+    /// Provides <see cref="IWaveSource"/>'s audio data to <see cref="NAudio"/>-styled consumer.
     /// </summary>
     /// <seealso cref="IWaveProvider" />
     /// <seealso cref="IDisposable" />
-    public sealed class NAudioInteroperatingWaveSource : IWaveProvider, IDisposable
+    public sealed class ShamisenWaveProvider
+        : IWaveProvider, IDisposable
     {
         private bool disposedValue = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NAudioInteroperatingWaveSource"/> class.
+        /// Initializes a new instance of the <see cref="ShamisenWaveProvider"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public NAudioInteroperatingWaveSource(IWaveSource source)
+        public ShamisenWaveProvider(IWaveSource source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            WaveFormat = NAudio.Wave.WaveFormat.CreateCustomFormat(
+            WaveFormat = NWaveFormat.CreateCustomFormat(
                 (WaveFormatEncoding)(short)source.Format.Encoding, source.Format.SampleRate, source.Format.Channels,
                 source.Format.BlockSize * source.Format.SampleRate, source.Format.BlockSize, source.Format.BitDepth);
         }
@@ -35,7 +39,7 @@ namespace Shamisen.IO
         /// <value>
         /// The wave format.
         /// </value>
-        public NAudio.Wave.WaveFormat WaveFormat { get; }
+        public NWaveFormat WaveFormat { get; }
 
         /// <summary>
         /// Gets the source to read the audio from.

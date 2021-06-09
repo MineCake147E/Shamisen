@@ -152,7 +152,7 @@ namespace Shamisen.Synthesis
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float GenerateMonauralSample(Fixed64 theta) => (float)MathX.SinCosPi(theta, ~0ul << 32).Imaginary;
+        private static float GenerateMonauralSample(Fixed64 theta) => MathX.SinF(theta);
 
         #region IDisposable Support
 

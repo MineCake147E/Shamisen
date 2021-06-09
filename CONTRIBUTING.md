@@ -17,15 +17,21 @@
 - You should not commit directly to branches.
 - Use [Pull Request](https://github.com/MineCake147E/Shamisen/compare) instead.
 ### Code Rules(WIP)
+#### All Text files(except for auto-generated non-C# files)
+| Name | Value |
+| -- | -- |
+|NewLine|CRLF|
+|Encoding|UTF-8|
+
 #### C\#
-- ***DO NOT USE ANY ~~EXTREMELY SUCKING~~ `T[] buffer, int offset, int count` patterns!***
+- ***DO NOT USE `T[] buffer, int offset, int count` patterns at ANY places!***(when possible)
   - Range checks can be remained under this pattern!
   - You **MUST** use `Span<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `ReadOnlyMemory<T>` except for some needed places.
-- **RELY YOUR TESTED `unsafe` CODES FOR OPTIMIZATION!** 
+- **Feel free to use `Unsafe` and `MemoryMarshal`.**  
   -  Don't forget that `Span<T>` can wrap any pointers thoguh.
-- Consider Latencies of filters.
-  - Don't forget to seal your filter classes if not needed to be `abstract` or `virtual`.
-- Manage memories yourself if possible and appropriate.
+- **You should be extremely greedy about doing tricky optimizations.**
+- Manage memories yourself if appropriate.
+- Be careful when using `MemoryMarshal.Cast<T, (T2,T3,T4,T5)>(Span<T> span)` because `StructLayout` of `ValueTuple` is set to `Auto`.
 
 #### Comments
 - Write XML comments at **EVERY** public members.

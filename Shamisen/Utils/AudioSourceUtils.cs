@@ -88,19 +88,16 @@ namespace Shamisen
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns></returns>
-        public static ISampleSource? ConvertToSample(this IWaveSource source)
+        public static ISampleSource? ConvertToSample(this IWaveSource source) => source.Format.BitDepth switch
         {
-            return source.Format.BitDepth switch
-            {
-                8 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm8ToSampleConverter(source),
-                8 when source.Format.Encoding == AudioEncoding.Alaw => new ALawToSampleConverter(source),
-                16 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm16ToSampleConverter(source),
-                32 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm32ToSampleConverter(source),
-                32 when source.Format.Encoding == AudioEncoding.IeeeFloat => new Float32ToSampleConverter(source),
-                24 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm24ToSampleConverter(source),
-                _ => null,
-            };
-        }
+            8 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm8ToSampleConverter(source),
+            8 when source.Format.Encoding == AudioEncoding.Alaw => new ALawToSampleConverter(source),
+            16 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm16ToSampleConverter(source),
+            32 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm32ToSampleConverter(source),
+            32 when source.Format.Encoding == AudioEncoding.IeeeFloat => new Float32ToSampleConverter(source),
+            24 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm24ToSampleConverter(source),
+            _ => null,
+        };
     }
 
     internal sealed class ReadableSampleSource : ISampleSource
