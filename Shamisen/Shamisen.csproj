@@ -63,6 +63,21 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="Codecs\Flac\Parsing\FlacCrc16.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+        </None>
+        <None Include="Codecs\Flac\Parsing\FlacCrc8.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+        </None>
+        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+        </None>
         <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -103,6 +118,21 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         </None>
+        <None Include="Utils\Audio\AudioUtils.Fallback.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.g.tt</DependentUpon>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
+        </None>
         <None Include="Utils\Binary\BinaryExtensions.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -110,6 +140,18 @@
         </None>
     </ItemGroup>
     <ItemGroup>
+        <None Update="Codecs\Flac\Parsing\FlacCrc16.table.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacCrc16.table.cs</LastGenOutput>
+        </None>
+        <None Update="Codecs\Flac\Parsing\FlacCrc8.table.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
+        </None>
+        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
+        </None>
         <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
@@ -142,15 +184,46 @@
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
         </None>
+        <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Audio\AudioUtils.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
+        </None>
         <None Update="Utils\Binary\BinaryExtensions.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Tuples\Tuples.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>Tuples.g.cs</LastGenOutput>
         </None>
     </ItemGroup>
     <ItemGroup>
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Update="Codecs\Flac\Parsing\FlacCrc16.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Flac\Parsing\FlacCrc8.table.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+        </Compile>
         <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -191,17 +264,42 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
+        </Compile>
         <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
         </Compile>
+        <Compile Update="Utils\Tuples\Tuples.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Tuples.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Tuples\Tuples.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Tuples.g.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="Codecs\Flac\Composing\" />
         <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
         <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
         <Folder Include="Codecs\Waveform\Formats\ALaw\" />
-        <Folder Include="Codecs\Flac\" />
         <Folder Include="Codecs\Waveform\Headers\" />
         <Folder Include="Data\Composing\" />
         <Folder Include="Metadata\Id3\" />

@@ -135,22 +135,26 @@ namespace Shamisen.Data
         /// <summary>
         /// Reads the data to the specified destination.
         /// </summary>
-        /// <param name="destination">The destination.</param>
+        /// <param name="buffer">The destination.</param>
         /// <returns>
         /// The number of <typeparamref name="TSample"/>s read from this <see cref="IDataSource{TSample}" />.
         /// </returns>
-        public ReadResult Read(Span<TSample> destination)
+        public ReadResult Read(Span<TSample> buffer)
         {
             this.ThrowIfDisposed(disposedValue);
             int wlen = 0;
             ulong position = ReadPosition;
             var p = FindBufferIndex(position);
-            var destRem = destination;
+            var destRem = buffer;
             while (!destRem.IsEmpty && destRem.Length > 0 && p.buffer >= 0)
             {
                 var src = buffers[p.buffer];
                 src.ReadPosition = p.local;
                 var h = src.Read(destRem);
+                if (h.HasNoData)
+                {
+                    return wlen == 0 ? h : wlen;
+                }
                 destRem = destRem.Slice(h.Length);
                 position += (ulong)h.Length;
                 wlen += h.Length;
@@ -161,17 +165,34 @@ namespace Shamisen.Data
         }
 
         /// <summary>
+        /// Clears this <see cref="DataCache{TSample}"/>.
+        /// </summary>
+        /// <param name="fillWithDefault">The value which indicates whether this must fill the internal buffer with default value, or not.</param>
+        public void Clear(bool fillWithDefault = false)
+        {
+            BytesWritten = 0;
+            ReadPosition = 0;
+            if (fillWithDefault)
+            {
+                foreach (var item in buffers)
+                {
+                    item.WriteHead.Span.QuickFill(default);
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads the data asynchronously to the specified destination.
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <returns>
         /// The number of <see cref="byte" />s read from this <see cref="IDataSource{TSample}" />.
         /// </returns>
-#pragma warning disable CS1998 // 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
+#pragma warning disable CS1998
 
         public async ValueTask<ReadResult> ReadAsync(Memory<TSample> destination) => Read(destination.Span);
 
-#pragma warning restore CS1998 // 非同期メソッドは、'await' 演算子がないため、同期的に実行されます
+#pragma warning restore CS1998
 
         /// <summary>
         /// Writes the data inside specified buffer to this instance.

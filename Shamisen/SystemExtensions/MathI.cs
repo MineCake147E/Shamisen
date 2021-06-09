@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG_MATHI_NON_USER_CODE
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,14 +8,15 @@ using System.Text;
 using System.Numerics;
 using DivideSharp;
 using DSUtils = DivideSharp.Utils;
+using System.Diagnostics;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 #endif
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
 
@@ -33,6 +36,9 @@ namespace Shamisen
         /// <param name="step">The step.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int FloorStep(int value, int step) => value - (value % step);
 
         /// <summary>
@@ -42,6 +48,9 @@ namespace Shamisen
         /// <param name="step">The step.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static (int newLength, int remainder) FloorStepRem(int value, int step)
         {
             var m = value % step;
@@ -54,17 +63,26 @@ namespace Shamisen
         /// <param name="value">The value to rectify.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int Rectify(int value)
         {
             var h = value >> 31;
             return value & ~h;
         }
 
+        #region Abs
+
         /// <summary>
         /// Returns the absolute value of the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static ulong Abs(long value) => DSUtils.Abs(value);
 
         /// <summary>
@@ -72,7 +90,15 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static uint Abs(int value) => DSUtils.Abs(value);
+
+        #endregion Abs
+
+        #region BigMul Polyfill
 
         /// <summary>
         /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
@@ -80,12 +106,16 @@ namespace Shamisen
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong low, long high) BigMul(long x, long y)
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var high = Math.BigMul(x, y, out var low);
                 return ((ulong)low, high);
 #else
@@ -102,11 +132,14 @@ namespace Shamisen
         /// <param name="y">The y.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static (ulong low, ulong high) BigMul(ulong x, ulong y)
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var high = Math.BigMul(x, y, out var low);
                 return (low, high);
 #else
@@ -114,6 +147,8 @@ namespace Shamisen
 #endif
             }
         }
+
+        #endregion BigMul Polyfill
 
         #region ReadResult functions
 
@@ -123,6 +158,10 @@ namespace Shamisen
         /// <param name="a">The value a.</param>
         /// <param name="b">The value b.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
 
         #endregion ReadResult functions
@@ -135,9 +174,12 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int TrailingZeroCount(uint value)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 #pragma warning disable IDE0022
             return BitOperations.TrailingZeroCount(value);
 #pragma warning restore IDE0022
@@ -156,9 +198,12 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int TrailingZeroCount(ulong value)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 #pragma warning disable IDE0022
             return BitOperations.TrailingZeroCount(value);
 #pragma warning restore IDE0022
@@ -173,6 +218,8 @@ namespace Shamisen
 
         #endregion TrailingZeroCount
 
+        #region LogBase2
+
         /// <summary>
         /// Finds last 1's position from LSB.<br/>
         /// When the value is 0, it returns 0.
@@ -180,12 +227,15 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LogBase2(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.Log2(value);
 #else
                 return MathIFallbacks.LogBase2(value);
@@ -200,12 +250,15 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LogBase2(ulong value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.Log2(value);
 #else
                 return MathIFallbacks.LogBase2(value);
@@ -213,6 +266,10 @@ namespace Shamisen
             }
         }
 
+        #endregion LogBase2
+
+        #region LeadingZeroCount
+
         /// <summary>
         /// Finds last 0's position from MSB.<br/>
         /// When the value is 0, it returns 32.
@@ -220,12 +277,15 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LeadingZeroCount(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.LeadingZeroCount(value);
 #else
                 return MathIFallbacks.LeadingZeroCount(value);
@@ -240,18 +300,73 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LeadingZeroCount(ulong value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return BitOperations.LeadingZeroCount(value);
 #else
                 return MathIFallbacks.LeadingZeroCount(value);
 #endif
             }
         }
+
+        #endregion LeadingZeroCount
+
+        #region PopCount
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static int Pop(uint value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                return BitOperations.PopCount(value);
+#else
+                return MathIFallbacks.PopCount(value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Counts how many the bits are 1.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static int PopCount(ulong value)
+        {
+            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                return BitOperations.PopCount(value);
+#else
+                return MathIFallbacks.PopCount(value);
+#endif
+            }
+        }
+
+        #endregion PopCount
+
+        #region ExtractHighestSetBit
 
         /// <summary>
         /// Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
@@ -259,11 +374,14 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static uint ExtractHighestSetBit(uint value)
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return (uint)(0x8000_0000ul >> BitOperations.LeadingZeroCount(value));
 #else
                 return MathIFallbacks.ExtractHighestSetBit(value);
@@ -277,11 +395,14 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static ulong ExtractHighestSetBit(ulong value)
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 return value == 0 ? 0 : (uint)(0x8000_0000_0000_0000ul >> BitOperations.LeadingZeroCount(value));
 #else
                 return MathIFallbacks.ExtractHighestSetBit(value);
@@ -289,17 +410,24 @@ namespace Shamisen
             }
         }
 
+        #endregion ExtractHighestSetBit
+
+        #region ReverseBitOrder
+
         /// <summary>
         /// Reverses the bit order of the specified <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static uint ReverseBitOrder(uint value)
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 if (ArmBase.IsSupported)
                 {
                     return ArmBase.ReverseElementBits(value);
@@ -315,11 +443,14 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static ulong ReverseBitOrder(ulong value)
         {
             unchecked
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 if (ArmBase.Arm64.IsSupported)
                 {
                     return ArmBase.Arm64.ReverseElementBits(value);
@@ -328,5 +459,57 @@ namespace Shamisen
                 return MathIFallbacks.ReverseBitOrder(value);
             }
         }
+
+        #endregion ReverseBitOrder
+
+        #region ExtractBitField
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static uint ExtractBitField(uint value, byte start, byte length)
+        {
+            if (start == 0) return value & ~(~0u << length);
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi1.IsSupported)
+            {
+                return Bmi1.BitFieldExtract(value, start, length);
+            }
+#endif
+            return (value >> start) & ~(~0u << length);
+        }
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static ulong ExtractBitField(ulong value, byte start, byte length)
+        {
+            if (start == 0) return value & ~(~0ul << length);
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi1.X64.IsSupported)
+            {
+                return Bmi1.X64.BitFieldExtract(value, start, length);
+            }
+#endif
+            return (value >> start) & ~(~0ul << length);
+        }
+
+        #endregion ExtractBitField
     }
 }

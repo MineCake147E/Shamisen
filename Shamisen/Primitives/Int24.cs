@@ -99,7 +99,7 @@ namespace Shamisen
         /// The result of the conversion.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static explicit operator Int24(int value) => new Int24(value);
+        public static explicit operator Int24(int value) => new(value);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int24"/> objects are equal.
@@ -129,7 +129,7 @@ namespace Shamisen
         /// The result of the operator.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Int24 operator -(Int24 value) => new Int24(-(int)value);
+        public static Int24 operator -(Int24 value) => new(-(int)value);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int24"/> objects are not equal.
@@ -192,7 +192,7 @@ namespace Shamisen
         /// <param name="value">The value to reverse endianness.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Int24 ReverseEndianness(Int24 value) => new Int24(value.tail, value.middle, value.head);
+        public static Int24 ReverseEndianness(Int24 value) => new(value.tail, value.middle, value.head);
 
         /// <summary>
         /// Compares the value of this instance to a specified <see cref="Int24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="Int24"/> value.

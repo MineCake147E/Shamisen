@@ -1,13 +1,13 @@
 ﻿using System;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using AesX86 = System.Runtime.Intrinsics.X86.Aes;
 
 #endif
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
 using AesArm = System.Runtime.Intrinsics.Arm.Aes;
@@ -60,9 +60,9 @@ namespace Shamisen.Optimization
         {
             unchecked
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 var res = X86Intrinsics.None;
-#if NET5_0
+#if NET5_0_OR_GREATER
                 res |= X86Base.IsSupported ? X86Intrinsics.X86Base : 0;
                 res |= X86Base.X64.IsSupported ? X86Intrinsics.X64 : 0;
 #else
@@ -111,7 +111,7 @@ namespace Shamisen.Optimization
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ArmIntrinsics GetAvailableArmIntrinsics()
         {
-#if NET5_0
+#if NET5_0_OR_GREATER
             var res = ArmIntrinsics.None;
             res |= ArmBase.IsSupported ? ArmIntrinsics.ArmBase : 0;
             res |= ArmBase.Arm64.IsSupported ? ArmIntrinsics.Arm64 : 0;

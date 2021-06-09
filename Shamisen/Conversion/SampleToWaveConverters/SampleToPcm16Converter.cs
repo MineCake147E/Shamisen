@@ -9,7 +9,7 @@ using System.Text;
 using Shamisen.Optimization;
 using System.Runtime.CompilerServices;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -155,7 +155,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         {
             if (IsEndiannessConversionRequired)
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
                     if (Avx2.IsSupported)
@@ -173,7 +173,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             else
             {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
                     if (Avx2.IsSupported)

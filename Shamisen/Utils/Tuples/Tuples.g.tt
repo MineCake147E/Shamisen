@@ -1,0 +1,97 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var Numbers = Enumerable.Range(2, 16 - 1).ToArray();
+
+ #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shamisen.Utils.Tuples
+{
+<#
+    foreach(var item in Numbers){#>
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public readonly partial struct UnmanagedTupleX<#=item#><T> where T:unmanaged
+    {
+        private readonly T <#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"i{a}"))#>;
+<#
+        for(int i = 0; i < item; i++)
+        {#>
+        /// <summary>
+        /// The item No.<#=i#>.
+        /// </summary>
+        public T Item<#=i#>
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX<#=item#><T>, T>(ref Unsafe.AsRef(in this)), <#=i#>);
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX<#=item#><T>, T>(ref Unsafe.AsRef(in this)), <#=i#>) = value;
+        }
+
+<#        }#>
+        /// <summary>
+        /// Initializes this <see cref="UnmanagedTupleX<#=item#>{T}"/> from values.
+        /// </summary>
+<#        for(int i = 0; i < item; i++){#>
+        /// <param name="v<#=i#>">The value No.<#=i#>.</param>
+<#        } #>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public UnmanagedTupleX<#=item#>(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T v{a}"))#>)
+        {
+<#        for(int i = 0; i < item; i++){#>
+            i<#=i #> = v<#=i #>;
+<#        } #>
+        }
+
+        /// <summary>
+        /// Deconstructs this <see cref="UnmanagedTupleX<#=item#>{T}"/> to values.
+        /// </summary>
+<#        for(int i = 0; i < item; i++){#>
+        /// <param name="v<#=i#>">The output value No.<#=i#>.</param>
+<#        } #>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public void Deconstruct(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"out T v{a}"))#>)
+        {
+<#        for(int i = 0; i < item; i++){#>
+            v<#=i #> = Item<#=i #>;
+<#        } #>
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="UnmanagedTupleX<#=item#>{T}"/> to <see cref="ValueTuple{T, T}"/>.
+        /// </summary>
+        /// <param name="from">The converting <see cref="UnmanagedTupleX<#=item#>{T}"/>.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static implicit operator (<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>)(UnmanagedTupleX<#=item#><T> from)
+            => Unsafe.As<UnmanagedTupleX<#=item#><T>, (<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>)>(ref from);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX<#=item#>{T}"/>.
+        /// </summary>
+        /// <param name="from">The converting <see cref="ValueTuple{<#=item < 9 ? string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T{a}")) : "T0"#>}"/>.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static implicit operator UnmanagedTupleX<#=item#><T>((<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>) from)
+            => Unsafe.As<(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>), UnmanagedTupleX<#=item#><T>>(ref from);
+    }
+<#    }#>
+}

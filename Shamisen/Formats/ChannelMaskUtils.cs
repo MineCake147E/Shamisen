@@ -33,15 +33,15 @@ namespace Shamisen
                     case 2: //Assuming Speaker Stereo
                         return Speakers.FrontStereo;
                     case 3: //Assuming 2.1ch Stereo
-                        return Speakers.FrontStereo | Speakers.FrontLowFrequency;
+                        return Speakers.FrontStereo | Speakers.FrontCenterLowFrequency;
                     case 4: //Assuming 3.1ch Stereo
                         return Speakers.ThreePointOne;
                     case 5: //Assuming 4.1ch Surround
-                        return Speakers.FrontStereo | Speakers.RearLeft | Speakers.RearRight | Speakers.FrontLowFrequency;
+                        return Speakers.FrontStereo | Speakers.RearLeft | Speakers.RearRight | Speakers.FrontCenterLowFrequency;
                     case 6: //Assuming 5.1ch Surround
-                        return Speakers.FivePointOne;
+                        return Speakers.FrontFivePointOne;
                     case 7: //Assuming 6.1ch Surround
-                        return Speakers.FrontStereo | Speakers.SideStereo | Speakers.RearStereo | Speakers.FrontLowFrequency;
+                        return Speakers.FrontStereo | Speakers.SideStereo | Speakers.RearStereo | Speakers.FrontCenterLowFrequency;
                     case 8: //Assuming 7.1ch Surround
                         return Speakers.SevenPointOne;
                     case 9: //Assuming 8.1ch Surround

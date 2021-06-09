@@ -8,7 +8,7 @@ namespace Shamisen
     [Flags]
     public enum Speakers : uint
     {
-        #region Masks
+        #region Standard Masks
 
         /// <summary>
         /// Invalid.
@@ -33,7 +33,7 @@ namespace Shamisen
         /// <summary>
         /// The subwoofer speaker placed in front of the listener.
         /// </summary>
-        FrontLowFrequency = 0b1000,
+        FrontCenterLowFrequency = 0b1000,
 
         /// <summary>
         /// The speaker placed in left rear of the listener.
@@ -120,7 +120,7 @@ namespace Shamisen
         /// </summary>
         TopSideRight = 0b1_0000_0000_0000_0000_0000,
 
-        #endregion Masks
+        #endregion Standard Masks
 
         #region Pre-Combined masks
 
@@ -160,20 +160,88 @@ namespace Shamisen
         TopRearStereo = TopRearLeft | TopRearRight,
 
         /// <summary>
-        /// The 3.1ch combination.
+        /// The 2.1ch combination.
         /// </summary>
-        ThreePointOne = FrontStereo | FrontCenter | FrontLowFrequency,
+        TwoPointOne = FrontStereo | FrontCenterLowFrequency,
 
         /// <summary>
-        /// The 5.1ch combination.
+        /// The 3ch surround combination.
         /// </summary>
-        FivePointOne = ThreePointOne | RearLeft | RearRight,
+        FrontThree = FrontStereo | RearCenter,
+
+        /// <summary>
+        /// The 3.1ch combination.
+        /// </summary>
+        ThreePointOne = FrontStereo | FrontCenter | FrontCenterLowFrequency,
+
+        /// <summary>
+        /// The 4ch surround combination.
+        /// </summary>
+        Quad = FrontStereo | RearStereo,
+
+        /// <summary>
+        /// The 5ch surround combination.
+        /// </summary>
+        FrontFive = FrontStereo | FrontCenter | RearStereo,
+
+        /// <summary>
+        /// The 5ch surround combination.
+        /// </summary>
+        SideFive = FrontStereo | FrontCenter | SideStereo,
+
+        /// <summary>
+        /// The 4.1ch combination.
+        /// </summary>
+        FourPointOne = FrontStereo | FrontCenterLowFrequency | RearLeft | RearRight,
+
+        /// <summary>
+        /// The standard 5.1ch combination.
+        /// </summary>
+        FrontFivePointOne = ThreePointOne | RearStereo,
+
+        /// <summary>
+        /// The side 5.1ch combination.
+        /// </summary>
+        SideFivePointOne = ThreePointOne | SideStereo,
+
+        /// <summary>
+        /// The hexagonal 6ch combination.
+        /// </summary>
+        Hexagonal = FrontStereo | FrontCenter | RearStereo | RearCenter,
+
+        /// <summary>
+        /// The 6.1ch combination with top-side center.
+        /// </summary>
+        ShamisenSixPointOne = FrontFivePointOne | TopSideCenter,
+
+        /// <summary>
+        /// The 6.1ch combination with rear center.
+        /// </summary>
+        DolbySixPointOne = FrontFivePointOne | RearCenter,
+
+        /// <summary>
+        /// The 7ch surround combination.
+        /// </summary>
+        SevenSurround = FrontFive | SideStereo,
 
         /// <summary>
         /// The 7.1ch combination.
         /// </summary>
-        SevenPointOne = FivePointOne | SideLeft | SideRight,
+        SevenPointOne = FrontFivePointOne | SideLeft | SideRight,
 
         #endregion Pre-Combined masks
+    }
+
+    /// <summary>
+    /// Contains some utility functions for <see cref="Speakers"/>.
+    /// </summary>
+    public static class SpeakersUtils
+    {
+        /// <summary>
+        /// Counts the number of channels of specified <paramref name="speakers"/>.
+        /// </summary>
+        /// <param name="speakers">The speakers.</param>
+        /// <returns></returns>
+        public static int CountChannels(this Speakers speakers) => MathI.PopCount((uint)speakers);
     }
 }

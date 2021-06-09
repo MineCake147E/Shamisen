@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -59,7 +59,7 @@ namespace System.Numerics
         /// </summary>
         public float Value8 => Back.W;
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
         private readonly Vector256<float> value;
 
@@ -106,7 +106,7 @@ namespace System.Numerics
         /// <param name="value">The value to fill with.</param>
         public Vector8(float value) : this()
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             this.value = Vector256.Create(value);
 #else
             Front = new Vector4(value);
@@ -114,7 +114,7 @@ namespace System.Numerics
 #endif
         }
 
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector8"/> struct.
@@ -140,7 +140,7 @@ namespace System.Numerics
         /// <param name="v8">The v8.</param>
         public Vector8(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8) : this()
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             value = Vector256.Create(v1, v2, v3, v4, v5, v6, v7, v8);
 #else
             Front = new Vector4(v1, v2, v3, v4);
@@ -155,7 +155,7 @@ namespace System.Numerics
         /// <param name="back">The back four values.</param>
         public Vector8(Vector4 front, Vector4 back) : this()
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             value = default;
 #else
             this.Front = front;
@@ -173,7 +173,7 @@ namespace System.Numerics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector8 operator -(Vector8 value)
         {
-#if NET5_0 || NETCOREAPP3_1
+#if NETCOREAPP3_1_OR_GREATER
             if (Avx.IsSupported)
             {
                 var flags = Vector256.Create(0x8000_0000u).AsSingle();

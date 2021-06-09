@@ -1,10 +1,24 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Shamisen;
+using DivideSharp;
+
+#if NET5_0_OR_GREATER
+
+using System.Runtime.Intrinsics.Arm;
+
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+#endif
 
 namespace System
 {
@@ -205,6 +219,46 @@ namespace System
 
         #endregion QuickFill
 
+        #region MoveByOffset
+
+        /// <summary>
+        /// Moves the elements of specified <paramref name="span"/> right by 1 element.
+        /// </summary>
+        /// <typeparam name="TSample"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to move its elements.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ShiftRight(this Span<int> span)
+        {
+            unsafe
+            {
+                ref var q = ref MemoryMarshal.GetReference(span);
+                for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
+                {
+                    Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Moves the elements of specified <paramref name="span"/> right by 1 element.
+        /// </summary>
+        /// <typeparam name="TSample"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to move its elements.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ShiftRight<TSample>(this Span<TSample> span)
+        {
+            unsafe
+            {
+                ref var q = ref MemoryMarshal.GetReference(span);
+                for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
+                {
+                    Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
+                }
+            }
+        }
+
+        #endregion MoveByOffset
+
         #region LinqLikeForSpan
 
         /// <summary>
@@ -239,5 +293,200 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, ulong maxLength)
             => maxLength > int.MaxValue ? span : span.SliceWhileIfLongerThan((int)maxLength);
+
+        /// <summary>
+        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
+
+        #region ReverseEndianness
+
+        /// <summary>
+        /// Reverses the endianness of each elements in specified <paramref name="span"/>.
+        /// </summary>
+        /// <param name="span">The span.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ReverseEndianness(this Span<ulong> span)
+        {
+#if NET5_0_OR_GREATER
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                ReverseEndiannessAdvSimd(span);
+                return;
+            }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+            if (Avx2.IsSupported)
+            {
+                ReverseEndiannessAvx2(span);
+                return;
+            }
+            if (Ssse3.IsSupported)
+            {
+                ReverseEndiannessSsse3(span);
+                return;
+            }
+#endif
+            ReverseEndiannessFallback(span);
+        }
+
+#if NET5_0_OR_GREATER
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ReverseEndiannessAdvSimd(Span<ulong> span)
+        {
+            var q = MemoryUtils.CastSplit<ulong, Vector128<ulong>>(span, out var rem);
+            for (int i = 0; i < q.Length; i++)
+            {
+                var t = q[i];
+                q[i] = AdvSimd.ReverseElement8(t);  //REV64 Vd.16B, Vn.16B
+            }
+            ReverseEndiannessSimple(rem);
+        }
+
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ReverseEndiannessAvx2(Span<ulong> span)
+        {
+            //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
+            var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
+            var mask256 = Vector256.Create(mask, mask);
+            var qq = MemoryUtils.CastSplit<ulong, (Vector256<byte> v0, Vector256<byte> v1, Vector256<byte> v2, Vector256<byte> v3, Vector256<byte> v4, Vector256<byte> v5, Vector256<byte> v6, Vector256<byte> v7)>(span, out var rem);
+            for (int i = 0; i < qq.Length; i++)
+            {
+                ref var t = ref qq[i];
+                var x = t.v0;   //Let RyuJIT not to emit unnecessary 'lea' instructions
+                var v0 = Avx2.Shuffle(x.AsByte(), mask256);
+                x = t.v1;
+                var v1 = Avx2.Shuffle(x.AsByte(), mask256);
+                x = t.v2;
+                var v2 = Avx2.Shuffle(x.AsByte(), mask256);
+                x = t.v3;
+                var v3 = Avx2.Shuffle(x.AsByte(), mask256);
+                t.v0 = v0;
+                x = t.v4;
+                v0 = Avx2.Shuffle(x.AsByte(), mask256);
+                t.v1 = v1;
+                x = t.v5;
+                v1 = Avx2.Shuffle(x.AsByte(), mask256);
+                t.v2 = v2;
+                x = t.v6;
+                v2 = Avx2.Shuffle(x.AsByte(), mask256);
+                t.v3 = v3;
+                x = t.v7;
+                v3 = Avx2.Shuffle(x.AsByte(), mask256);
+                t.v4 = v0;
+                t.v5 = v1;
+                t.v6 = v2;
+                t.v7 = v3;
+            }
+            var q = MemoryUtils.CastSplit<ulong, Vector256<ulong>>(rem, out rem);
+            for (int i = 0; i < q.Length; i++)
+            {
+                var t = q[i];
+                q[i] = Avx2.Shuffle(t.AsByte(), mask256).AsUInt64();
+            }
+            ReverseEndiannessSimple(rem);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ReverseEndiannessSsse3(Span<ulong> span)
+        {
+            //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
+            var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
+            var qq = MemoryUtils.CastSplit<ulong, (Vector128<byte> v0, Vector128<byte> v1, Vector128<byte> v2, Vector128<byte> v3, Vector128<byte> v4, Vector128<byte> v5, Vector128<byte> v6, Vector128<byte> v7)>(span, out var rem);
+            for (int i = 0; i < qq.Length; i++)
+            {
+                ref var t = ref qq[i];
+
+                var x = t.v0;
+                var v0 = Ssse3.Shuffle(x.AsByte(), mask);
+                x = t.v1;
+                var v1 = Ssse3.Shuffle(x.AsByte(), mask);
+                x = t.v2;
+                var v2 = Ssse3.Shuffle(x.AsByte(), mask);
+                x = t.v3;
+                var v3 = Ssse3.Shuffle(x.AsByte(), mask);
+                t.v0 = v0;
+                x = t.v4;
+                v0 = Ssse3.Shuffle(x.AsByte(), mask);
+                t.v1 = v1;
+                x = t.v5;
+                v1 = Ssse3.Shuffle(x.AsByte(), mask);
+                t.v2 = v2;
+                x = t.v6;
+                v2 = Ssse3.Shuffle(x.AsByte(), mask);
+                t.v3 = v3;
+                x = t.v7;
+                v3 = Ssse3.Shuffle(x.AsByte(), mask);
+                t.v4 = v0;
+                t.v5 = v1;
+                t.v6 = v2;
+                t.v7 = v3;
+            }
+            var q = MemoryUtils.CastSplit<ulong, Vector128<ulong>>(rem, out rem);
+            for (int i = 0; i < q.Length; i++)
+            {
+                var t = q[i];
+                q[i] = Ssse3.Shuffle(t.AsByte(), mask).AsUInt64();
+            }
+            ReverseEndiannessSimple(rem);
+        }
+
+#endif
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessFallback(Span<ulong> span)
+        {
+            var qq = MemoryUtils.CastSplit<ulong, (ulong v0, ulong v1, ulong v2, ulong v3, ulong v4, ulong v5, ulong v6, ulong v7)>(span, out var rem);
+            for (int i = 0; i < qq.Length; i++)
+            {
+                ref var t = ref qq[i];
+
+                var x = t.v0;
+                var v0 = BinaryPrimitives.ReverseEndianness(x);
+                x = t.v1;
+                var v1 = BinaryPrimitives.ReverseEndianness(x);
+                x = t.v2;
+                var v2 = BinaryPrimitives.ReverseEndianness(x);
+                x = t.v3;
+                var v3 = BinaryPrimitives.ReverseEndianness(x);
+                t.v0 = v0;
+                x = t.v4;
+                v0 = BinaryPrimitives.ReverseEndianness(x);
+                t.v1 = v1;
+                x = t.v5;
+                v1 = BinaryPrimitives.ReverseEndianness(x);
+                t.v2 = v2;
+                x = t.v6;
+                v2 = BinaryPrimitives.ReverseEndianness(x);
+                t.v3 = v3;
+                x = t.v7;
+                v3 = BinaryPrimitives.ReverseEndianness(x);
+                t.v4 = v0;
+                t.v5 = v1;
+                t.v6 = v2;
+                t.v7 = v3;
+            }
+            ReverseEndiannessSimple(rem);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessSimple(Span<ulong> span)
+        {
+            for (int i = 0; i < span.Length; i++)
+            {
+                span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
+            }
+        }
+
+        #endregion ReverseEndianness
     }
 }

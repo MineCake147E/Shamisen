@@ -13,7 +13,7 @@ namespace Shamisen
     public interface IReadSupport<TSample> where TSample : unmanaged
     {
         /// <summary>
-        /// Reads the data to the specified buffer.
+        /// Reads the data to the specified <paramref name="buffer"/>.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>

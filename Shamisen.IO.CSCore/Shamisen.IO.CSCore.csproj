@@ -4,6 +4,7 @@
         <TargetFramework>net472</TargetFramework>
         <RootNamespace>Shamisen.IO</RootNamespace>
         <LangVersion>8.0</LangVersion>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -26,5 +27,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="LICENSE.md">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 </Project>

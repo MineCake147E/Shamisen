@@ -34,7 +34,7 @@ namespace Shamisen
             return new Guid(q.Item1, q.Item2, q.Item3, q.Item4, q.Item5, q.Item6, q.Item7, q.Item8, q.Item9, q.Item10, q.Item11);
         }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         /// <summary>
         /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
@@ -66,7 +66,7 @@ namespace Shamisen
         }
 #endif
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         /// <summary>
         /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
@@ -98,7 +98,7 @@ namespace Shamisen
         }
 #endif
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         /// <summary>
         /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as little endian.
@@ -126,7 +126,7 @@ namespace Shamisen
         }
 #endif
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         /// <summary>
         /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as big endian.
