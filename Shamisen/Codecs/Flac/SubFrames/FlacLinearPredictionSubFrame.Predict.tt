@@ -6,7 +6,7 @@
 <#@ output extension=".cs" #>
 <#
     var b = new HashSet<int>(){2};
-    var enregisterPrevious = new HashSet<int>(){1,2,3,4};
+    var enregisterPrevious = new HashSet<int>(){1};
     var enregisterCoeffs = new HashSet<int>(){1, 2, 3, 4, 5, 6, 7, 8};
     var c = Enumerable.Range(1, 32);
     var names = c.Select(f=>(Order: f, Suffix:(b.Contains(f)?"Standard":""), enregisterPrevious: enregisterPrevious.Contains(f),
@@ -60,11 +60,16 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Write($"\t\t\tvar coeff{i} = coeffs[{i}];\r\n");
             }
         }
+        else
+        {#>
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
+<#        }
 #>
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
@@ -77,21 +82,21 @@ namespace Shamisen.Codecs.Flac.SubFrames
         else if(item.enregisterCoeffs)
         {
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * output[i + {item.Order - 1 - i}];\r\n");
+                Write($"\t\t\t\tsum += coeff{i} * Unsafe.Add(ref o, i + {item.Order - 1 - i});\r\n");
             }
-            Write($"\t\t\t\tsum += coeff0 * output[i + {item.Order - 1}];\r\n");
+            Write($"\t\t\t\tsum += coeff0 * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
         }
         else
         {
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeffs[{i}] * output[i + {item.Order - i - 1}];\r\n");
+                Write($"\t\t\t\tsum += Unsafe.Add(ref c, {i}) * Unsafe.Add(ref o, i + {item.Order - i - 1});\r\n");
             }
-            Write($"\t\t\t\tsum += coeffs[0] * output[i + {item.Order - 1}];\r\n");
+            Write($"\t\t\t\tsum += c * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
         }
 #>
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
 <#        if(item.enregisterPrevious){#>
                 prev<#=                item.Order - 1 #> = sum;
 <#        }#>
@@ -130,38 +135,44 @@ namespace Shamisen.Codecs.Flac.SubFrames
             for(int i = 0; i < item.Order; i++){
                 Write($"\t\t\tlong coeff{i} = coeffs[{i}];\r\n");
             }
-        }#>
+        }
+        else
+        {#>
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
+<#        }
+#>
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
 <#        if(item.enregisterPrevious){
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - 1 - i};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
+                Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - i - 1};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
             }
             Write($"\t\t\t\tsum += coeff0 * prev{item.Order - 1};\r\n");
         }
         else if(item.enregisterCoeffs)
         {
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * output[i + {item.Order - 1 - i}];\r\n");
+                Write($"\t\t\t\tsum += coeff{i} * Unsafe.Add(ref o, i + {item.Order - 1 - i});\r\n");
             }
-            Write($"\t\t\t\tsum += coeff0 * output[i + {item.Order - 1}];\r\n");
+            Write($"\t\t\t\tsum += coeff0 * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
         }
         else
         {
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeffs[{i}] * (long)output[i + {item.Order - 1 - i}];\r\n");
+                Write($"\t\t\t\tsum += Unsafe.Add(ref c, {i}) * (long)Unsafe.Add(ref o, i + {item.Order - i - 1});\r\n");
             }
-            Write($"\t\t\t\tsum += coeffs[0] * (long)output[i + {item.Order - 1}];\r\n");
+            Write($"\t\t\t\tsum += c * (long)Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
         }
 #>
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
 <#        if(item.enregisterPrevious){#>
                 prev<#=                item.Order - 1 #> = (int)sum;
 <#        }#>

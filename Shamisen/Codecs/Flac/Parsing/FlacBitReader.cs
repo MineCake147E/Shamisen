@@ -288,6 +288,26 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Reads the number with specified <paramref name="bits"/>.
         /// </summary>
+        /// <param name="bits">The bits.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public bool ReadBitsInt32(byte bits, out int value)
+        {
+            var h = ReadBitsUInt32(bits);
+            value = 0;
+            if (bits < 1 || !h.HasValue)
+            {
+                return false;
+            }
+            var gg = h.Value;
+            gg <<= 32 - bits;
+            value = (int)gg >> (32 - bits);
+            return true;
+        }
+
+        /// <summary>
+        /// Reads the number with specified <paramref name="bits"/>.
+        /// </summary>
         /// <param name="bits">The bits to read. must be &lt;=32.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -377,25 +397,6 @@ namespace Shamisen.Codecs.Flac.Parsing
             if (!v.HasValue) return null;
             uint? w = ReadBitsUInt32(32);
             return !w.HasValue ? null : ((ulong)v.Value << 32) | w.Value;
-        }
-
-        /// <summary>
-        /// Reads the number with specified <paramref name="bits"/>.
-        /// </summary>
-        /// <param name="bits">The bits.</param>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
-        public bool ReadBitsInt32(byte bits, out int value)
-        {
-            var h = ReadBitsUInt32(bits);
-            value = 0;
-            if (bits < 1 || !h.HasValue)
-            {
-                return false;
-            }
-            var mask = bits >= 33 ? 0 : 1u << (bits - 1);
-            value = (int)((h.Value ^ mask) - mask);
-            return true;
         }
 
         /// <summary>
@@ -661,6 +662,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="value"></param>
         /// <param name="rawData"></param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadUtf8UInt32(out uint value, Span<byte> rawData, out int bytesRead)
         {
             value = 0;
@@ -702,6 +704,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="value"></param>
         /// <param name="rawData"></param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadUtf8UInt64(out ulong value, Span<byte> rawData, out int bytesRead)
         {
             value = 0;
@@ -785,6 +788,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Updates the CRC16.
         /// </summary>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public void UpdateCrc16()
         {
             UpdateCrcByBlock();
@@ -898,6 +902,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         #region ReadNBits
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private uint? Read8Bits()
         {
             const byte Bits = 8;

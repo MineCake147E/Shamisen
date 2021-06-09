@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -41,10 +42,10 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var dataF = new PooledArray<int>(size);
             using var dataW = new PooledArray<Int24>(size);
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            Assert.AreEqual(flac.TotalLength * (ulong)flac.Format.Channels * sizeof(int), (ulong)rr.Length);
+            Assert.AreEqual(size * sizeof(int), rr.Length);
             var rw = wav.Read(MemoryMarshal.Cast<Int24, byte>(dataW.Span));
             Assert.AreEqual(rw.Length / 3, rr.Length / sizeof(int));
-
+            Debug.WriteLine("Comparing!");
             Assert.Multiple(() =>
             {
                 var err = 0ul;
@@ -54,19 +55,12 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 {
                     if (sw[i] != (int)(Int24)sf[i])
                     {
+                        Assert.AreEqual((int)sw[i], (int)(Int24)sf[i], $"Comparing {i}th element");
                         err++;
                         if (err > 128) break;
                     }
-                    Assert.AreEqual((int)sw[i], (int)(Int24)sf[i], $"Comparing {i}th element");
                 }
             });
-            using var dataEF = new PooledArray<Int24>(size);
-            var sf2 = dataF.Span;
-            var sef = dataEF.Span;
-            for (int i = 0; i < sef.Length; i++)
-            {
-                sef[i] = (Int24)sf2[i];
-            }
         }
     }
 }

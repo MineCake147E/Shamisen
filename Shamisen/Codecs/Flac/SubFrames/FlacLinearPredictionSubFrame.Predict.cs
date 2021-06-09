@@ -129,16 +129,17 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var prev0 = output[0];
 			var coeff0 = coeffs[0];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
 				sum += coeff0 * prev0;
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
                 prev0 = sum;
             }
         }
@@ -148,24 +149,21 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 2;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
 			var coeff0 = coeffs[0];
 			var coeff1 = coeffs[1];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff1 * prev0;
-				prev0 = prev1;
-				sum += coeff0 * prev1;
+				sum += coeff1 * Unsafe.Add(ref o, i + 0);
+				sum += coeff0 * Unsafe.Add(ref o, i + 1);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
-                prev1 = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -174,28 +172,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 3;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
-			var prev2 = output[2];
 			var coeff0 = coeffs[0];
 			var coeff1 = coeffs[1];
 			var coeff2 = coeffs[2];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff2 * prev0;
-				prev0 = prev1;
-				sum += coeff1 * prev1;
-				prev1 = prev2;
-				sum += coeff0 * prev2;
+				sum += coeff2 * Unsafe.Add(ref o, i + 0);
+				sum += coeff1 * Unsafe.Add(ref o, i + 1);
+				sum += coeff0 * Unsafe.Add(ref o, i + 2);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
-                prev2 = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -204,32 +197,25 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 4;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
-			var prev2 = output[2];
-			var prev3 = output[3];
 			var coeff0 = coeffs[0];
 			var coeff1 = coeffs[1];
 			var coeff2 = coeffs[2];
 			var coeff3 = coeffs[3];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff3 * prev0;
-				prev0 = prev1;
-				sum += coeff2 * prev1;
-				prev1 = prev2;
-				sum += coeff1 * prev2;
-				prev2 = prev3;
-				sum += coeff0 * prev3;
+				sum += coeff3 * Unsafe.Add(ref o, i + 0);
+				sum += coeff2 * Unsafe.Add(ref o, i + 1);
+				sum += coeff1 * Unsafe.Add(ref o, i + 2);
+				sum += coeff0 * Unsafe.Add(ref o, i + 3);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
-                prev3 = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -244,20 +230,21 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff3 = coeffs[3];
 			var coeff4 = coeffs[4];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff4 * output[i + 0];
-				sum += coeff3 * output[i + 1];
-				sum += coeff2 * output[i + 2];
-				sum += coeff1 * output[i + 3];
-				sum += coeff0 * output[i + 4];
+				sum += coeff4 * Unsafe.Add(ref o, i + 0);
+				sum += coeff3 * Unsafe.Add(ref o, i + 1);
+				sum += coeff2 * Unsafe.Add(ref o, i + 2);
+				sum += coeff1 * Unsafe.Add(ref o, i + 3);
+				sum += coeff0 * Unsafe.Add(ref o, i + 4);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -273,21 +260,22 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff4 = coeffs[4];
 			var coeff5 = coeffs[5];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff5 * output[i + 0];
-				sum += coeff4 * output[i + 1];
-				sum += coeff3 * output[i + 2];
-				sum += coeff2 * output[i + 3];
-				sum += coeff1 * output[i + 4];
-				sum += coeff0 * output[i + 5];
+				sum += coeff5 * Unsafe.Add(ref o, i + 0);
+				sum += coeff4 * Unsafe.Add(ref o, i + 1);
+				sum += coeff3 * Unsafe.Add(ref o, i + 2);
+				sum += coeff2 * Unsafe.Add(ref o, i + 3);
+				sum += coeff1 * Unsafe.Add(ref o, i + 4);
+				sum += coeff0 * Unsafe.Add(ref o, i + 5);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -304,22 +292,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff5 = coeffs[5];
 			var coeff6 = coeffs[6];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff6 * output[i + 0];
-				sum += coeff5 * output[i + 1];
-				sum += coeff4 * output[i + 2];
-				sum += coeff3 * output[i + 3];
-				sum += coeff2 * output[i + 4];
-				sum += coeff1 * output[i + 5];
-				sum += coeff0 * output[i + 6];
+				sum += coeff6 * Unsafe.Add(ref o, i + 0);
+				sum += coeff5 * Unsafe.Add(ref o, i + 1);
+				sum += coeff4 * Unsafe.Add(ref o, i + 2);
+				sum += coeff3 * Unsafe.Add(ref o, i + 3);
+				sum += coeff2 * Unsafe.Add(ref o, i + 4);
+				sum += coeff1 * Unsafe.Add(ref o, i + 5);
+				sum += coeff0 * Unsafe.Add(ref o, i + 6);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -337,23 +326,24 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff6 = coeffs[6];
 			var coeff7 = coeffs[7];
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff7 * output[i + 0];
-				sum += coeff6 * output[i + 1];
-				sum += coeff5 * output[i + 2];
-				sum += coeff4 * output[i + 3];
-				sum += coeff3 * output[i + 4];
-				sum += coeff2 * output[i + 5];
-				sum += coeff1 * output[i + 6];
-				sum += coeff0 * output[i + 7];
+				sum += coeff7 * Unsafe.Add(ref o, i + 0);
+				sum += coeff6 * Unsafe.Add(ref o, i + 1);
+				sum += coeff5 * Unsafe.Add(ref o, i + 2);
+				sum += coeff4 * Unsafe.Add(ref o, i + 3);
+				sum += coeff3 * Unsafe.Add(ref o, i + 4);
+				sum += coeff2 * Unsafe.Add(ref o, i + 5);
+				sum += coeff1 * Unsafe.Add(ref o, i + 6);
+				sum += coeff0 * Unsafe.Add(ref o, i + 7);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -362,25 +352,27 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 9;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[8] * output[i + 0];
-				sum += coeffs[7] * output[i + 1];
-				sum += coeffs[6] * output[i + 2];
-				sum += coeffs[5] * output[i + 3];
-				sum += coeffs[4] * output[i + 4];
-				sum += coeffs[3] * output[i + 5];
-				sum += coeffs[2] * output[i + 6];
-				sum += coeffs[1] * output[i + 7];
-				sum += coeffs[0] * output[i + 8];
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 7);
+				sum += c * Unsafe.Add(ref o, i + 8);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -389,26 +381,28 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 10;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[9] * output[i + 0];
-				sum += coeffs[8] * output[i + 1];
-				sum += coeffs[7] * output[i + 2];
-				sum += coeffs[6] * output[i + 3];
-				sum += coeffs[5] * output[i + 4];
-				sum += coeffs[4] * output[i + 5];
-				sum += coeffs[3] * output[i + 6];
-				sum += coeffs[2] * output[i + 7];
-				sum += coeffs[1] * output[i + 8];
-				sum += coeffs[0] * output[i + 9];
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 8);
+				sum += c * Unsafe.Add(ref o, i + 9);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -417,27 +411,29 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 11;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[10] * output[i + 0];
-				sum += coeffs[9] * output[i + 1];
-				sum += coeffs[8] * output[i + 2];
-				sum += coeffs[7] * output[i + 3];
-				sum += coeffs[6] * output[i + 4];
-				sum += coeffs[5] * output[i + 5];
-				sum += coeffs[4] * output[i + 6];
-				sum += coeffs[3] * output[i + 7];
-				sum += coeffs[2] * output[i + 8];
-				sum += coeffs[1] * output[i + 9];
-				sum += coeffs[0] * output[i + 10];
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 9);
+				sum += c * Unsafe.Add(ref o, i + 10);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -446,28 +442,30 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 12;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[11] * output[i + 0];
-				sum += coeffs[10] * output[i + 1];
-				sum += coeffs[9] * output[i + 2];
-				sum += coeffs[8] * output[i + 3];
-				sum += coeffs[7] * output[i + 4];
-				sum += coeffs[6] * output[i + 5];
-				sum += coeffs[5] * output[i + 6];
-				sum += coeffs[4] * output[i + 7];
-				sum += coeffs[3] * output[i + 8];
-				sum += coeffs[2] * output[i + 9];
-				sum += coeffs[1] * output[i + 10];
-				sum += coeffs[0] * output[i + 11];
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 10);
+				sum += c * Unsafe.Add(ref o, i + 11);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -476,29 +474,31 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 13;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[12] * output[i + 0];
-				sum += coeffs[11] * output[i + 1];
-				sum += coeffs[10] * output[i + 2];
-				sum += coeffs[9] * output[i + 3];
-				sum += coeffs[8] * output[i + 4];
-				sum += coeffs[7] * output[i + 5];
-				sum += coeffs[6] * output[i + 6];
-				sum += coeffs[5] * output[i + 7];
-				sum += coeffs[4] * output[i + 8];
-				sum += coeffs[3] * output[i + 9];
-				sum += coeffs[2] * output[i + 10];
-				sum += coeffs[1] * output[i + 11];
-				sum += coeffs[0] * output[i + 12];
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 11);
+				sum += c * Unsafe.Add(ref o, i + 12);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -507,30 +507,32 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 14;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[13] * output[i + 0];
-				sum += coeffs[12] * output[i + 1];
-				sum += coeffs[11] * output[i + 2];
-				sum += coeffs[10] * output[i + 3];
-				sum += coeffs[9] * output[i + 4];
-				sum += coeffs[8] * output[i + 5];
-				sum += coeffs[7] * output[i + 6];
-				sum += coeffs[6] * output[i + 7];
-				sum += coeffs[5] * output[i + 8];
-				sum += coeffs[4] * output[i + 9];
-				sum += coeffs[3] * output[i + 10];
-				sum += coeffs[2] * output[i + 11];
-				sum += coeffs[1] * output[i + 12];
-				sum += coeffs[0] * output[i + 13];
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 12);
+				sum += c * Unsafe.Add(ref o, i + 13);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -539,31 +541,33 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 15;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[14] * output[i + 0];
-				sum += coeffs[13] * output[i + 1];
-				sum += coeffs[12] * output[i + 2];
-				sum += coeffs[11] * output[i + 3];
-				sum += coeffs[10] * output[i + 4];
-				sum += coeffs[9] * output[i + 5];
-				sum += coeffs[8] * output[i + 6];
-				sum += coeffs[7] * output[i + 7];
-				sum += coeffs[6] * output[i + 8];
-				sum += coeffs[5] * output[i + 9];
-				sum += coeffs[4] * output[i + 10];
-				sum += coeffs[3] * output[i + 11];
-				sum += coeffs[2] * output[i + 12];
-				sum += coeffs[1] * output[i + 13];
-				sum += coeffs[0] * output[i + 14];
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 13);
+				sum += c * Unsafe.Add(ref o, i + 14);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -572,32 +576,34 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 16;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[15] * output[i + 0];
-				sum += coeffs[14] * output[i + 1];
-				sum += coeffs[13] * output[i + 2];
-				sum += coeffs[12] * output[i + 3];
-				sum += coeffs[11] * output[i + 4];
-				sum += coeffs[10] * output[i + 5];
-				sum += coeffs[9] * output[i + 6];
-				sum += coeffs[8] * output[i + 7];
-				sum += coeffs[7] * output[i + 8];
-				sum += coeffs[6] * output[i + 9];
-				sum += coeffs[5] * output[i + 10];
-				sum += coeffs[4] * output[i + 11];
-				sum += coeffs[3] * output[i + 12];
-				sum += coeffs[2] * output[i + 13];
-				sum += coeffs[1] * output[i + 14];
-				sum += coeffs[0] * output[i + 15];
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 14);
+				sum += c * Unsafe.Add(ref o, i + 15);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -606,33 +612,35 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 17;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[16] * output[i + 0];
-				sum += coeffs[15] * output[i + 1];
-				sum += coeffs[14] * output[i + 2];
-				sum += coeffs[13] * output[i + 3];
-				sum += coeffs[12] * output[i + 4];
-				sum += coeffs[11] * output[i + 5];
-				sum += coeffs[10] * output[i + 6];
-				sum += coeffs[9] * output[i + 7];
-				sum += coeffs[8] * output[i + 8];
-				sum += coeffs[7] * output[i + 9];
-				sum += coeffs[6] * output[i + 10];
-				sum += coeffs[5] * output[i + 11];
-				sum += coeffs[4] * output[i + 12];
-				sum += coeffs[3] * output[i + 13];
-				sum += coeffs[2] * output[i + 14];
-				sum += coeffs[1] * output[i + 15];
-				sum += coeffs[0] * output[i + 16];
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 15);
+				sum += c * Unsafe.Add(ref o, i + 16);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -641,34 +649,36 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 18;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[17] * output[i + 0];
-				sum += coeffs[16] * output[i + 1];
-				sum += coeffs[15] * output[i + 2];
-				sum += coeffs[14] * output[i + 3];
-				sum += coeffs[13] * output[i + 4];
-				sum += coeffs[12] * output[i + 5];
-				sum += coeffs[11] * output[i + 6];
-				sum += coeffs[10] * output[i + 7];
-				sum += coeffs[9] * output[i + 8];
-				sum += coeffs[8] * output[i + 9];
-				sum += coeffs[7] * output[i + 10];
-				sum += coeffs[6] * output[i + 11];
-				sum += coeffs[5] * output[i + 12];
-				sum += coeffs[4] * output[i + 13];
-				sum += coeffs[3] * output[i + 14];
-				sum += coeffs[2] * output[i + 15];
-				sum += coeffs[1] * output[i + 16];
-				sum += coeffs[0] * output[i + 17];
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 16);
+				sum += c * Unsafe.Add(ref o, i + 17);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -677,35 +687,37 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 19;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[18] * output[i + 0];
-				sum += coeffs[17] * output[i + 1];
-				sum += coeffs[16] * output[i + 2];
-				sum += coeffs[15] * output[i + 3];
-				sum += coeffs[14] * output[i + 4];
-				sum += coeffs[13] * output[i + 5];
-				sum += coeffs[12] * output[i + 6];
-				sum += coeffs[11] * output[i + 7];
-				sum += coeffs[10] * output[i + 8];
-				sum += coeffs[9] * output[i + 9];
-				sum += coeffs[8] * output[i + 10];
-				sum += coeffs[7] * output[i + 11];
-				sum += coeffs[6] * output[i + 12];
-				sum += coeffs[5] * output[i + 13];
-				sum += coeffs[4] * output[i + 14];
-				sum += coeffs[3] * output[i + 15];
-				sum += coeffs[2] * output[i + 16];
-				sum += coeffs[1] * output[i + 17];
-				sum += coeffs[0] * output[i + 18];
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 17);
+				sum += c * Unsafe.Add(ref o, i + 18);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -714,36 +726,38 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 20;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[19] * output[i + 0];
-				sum += coeffs[18] * output[i + 1];
-				sum += coeffs[17] * output[i + 2];
-				sum += coeffs[16] * output[i + 3];
-				sum += coeffs[15] * output[i + 4];
-				sum += coeffs[14] * output[i + 5];
-				sum += coeffs[13] * output[i + 6];
-				sum += coeffs[12] * output[i + 7];
-				sum += coeffs[11] * output[i + 8];
-				sum += coeffs[10] * output[i + 9];
-				sum += coeffs[9] * output[i + 10];
-				sum += coeffs[8] * output[i + 11];
-				sum += coeffs[7] * output[i + 12];
-				sum += coeffs[6] * output[i + 13];
-				sum += coeffs[5] * output[i + 14];
-				sum += coeffs[4] * output[i + 15];
-				sum += coeffs[3] * output[i + 16];
-				sum += coeffs[2] * output[i + 17];
-				sum += coeffs[1] * output[i + 18];
-				sum += coeffs[0] * output[i + 19];
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 18);
+				sum += c * Unsafe.Add(ref o, i + 19);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -752,37 +766,39 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 21;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[20] * output[i + 0];
-				sum += coeffs[19] * output[i + 1];
-				sum += coeffs[18] * output[i + 2];
-				sum += coeffs[17] * output[i + 3];
-				sum += coeffs[16] * output[i + 4];
-				sum += coeffs[15] * output[i + 5];
-				sum += coeffs[14] * output[i + 6];
-				sum += coeffs[13] * output[i + 7];
-				sum += coeffs[12] * output[i + 8];
-				sum += coeffs[11] * output[i + 9];
-				sum += coeffs[10] * output[i + 10];
-				sum += coeffs[9] * output[i + 11];
-				sum += coeffs[8] * output[i + 12];
-				sum += coeffs[7] * output[i + 13];
-				sum += coeffs[6] * output[i + 14];
-				sum += coeffs[5] * output[i + 15];
-				sum += coeffs[4] * output[i + 16];
-				sum += coeffs[3] * output[i + 17];
-				sum += coeffs[2] * output[i + 18];
-				sum += coeffs[1] * output[i + 19];
-				sum += coeffs[0] * output[i + 20];
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 19);
+				sum += c * Unsafe.Add(ref o, i + 20);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -791,38 +807,40 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 22;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[21] * output[i + 0];
-				sum += coeffs[20] * output[i + 1];
-				sum += coeffs[19] * output[i + 2];
-				sum += coeffs[18] * output[i + 3];
-				sum += coeffs[17] * output[i + 4];
-				sum += coeffs[16] * output[i + 5];
-				sum += coeffs[15] * output[i + 6];
-				sum += coeffs[14] * output[i + 7];
-				sum += coeffs[13] * output[i + 8];
-				sum += coeffs[12] * output[i + 9];
-				sum += coeffs[11] * output[i + 10];
-				sum += coeffs[10] * output[i + 11];
-				sum += coeffs[9] * output[i + 12];
-				sum += coeffs[8] * output[i + 13];
-				sum += coeffs[7] * output[i + 14];
-				sum += coeffs[6] * output[i + 15];
-				sum += coeffs[5] * output[i + 16];
-				sum += coeffs[4] * output[i + 17];
-				sum += coeffs[3] * output[i + 18];
-				sum += coeffs[2] * output[i + 19];
-				sum += coeffs[1] * output[i + 20];
-				sum += coeffs[0] * output[i + 21];
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 20);
+				sum += c * Unsafe.Add(ref o, i + 21);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -831,39 +849,41 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 23;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[22] * output[i + 0];
-				sum += coeffs[21] * output[i + 1];
-				sum += coeffs[20] * output[i + 2];
-				sum += coeffs[19] * output[i + 3];
-				sum += coeffs[18] * output[i + 4];
-				sum += coeffs[17] * output[i + 5];
-				sum += coeffs[16] * output[i + 6];
-				sum += coeffs[15] * output[i + 7];
-				sum += coeffs[14] * output[i + 8];
-				sum += coeffs[13] * output[i + 9];
-				sum += coeffs[12] * output[i + 10];
-				sum += coeffs[11] * output[i + 11];
-				sum += coeffs[10] * output[i + 12];
-				sum += coeffs[9] * output[i + 13];
-				sum += coeffs[8] * output[i + 14];
-				sum += coeffs[7] * output[i + 15];
-				sum += coeffs[6] * output[i + 16];
-				sum += coeffs[5] * output[i + 17];
-				sum += coeffs[4] * output[i + 18];
-				sum += coeffs[3] * output[i + 19];
-				sum += coeffs[2] * output[i + 20];
-				sum += coeffs[1] * output[i + 21];
-				sum += coeffs[0] * output[i + 22];
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 21);
+				sum += c * Unsafe.Add(ref o, i + 22);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -872,40 +892,42 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 24;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[23] * output[i + 0];
-				sum += coeffs[22] * output[i + 1];
-				sum += coeffs[21] * output[i + 2];
-				sum += coeffs[20] * output[i + 3];
-				sum += coeffs[19] * output[i + 4];
-				sum += coeffs[18] * output[i + 5];
-				sum += coeffs[17] * output[i + 6];
-				sum += coeffs[16] * output[i + 7];
-				sum += coeffs[15] * output[i + 8];
-				sum += coeffs[14] * output[i + 9];
-				sum += coeffs[13] * output[i + 10];
-				sum += coeffs[12] * output[i + 11];
-				sum += coeffs[11] * output[i + 12];
-				sum += coeffs[10] * output[i + 13];
-				sum += coeffs[9] * output[i + 14];
-				sum += coeffs[8] * output[i + 15];
-				sum += coeffs[7] * output[i + 16];
-				sum += coeffs[6] * output[i + 17];
-				sum += coeffs[5] * output[i + 18];
-				sum += coeffs[4] * output[i + 19];
-				sum += coeffs[3] * output[i + 20];
-				sum += coeffs[2] * output[i + 21];
-				sum += coeffs[1] * output[i + 22];
-				sum += coeffs[0] * output[i + 23];
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 22);
+				sum += c * Unsafe.Add(ref o, i + 23);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -914,41 +936,43 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 25;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[24] * output[i + 0];
-				sum += coeffs[23] * output[i + 1];
-				sum += coeffs[22] * output[i + 2];
-				sum += coeffs[21] * output[i + 3];
-				sum += coeffs[20] * output[i + 4];
-				sum += coeffs[19] * output[i + 5];
-				sum += coeffs[18] * output[i + 6];
-				sum += coeffs[17] * output[i + 7];
-				sum += coeffs[16] * output[i + 8];
-				sum += coeffs[15] * output[i + 9];
-				sum += coeffs[14] * output[i + 10];
-				sum += coeffs[13] * output[i + 11];
-				sum += coeffs[12] * output[i + 12];
-				sum += coeffs[11] * output[i + 13];
-				sum += coeffs[10] * output[i + 14];
-				sum += coeffs[9] * output[i + 15];
-				sum += coeffs[8] * output[i + 16];
-				sum += coeffs[7] * output[i + 17];
-				sum += coeffs[6] * output[i + 18];
-				sum += coeffs[5] * output[i + 19];
-				sum += coeffs[4] * output[i + 20];
-				sum += coeffs[3] * output[i + 21];
-				sum += coeffs[2] * output[i + 22];
-				sum += coeffs[1] * output[i + 23];
-				sum += coeffs[0] * output[i + 24];
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 23);
+				sum += c * Unsafe.Add(ref o, i + 24);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -957,42 +981,44 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 26;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[25] * output[i + 0];
-				sum += coeffs[24] * output[i + 1];
-				sum += coeffs[23] * output[i + 2];
-				sum += coeffs[22] * output[i + 3];
-				sum += coeffs[21] * output[i + 4];
-				sum += coeffs[20] * output[i + 5];
-				sum += coeffs[19] * output[i + 6];
-				sum += coeffs[18] * output[i + 7];
-				sum += coeffs[17] * output[i + 8];
-				sum += coeffs[16] * output[i + 9];
-				sum += coeffs[15] * output[i + 10];
-				sum += coeffs[14] * output[i + 11];
-				sum += coeffs[13] * output[i + 12];
-				sum += coeffs[12] * output[i + 13];
-				sum += coeffs[11] * output[i + 14];
-				sum += coeffs[10] * output[i + 15];
-				sum += coeffs[9] * output[i + 16];
-				sum += coeffs[8] * output[i + 17];
-				sum += coeffs[7] * output[i + 18];
-				sum += coeffs[6] * output[i + 19];
-				sum += coeffs[5] * output[i + 20];
-				sum += coeffs[4] * output[i + 21];
-				sum += coeffs[3] * output[i + 22];
-				sum += coeffs[2] * output[i + 23];
-				sum += coeffs[1] * output[i + 24];
-				sum += coeffs[0] * output[i + 25];
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 24);
+				sum += c * Unsafe.Add(ref o, i + 25);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1001,43 +1027,45 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 27;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[26] * output[i + 0];
-				sum += coeffs[25] * output[i + 1];
-				sum += coeffs[24] * output[i + 2];
-				sum += coeffs[23] * output[i + 3];
-				sum += coeffs[22] * output[i + 4];
-				sum += coeffs[21] * output[i + 5];
-				sum += coeffs[20] * output[i + 6];
-				sum += coeffs[19] * output[i + 7];
-				sum += coeffs[18] * output[i + 8];
-				sum += coeffs[17] * output[i + 9];
-				sum += coeffs[16] * output[i + 10];
-				sum += coeffs[15] * output[i + 11];
-				sum += coeffs[14] * output[i + 12];
-				sum += coeffs[13] * output[i + 13];
-				sum += coeffs[12] * output[i + 14];
-				sum += coeffs[11] * output[i + 15];
-				sum += coeffs[10] * output[i + 16];
-				sum += coeffs[9] * output[i + 17];
-				sum += coeffs[8] * output[i + 18];
-				sum += coeffs[7] * output[i + 19];
-				sum += coeffs[6] * output[i + 20];
-				sum += coeffs[5] * output[i + 21];
-				sum += coeffs[4] * output[i + 22];
-				sum += coeffs[3] * output[i + 23];
-				sum += coeffs[2] * output[i + 24];
-				sum += coeffs[1] * output[i + 25];
-				sum += coeffs[0] * output[i + 26];
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 25);
+				sum += c * Unsafe.Add(ref o, i + 26);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1046,44 +1074,46 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 28;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[27] * output[i + 0];
-				sum += coeffs[26] * output[i + 1];
-				sum += coeffs[25] * output[i + 2];
-				sum += coeffs[24] * output[i + 3];
-				sum += coeffs[23] * output[i + 4];
-				sum += coeffs[22] * output[i + 5];
-				sum += coeffs[21] * output[i + 6];
-				sum += coeffs[20] * output[i + 7];
-				sum += coeffs[19] * output[i + 8];
-				sum += coeffs[18] * output[i + 9];
-				sum += coeffs[17] * output[i + 10];
-				sum += coeffs[16] * output[i + 11];
-				sum += coeffs[15] * output[i + 12];
-				sum += coeffs[14] * output[i + 13];
-				sum += coeffs[13] * output[i + 14];
-				sum += coeffs[12] * output[i + 15];
-				sum += coeffs[11] * output[i + 16];
-				sum += coeffs[10] * output[i + 17];
-				sum += coeffs[9] * output[i + 18];
-				sum += coeffs[8] * output[i + 19];
-				sum += coeffs[7] * output[i + 20];
-				sum += coeffs[6] * output[i + 21];
-				sum += coeffs[5] * output[i + 22];
-				sum += coeffs[4] * output[i + 23];
-				sum += coeffs[3] * output[i + 24];
-				sum += coeffs[2] * output[i + 25];
-				sum += coeffs[1] * output[i + 26];
-				sum += coeffs[0] * output[i + 27];
+				sum += Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 26);
+				sum += c * Unsafe.Add(ref o, i + 27);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1092,45 +1122,47 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 29;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[28] * output[i + 0];
-				sum += coeffs[27] * output[i + 1];
-				sum += coeffs[26] * output[i + 2];
-				sum += coeffs[25] * output[i + 3];
-				sum += coeffs[24] * output[i + 4];
-				sum += coeffs[23] * output[i + 5];
-				sum += coeffs[22] * output[i + 6];
-				sum += coeffs[21] * output[i + 7];
-				sum += coeffs[20] * output[i + 8];
-				sum += coeffs[19] * output[i + 9];
-				sum += coeffs[18] * output[i + 10];
-				sum += coeffs[17] * output[i + 11];
-				sum += coeffs[16] * output[i + 12];
-				sum += coeffs[15] * output[i + 13];
-				sum += coeffs[14] * output[i + 14];
-				sum += coeffs[13] * output[i + 15];
-				sum += coeffs[12] * output[i + 16];
-				sum += coeffs[11] * output[i + 17];
-				sum += coeffs[10] * output[i + 18];
-				sum += coeffs[9] * output[i + 19];
-				sum += coeffs[8] * output[i + 20];
-				sum += coeffs[7] * output[i + 21];
-				sum += coeffs[6] * output[i + 22];
-				sum += coeffs[5] * output[i + 23];
-				sum += coeffs[4] * output[i + 24];
-				sum += coeffs[3] * output[i + 25];
-				sum += coeffs[2] * output[i + 26];
-				sum += coeffs[1] * output[i + 27];
-				sum += coeffs[0] * output[i + 28];
+				sum += Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 27);
+				sum += c * Unsafe.Add(ref o, i + 28);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1139,46 +1171,48 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 30;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[29] * output[i + 0];
-				sum += coeffs[28] * output[i + 1];
-				sum += coeffs[27] * output[i + 2];
-				sum += coeffs[26] * output[i + 3];
-				sum += coeffs[25] * output[i + 4];
-				sum += coeffs[24] * output[i + 5];
-				sum += coeffs[23] * output[i + 6];
-				sum += coeffs[22] * output[i + 7];
-				sum += coeffs[21] * output[i + 8];
-				sum += coeffs[20] * output[i + 9];
-				sum += coeffs[19] * output[i + 10];
-				sum += coeffs[18] * output[i + 11];
-				sum += coeffs[17] * output[i + 12];
-				sum += coeffs[16] * output[i + 13];
-				sum += coeffs[15] * output[i + 14];
-				sum += coeffs[14] * output[i + 15];
-				sum += coeffs[13] * output[i + 16];
-				sum += coeffs[12] * output[i + 17];
-				sum += coeffs[11] * output[i + 18];
-				sum += coeffs[10] * output[i + 19];
-				sum += coeffs[9] * output[i + 20];
-				sum += coeffs[8] * output[i + 21];
-				sum += coeffs[7] * output[i + 22];
-				sum += coeffs[6] * output[i + 23];
-				sum += coeffs[5] * output[i + 24];
-				sum += coeffs[4] * output[i + 25];
-				sum += coeffs[3] * output[i + 26];
-				sum += coeffs[2] * output[i + 27];
-				sum += coeffs[1] * output[i + 28];
-				sum += coeffs[0] * output[i + 29];
+				sum += Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 28);
+				sum += c * Unsafe.Add(ref o, i + 29);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1187,47 +1221,49 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 31;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[30] * output[i + 0];
-				sum += coeffs[29] * output[i + 1];
-				sum += coeffs[28] * output[i + 2];
-				sum += coeffs[27] * output[i + 3];
-				sum += coeffs[26] * output[i + 4];
-				sum += coeffs[25] * output[i + 5];
-				sum += coeffs[24] * output[i + 6];
-				sum += coeffs[23] * output[i + 7];
-				sum += coeffs[22] * output[i + 8];
-				sum += coeffs[21] * output[i + 9];
-				sum += coeffs[20] * output[i + 10];
-				sum += coeffs[19] * output[i + 11];
-				sum += coeffs[18] * output[i + 12];
-				sum += coeffs[17] * output[i + 13];
-				sum += coeffs[16] * output[i + 14];
-				sum += coeffs[15] * output[i + 15];
-				sum += coeffs[14] * output[i + 16];
-				sum += coeffs[13] * output[i + 17];
-				sum += coeffs[12] * output[i + 18];
-				sum += coeffs[11] * output[i + 19];
-				sum += coeffs[10] * output[i + 20];
-				sum += coeffs[9] * output[i + 21];
-				sum += coeffs[8] * output[i + 22];
-				sum += coeffs[7] * output[i + 23];
-				sum += coeffs[6] * output[i + 24];
-				sum += coeffs[5] * output[i + 25];
-				sum += coeffs[4] * output[i + 26];
-				sum += coeffs[3] * output[i + 27];
-				sum += coeffs[2] * output[i + 28];
-				sum += coeffs[1] * output[i + 29];
-				sum += coeffs[0] * output[i + 30];
+				sum += Unsafe.Add(ref c, 30) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 28);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 29);
+				sum += c * Unsafe.Add(ref o, i + 30);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1236,48 +1272,50 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 32;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             int sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[31] * output[i + 0];
-				sum += coeffs[30] * output[i + 1];
-				sum += coeffs[29] * output[i + 2];
-				sum += coeffs[28] * output[i + 3];
-				sum += coeffs[27] * output[i + 4];
-				sum += coeffs[26] * output[i + 5];
-				sum += coeffs[25] * output[i + 6];
-				sum += coeffs[24] * output[i + 7];
-				sum += coeffs[23] * output[i + 8];
-				sum += coeffs[22] * output[i + 9];
-				sum += coeffs[21] * output[i + 10];
-				sum += coeffs[20] * output[i + 11];
-				sum += coeffs[19] * output[i + 12];
-				sum += coeffs[18] * output[i + 13];
-				sum += coeffs[17] * output[i + 14];
-				sum += coeffs[16] * output[i + 15];
-				sum += coeffs[15] * output[i + 16];
-				sum += coeffs[14] * output[i + 17];
-				sum += coeffs[13] * output[i + 18];
-				sum += coeffs[12] * output[i + 19];
-				sum += coeffs[11] * output[i + 20];
-				sum += coeffs[10] * output[i + 21];
-				sum += coeffs[9] * output[i + 22];
-				sum += coeffs[8] * output[i + 23];
-				sum += coeffs[7] * output[i + 24];
-				sum += coeffs[6] * output[i + 25];
-				sum += coeffs[5] * output[i + 26];
-				sum += coeffs[4] * output[i + 27];
-				sum += coeffs[3] * output[i + 28];
-				sum += coeffs[2] * output[i + 29];
-				sum += coeffs[1] * output[i + 30];
-				sum += coeffs[0] * output[i + 31];
+				sum += Unsafe.Add(ref c, 31) * Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 30) * Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 29) * Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 28) * Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 27) * Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 26) * Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 25) * Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 24) * Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 23) * Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 22) * Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 21) * Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 20) * Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 19) * Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 18) * Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 17) * Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 16) * Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 15) * Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 14) * Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 13) * Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 12) * Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 11) * Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 10) * Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 9) * Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 8) * Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 7) * Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 6) * Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 5) * Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 4) * Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 3) * Unsafe.Add(ref o, i + 28);
+				sum += Unsafe.Add(ref c, 2) * Unsafe.Add(ref o, i + 29);
+				sum += Unsafe.Add(ref c, 1) * Unsafe.Add(ref o, i + 30);
+				sum += c * Unsafe.Add(ref o, i + 31);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1396,16 +1434,17 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var prev0 = output[0];
 			long coeff0 = coeffs[0];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
 				sum += coeff0 * prev0;
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
                 prev0 = (int)sum;
             }
         }
@@ -1415,24 +1454,21 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 2;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
 			long coeff0 = coeffs[0];
 			long coeff1 = coeffs[1];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff1 * prev0;
-				prev0 = prev1;
-				sum += coeff0 * prev1;
+				sum += coeff1 * Unsafe.Add(ref o, i + 0);
+				sum += coeff0 * Unsafe.Add(ref o, i + 1);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
-                prev1 = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1441,28 +1477,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 3;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
-			var prev2 = output[2];
 			long coeff0 = coeffs[0];
 			long coeff1 = coeffs[1];
 			long coeff2 = coeffs[2];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff2 * prev0;
-				prev0 = prev1;
-				sum += coeff1 * prev1;
-				prev1 = prev2;
-				sum += coeff0 * prev2;
+				sum += coeff2 * Unsafe.Add(ref o, i + 0);
+				sum += coeff1 * Unsafe.Add(ref o, i + 1);
+				sum += coeff0 * Unsafe.Add(ref o, i + 2);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
-                prev2 = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1471,32 +1502,25 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 4;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-			var prev0 = output[0];
-			var prev1 = output[1];
-			var prev2 = output[2];
-			var prev3 = output[3];
 			long coeff0 = coeffs[0];
 			long coeff1 = coeffs[1];
 			long coeff2 = coeffs[2];
 			long coeff3 = coeffs[3];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff3 * prev0;
-				prev0 = prev1;
-				sum += coeff2 * prev1;
-				prev1 = prev2;
-				sum += coeff1 * prev2;
-				prev2 = prev3;
-				sum += coeff0 * prev3;
+				sum += coeff3 * Unsafe.Add(ref o, i + 0);
+				sum += coeff2 * Unsafe.Add(ref o, i + 1);
+				sum += coeff1 * Unsafe.Add(ref o, i + 2);
+				sum += coeff0 * Unsafe.Add(ref o, i + 3);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
-                prev3 = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1511,20 +1535,21 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff3 = coeffs[3];
 			long coeff4 = coeffs[4];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff4 * output[i + 0];
-				sum += coeff3 * output[i + 1];
-				sum += coeff2 * output[i + 2];
-				sum += coeff1 * output[i + 3];
-				sum += coeff0 * output[i + 4];
+				sum += coeff4 * Unsafe.Add(ref o, i + 0);
+				sum += coeff3 * Unsafe.Add(ref o, i + 1);
+				sum += coeff2 * Unsafe.Add(ref o, i + 2);
+				sum += coeff1 * Unsafe.Add(ref o, i + 3);
+				sum += coeff0 * Unsafe.Add(ref o, i + 4);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1540,21 +1565,22 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff4 = coeffs[4];
 			long coeff5 = coeffs[5];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff5 * output[i + 0];
-				sum += coeff4 * output[i + 1];
-				sum += coeff3 * output[i + 2];
-				sum += coeff2 * output[i + 3];
-				sum += coeff1 * output[i + 4];
-				sum += coeff0 * output[i + 5];
+				sum += coeff5 * Unsafe.Add(ref o, i + 0);
+				sum += coeff4 * Unsafe.Add(ref o, i + 1);
+				sum += coeff3 * Unsafe.Add(ref o, i + 2);
+				sum += coeff2 * Unsafe.Add(ref o, i + 3);
+				sum += coeff1 * Unsafe.Add(ref o, i + 4);
+				sum += coeff0 * Unsafe.Add(ref o, i + 5);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1571,22 +1597,23 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff5 = coeffs[5];
 			long coeff6 = coeffs[6];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff6 * output[i + 0];
-				sum += coeff5 * output[i + 1];
-				sum += coeff4 * output[i + 2];
-				sum += coeff3 * output[i + 3];
-				sum += coeff2 * output[i + 4];
-				sum += coeff1 * output[i + 5];
-				sum += coeff0 * output[i + 6];
+				sum += coeff6 * Unsafe.Add(ref o, i + 0);
+				sum += coeff5 * Unsafe.Add(ref o, i + 1);
+				sum += coeff4 * Unsafe.Add(ref o, i + 2);
+				sum += coeff3 * Unsafe.Add(ref o, i + 3);
+				sum += coeff2 * Unsafe.Add(ref o, i + 4);
+				sum += coeff1 * Unsafe.Add(ref o, i + 5);
+				sum += coeff0 * Unsafe.Add(ref o, i + 6);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1604,23 +1631,24 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff6 = coeffs[6];
 			long coeff7 = coeffs[7];
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeff7 * output[i + 0];
-				sum += coeff6 * output[i + 1];
-				sum += coeff5 * output[i + 2];
-				sum += coeff4 * output[i + 3];
-				sum += coeff3 * output[i + 4];
-				sum += coeff2 * output[i + 5];
-				sum += coeff1 * output[i + 6];
-				sum += coeff0 * output[i + 7];
+				sum += coeff7 * Unsafe.Add(ref o, i + 0);
+				sum += coeff6 * Unsafe.Add(ref o, i + 1);
+				sum += coeff5 * Unsafe.Add(ref o, i + 2);
+				sum += coeff4 * Unsafe.Add(ref o, i + 3);
+				sum += coeff3 * Unsafe.Add(ref o, i + 4);
+				sum += coeff2 * Unsafe.Add(ref o, i + 5);
+				sum += coeff1 * Unsafe.Add(ref o, i + 6);
+				sum += coeff0 * Unsafe.Add(ref o, i + 7);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1629,25 +1657,27 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 9;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[8] * (long)output[i + 0];
-				sum += coeffs[7] * (long)output[i + 1];
-				sum += coeffs[6] * (long)output[i + 2];
-				sum += coeffs[5] * (long)output[i + 3];
-				sum += coeffs[4] * (long)output[i + 4];
-				sum += coeffs[3] * (long)output[i + 5];
-				sum += coeffs[2] * (long)output[i + 6];
-				sum += coeffs[1] * (long)output[i + 7];
-				sum += coeffs[0] * (long)output[i + 8];
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 7);
+				sum += c * (long)Unsafe.Add(ref o, i + 8);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1656,26 +1686,28 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 10;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[9] * (long)output[i + 0];
-				sum += coeffs[8] * (long)output[i + 1];
-				sum += coeffs[7] * (long)output[i + 2];
-				sum += coeffs[6] * (long)output[i + 3];
-				sum += coeffs[5] * (long)output[i + 4];
-				sum += coeffs[4] * (long)output[i + 5];
-				sum += coeffs[3] * (long)output[i + 6];
-				sum += coeffs[2] * (long)output[i + 7];
-				sum += coeffs[1] * (long)output[i + 8];
-				sum += coeffs[0] * (long)output[i + 9];
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 8);
+				sum += c * (long)Unsafe.Add(ref o, i + 9);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1684,27 +1716,29 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 11;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[10] * (long)output[i + 0];
-				sum += coeffs[9] * (long)output[i + 1];
-				sum += coeffs[8] * (long)output[i + 2];
-				sum += coeffs[7] * (long)output[i + 3];
-				sum += coeffs[6] * (long)output[i + 4];
-				sum += coeffs[5] * (long)output[i + 5];
-				sum += coeffs[4] * (long)output[i + 6];
-				sum += coeffs[3] * (long)output[i + 7];
-				sum += coeffs[2] * (long)output[i + 8];
-				sum += coeffs[1] * (long)output[i + 9];
-				sum += coeffs[0] * (long)output[i + 10];
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 9);
+				sum += c * (long)Unsafe.Add(ref o, i + 10);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1713,28 +1747,30 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 12;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[11] * (long)output[i + 0];
-				sum += coeffs[10] * (long)output[i + 1];
-				sum += coeffs[9] * (long)output[i + 2];
-				sum += coeffs[8] * (long)output[i + 3];
-				sum += coeffs[7] * (long)output[i + 4];
-				sum += coeffs[6] * (long)output[i + 5];
-				sum += coeffs[5] * (long)output[i + 6];
-				sum += coeffs[4] * (long)output[i + 7];
-				sum += coeffs[3] * (long)output[i + 8];
-				sum += coeffs[2] * (long)output[i + 9];
-				sum += coeffs[1] * (long)output[i + 10];
-				sum += coeffs[0] * (long)output[i + 11];
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 10);
+				sum += c * (long)Unsafe.Add(ref o, i + 11);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1743,29 +1779,31 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 13;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[12] * (long)output[i + 0];
-				sum += coeffs[11] * (long)output[i + 1];
-				sum += coeffs[10] * (long)output[i + 2];
-				sum += coeffs[9] * (long)output[i + 3];
-				sum += coeffs[8] * (long)output[i + 4];
-				sum += coeffs[7] * (long)output[i + 5];
-				sum += coeffs[6] * (long)output[i + 6];
-				sum += coeffs[5] * (long)output[i + 7];
-				sum += coeffs[4] * (long)output[i + 8];
-				sum += coeffs[3] * (long)output[i + 9];
-				sum += coeffs[2] * (long)output[i + 10];
-				sum += coeffs[1] * (long)output[i + 11];
-				sum += coeffs[0] * (long)output[i + 12];
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 11);
+				sum += c * (long)Unsafe.Add(ref o, i + 12);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1774,30 +1812,32 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 14;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[13] * (long)output[i + 0];
-				sum += coeffs[12] * (long)output[i + 1];
-				sum += coeffs[11] * (long)output[i + 2];
-				sum += coeffs[10] * (long)output[i + 3];
-				sum += coeffs[9] * (long)output[i + 4];
-				sum += coeffs[8] * (long)output[i + 5];
-				sum += coeffs[7] * (long)output[i + 6];
-				sum += coeffs[6] * (long)output[i + 7];
-				sum += coeffs[5] * (long)output[i + 8];
-				sum += coeffs[4] * (long)output[i + 9];
-				sum += coeffs[3] * (long)output[i + 10];
-				sum += coeffs[2] * (long)output[i + 11];
-				sum += coeffs[1] * (long)output[i + 12];
-				sum += coeffs[0] * (long)output[i + 13];
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 12);
+				sum += c * (long)Unsafe.Add(ref o, i + 13);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1806,31 +1846,33 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 15;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[14] * (long)output[i + 0];
-				sum += coeffs[13] * (long)output[i + 1];
-				sum += coeffs[12] * (long)output[i + 2];
-				sum += coeffs[11] * (long)output[i + 3];
-				sum += coeffs[10] * (long)output[i + 4];
-				sum += coeffs[9] * (long)output[i + 5];
-				sum += coeffs[8] * (long)output[i + 6];
-				sum += coeffs[7] * (long)output[i + 7];
-				sum += coeffs[6] * (long)output[i + 8];
-				sum += coeffs[5] * (long)output[i + 9];
-				sum += coeffs[4] * (long)output[i + 10];
-				sum += coeffs[3] * (long)output[i + 11];
-				sum += coeffs[2] * (long)output[i + 12];
-				sum += coeffs[1] * (long)output[i + 13];
-				sum += coeffs[0] * (long)output[i + 14];
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 13);
+				sum += c * (long)Unsafe.Add(ref o, i + 14);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1839,32 +1881,34 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 16;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[15] * (long)output[i + 0];
-				sum += coeffs[14] * (long)output[i + 1];
-				sum += coeffs[13] * (long)output[i + 2];
-				sum += coeffs[12] * (long)output[i + 3];
-				sum += coeffs[11] * (long)output[i + 4];
-				sum += coeffs[10] * (long)output[i + 5];
-				sum += coeffs[9] * (long)output[i + 6];
-				sum += coeffs[8] * (long)output[i + 7];
-				sum += coeffs[7] * (long)output[i + 8];
-				sum += coeffs[6] * (long)output[i + 9];
-				sum += coeffs[5] * (long)output[i + 10];
-				sum += coeffs[4] * (long)output[i + 11];
-				sum += coeffs[3] * (long)output[i + 12];
-				sum += coeffs[2] * (long)output[i + 13];
-				sum += coeffs[1] * (long)output[i + 14];
-				sum += coeffs[0] * (long)output[i + 15];
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 14);
+				sum += c * (long)Unsafe.Add(ref o, i + 15);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1873,33 +1917,35 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 17;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[16] * (long)output[i + 0];
-				sum += coeffs[15] * (long)output[i + 1];
-				sum += coeffs[14] * (long)output[i + 2];
-				sum += coeffs[13] * (long)output[i + 3];
-				sum += coeffs[12] * (long)output[i + 4];
-				sum += coeffs[11] * (long)output[i + 5];
-				sum += coeffs[10] * (long)output[i + 6];
-				sum += coeffs[9] * (long)output[i + 7];
-				sum += coeffs[8] * (long)output[i + 8];
-				sum += coeffs[7] * (long)output[i + 9];
-				sum += coeffs[6] * (long)output[i + 10];
-				sum += coeffs[5] * (long)output[i + 11];
-				sum += coeffs[4] * (long)output[i + 12];
-				sum += coeffs[3] * (long)output[i + 13];
-				sum += coeffs[2] * (long)output[i + 14];
-				sum += coeffs[1] * (long)output[i + 15];
-				sum += coeffs[0] * (long)output[i + 16];
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 15);
+				sum += c * (long)Unsafe.Add(ref o, i + 16);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1908,34 +1954,36 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 18;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[17] * (long)output[i + 0];
-				sum += coeffs[16] * (long)output[i + 1];
-				sum += coeffs[15] * (long)output[i + 2];
-				sum += coeffs[14] * (long)output[i + 3];
-				sum += coeffs[13] * (long)output[i + 4];
-				sum += coeffs[12] * (long)output[i + 5];
-				sum += coeffs[11] * (long)output[i + 6];
-				sum += coeffs[10] * (long)output[i + 7];
-				sum += coeffs[9] * (long)output[i + 8];
-				sum += coeffs[8] * (long)output[i + 9];
-				sum += coeffs[7] * (long)output[i + 10];
-				sum += coeffs[6] * (long)output[i + 11];
-				sum += coeffs[5] * (long)output[i + 12];
-				sum += coeffs[4] * (long)output[i + 13];
-				sum += coeffs[3] * (long)output[i + 14];
-				sum += coeffs[2] * (long)output[i + 15];
-				sum += coeffs[1] * (long)output[i + 16];
-				sum += coeffs[0] * (long)output[i + 17];
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 16);
+				sum += c * (long)Unsafe.Add(ref o, i + 17);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1944,35 +1992,37 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 19;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[18] * (long)output[i + 0];
-				sum += coeffs[17] * (long)output[i + 1];
-				sum += coeffs[16] * (long)output[i + 2];
-				sum += coeffs[15] * (long)output[i + 3];
-				sum += coeffs[14] * (long)output[i + 4];
-				sum += coeffs[13] * (long)output[i + 5];
-				sum += coeffs[12] * (long)output[i + 6];
-				sum += coeffs[11] * (long)output[i + 7];
-				sum += coeffs[10] * (long)output[i + 8];
-				sum += coeffs[9] * (long)output[i + 9];
-				sum += coeffs[8] * (long)output[i + 10];
-				sum += coeffs[7] * (long)output[i + 11];
-				sum += coeffs[6] * (long)output[i + 12];
-				sum += coeffs[5] * (long)output[i + 13];
-				sum += coeffs[4] * (long)output[i + 14];
-				sum += coeffs[3] * (long)output[i + 15];
-				sum += coeffs[2] * (long)output[i + 16];
-				sum += coeffs[1] * (long)output[i + 17];
-				sum += coeffs[0] * (long)output[i + 18];
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 17);
+				sum += c * (long)Unsafe.Add(ref o, i + 18);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1981,36 +2031,38 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 20;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[19] * (long)output[i + 0];
-				sum += coeffs[18] * (long)output[i + 1];
-				sum += coeffs[17] * (long)output[i + 2];
-				sum += coeffs[16] * (long)output[i + 3];
-				sum += coeffs[15] * (long)output[i + 4];
-				sum += coeffs[14] * (long)output[i + 5];
-				sum += coeffs[13] * (long)output[i + 6];
-				sum += coeffs[12] * (long)output[i + 7];
-				sum += coeffs[11] * (long)output[i + 8];
-				sum += coeffs[10] * (long)output[i + 9];
-				sum += coeffs[9] * (long)output[i + 10];
-				sum += coeffs[8] * (long)output[i + 11];
-				sum += coeffs[7] * (long)output[i + 12];
-				sum += coeffs[6] * (long)output[i + 13];
-				sum += coeffs[5] * (long)output[i + 14];
-				sum += coeffs[4] * (long)output[i + 15];
-				sum += coeffs[3] * (long)output[i + 16];
-				sum += coeffs[2] * (long)output[i + 17];
-				sum += coeffs[1] * (long)output[i + 18];
-				sum += coeffs[0] * (long)output[i + 19];
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 18);
+				sum += c * (long)Unsafe.Add(ref o, i + 19);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2019,37 +2071,39 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 21;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[20] * (long)output[i + 0];
-				sum += coeffs[19] * (long)output[i + 1];
-				sum += coeffs[18] * (long)output[i + 2];
-				sum += coeffs[17] * (long)output[i + 3];
-				sum += coeffs[16] * (long)output[i + 4];
-				sum += coeffs[15] * (long)output[i + 5];
-				sum += coeffs[14] * (long)output[i + 6];
-				sum += coeffs[13] * (long)output[i + 7];
-				sum += coeffs[12] * (long)output[i + 8];
-				sum += coeffs[11] * (long)output[i + 9];
-				sum += coeffs[10] * (long)output[i + 10];
-				sum += coeffs[9] * (long)output[i + 11];
-				sum += coeffs[8] * (long)output[i + 12];
-				sum += coeffs[7] * (long)output[i + 13];
-				sum += coeffs[6] * (long)output[i + 14];
-				sum += coeffs[5] * (long)output[i + 15];
-				sum += coeffs[4] * (long)output[i + 16];
-				sum += coeffs[3] * (long)output[i + 17];
-				sum += coeffs[2] * (long)output[i + 18];
-				sum += coeffs[1] * (long)output[i + 19];
-				sum += coeffs[0] * (long)output[i + 20];
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 19);
+				sum += c * (long)Unsafe.Add(ref o, i + 20);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2058,38 +2112,40 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 22;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[21] * (long)output[i + 0];
-				sum += coeffs[20] * (long)output[i + 1];
-				sum += coeffs[19] * (long)output[i + 2];
-				sum += coeffs[18] * (long)output[i + 3];
-				sum += coeffs[17] * (long)output[i + 4];
-				sum += coeffs[16] * (long)output[i + 5];
-				sum += coeffs[15] * (long)output[i + 6];
-				sum += coeffs[14] * (long)output[i + 7];
-				sum += coeffs[13] * (long)output[i + 8];
-				sum += coeffs[12] * (long)output[i + 9];
-				sum += coeffs[11] * (long)output[i + 10];
-				sum += coeffs[10] * (long)output[i + 11];
-				sum += coeffs[9] * (long)output[i + 12];
-				sum += coeffs[8] * (long)output[i + 13];
-				sum += coeffs[7] * (long)output[i + 14];
-				sum += coeffs[6] * (long)output[i + 15];
-				sum += coeffs[5] * (long)output[i + 16];
-				sum += coeffs[4] * (long)output[i + 17];
-				sum += coeffs[3] * (long)output[i + 18];
-				sum += coeffs[2] * (long)output[i + 19];
-				sum += coeffs[1] * (long)output[i + 20];
-				sum += coeffs[0] * (long)output[i + 21];
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 20);
+				sum += c * (long)Unsafe.Add(ref o, i + 21);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2098,39 +2154,41 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 23;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[22] * (long)output[i + 0];
-				sum += coeffs[21] * (long)output[i + 1];
-				sum += coeffs[20] * (long)output[i + 2];
-				sum += coeffs[19] * (long)output[i + 3];
-				sum += coeffs[18] * (long)output[i + 4];
-				sum += coeffs[17] * (long)output[i + 5];
-				sum += coeffs[16] * (long)output[i + 6];
-				sum += coeffs[15] * (long)output[i + 7];
-				sum += coeffs[14] * (long)output[i + 8];
-				sum += coeffs[13] * (long)output[i + 9];
-				sum += coeffs[12] * (long)output[i + 10];
-				sum += coeffs[11] * (long)output[i + 11];
-				sum += coeffs[10] * (long)output[i + 12];
-				sum += coeffs[9] * (long)output[i + 13];
-				sum += coeffs[8] * (long)output[i + 14];
-				sum += coeffs[7] * (long)output[i + 15];
-				sum += coeffs[6] * (long)output[i + 16];
-				sum += coeffs[5] * (long)output[i + 17];
-				sum += coeffs[4] * (long)output[i + 18];
-				sum += coeffs[3] * (long)output[i + 19];
-				sum += coeffs[2] * (long)output[i + 20];
-				sum += coeffs[1] * (long)output[i + 21];
-				sum += coeffs[0] * (long)output[i + 22];
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 21);
+				sum += c * (long)Unsafe.Add(ref o, i + 22);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2139,40 +2197,42 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 24;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[23] * (long)output[i + 0];
-				sum += coeffs[22] * (long)output[i + 1];
-				sum += coeffs[21] * (long)output[i + 2];
-				sum += coeffs[20] * (long)output[i + 3];
-				sum += coeffs[19] * (long)output[i + 4];
-				sum += coeffs[18] * (long)output[i + 5];
-				sum += coeffs[17] * (long)output[i + 6];
-				sum += coeffs[16] * (long)output[i + 7];
-				sum += coeffs[15] * (long)output[i + 8];
-				sum += coeffs[14] * (long)output[i + 9];
-				sum += coeffs[13] * (long)output[i + 10];
-				sum += coeffs[12] * (long)output[i + 11];
-				sum += coeffs[11] * (long)output[i + 12];
-				sum += coeffs[10] * (long)output[i + 13];
-				sum += coeffs[9] * (long)output[i + 14];
-				sum += coeffs[8] * (long)output[i + 15];
-				sum += coeffs[7] * (long)output[i + 16];
-				sum += coeffs[6] * (long)output[i + 17];
-				sum += coeffs[5] * (long)output[i + 18];
-				sum += coeffs[4] * (long)output[i + 19];
-				sum += coeffs[3] * (long)output[i + 20];
-				sum += coeffs[2] * (long)output[i + 21];
-				sum += coeffs[1] * (long)output[i + 22];
-				sum += coeffs[0] * (long)output[i + 23];
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 22);
+				sum += c * (long)Unsafe.Add(ref o, i + 23);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2181,41 +2241,43 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 25;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[24] * (long)output[i + 0];
-				sum += coeffs[23] * (long)output[i + 1];
-				sum += coeffs[22] * (long)output[i + 2];
-				sum += coeffs[21] * (long)output[i + 3];
-				sum += coeffs[20] * (long)output[i + 4];
-				sum += coeffs[19] * (long)output[i + 5];
-				sum += coeffs[18] * (long)output[i + 6];
-				sum += coeffs[17] * (long)output[i + 7];
-				sum += coeffs[16] * (long)output[i + 8];
-				sum += coeffs[15] * (long)output[i + 9];
-				sum += coeffs[14] * (long)output[i + 10];
-				sum += coeffs[13] * (long)output[i + 11];
-				sum += coeffs[12] * (long)output[i + 12];
-				sum += coeffs[11] * (long)output[i + 13];
-				sum += coeffs[10] * (long)output[i + 14];
-				sum += coeffs[9] * (long)output[i + 15];
-				sum += coeffs[8] * (long)output[i + 16];
-				sum += coeffs[7] * (long)output[i + 17];
-				sum += coeffs[6] * (long)output[i + 18];
-				sum += coeffs[5] * (long)output[i + 19];
-				sum += coeffs[4] * (long)output[i + 20];
-				sum += coeffs[3] * (long)output[i + 21];
-				sum += coeffs[2] * (long)output[i + 22];
-				sum += coeffs[1] * (long)output[i + 23];
-				sum += coeffs[0] * (long)output[i + 24];
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 23);
+				sum += c * (long)Unsafe.Add(ref o, i + 24);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2224,42 +2286,44 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 26;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[25] * (long)output[i + 0];
-				sum += coeffs[24] * (long)output[i + 1];
-				sum += coeffs[23] * (long)output[i + 2];
-				sum += coeffs[22] * (long)output[i + 3];
-				sum += coeffs[21] * (long)output[i + 4];
-				sum += coeffs[20] * (long)output[i + 5];
-				sum += coeffs[19] * (long)output[i + 6];
-				sum += coeffs[18] * (long)output[i + 7];
-				sum += coeffs[17] * (long)output[i + 8];
-				sum += coeffs[16] * (long)output[i + 9];
-				sum += coeffs[15] * (long)output[i + 10];
-				sum += coeffs[14] * (long)output[i + 11];
-				sum += coeffs[13] * (long)output[i + 12];
-				sum += coeffs[12] * (long)output[i + 13];
-				sum += coeffs[11] * (long)output[i + 14];
-				sum += coeffs[10] * (long)output[i + 15];
-				sum += coeffs[9] * (long)output[i + 16];
-				sum += coeffs[8] * (long)output[i + 17];
-				sum += coeffs[7] * (long)output[i + 18];
-				sum += coeffs[6] * (long)output[i + 19];
-				sum += coeffs[5] * (long)output[i + 20];
-				sum += coeffs[4] * (long)output[i + 21];
-				sum += coeffs[3] * (long)output[i + 22];
-				sum += coeffs[2] * (long)output[i + 23];
-				sum += coeffs[1] * (long)output[i + 24];
-				sum += coeffs[0] * (long)output[i + 25];
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 24);
+				sum += c * (long)Unsafe.Add(ref o, i + 25);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2268,43 +2332,45 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 27;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[26] * (long)output[i + 0];
-				sum += coeffs[25] * (long)output[i + 1];
-				sum += coeffs[24] * (long)output[i + 2];
-				sum += coeffs[23] * (long)output[i + 3];
-				sum += coeffs[22] * (long)output[i + 4];
-				sum += coeffs[21] * (long)output[i + 5];
-				sum += coeffs[20] * (long)output[i + 6];
-				sum += coeffs[19] * (long)output[i + 7];
-				sum += coeffs[18] * (long)output[i + 8];
-				sum += coeffs[17] * (long)output[i + 9];
-				sum += coeffs[16] * (long)output[i + 10];
-				sum += coeffs[15] * (long)output[i + 11];
-				sum += coeffs[14] * (long)output[i + 12];
-				sum += coeffs[13] * (long)output[i + 13];
-				sum += coeffs[12] * (long)output[i + 14];
-				sum += coeffs[11] * (long)output[i + 15];
-				sum += coeffs[10] * (long)output[i + 16];
-				sum += coeffs[9] * (long)output[i + 17];
-				sum += coeffs[8] * (long)output[i + 18];
-				sum += coeffs[7] * (long)output[i + 19];
-				sum += coeffs[6] * (long)output[i + 20];
-				sum += coeffs[5] * (long)output[i + 21];
-				sum += coeffs[4] * (long)output[i + 22];
-				sum += coeffs[3] * (long)output[i + 23];
-				sum += coeffs[2] * (long)output[i + 24];
-				sum += coeffs[1] * (long)output[i + 25];
-				sum += coeffs[0] * (long)output[i + 26];
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 25);
+				sum += c * (long)Unsafe.Add(ref o, i + 26);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2313,44 +2379,46 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 28;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[27] * (long)output[i + 0];
-				sum += coeffs[26] * (long)output[i + 1];
-				sum += coeffs[25] * (long)output[i + 2];
-				sum += coeffs[24] * (long)output[i + 3];
-				sum += coeffs[23] * (long)output[i + 4];
-				sum += coeffs[22] * (long)output[i + 5];
-				sum += coeffs[21] * (long)output[i + 6];
-				sum += coeffs[20] * (long)output[i + 7];
-				sum += coeffs[19] * (long)output[i + 8];
-				sum += coeffs[18] * (long)output[i + 9];
-				sum += coeffs[17] * (long)output[i + 10];
-				sum += coeffs[16] * (long)output[i + 11];
-				sum += coeffs[15] * (long)output[i + 12];
-				sum += coeffs[14] * (long)output[i + 13];
-				sum += coeffs[13] * (long)output[i + 14];
-				sum += coeffs[12] * (long)output[i + 15];
-				sum += coeffs[11] * (long)output[i + 16];
-				sum += coeffs[10] * (long)output[i + 17];
-				sum += coeffs[9] * (long)output[i + 18];
-				sum += coeffs[8] * (long)output[i + 19];
-				sum += coeffs[7] * (long)output[i + 20];
-				sum += coeffs[6] * (long)output[i + 21];
-				sum += coeffs[5] * (long)output[i + 22];
-				sum += coeffs[4] * (long)output[i + 23];
-				sum += coeffs[3] * (long)output[i + 24];
-				sum += coeffs[2] * (long)output[i + 25];
-				sum += coeffs[1] * (long)output[i + 26];
-				sum += coeffs[0] * (long)output[i + 27];
+				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 26);
+				sum += c * (long)Unsafe.Add(ref o, i + 27);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2359,45 +2427,47 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 29;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[28] * (long)output[i + 0];
-				sum += coeffs[27] * (long)output[i + 1];
-				sum += coeffs[26] * (long)output[i + 2];
-				sum += coeffs[25] * (long)output[i + 3];
-				sum += coeffs[24] * (long)output[i + 4];
-				sum += coeffs[23] * (long)output[i + 5];
-				sum += coeffs[22] * (long)output[i + 6];
-				sum += coeffs[21] * (long)output[i + 7];
-				sum += coeffs[20] * (long)output[i + 8];
-				sum += coeffs[19] * (long)output[i + 9];
-				sum += coeffs[18] * (long)output[i + 10];
-				sum += coeffs[17] * (long)output[i + 11];
-				sum += coeffs[16] * (long)output[i + 12];
-				sum += coeffs[15] * (long)output[i + 13];
-				sum += coeffs[14] * (long)output[i + 14];
-				sum += coeffs[13] * (long)output[i + 15];
-				sum += coeffs[12] * (long)output[i + 16];
-				sum += coeffs[11] * (long)output[i + 17];
-				sum += coeffs[10] * (long)output[i + 18];
-				sum += coeffs[9] * (long)output[i + 19];
-				sum += coeffs[8] * (long)output[i + 20];
-				sum += coeffs[7] * (long)output[i + 21];
-				sum += coeffs[6] * (long)output[i + 22];
-				sum += coeffs[5] * (long)output[i + 23];
-				sum += coeffs[4] * (long)output[i + 24];
-				sum += coeffs[3] * (long)output[i + 25];
-				sum += coeffs[2] * (long)output[i + 26];
-				sum += coeffs[1] * (long)output[i + 27];
-				sum += coeffs[0] * (long)output[i + 28];
+				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 27);
+				sum += c * (long)Unsafe.Add(ref o, i + 28);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2406,46 +2476,48 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 30;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[29] * (long)output[i + 0];
-				sum += coeffs[28] * (long)output[i + 1];
-				sum += coeffs[27] * (long)output[i + 2];
-				sum += coeffs[26] * (long)output[i + 3];
-				sum += coeffs[25] * (long)output[i + 4];
-				sum += coeffs[24] * (long)output[i + 5];
-				sum += coeffs[23] * (long)output[i + 6];
-				sum += coeffs[22] * (long)output[i + 7];
-				sum += coeffs[21] * (long)output[i + 8];
-				sum += coeffs[20] * (long)output[i + 9];
-				sum += coeffs[19] * (long)output[i + 10];
-				sum += coeffs[18] * (long)output[i + 11];
-				sum += coeffs[17] * (long)output[i + 12];
-				sum += coeffs[16] * (long)output[i + 13];
-				sum += coeffs[15] * (long)output[i + 14];
-				sum += coeffs[14] * (long)output[i + 15];
-				sum += coeffs[13] * (long)output[i + 16];
-				sum += coeffs[12] * (long)output[i + 17];
-				sum += coeffs[11] * (long)output[i + 18];
-				sum += coeffs[10] * (long)output[i + 19];
-				sum += coeffs[9] * (long)output[i + 20];
-				sum += coeffs[8] * (long)output[i + 21];
-				sum += coeffs[7] * (long)output[i + 22];
-				sum += coeffs[6] * (long)output[i + 23];
-				sum += coeffs[5] * (long)output[i + 24];
-				sum += coeffs[4] * (long)output[i + 25];
-				sum += coeffs[3] * (long)output[i + 26];
-				sum += coeffs[2] * (long)output[i + 27];
-				sum += coeffs[1] * (long)output[i + 28];
-				sum += coeffs[0] * (long)output[i + 29];
+				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 28);
+				sum += c * (long)Unsafe.Add(ref o, i + 29);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2454,47 +2526,49 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 31;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[30] * (long)output[i + 0];
-				sum += coeffs[29] * (long)output[i + 1];
-				sum += coeffs[28] * (long)output[i + 2];
-				sum += coeffs[27] * (long)output[i + 3];
-				sum += coeffs[26] * (long)output[i + 4];
-				sum += coeffs[25] * (long)output[i + 5];
-				sum += coeffs[24] * (long)output[i + 6];
-				sum += coeffs[23] * (long)output[i + 7];
-				sum += coeffs[22] * (long)output[i + 8];
-				sum += coeffs[21] * (long)output[i + 9];
-				sum += coeffs[20] * (long)output[i + 10];
-				sum += coeffs[19] * (long)output[i + 11];
-				sum += coeffs[18] * (long)output[i + 12];
-				sum += coeffs[17] * (long)output[i + 13];
-				sum += coeffs[16] * (long)output[i + 14];
-				sum += coeffs[15] * (long)output[i + 15];
-				sum += coeffs[14] * (long)output[i + 16];
-				sum += coeffs[13] * (long)output[i + 17];
-				sum += coeffs[12] * (long)output[i + 18];
-				sum += coeffs[11] * (long)output[i + 19];
-				sum += coeffs[10] * (long)output[i + 20];
-				sum += coeffs[9] * (long)output[i + 21];
-				sum += coeffs[8] * (long)output[i + 22];
-				sum += coeffs[7] * (long)output[i + 23];
-				sum += coeffs[6] * (long)output[i + 24];
-				sum += coeffs[5] * (long)output[i + 25];
-				sum += coeffs[4] * (long)output[i + 26];
-				sum += coeffs[3] * (long)output[i + 27];
-				sum += coeffs[2] * (long)output[i + 28];
-				sum += coeffs[1] * (long)output[i + 29];
-				sum += coeffs[0] * (long)output[i + 30];
+				sum += Unsafe.Add(ref c, 30) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 28);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 29);
+				sum += c * (long)Unsafe.Add(ref o, i + 30);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -2503,48 +2577,50 @@ namespace Shamisen.Codecs.Flac.SubFrames
             const int Order = 32;
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
+            ref var c = ref MemoryMarshal.GetReference(coeffs);
             long sum = 0;
-            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            ref var o = ref MemoryMarshal.GetReference(output);
+            ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
-            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            ref var r = ref MemoryMarshal.GetReference(residual);
             for(int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-				sum += coeffs[31] * (long)output[i + 0];
-				sum += coeffs[30] * (long)output[i + 1];
-				sum += coeffs[29] * (long)output[i + 2];
-				sum += coeffs[28] * (long)output[i + 3];
-				sum += coeffs[27] * (long)output[i + 4];
-				sum += coeffs[26] * (long)output[i + 5];
-				sum += coeffs[25] * (long)output[i + 6];
-				sum += coeffs[24] * (long)output[i + 7];
-				sum += coeffs[23] * (long)output[i + 8];
-				sum += coeffs[22] * (long)output[i + 9];
-				sum += coeffs[21] * (long)output[i + 10];
-				sum += coeffs[20] * (long)output[i + 11];
-				sum += coeffs[19] * (long)output[i + 12];
-				sum += coeffs[18] * (long)output[i + 13];
-				sum += coeffs[17] * (long)output[i + 14];
-				sum += coeffs[16] * (long)output[i + 15];
-				sum += coeffs[15] * (long)output[i + 16];
-				sum += coeffs[14] * (long)output[i + 17];
-				sum += coeffs[13] * (long)output[i + 18];
-				sum += coeffs[12] * (long)output[i + 19];
-				sum += coeffs[11] * (long)output[i + 20];
-				sum += coeffs[10] * (long)output[i + 21];
-				sum += coeffs[9] * (long)output[i + 22];
-				sum += coeffs[8] * (long)output[i + 23];
-				sum += coeffs[7] * (long)output[i + 24];
-				sum += coeffs[6] * (long)output[i + 25];
-				sum += coeffs[5] * (long)output[i + 26];
-				sum += coeffs[4] * (long)output[i + 27];
-				sum += coeffs[3] * (long)output[i + 28];
-				sum += coeffs[2] * (long)output[i + 29];
-				sum += coeffs[1] * (long)output[i + 30];
-				sum += coeffs[0] * (long)output[i + 31];
+				sum += Unsafe.Add(ref c, 31) * (long)Unsafe.Add(ref o, i + 0);
+				sum += Unsafe.Add(ref c, 30) * (long)Unsafe.Add(ref o, i + 1);
+				sum += Unsafe.Add(ref c, 29) * (long)Unsafe.Add(ref o, i + 2);
+				sum += Unsafe.Add(ref c, 28) * (long)Unsafe.Add(ref o, i + 3);
+				sum += Unsafe.Add(ref c, 27) * (long)Unsafe.Add(ref o, i + 4);
+				sum += Unsafe.Add(ref c, 26) * (long)Unsafe.Add(ref o, i + 5);
+				sum += Unsafe.Add(ref c, 25) * (long)Unsafe.Add(ref o, i + 6);
+				sum += Unsafe.Add(ref c, 24) * (long)Unsafe.Add(ref o, i + 7);
+				sum += Unsafe.Add(ref c, 23) * (long)Unsafe.Add(ref o, i + 8);
+				sum += Unsafe.Add(ref c, 22) * (long)Unsafe.Add(ref o, i + 9);
+				sum += Unsafe.Add(ref c, 21) * (long)Unsafe.Add(ref o, i + 10);
+				sum += Unsafe.Add(ref c, 20) * (long)Unsafe.Add(ref o, i + 11);
+				sum += Unsafe.Add(ref c, 19) * (long)Unsafe.Add(ref o, i + 12);
+				sum += Unsafe.Add(ref c, 18) * (long)Unsafe.Add(ref o, i + 13);
+				sum += Unsafe.Add(ref c, 17) * (long)Unsafe.Add(ref o, i + 14);
+				sum += Unsafe.Add(ref c, 16) * (long)Unsafe.Add(ref o, i + 15);
+				sum += Unsafe.Add(ref c, 15) * (long)Unsafe.Add(ref o, i + 16);
+				sum += Unsafe.Add(ref c, 14) * (long)Unsafe.Add(ref o, i + 17);
+				sum += Unsafe.Add(ref c, 13) * (long)Unsafe.Add(ref o, i + 18);
+				sum += Unsafe.Add(ref c, 12) * (long)Unsafe.Add(ref o, i + 19);
+				sum += Unsafe.Add(ref c, 11) * (long)Unsafe.Add(ref o, i + 20);
+				sum += Unsafe.Add(ref c, 10) * (long)Unsafe.Add(ref o, i + 21);
+				sum += Unsafe.Add(ref c, 9) * (long)Unsafe.Add(ref o, i + 22);
+				sum += Unsafe.Add(ref c, 8) * (long)Unsafe.Add(ref o, i + 23);
+				sum += Unsafe.Add(ref c, 7) * (long)Unsafe.Add(ref o, i + 24);
+				sum += Unsafe.Add(ref c, 6) * (long)Unsafe.Add(ref o, i + 25);
+				sum += Unsafe.Add(ref c, 5) * (long)Unsafe.Add(ref o, i + 26);
+				sum += Unsafe.Add(ref c, 4) * (long)Unsafe.Add(ref o, i + 27);
+				sum += Unsafe.Add(ref c, 3) * (long)Unsafe.Add(ref o, i + 28);
+				sum += Unsafe.Add(ref c, 2) * (long)Unsafe.Add(ref o, i + 29);
+				sum += Unsafe.Add(ref c, 1) * (long)Unsafe.Add(ref o, i + 30);
+				sum += c * (long)Unsafe.Add(ref o, i + 31);
                 sum >>= shiftsNeeded;
-                sum += r[i];
-                d[i] = (int)sum;
+                sum += Unsafe.Add(ref r, i);
+                Unsafe.Add(ref d, i) = (int)sum;
             }
         }
     }

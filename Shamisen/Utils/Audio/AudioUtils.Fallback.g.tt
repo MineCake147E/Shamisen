@@ -44,7 +44,7 @@ namespace Shamisen.Utils
                         var a = Unsafe.Add(ref rA0, i);
                         Unsafe.Add(ref rB, j) = a;
                         <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"a = Unsafe.Add(ref rA{a}, i);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a}) = a;"))#>
-                        <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"a = Unsafe.Add(ref Unsafe.Add(ref rA{a}, i), 1);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a + channels}) = a;"))#>
+                        <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(0, channels).Select(a=>$"a = Unsafe.Add(ref Unsafe.Add(ref rA{a}, i), 1);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a + channels}) = a;"))#>
                         j += Channels * 2;
                     }
                     for (; i < length; i += 1)

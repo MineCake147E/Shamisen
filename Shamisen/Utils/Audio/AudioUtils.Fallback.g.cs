@@ -49,7 +49,9 @@ namespace Shamisen.Utils
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 3) = a;
 						a = Unsafe.Add(ref rA4, i);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 4) = a;
-                        a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
+                        a = Unsafe.Add(ref Unsafe.Add(ref rA0, i), 1);
+						Unsafe.Add(ref Unsafe.Add(ref rB, j), 5) = a;
+						a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 6) = a;
 						a = Unsafe.Add(ref Unsafe.Add(ref rA2, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 7) = a;
@@ -115,7 +117,9 @@ namespace Shamisen.Utils
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 4) = a;
 						a = Unsafe.Add(ref rA5, i);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 5) = a;
-                        a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
+                        a = Unsafe.Add(ref Unsafe.Add(ref rA0, i), 1);
+						Unsafe.Add(ref Unsafe.Add(ref rB, j), 6) = a;
+						a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 7) = a;
 						a = Unsafe.Add(ref Unsafe.Add(ref rA2, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 8) = a;
@@ -189,7 +193,9 @@ namespace Shamisen.Utils
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 5) = a;
 						a = Unsafe.Add(ref rA6, i);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 6) = a;
-                        a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
+                        a = Unsafe.Add(ref Unsafe.Add(ref rA0, i), 1);
+						Unsafe.Add(ref Unsafe.Add(ref rB, j), 7) = a;
+						a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 8) = a;
 						a = Unsafe.Add(ref Unsafe.Add(ref rA2, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 9) = a;
@@ -271,7 +277,9 @@ namespace Shamisen.Utils
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 6) = a;
 						a = Unsafe.Add(ref rA7, i);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 7) = a;
-                        a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
+                        a = Unsafe.Add(ref Unsafe.Add(ref rA0, i), 1);
+						Unsafe.Add(ref Unsafe.Add(ref rB, j), 8) = a;
+						a = Unsafe.Add(ref Unsafe.Add(ref rA1, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 9) = a;
 						a = Unsafe.Add(ref Unsafe.Add(ref rA2, i), 1);
 						Unsafe.Add(ref Unsafe.Add(ref rB, j), 10) = a;

@@ -26,6 +26,7 @@ namespace Shamisen.Codecs.Flac
 
             #region LeftSide
 
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (Avx2.IsSupported)
@@ -81,6 +82,7 @@ namespace Shamisen.Codecs.Flac
 
             #region RightSide
 
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (Avx2.IsSupported)
@@ -139,6 +141,7 @@ namespace Shamisen.Codecs.Flac
 
             #region MidSide
 
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveMidSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (Avx2.IsSupported)

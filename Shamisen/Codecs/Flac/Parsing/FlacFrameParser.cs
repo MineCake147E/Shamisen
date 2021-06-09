@@ -38,7 +38,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         private uint sampleRate = 0;
 
-        private int[]? samples;
+        private PooledArray<int>? samples;
 
         private IFlacSubFrame[]? subFrames;
 
@@ -147,6 +147,10 @@ namespace Shamisen.Codecs.Flac.Parsing
             StreamInfoBlock = streamInfoBlock;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <returns></returns>
         public void Dispose()
         {
             Dispose(disposing: true);
@@ -205,7 +209,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
                 uint sampleRate = 0;
 
-                int[]? samples;
+                PooledArray<int>? samples;
 
                 if ((q & 0b1) > 0)   //variable blocking
                 {
@@ -342,11 +346,10 @@ namespace Shamisen.Codecs.Flac.Parsing
                     throw new FlacException($"The decoder has detected CRC-16 mismatch!\nExpected: {expectedCrc16}\nActual:{frameCrc}", source);
                 }
                 if (subFrames is null) throw new FlacException("The subFrames is null! This is a bug!", source);
-                int c = nChannels.GetChannels();
-                samples = new int[length * c];
+                samples = new((int)length * chCount);
                 var TotalLength = length;
-                channelsDivisor = new(c);
-                InterleaveChannels(length, nChannels, samples, subFrames);
+                channelsDivisor = new(chCount);
+                InterleaveChannels(length, nChannels, samples.Span, subFrames);
 
                 var p = new FlacFrameParser(source, streamInfoBlock)
                 {
@@ -400,7 +403,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 #pragma warning restore S907 // "goto" statement should not be used
         }
 
-        private static void InterleaveChannels(uint length, FlacChannelAssignments nChannels, int[] samples, IFlacSubFrame[] subFrames)
+        private static void InterleaveChannels(uint length, FlacChannelAssignments nChannels, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             switch ((nChannels, subFrames.Length))
             {
@@ -568,28 +571,31 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadResult Read(Span<int> buffer)
         {
-            if (Length == 0) return ReadResult.EndOfStream;
+            if (Length == 0 || samples is null) return ReadResult.EndOfStream;
             if (Position is null || Length is null) throw new InvalidProgramException();
             if ((ulong)buffer.Length <= Length)
             {
-                samples.AsSpan().Slice((int)Position * channelsDivisor.Divisor, buffer.Length).CopyTo(buffer);
+                samples.Span.Slice((int)Position * channelsDivisor.Divisor, buffer.Length).CopyTo(buffer);
                 Position += (ulong)(buffer.Length / channelsDivisor);
                 return buffer.Length;
             }
             else
             {
-                samples.AsSpan().Slice((int)Position * channelsDivisor.Divisor).CopyTo(buffer);
+                samples.Span.Slice((int)Position * channelsDivisor.Divisor).CopyTo(buffer);
                 int length = (int)Length;
                 Position += Length;
-                return length;
+                return length * channelsDivisor.Divisor;
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static (uint bitDepth, BitDepthState state) ParseBitDepth(byte value)
             => Unsafe.Add(ref MemoryMarshal.GetReference(BitDepthTable), value & 0x7);
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static (uint length, BlockSizeState state) ParseBlockSize(byte value)
             => value switch
             {
@@ -602,6 +608,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 _ => (256u << (value - 8), BlockSizeState.Value),
             };
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static (uint sampleRate, SampleRateState state) ParseSampleRate(byte value)
             => (value & 0xf) switch
             {
@@ -621,6 +628,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                 {
                     //
                 }
+                samples?.Dispose();
+                samples = null;
                 disposedValue = true;
             }
         }
