@@ -60,6 +60,7 @@ A Cross-Platform Audio Library for:
 | Container Name | Typical File Extensions | Implemented Codec | Library contains Decoder/Encoder | License | Decoding | Encoding |
 |--|--|--|--|--|:--:|:--:|
 | Waveform | `.wav` | Linear PCM, IEEE 754 Floating-Point PCM, A-Law | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ |
+| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ❎(Planned) |
 
 #### Platform-Dependent
 
@@ -118,6 +119,6 @@ A Cross-Platform Audio Library for:
 
 | Container Name | Typical File Extensions | Implementing Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
 |--|--|--|--|--|:--:|:--:|--|
-| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implementing Decoder |
+| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implemented Decoder |
 | Opus | `.opus` | Opus | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
 | Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
