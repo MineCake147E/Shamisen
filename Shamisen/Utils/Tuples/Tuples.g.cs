@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Utils.Tuples
 {
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX2<T> where T:unmanaged
     {
@@ -80,6 +84,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX2<T>((T, T) from)
             => Unsafe.As<(T, T), UnmanagedTupleX2<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX3<T> where T:unmanaged
     {
@@ -167,6 +175,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX3<T>((T, T, T) from)
             => Unsafe.As<(T, T, T), UnmanagedTupleX3<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX4<T> where T:unmanaged
     {
@@ -269,6 +281,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX4<T>((T, T, T, T) from)
             => Unsafe.As<(T, T, T, T), UnmanagedTupleX4<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX5<T> where T:unmanaged
     {
@@ -386,6 +402,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX5<T>((T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T), UnmanagedTupleX5<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX6<T> where T:unmanaged
     {
@@ -518,6 +538,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX6<T>((T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T), UnmanagedTupleX6<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX7<T> where T:unmanaged
     {
@@ -665,6 +689,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX7<T>((T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T), UnmanagedTupleX7<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX8<T> where T:unmanaged
     {
@@ -827,6 +855,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX8<T>((T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T), UnmanagedTupleX8<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX9<T> where T:unmanaged
     {
@@ -996,7 +1028,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX9{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -1004,6 +1036,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX9<T>((T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T), UnmanagedTupleX9<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX10<T> where T:unmanaged
     {
@@ -1188,7 +1224,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX10{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -1196,6 +1232,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX10<T>((T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX10<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX11<T> where T:unmanaged
     {
@@ -1395,7 +1435,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX11{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -1403,6 +1443,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX11<T>((T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX11<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX12<T> where T:unmanaged
     {
@@ -1617,7 +1661,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX12{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -1625,6 +1669,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX12<T>((T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX12<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX13<T> where T:unmanaged
     {
@@ -1854,7 +1902,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX13{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -1862,6 +1910,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX13<T>((T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX13<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX14<T> where T:unmanaged
     {
@@ -2106,7 +2158,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX14{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -2114,6 +2166,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX14<T>((T, T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX14<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX15<T> where T:unmanaged
     {
@@ -2373,7 +2429,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX15{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -2381,6 +2437,10 @@ namespace Shamisen.Utils.Tuples
         public static implicit operator UnmanagedTupleX15<T>((T, T, T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX15<T>>(ref from);
     }
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX16<T> where T:unmanaged
     {
@@ -2655,7 +2715,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX16{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{T0}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>

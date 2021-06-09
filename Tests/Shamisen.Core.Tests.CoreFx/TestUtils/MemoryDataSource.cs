@@ -35,13 +35,21 @@ namespace Shamisen.Core.Tests.CoreFx
 
         public ReadResult Read(Span<byte> buffer)
         {
+            //if (buffer.Length > memory.Length - memory.Position)
+            //{
+            //    buffer = buffer.SliceWhile((int)(memory.Length - memory.Position));
+            //}
             var h = memory.Read(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 
-        public async ValueTask<ReadResult> ReadAsync(Memory<byte> destination)
+        public async ValueTask<ReadResult> ReadAsync(Memory<byte> buffer)
         {
-            var h = await memory.ReadAsync(destination);
+            //if (buffer.Length > memory.Length - memory.Position)
+            //{
+            //    buffer = buffer.Slice((int)(memory.Length - memory.Position));
+            //}
+            var h = await memory.ReadAsync(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 

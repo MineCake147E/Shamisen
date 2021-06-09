@@ -78,7 +78,16 @@ namespace Shamisen
         {
             unchecked
             {
-                return 31 - LeadingZeroCount(value | 1);
+                value |= value >> 1;
+                value |= value >> 2;
+                value |= value >> 4;
+                value |= value >> 8;
+                value |= value >> 16;
+                var index = (value * 0x07C4_ACDDu) >> 27;
+
+                return Unsafe.AddByteOffset(
+                    ref MemoryMarshal.GetReference(Log2DeBruijn),
+                    (IntPtr)(int)index);
             }
         }
 
@@ -113,11 +122,7 @@ namespace Shamisen
                 value |= value >> 4;
                 value |= value >> 8;
                 value |= value >> 16;
-                var index = (value * 0x077C_B531u) >> 27;
-
-                return Unsafe.AddByteOffset(
-                    ref MemoryMarshal.GetReference(Log2DeBruijn),
-                    (IntPtr)(int)index);
+                return 32 - TrailingZeroCount(~value);
             }
         }
 

@@ -77,5 +77,14 @@ namespace Shamisen
                 return new(Unsafe.AsPointer(ref value));
             }
         }
+
+        /// <summary>
+        /// Converts the specified <paramref name="value"/> to pointer.
+        /// </summary>
+        /// <param name="value">The <see cref="IntPtr"/> getting converted.</param>
+        /// <returns>
+        /// The converted pointer.
+        /// </returns>
+        public static unsafe void* ToPointer(this nint value) => ((IntPtr)value).ToPointer();
     }
 }

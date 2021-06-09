@@ -8,17 +8,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Shamisen.Codecs.Flac.Parsing;
+using Shamisen.Data;
 
 namespace Shamisen.Codecs.Flac.SubFrames
 {
+    /// <summary>
+    ///
+    /// </summary>
+    /// <seealso cref="Shamisen.Codecs.Flac.IFlacSubFrame" />
     public sealed class FlacFixedPredictionSubFrame : IFlacSubFrame
     {
         private int order;
         private int partition;
-        private int[] data;
+        private PooledArray<int> data;
+        private int length;
+        private bool disposedValue;
 
+        /// <summary>
+        /// Gets the type of the sub-frame.
+        /// </summary>
         public byte SubFrameType { get; }
 
+        /// <summary>
+        /// Gets the number of wasted LSBs.
+        /// </summary>
         public int WastedBits { get; }
 
         /// <summary>
@@ -71,22 +84,31 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             WastedBits = wastedBits;
             order = subFrameType & 0x7;
-            var residual = new int[blockSize - order];
+            int residualSize = blockSize - order;
+            if (residualSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockSize), "The blockSize must be larger than order!");
+            }
+            using var residual = new PooledArray<int>(residualSize);
             Span<int> warmup = stackalloc int[order];
             for (int i = 0; i < warmup.Length; i++)
             {
-                warmup[i] = (int?)bitReader.ReadBitsUInt64(bitsPerSample) ?? throw new FlacException("Invalid FLAC Stream!");
+                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample) ?? throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             order = subFrameType & 0x7;
             //Read residual
-            ReadResidualPart(bitReader, blockSize, order, out partition, residual);
+            var resiSpan = residual.Span;
+            ReadResidualPart(bitReader, blockSize, order, out partition, resiSpan);
             //Restore signal
-            data = new int[blockSize];
-            warmup.CopyTo(data.AsSpan());
-            RestoreSignal(residual, order, data);
+            data = new(blockSize);
+            var output = data.Span;
+            warmup.CopyTo(output);
+            RestoreSignal(resiSpan, order, output);
+            FlacUtils.ShiftLeft(output, wastedBits);
+            length = blockSize;
         }
 
-        internal static void ReadResidualPart(FlacBitReader bitReader, int blockSize, int order, out int partition, int[] residual)
+        internal static void ReadResidualPart(FlacBitReader bitReader, int blockSize, int order, out int partition, Span<int> residual)
         {
             //Modified for C# use.
 
@@ -128,32 +150,32 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             var (hasValue, result) = bitReader.ReadBitsUInt64(2);
             result &= 0x3;
-            if (!hasValue) throw new FlacException("Invalid FLAC Stream!");
+            if (!hasValue) throw new FlacException("Invalid FLAC Stream!", bitReader);
 
             switch ((FlacEntropyCodingMethod)result)
             {
                 case FlacEntropyCodingMethod.PartitionedRice:
                 case FlacEntropyCodingMethod.PartitionedRice2:
                     //Read partition order
-                    var g = bitReader.ReadBitsUInt64(4) ?? throw new FlacException("Invalid FLAC Stream!");
-                    if (blockSize >> (int)g < order) throw new FlacException("Invalid FLAC Stream!");
+                    var g = bitReader.ReadBitsUInt32(4) ?? throw new FlacException("Invalid FLAC Stream!", bitReader);
+                    if (blockSize >> (int)g < order) throw new FlacException("Invalid FLAC Stream!", bitReader);
                     partition = (int)g;
                     break;
                 default:
-                    throw new FlacException("Invalid FLAC Stream!");
+                    throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             switch ((FlacEntropyCodingMethod)result)
             {
                 case FlacEntropyCodingMethod.PartitionedRice:
-                    if (!ResidualUtils.ReadRiceEncodedResidual(residual.AsSpan(), bitReader, order, partition, blockSize, false))
-                        throw new FlacException("Invalid FLAC Stream!");
+                    if (!FlacUtils.ReadRiceEncodedResidual(residual, bitReader, order, partition, blockSize, false))
+                        throw new FlacException("Invalid FLAC Stream!", bitReader);
                     break;
                 case FlacEntropyCodingMethod.PartitionedRice2:
-                    if (!ResidualUtils.ReadRiceEncodedResidual(residual.AsSpan(), bitReader, order, partition, blockSize, true))
-                        throw new FlacException("Invalid FLAC Stream!");
+                    if (!FlacUtils.ReadRiceEncodedResidual(residual, bitReader, order, partition, blockSize, true))
+                        throw new FlacException("Invalid FLAC Stream!", bitReader);
                     break;
                 default:
-                    throw new FlacException("Invalid FLAC Stream!");
+                    throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
         }
 
@@ -326,11 +348,48 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
 #pragma warning restore S907 // "goto" statement should not be used
 
+        /// <summary>
+        /// Reads the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns></returns>
         public ReadResult Read(Span<int> buffer)
         {
             if (data.Length > buffer.Length) return ReadResult.EndOfStream;
-            data.AsSpan().CopyTo(buffer);
+            data.Span.CopyTo(buffer);
             return data.Length;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    //
+                }
+                data.Dispose();
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizes this instance.
+        /// </summary>
+        /// <returns></returns>
+        ~FlacFixedPredictionSubFrame()
+        {
+            Dispose(disposing: false);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <returns></returns>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

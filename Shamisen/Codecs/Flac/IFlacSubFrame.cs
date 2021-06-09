@@ -9,7 +9,7 @@ namespace Shamisen.Codecs.Flac
     /// <summary>
     /// Defines a base infrastructure of a FLAC sub-frame.
     /// </summary>
-    public interface IFlacSubFrame : IReadSupport<int>
+    public interface IFlacSubFrame : IReadSupport<int>, IDisposable
     {
         /// <summary>
         /// Gets the number of wasted LSBs.

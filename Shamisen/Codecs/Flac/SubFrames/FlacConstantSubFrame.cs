@@ -15,6 +15,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
     {
         private int value;
         private int wastedBits;
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of <see cref="FlacConstantSubFrame"/>.
@@ -22,7 +23,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// <param name="value"></param>
         public FlacConstantSubFrame(int value, int wastedBits)
         {
-            this.value = value;
+            this.value = value << wastedBits;
             this.wastedBits = wastedBits;
         }
 
@@ -31,9 +32,9 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// </summary>
         /// <param name="bitReader">A <see cref="FlacBitReader"/> to read the constant from.</param>
         /// <param name="wastedBits">The number of wasted bits.</param>
-        public static FlacConstantSubFrame? ReadFrame(FlacBitReader bitReader, int wastedBits)
+        public static FlacConstantSubFrame? ReadFrame(FlacBitReader bitReader, int wastedBits, byte bitDepth)
         {
-            (var res, var val) = bitReader.ReadBitsUInt64(32);
+            (var res, var val) = bitReader.ReadBitsUInt64(bitDepth);
             return !res ? null : new FlacConstantSubFrame((int)val, wastedBits);
         }
 
@@ -56,6 +57,27 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
             buffer.FastFill(value << wastedBits);
             return buffer.Length;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    //
+                }
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

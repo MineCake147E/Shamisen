@@ -1,0 +1,63 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#    var channelAssignments = Enumerable.Range(5, 8 - 5 + 1).ToArray(); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+using Shamisen.Utils.Tuples;
+
+namespace Shamisen.Utils
+{
+    public static partial class AudioUtils
+    {
+        internal static partial class Fallback
+        {
+<#
+    foreach(var channels in channelAssignments){#>
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void Interleave<#=            channels#>ChannelsInt32(Span<int> buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
+            {
+                unsafe
+                {
+                    const int Channels = <#=            channels#>;
+                    <#=            string.Join("\r\n\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"if (a{a}.Length < a0.Length) throw new ArgumentException(\"a{a} must be as long as a0!\", nameof(a{a}));"))#>
+
+                    //These pre-touches may avoid some range checks
+                    <#=            string.Join("\r\n\t\t\t\t\t", Enumerable.Range(0, channels).Select(a=>$"ref var rA{a} = ref MemoryMarshal.GetReference(a{a});"))#>
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
+                    nint length = a0.Length;
+                    nint u8Length = length & ~1;
+                    nint j = 0;
+                    nint i = 0;
+                    for (; i < u8Length; i += 2)
+                    {
+                        //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
+                        var a = Unsafe.Add(ref rA0, i);
+                        Unsafe.Add(ref rB, j) = a;
+                        <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"a = Unsafe.Add(ref rA{a}, i);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a}) = a;"))#>
+                        <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"a = Unsafe.Add(ref Unsafe.Add(ref rA{a}, i), 1);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a + channels}) = a;"))#>
+                        j += Channels * 2;
+                    }
+                    for (; i < length; i += 1)
+                    {
+                        var a = Unsafe.Add(ref rA0, i);
+                        Unsafe.Add(ref rB, j) = a;
+                        <#=            string.Join("\r\n\t\t\t\t\t\t", Enumerable.Range(1, channels - 1).Select(a=>$"a = Unsafe.Add(ref rA{a}, i);\r\n\t\t\t\t\t\t" + $"Unsafe.Add(ref Unsafe.Add(ref rB, j), {a}) = a;"))#>
+                        j += Channels;
+                    }
+                }
+            }
+
+<#    }#>
+        }
+    }
+}

@@ -20,6 +20,10 @@ namespace Shamisen.Utils.Tuples
 {
 <#
     foreach(var item in Numbers){#>
+    /// <summary>
+    /// TODO: Documentation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public readonly partial struct UnmanagedTupleX<#=item#><T> where T:unmanaged
     {
@@ -81,7 +85,7 @@ namespace Shamisen.Utils.Tuples
         /// <summary>
         /// Performs an implicit conversion from <see cref="ValueTuple{T, T}"/> to <see cref="UnmanagedTupleX<#=item#>{T}"/>.
         /// </summary>
-        /// <param name="from">The converting <see cref="ValueTuple{<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T{a}"))#>}"/>.</param>
+        /// <param name="from">The converting <see cref="ValueTuple{<#=item < 9 ? string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T{a}")) : "T0"#>}"/>.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>

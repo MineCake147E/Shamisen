@@ -26,11 +26,13 @@
     <ItemGroup>
         <None Remove="Resources\Test.wav" />
         <None Remove="Resources\Test_rf64.wav" />
+        <None Remove="Resources\Utf8TestCases.txt" />
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\Test.wav" />
         <EmbeddedResource Include="Resources\Test_rf64.wav" />
+        <EmbeddedResource Include="Resources\Utf8TestCases.txt" />
     </ItemGroup>
 
     <ItemGroup>
@@ -50,5 +52,20 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\Sawtooth3000_24bit_Lv8.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\Silence_24bit.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\Sinusoid1760_24bit.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\Square1760_24bit.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

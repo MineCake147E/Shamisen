@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using DivideSharp;
+
 using Shamisen.Data.Binary;
 
 namespace Shamisen.Codecs.Flac.Parsing
@@ -14,13 +16,18 @@ namespace Shamisen.Codecs.Flac.Parsing
     /// Parses ".flac" files from <see cref="IReadableDataSource{TSample}"/>.
     /// https://xiph.org/flac/format.html
     /// </summary>
-    /// <seealso cref="Shamisen.IWaveSource" />
+    /// <seealso cref="IWaveSource" />
     public sealed class FlacParser : IWaveSource
     {
         private bool disposedValue;
         private readonly FlacStreamInfoBlock streamInfoBlock;
 
         private Memory<FlacSeekPoint> seekPoints;
+
+        private FlacBitReader BitReader { get; }
+
+        private FlacFrameParser? currentFrame;
+        private Int32Divisor channelsDivisor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacParser"/> class.
@@ -38,6 +45,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                 throw new ArgumentException("The FLAC Stream is invalid!", nameof(source));
             var streamInfo = streamInfoBlock = FlacStreamInfoBlock.ToReadableValue(Read<FlacStreamInfoBlock>(source));
             Format = new WaveFormat((int)streamInfo.SampleRate, streamInfo.BitDepth, streamInfo.Channels, AudioEncoding.LinearPcm);
+            channelsDivisor = new(Format.Channels);
+            TotalLength = streamInfo.TotalSamples;
             var currentHeader = streamInfoHeader;
             while (!currentHeader.IsLastMetadataBlock)
             {
@@ -50,7 +59,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                     case FlacMetadataBlockType.Picture:
                     case FlacMetadataBlockType.Padding: //Defined but currently not supported, or unnecessary data like Padding
 #pragma warning disable S907
-                        goto case default;
+                        goto default;
 #pragma warning restore S907
                     case FlacMetadataBlockType.SeekTable when seekPoints.IsEmpty:
                         ReadSeekTable(currentHeader, source);
@@ -64,13 +73,15 @@ namespace Shamisen.Codecs.Flac.Parsing
                         break;
                 }
             }
-            FindNextFrame();
+            BitReader = new FlacBitReader(source);
+            currentFrame = FindNextFrame() ?? throw new FlacException("The FLAC file has no data!", BitReader);
         }
 
-        private void FindNextFrame()
+        private FlacFrameParser? FindNextFrame()
         {
-            var frameParser = new FlacFrameParser(Source, streamInfoBlock);
-            frameParser.ParseNextFrame();
+            var frameParser = FlacFrameParser.ParseNextFrame(BitReader, streamInfoBlock);
+
+            return frameParser;
         }
 
         private void ReadSeekTable(FlacMetadataBlockHeader header, IReadableDataSource<byte> source)
@@ -106,17 +117,86 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public IWaveFormat Format { get; }
 
-        ulong? IAudioSource<byte, IWaveFormat>.Length { get; }
+        /// <summary>
+        /// Gets the total length.
+        /// </summary>
+        /// <value>
+        /// The total length.
+        /// </value>
+        public ulong TotalLength { get; }
 
-        ulong? IAudioSource<byte, IWaveFormat>.TotalLength { get; }
+        /// <summary>
+        /// Gets the remaining length.
+        /// </summary>
+        /// <value>
+        /// The length.
+        /// </value>
+        public ulong Length => TotalLength - Position;
 
-        ulong? IAudioSource<byte, IWaveFormat>.Position { get; }
+        /// <summary>
+        /// Gets the position.
+        /// </summary>
+        /// <value>
+        /// The position.
+        /// </value>
+        public ulong Position { get; private set; }
+
+        ulong? IAudioSource<byte, IWaveFormat>.Length => Length;
+
+        ulong? IAudioSource<byte, IWaveFormat>.TotalLength => TotalLength;
+
+        ulong? IAudioSource<byte, IWaveFormat>.Position => Position;
 
         ISkipSupport? IAudioSource<byte, IWaveFormat>.SkipSupport { get; }
 
         ISeekSupport? IAudioSource<byte, IWaveFormat>.SeekSupport { get; }
 
-        public ReadResult Read(Span<byte> buffer) => throw new NotImplementedException();
+        /// <summary>
+        /// Reads the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns></returns>
+        public ReadResult Read(Span<byte> buffer)
+        {
+            var bb = MemoryMarshal.Cast<byte, int>(buffer).SliceAlign(channelsDivisor);
+            var bbr = bb;
+            if (Length == 0) return ReadResult.EndOfStream;
+            while (!bbr.IsEmpty && Length > 0)
+            {
+                while (currentFrame?.Length is null || currentFrame.Length == 0)
+                {
+                    var g = FindNextFrame();
+                    if (g is null)
+                    {
+                        Position = TotalLength;
+                        return (bb.Length - bbr.Length) * sizeof(int);
+                    }
+                    currentFrame = g;
+                }
+                var rr = currentFrame.Read(bbr);
+                while (rr.HasNoData)
+                {
+                    while (currentFrame?.Length is null || currentFrame.Length == 0)
+                    {
+                        var g = FindNextFrame();
+                        if (g is null)
+                        {
+                            Position = TotalLength;
+                            return (bb.Length - bbr.Length) * sizeof(int);
+                        }
+                        currentFrame = g;
+                    }
+                    rr = currentFrame.Read(bbr);
+                }
+                Position += (ulong)(rr.Length / channelsDivisor);
+                if (rr.Length == bbr.Length)
+                {
+                    return bb.Length * sizeof(int);
+                }
+                bbr = bbr.Slice(rr.Length);
+            }
+            return (bb.Length - bbr.Length) * sizeof(int);
+        }
 
         private void Dispose(bool disposing)
         {

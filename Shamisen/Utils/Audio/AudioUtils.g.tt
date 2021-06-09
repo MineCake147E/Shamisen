@@ -1,0 +1,56 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#    var channelAssignments = Enumerable.Range(5, 8 - 5 + 1).ToArray(); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shamisen.Utils
+{
+    /// <summary>
+    /// Contains some utility functions for manipulating audio data.
+    /// </summary>
+    public static partial class AudioUtils
+    {
+<#
+    foreach(var channels in channelAssignments){#>
+        /// <summary>
+        /// Interleaves and stores audio samples with <#=            channels #> channels, to <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="buffer">The output buffer.</param>
+        <#=            string.Join("\r\n\t\t", Enumerable.Range(0, channels).Select(a=>$"/// <param name=\"a{a}\">The input buffer for channel No.{a}.</param>"))#>
+        /// <param name="left">The input buffer for left channel.</param>
+        /// <param name="right">The input buffer for right channel.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void Interleave<#=            channels #>Channels(Span<int> buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
+        {
+            unchecked
+            {
+#if NET5_0
+                //Arm intrinsics
+                if(Arm.IsSupported)
+                {
+                    Arm.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
+                    return;
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if(X86.IsSupported)
+                {
+                    X86.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
+                    return;
+                }
+#endif
+                Fallback.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
+            }
+        }
+<#    }#>
+    }
+}

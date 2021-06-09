@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG_MATHI_NON_USER_CODE
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,6 +8,7 @@ using System.Text;
 using System.Numerics;
 using DivideSharp;
 using DSUtils = DivideSharp.Utils;
+using System.Diagnostics;
 
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -33,6 +36,9 @@ namespace Shamisen
         /// <param name="step">The step.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int FloorStep(int value, int step) => value - (value % step);
 
         /// <summary>
@@ -42,6 +48,9 @@ namespace Shamisen
         /// <param name="step">The step.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static (int newLength, int remainder) FloorStepRem(int value, int step)
         {
             var m = value % step;
@@ -54,6 +63,9 @@ namespace Shamisen
         /// <param name="value">The value to rectify.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int Rectify(int value)
         {
             var h = value >> 31;
@@ -67,6 +79,10 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static ulong Abs(long value) => DSUtils.Abs(value);
 
         /// <summary>
@@ -74,6 +90,10 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static uint Abs(int value) => DSUtils.Abs(value);
 
         #endregion Abs
@@ -86,6 +106,10 @@ namespace Shamisen
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong low, long high) BigMul(long x, long y)
         {
@@ -108,6 +132,9 @@ namespace Shamisen
         /// <param name="y">The y.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static (ulong low, ulong high) BigMul(ulong x, ulong y)
         {
             unchecked
@@ -131,6 +158,10 @@ namespace Shamisen
         /// <param name="a">The value a.</param>
         /// <param name="b">The value b.</param>
         /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
 
         #endregion ReadResult functions
@@ -143,6 +174,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int TrailingZeroCount(uint value)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -164,6 +198,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int TrailingZeroCount(ulong value)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -190,6 +227,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LogBase2(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -210,6 +250,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LogBase2(ulong value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -234,6 +277,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LeadingZeroCount(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -254,6 +300,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int LeadingZeroCount(ulong value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -277,6 +326,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int Pop(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -296,6 +348,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static int PopCount(ulong value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
@@ -319,6 +374,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static uint ExtractHighestSetBit(uint value)
         {
             unchecked
@@ -337,6 +395,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static ulong ExtractHighestSetBit(ulong value)
         {
             unchecked
@@ -359,6 +420,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static uint ReverseBitOrder(uint value)
         {
             unchecked
@@ -379,6 +443,9 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static ulong ReverseBitOrder(ulong value)
         {
             unchecked
@@ -405,6 +472,9 @@ namespace Shamisen
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static uint ExtractBitField(uint value, byte start, byte length)
         {
             if (start == 0) return value & ~(~0u << length);
@@ -425,6 +495,9 @@ namespace Shamisen
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
         public static ulong ExtractBitField(ulong value, byte start, byte length)
         {
             if (start == 0) return value & ~(~0ul << length);

@@ -118,6 +118,21 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         </None>
+        <None Include="Utils\Audio\AudioUtils.Fallback.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.g.tt</DependentUpon>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
+        </None>
         <None Include="Utils\Binary\BinaryExtensions.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -168,6 +183,18 @@
         <None Update="SystemExtensions\Memory\SpanExtensionsTemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Audio\AudioUtils.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
         </None>
         <None Update="Utils\Binary\BinaryExtensions.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
@@ -236,6 +263,21 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
         </Compile>
         <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
           <DesignTime>True</DesignTime>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Shamisen.Codecs.Flac.Parsing
     /// <summary>
     /// Calculates a CRC-16 for FLAC stream. Polynomial: CRC-16-IBM
     /// </summary>
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly partial struct FlacCrc16 : IEquatable<FlacCrc16>
     {
         private readonly ushort state;
@@ -127,7 +129,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (Table0[value ^ (byte)state])));
+        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (Table0[value ^ (byte)(state >> 8)])));
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
@@ -246,5 +248,15 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator !=(FlacCrc16 left, FlacCrc16 right) => !(left == right);
+
+        private string GetDebuggerDisplay() => $"{state}";
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// The converted <see cref="string?"/> instance.
+        /// </returns>
+        public override string? ToString() => GetDebuggerDisplay();
     }
 }

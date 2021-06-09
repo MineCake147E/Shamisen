@@ -151,6 +151,10 @@ namespace Shamisen.Data
                 var src = buffers[p.buffer];
                 src.ReadPosition = p.local;
                 var h = src.Read(destRem);
+                if (h.HasNoData)
+                {
+                    return wlen == 0 ? h : wlen;
+                }
                 destRem = destRem.Slice(h.Length);
                 position += (ulong)h.Length;
                 wlen += h.Length;

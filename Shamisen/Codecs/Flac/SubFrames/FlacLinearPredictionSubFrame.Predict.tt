@@ -7,8 +7,10 @@
 <#
     var b = new HashSet<int>(){2};
     var enregisterPrevious = new HashSet<int>(){1,2,3,4};
+    var enregisterCoeffs = new HashSet<int>(){1, 2, 3, 4, 5, 6, 7, 8};
     var c = Enumerable.Range(1, 32);
-    var names = c.Select(f=>(Order: f, Suffix:(b.Contains(f)?"Standard":""), enregisterPrevious: enregisterPrevious.Contains(f)));
+    var names = c.Select(f=>(Order: f, Suffix:(b.Contains(f)?"Standard":""), enregisterPrevious: enregisterPrevious.Contains(f),
+    enregisterCoeffs: enregisterCoeffs.Contains(f)));
  #>
 using System;
 using System.Collections.Generic;
@@ -52,14 +54,13 @@ namespace Shamisen.Codecs.Flac.SubFrames
             for(int i = 0; i < item.Order; i++){
                 Write($"\t\t\tvar prev{i} = output[{i}];\r\n");
             }
+        }
+        if(item.enregisterCoeffs){
             for(int i = 0; i < item.Order; i++){
                 Write($"\t\t\tvar coeff{i} = coeffs[{i}];\r\n");
             }
-        }else{#>
-            Span<int> prev = stackalloc int[Order];
-            output.SliceWhile(Order).CopyTo(prev);
-            _ = prev[Order - 1];
-<#        }#>
+        }
+#>
             int sum = 0;
             var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
             int dataLength = output.Length - Order;
@@ -69,27 +70,100 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 sum = 0;
 <#        if(item.enregisterPrevious){
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * prev{i};\r\n\t\t\t\tprev{i} = prev{i - 1};\r\n");
+                Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - i - 1};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
             }
-            Write($"\t\t\t\tsum += coeff0 * prev0;\r\n");
-        }else{
+            Write($"\t\t\t\tsum += coeff0 * prev{item.Order - 1};\r\n");
+        }
+        else if(item.enregisterCoeffs)
+        {
             for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeffs[{i}] * prev[{i}];\r\n");
+                Write($"\t\t\t\tsum += coeff{i} * output[i + {item.Order - 1 - i}];\r\n");
             }
-            Write($"\t\t\t\tsum += coeffs[0] * prev[0];\r\n");
+            Write($"\t\t\t\tsum += coeff0 * output[i + {item.Order - 1}];\r\n");
+        }
+        else
+        {
+            for(int i = item.Order - 1; i > 0; i--){
+                Write($"\t\t\t\tsum += coeffs[{i}] * output[i + {item.Order - i - 1}];\r\n");
+            }
+            Write($"\t\t\t\tsum += coeffs[0] * output[i + {item.Order - 1}];\r\n");
         }
 #>
                 sum >>= shiftsNeeded;
                 sum += r[i];
                 d[i] = sum;
-<#        if(!item.enregisterPrevious){
-            for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tprev[{i}] = prev[{i-1}];\r\n");
+<#        if(item.enregisterPrevious){#>
+                prev<#=                item.Order - 1 #> = sum;
+<#        }#>
             }
+        }
+<#    } #>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static unsafe void RestoreSignalStandardWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+            var order = coeffs.Length;
+            switch (order)
+            {
+<#    foreach(var item in names){#>
+                case <#=            item.Order#>:
+                    <#=            $"RestoreSignalOrder{item.Order}Wide{item.Suffix}"#>(shiftsNeeded, residual, coeffs, output);
+                    return;
+<#    }#>
+                default:
+                    throw new FlacException("Invalid FLAC stream!");
+            }
+        }
+
+<#    foreach(var item in names){#>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}Wide{item.Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+            const int Order = <#=            item.Order#>;
+            if(coeffs.Length < Order) return;
+            _ = coeffs[Order - 1];
+<#        if(item.enregisterPrevious){
+            for(int i = 0; i < item.Order; i++){
+                Write($"\t\t\tvar prev{i} = output[{i}];\r\n");
+            }
+        }
+        if(item.enregisterCoeffs){
+            for(int i = 0; i < item.Order; i++){
+                Write($"\t\t\tlong coeff{i} = coeffs[{i}];\r\n");
+            }
+        }#>
+            long sum = 0;
+            var d = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(output)) + Order;
+            int dataLength = output.Length - Order;
+            var r = (int*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(residual));
+            for(int i = 0; i < dataLength; i++)
+            {
+                sum = 0;
+<#        if(item.enregisterPrevious){
+            for(int i = item.Order - 1; i > 0; i--){
+                Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - 1 - i};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
+            }
+            Write($"\t\t\t\tsum += coeff0 * prev{item.Order - 1};\r\n");
+        }
+        else if(item.enregisterCoeffs)
+        {
+            for(int i = item.Order - 1; i > 0; i--){
+                Write($"\t\t\t\tsum += coeff{i} * output[i + {item.Order - 1 - i}];\r\n");
+            }
+            Write($"\t\t\t\tsum += coeff0 * output[i + {item.Order - 1}];\r\n");
+        }
+        else
+        {
+            for(int i = item.Order - 1; i > 0; i--){
+                Write($"\t\t\t\tsum += coeffs[{i}] * (long)output[i + {item.Order - 1 - i}];\r\n");
+            }
+            Write($"\t\t\t\tsum += coeffs[0] * (long)output[i + {item.Order - 1}];\r\n");
+        }
 #>
-                prev[0] = sum;
-<#        }else{#>
-                prev0 = sum;
+                sum >>= shiftsNeeded;
+                sum += r[i];
+                d[i] = (int)sum;
+<#        if(item.enregisterPrevious){#>
+                prev<#=                item.Order - 1 #> = (int)sum;
 <#        }#>
             }
         }

@@ -14,8 +14,16 @@ namespace Shamisen.Utils
 {
     public static partial class AudioUtils
     {
-        internal static class X86
+        internal static partial class X86
         {
+            internal static bool IsSupported =>
+#if NET5_0_OR_GREATER
+                X86Base.IsSupported;
+
+#else
+                Sse.IsSupported;
+#endif
+
             #region Stereo
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -41,14 +49,19 @@ namespace Shamisen.Utils
                 {
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
+                    if (left.Length < Vector256<int>.Count)
+                    {
+                        Fallback.InterleaveStereoInt32(buffer, left, right);
+                        return;
+                    }
                     right = right.SliceWhile(left.Length);
                     buffer = buffer.SliceWhile(left.Length * 2);
                     //These pre-touches may avoid some range checks
                     _ = right[left.Length - 1];
                     _ = buffer[left.Length * 2 - 1];
-                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out buffer);
-                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out left);
-                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out right);
+                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
+                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out var rleft);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out var rright);
                     ref var rL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(left));
                     ref var rR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(right));
                     ref var rB = ref Unsafe.As<int, (Vector256<int>, Vector256<int>)>(ref MemoryMarshal.GetReference(buffer));
@@ -60,13 +73,13 @@ namespace Shamisen.Utils
                         var ymm1 = Unsafe.AddByteOffset(ref rR, i);
                         var x = Avx2.UnpackLow(ymm0, ymm1);
                         var y = Avx2.UnpackHigh(ymm0, ymm1);
-                        var d = Avx2.Permute2x128(x, y, 0b00100000);
-                        var q = Avx2.Permute2x128(x, y, 0b00110001);
+                        var d = Avx2.Permute2x128(x, y, 0x20);
+                        var q = Avx2.Permute2x128(x, y, 0x31);
                         Unsafe.AddByteOffset(ref rB, j) = (d, q);
                         j += 2 * sizeof(Vector256<int>);
                     }
+                    Fallback.InterleaveStereoInt32(rbuffer, rleft, rright);
                 }
-                Fallback.InterleaveStereoInt32(buffer, left, right);
             }
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -76,14 +89,19 @@ namespace Shamisen.Utils
                 {
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
+                    if (left.Length < Vector256<int>.Count)
+                    {
+                        Fallback.InterleaveStereoInt32(buffer, left, right);
+                        return;
+                    }
                     right = right.SliceWhile(left.Length);
                     buffer = buffer.SliceWhile(left.Length * 2);
                     //These pre-touches may avoid some range checks
                     _ = right[left.Length - 1];
                     _ = buffer[left.Length * 2 - 1];
-                    _ = MemoryUtils.CastSplit<int, (Vector256<float>, Vector256<float>)>(buffer, out buffer);
-                    var vL = MemoryUtils.CastSplit<int, Vector256<float>>(left, out left);
-                    _ = MemoryUtils.CastSplit<int, Vector256<float>>(right, out right);
+                    _ = MemoryUtils.CastSplit<int, (Vector256<float>, Vector256<float>)>(buffer, out var rbuffer);
+                    var vL = MemoryUtils.CastSplit<int, Vector256<float>>(left, out var rleft);
+                    _ = MemoryUtils.CastSplit<int, Vector256<float>>(right, out var rright);
                     ref var rL = ref Unsafe.As<int, Vector256<float>>(ref MemoryMarshal.GetReference(left));
                     ref var rR = ref Unsafe.As<int, Vector256<float>>(ref MemoryMarshal.GetReference(right));
                     ref var rB = ref Unsafe.As<int, (Vector256<float>, Vector256<float>)>(ref MemoryMarshal.GetReference(buffer));
@@ -100,8 +118,8 @@ namespace Shamisen.Utils
                         Unsafe.AddByteOffset(ref rB, j) = (d, q);
                         j += 2 * sizeof(Vector256<float>);
                     }
+                    Fallback.InterleaveStereoInt32(rbuffer, rleft, rright);
                 }
-                Fallback.InterleaveStereoInt32(buffer, left, right);
             }
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -111,14 +129,19 @@ namespace Shamisen.Utils
                 {
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
+                    if (left.Length < Vector256<int>.Count)
+                    {
+                        Fallback.InterleaveStereoSingle(buffer, left, right);
+                        return;
+                    }
                     right = right.SliceWhile(left.Length);
                     buffer = buffer.SliceWhile(left.Length * 2);
                     //These pre-touches may avoid some range checks
                     _ = right[left.Length - 1];
                     _ = buffer[left.Length * 2 - 1];
-                    _ = MemoryUtils.CastSplit<float, (Vector256<float>, Vector256<float>)>(buffer, out buffer);
-                    var vL = MemoryUtils.CastSplit<float, Vector256<float>>(left, out left);
-                    _ = MemoryUtils.CastSplit<float, Vector256<float>>(right, out right);
+                    _ = MemoryUtils.CastSplit<float, (Vector256<float>, Vector256<float>)>(buffer, out var rbuffer);
+                    var vL = MemoryUtils.CastSplit<float, Vector256<float>>(left, out var rleft);
+                    _ = MemoryUtils.CastSplit<float, Vector256<float>>(right, out var rright);
                     ref var rL = ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetReference(left));
                     ref var rR = ref Unsafe.As<float, Vector256<float>>(ref MemoryMarshal.GetReference(right));
                     ref var rB = ref Unsafe.As<float, (Vector256<float>, Vector256<float>)>(ref MemoryMarshal.GetReference(buffer));
@@ -135,8 +158,8 @@ namespace Shamisen.Utils
                         Unsafe.AddByteOffset(ref rB, j) = (d, q);
                         j += 2 * sizeof(Vector256<float>);
                     }
+                    Fallback.InterleaveStereoSingle(rbuffer, rleft, rright);
                 }
-                Fallback.InterleaveStereoSingle(buffer, left, right);
             }
 
             #endregion Stereo
@@ -162,13 +185,19 @@ namespace Shamisen.Utils
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (left.Length > center.Length) throw new ArgumentException("center must be as long as left!", nameof(center));
                     if (buffer.Length < left.Length * 3) throw new ArgumentException("buffer must be 3 times as long as left!");
+                    if (left.Length < Vector256<int>.Count)
+                    {
+                        Fallback.InterleaveThreeInt32(buffer, left, right, center);
+                        return;
+                    }
                     right = right.SliceWhile(left.Length);
+                    center = center.SliceWhile(left.Length);
                     buffer = buffer.SliceWhile(left.Length * 3);
                     //These pre-touches may avoid some range checks
-                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out buffer);
-                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out left);
-                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out right);
-                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(center, out center);
+                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
+                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out var rleft);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out var rright);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(center, out var rcenter);
                     ref var rL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(left));
                     ref var rR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(right));
                     ref var rC = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(center));
@@ -202,11 +231,97 @@ namespace Shamisen.Utils
                         Unsafe.AddByteOffset(ref rB, j) = (ymm0, ymm1, ymm2);
                         j += 3 * sizeof(Vector256<int>);
                     }
+                    if (rleft.Length > 0)
+                    {
+                        Fallback.InterleaveThreeInt32(rbuffer, rleft, rright, rcenter);
+                    }
                 }
-                Fallback.InterleaveStereoInt32(buffer, left, right);
             }
 
             #endregion Three
+
+            #region Quad
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void InterleaveQuadInt32(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
+            {
+                if (Avx2.IsSupported)
+                {
+                    InterleaveQuadInt32Avx2(buffer, frontLeft, frontRight, rearLeft, rearRight);
+                    return;
+                }
+                Fallback.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void InterleaveQuadInt32Avx2(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
+            {
+                unsafe
+                {
+                    const int Channels = 4;
+                    if (frontLeft.Length > frontRight.Length) throw new ArgumentException("right must be as long as left!", nameof(frontRight));
+                    if (frontLeft.Length > rearLeft.Length) throw new ArgumentException("center must be as long as left!", nameof(rearLeft));
+                    if (frontLeft.Length > rearRight.Length) throw new ArgumentException("center must be as long as left!", nameof(rearRight));
+                    if (buffer.Length < frontLeft.Length * Channels) throw new ArgumentException("buffer must be 4 times as long as left!");
+                    //These pre-touches may avoid some range checks
+                    _ = frontRight[frontLeft.Length - 1];
+                    _ = rearLeft[frontLeft.Length - 1];
+                    _ = rearRight[frontLeft.Length - 1];
+                    _ = buffer[frontLeft.Length * Channels - 1];
+                    frontRight = frontRight.SliceWhile(frontLeft.Length);
+                    rearLeft = rearLeft.SliceWhile(frontLeft.Length);
+                    rearRight = rearRight.SliceWhile(frontLeft.Length);
+                    buffer = buffer.SliceWhile(frontLeft.Length * Channels);
+                    //These pre-touches may avoid some range checks
+                    _ = frontRight[frontLeft.Length - 1];
+                    _ = rearLeft[frontLeft.Length - 1];
+                    _ = rearRight[frontLeft.Length - 1];
+                    _ = buffer[frontLeft.Length * 2 - 1];
+                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>, Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
+                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(frontLeft, out var rfleft);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(frontRight, out var rfright);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(rearLeft, out var rrleft);
+                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(rearRight, out var rrright);
+                    ref var rFL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(frontLeft));
+                    ref var rFR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(frontRight));
+                    ref var rRL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(rearLeft));
+                    ref var rRR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(rearRight));
+                    ref var rB = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(buffer));
+                    nint length = vL.Length;
+                    nint j = 0;
+                    for (nint i = 0; i < length; i++)
+                    {
+                        var ymm0 = Unsafe.Add(ref rFL, i);
+                        var ymm1 = Unsafe.Add(ref rFR, i);
+                        var ymm2 = Unsafe.Add(ref rRL, i);
+                        var ymm3 = Unsafe.Add(ref rRR, i);
+                        var x = Avx2.UnpackLow(ymm0, ymm1);
+                        var y = Avx2.UnpackHigh(ymm0, ymm1);
+                        var z = Avx2.UnpackLow(ymm2, ymm3);
+                        var w = Avx2.UnpackHigh(ymm2, ymm3);
+                        var d = Avx2.Permute2x128(x, y, 0x20).AsInt64();
+                        var p = Avx2.Permute2x128(z, w, 0x20).AsInt64();
+                        var q = Avx2.Permute2x128(x, y, 0x31).AsInt64();
+                        var b = Avx2.Permute2x128(z, w, 0x31).AsInt64();
+                        var h0 = Avx2.UnpackLow(d, p);
+                        var h1 = Avx2.UnpackHigh(d, p);
+                        var h2 = Avx2.UnpackLow(q, b);
+                        var h3 = Avx2.UnpackHigh(q, b);
+                        var s0 = Avx2.Permute2x128(h0, h1, 0x20).AsInt32();
+                        var s1 = Avx2.Permute2x128(h0, h1, 0x31).AsInt32();
+                        var s2 = Avx2.Permute2x128(h2, h3, 0x20).AsInt32();
+                        var s3 = Avx2.Permute2x128(h2, h3, 0x31).AsInt32();
+                        Unsafe.AddByteOffset(ref rB, j + sizeof(Vector256<int>) * 0) = s0;
+                        Unsafe.AddByteOffset(ref rB, j + sizeof(Vector256<int>) * 1) = s1;
+                        Unsafe.AddByteOffset(ref rB, j + sizeof(Vector256<int>) * 2) = s2;
+                        Unsafe.AddByteOffset(ref rB, j + sizeof(Vector256<int>) * 3) = s3;
+                        j += 4 * sizeof(Vector256<int>);
+                    }
+                    if (rfleft.Length > 0) Fallback.InterleaveQuadInt32(rbuffer, rfleft, rfright, rrleft, rrright);
+                }
+            }
+
+            #endregion Quad
         }
     }
 }

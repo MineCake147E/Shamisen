@@ -86,7 +86,7 @@ namespace Shamisen.Codecs.Flac
             sampleRate &= (uint)(~0ul >> 44);
             channels &= 0b0111;
             bitDepth &= 0x1f;
-            totalSamples &= 0x000F_FFFF_FFFF_FFFF;
+            totalSamples &= ~(~0ul << 36);
             channels--;
             bitDepth--;
             field4 = ((ulong)sampleRate << 44) | ((ulong)channels << 41) | ((ulong)bitDepth << 36) | totalSamples;
@@ -187,7 +187,7 @@ namespace Shamisen.Codecs.Flac
         public ulong TotalSamples
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => field4 & 0x000F_FFFF_FFFF_FFFF;
+            get => field4 & ~(~0ul << 36);
         }
 
         /// <summary>

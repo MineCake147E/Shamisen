@@ -26,6 +26,14 @@ namespace Shamisen
     {
 #if NETCOREAPP3_1_OR_GREATER
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="v0"></param>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
         public static void Deconstruct(this Vector256<ulong> vector, out ulong v0, out ulong v1, out ulong v2, out ulong v3)
         {
             v0 = vector.GetElement(0);

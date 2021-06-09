@@ -25,12 +25,16 @@ namespace Shamisen.Utils
             {
 #if NET5_0
                 //Arm intrinsics
+
 #endif
 #if NETCOREAPP3_1_OR_GREATER
-                X86.InterleaveStereoInt32(buffer, left, right);
-#else
-                Fallback.InterleaveStereoInt32(buffer, left, right);
+                if (X86.IsSupported)
+                {
+                    X86.InterleaveStereoInt32(buffer, left, right);
+                    return;
+                }
 #endif
+                Fallback.InterleaveStereoInt32(buffer, left, right);
             }
         }
 
@@ -50,10 +54,40 @@ namespace Shamisen.Utils
                 //Arm intrinsics
 #endif
 #if NETCOREAPP3_1_OR_GREATER
-                X86.InterleaveStereoInt32(buffer, left, right);
-#else
-                Fallback.InterleaveStereoInt32(buffer, left, right);
+                if (X86.IsSupported)
+                {
+                    X86.InterleaveThreeInt32(buffer, left, right, center);
+                    return;
+                }
 #endif
+                Fallback.InterleaveThreeInt32(buffer, left, right, center);
+            }
+        }
+
+        /// <summary>
+        /// Interleaves and stores Stereo samples to <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="buffer">The output buffer.</param>
+        /// <param name="frontLeft">The input buffer for front left channel.</param>
+        /// <param name="frontRight">The input buffer for front right channel.</param>
+        /// <param name="rearLeft">The input buffer for rear left channel.</param>
+        /// <param name="rearRight">The input buffer for rear right channel.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void InterleaveQuad(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
+        {
+            unchecked
+            {
+#if NET5_0
+                //Arm intrinsics
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
+                    return;
+                }
+#endif
+                Fallback.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
             }
         }
     }

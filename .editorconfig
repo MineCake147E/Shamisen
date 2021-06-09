@@ -295,3 +295,12 @@ dotnet_diagnostic.CS8618.severity = error
 
 # CS8601: Null 参照代入の可能性があります。
 dotnet_diagnostic.CS8601.severity = error
+
+# S2699: Tests should include assertions
+dotnet_diagnostic.S2699.severity = warning
+
+# CS8629: Null 許容値型は Null になる場合があります。
+dotnet_diagnostic.CS8629.severity = error
+
+# CS8602: null 参照の可能性があるものの逆参照です。
+dotnet_diagnostic.CS8602.severity = error

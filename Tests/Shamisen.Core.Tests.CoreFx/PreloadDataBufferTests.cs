@@ -61,7 +61,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 {
                     var u = ls.ReadByte();
                     var len = gb.Length - u;
-                    AssertExt.DoesNotTakeSoLong(() => ps.ReadAll(gb.Span.SliceWhile(len)), timeout);
+                    TestHelper.DoesNotTakeSoLong(() => ps.ReadAll(gb.Span.SliceWhile(len)), timeout);
                     ns.ReadAll(gn.Span.SliceWhile(len));
                     for (int j = 0; j < vgn.Length; j++)
                     {

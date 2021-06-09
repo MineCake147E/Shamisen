@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Shamisen;
+using DivideSharp;
 
 #if NET5_0_OR_GREATER
 
@@ -293,6 +294,16 @@ namespace System
         public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, ulong maxLength)
             => maxLength > int.MaxValue ? span : span.SliceWhileIfLongerThan((int)maxLength);
 
+        /// <summary>
+        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
+
         #region ReverseEndianness
 
         /// <summary>
@@ -344,7 +355,8 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ReverseEndiannessAvx2(Span<ulong> span)
         {
-            var mask = Vector128.Create(0x0706050403020100ul, 0x0f0e0d0c0b0a0908ul).AsByte();
+            //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
+            var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
             var mask256 = Vector256.Create(mask, mask);
             var qq = MemoryUtils.CastSplit<ulong, (Vector256<byte> v0, Vector256<byte> v1, Vector256<byte> v2, Vector256<byte> v3, Vector256<byte> v4, Vector256<byte> v5, Vector256<byte> v6, Vector256<byte> v7)>(span, out var rem);
             for (int i = 0; i < qq.Length; i++)
@@ -387,7 +399,8 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ReverseEndiannessSsse3(Span<ulong> span)
         {
-            var mask = Vector128.Create(0x0706050403020100ul, 0x0f0e0d0c0b0a0908ul).AsByte();
+            //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
+            var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
             var qq = MemoryUtils.CastSplit<ulong, (Vector128<byte> v0, Vector128<byte> v1, Vector128<byte> v2, Vector128<byte> v3, Vector128<byte> v4, Vector128<byte> v5, Vector128<byte> v6, Vector128<byte> v7)>(span, out var rem);
             for (int i = 0; i < qq.Length; i++)
             {

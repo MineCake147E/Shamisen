@@ -11,17 +11,17 @@ namespace Shamisen.SystemExtensions.Memory
     /// Represents a continuous region of memory.
     /// </summary>
     /// <typeparam name="T">The type of contents.</typeparam>
-    public unsafe readonly ref struct LongSpan<T> where T : unmanaged
+    public unsafe readonly ref struct NativeSpan<T> where T : unmanaged
     {
-        private readonly IntPtr headPointer;
-        private readonly IntPtr length;
+        private readonly nint headPointer;
+        private readonly nint length;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LongSpan{T}"/> struct.
+        /// Initializes a new instance of the <see cref="NativeSpan{T}"/> struct.
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        public LongSpan(IntPtr headPointer, IntPtr length)
+        public NativeSpan(nint headPointer, nint length)
         {
             this.headPointer = headPointer;
             this.length = length;
@@ -30,32 +30,32 @@ namespace Shamisen.SystemExtensions.Memory
         private ref T Head
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => ref Unsafe.AsRef<T>(headPointer.ToPointer());
+            get => ref Unsafe.AsRef<T>(((IntPtr)headPointer).ToPointer());
         }
 
         /// <summary>
-        /// The length of this <see cref="LongSpan{T}"/>.
+        /// The length of this <see cref="NativeSpan{T}"/>.
         /// </summary>
-        public IntPtr Length => length;
+        public nint Length => length;
 
         /// <summary>
-        /// Returns the <paramref name="index"/>th element of this <see cref="LongSpan{T}"/>.
+        /// Returns the <paramref name="index"/>th element of this <see cref="NativeSpan{T}"/>.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public ref T this[IntPtr index]
+        public ref T this[nint index]
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => ref Unsafe.Add(ref Head, index);
         }
 
         /// <summary>
-        /// Slices the <see cref="LongSpan{T}"/> with the specified start.
+        /// Slices the <see cref="NativeSpan{T}"/> with the specified start.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        public LongSpan<T> Slice(IntPtr start)
-            => new((nint)headPointer + start, (nint)length - start);
+        public NativeSpan<T> Slice(nint start)
+            => new(headPointer + start, length - start);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -75,23 +75,23 @@ namespace Shamisen.SystemExtensions.Memory
         public override int GetHashCode() => HashCode.Combine(headPointer, length);
 
         /// <summary>
-        /// Indicates whether the values of two specified <see cref="LongSpan{T}"/> objects are equal.
+        /// Indicates whether the values of two specified <see cref="NativeSpan{T}"/> objects are equal.
         /// </summary>
-        /// <param name="left">The first <see cref="LongSpan{T}"/> to compare.</param>
-        /// <param name="right">The second <see cref="LongSpan{T}"/> to compare.</param>
+        /// <param name="left">The first <see cref="NativeSpan{T}"/> to compare.</param>
+        /// <param name="right">The second <see cref="NativeSpan{T}"/> to compare.</param>
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator ==(LongSpan<T> left, LongSpan<T> right) => left.length == right.length && left.headPointer == right.headPointer;
+        public static bool operator ==(NativeSpan<T> left, NativeSpan<T> right) => left.length == right.length && left.headPointer == right.headPointer;
 
         /// <summary>
-        /// Indicates whether the values of two specified <see cref="LongSpan{T}"/> objects are not equal.
+        /// Indicates whether the values of two specified <see cref="NativeSpan{T}"/> objects are not equal.
         /// </summary>
-        /// <param name="left">The first <see cref="LongSpan{T}"/> to compare.</param>
-        /// <param name="right">The second  <see cref="LongSpan{T}"/> to compare.</param>
+        /// <param name="left">The first <see cref="NativeSpan{T}"/> to compare.</param>
+        /// <param name="right">The second  <see cref="NativeSpan{T}"/> to compare.</param>
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator !=(LongSpan<T> left, LongSpan<T> right) => !(left == right);
+        public static bool operator !=(NativeSpan<T> left, NativeSpan<T> right) => !(left == right);
     }
 }

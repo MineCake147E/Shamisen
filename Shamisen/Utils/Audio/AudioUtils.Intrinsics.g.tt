@@ -1,0 +1,52 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#    var channelAssignmentsX86FallbackOnly = Enumerable.Range(5, 8 - 5 + 1).ToArray(); #>
+<#    var channelAssignmentsArmFallbackOnly = Enumerable.Range(5, 8 - 5 + 1).ToArray(); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+using Shamisen.Utils.Tuples;
+
+namespace Shamisen.Utils
+{
+    public static partial class AudioUtils
+    {
+#if NET5_0_OR_GREATER
+        internal static partial class Arm
+        {
+<#
+    foreach(var channels in channelAssignmentsArmFallbackOnly){#>
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void Interleave<#=            channels#>ChannelsInt32(Span<int> buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
+            {
+                Fallback.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
+            }
+
+<#    }#>
+        }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+        internal static partial class X86
+        {
+<#
+    foreach(var channels in channelAssignmentsX86FallbackOnly){#>
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void Interleave<#=            channels#>ChannelsInt32(Span<int> buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
+            {
+                Fallback.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
+            }
+
+<#    }#>
+        }
+#endif
+    }
+}
