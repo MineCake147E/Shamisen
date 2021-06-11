@@ -20,100 +20,103 @@ namespace Shamisen.Codecs.Flac.SubFrames
             switch (order)
             {
                 case 1:
-                    RestoreSignalOrder1(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder1Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 2:
+                    if(RestoreSignalOrder2Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder2Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 3:
-                    RestoreSignalOrder3(shiftsNeeded, residual, coeffs, output);
+                    if(RestoreSignalOrder3Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
+                    RestoreSignalOrder3Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 4:
-                    RestoreSignalOrder4(shiftsNeeded, residual, coeffs, output);
+                    if(RestoreSignalOrder4Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
+                    RestoreSignalOrder4Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 5:
-                    RestoreSignalOrder5(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder5Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 6:
-                    RestoreSignalOrder6(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder6Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 7:
-                    RestoreSignalOrder7(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder7Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 8:
-                    RestoreSignalOrder8(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder8Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 9:
-                    RestoreSignalOrder9(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder9Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 10:
-                    RestoreSignalOrder10(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder10Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 11:
-                    RestoreSignalOrder11(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder11Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 12:
-                    RestoreSignalOrder12(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder12Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 13:
-                    RestoreSignalOrder13(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder13Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 14:
-                    RestoreSignalOrder14(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder14Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 15:
-                    RestoreSignalOrder15(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder15Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 16:
-                    RestoreSignalOrder16(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder16Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 17:
-                    RestoreSignalOrder17(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder17Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 18:
-                    RestoreSignalOrder18(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder18Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 19:
-                    RestoreSignalOrder19(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder19Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 20:
-                    RestoreSignalOrder20(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder20Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 21:
-                    RestoreSignalOrder21(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder21Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 22:
-                    RestoreSignalOrder22(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder22Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 23:
-                    RestoreSignalOrder23(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder23Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 24:
-                    RestoreSignalOrder24(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder24Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 25:
-                    RestoreSignalOrder25(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder25Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 26:
-                    RestoreSignalOrder26(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder26Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 27:
-                    RestoreSignalOrder27(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder27Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 28:
-                    RestoreSignalOrder28(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder28Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 29:
-                    RestoreSignalOrder29(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder29Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 30:
-                    RestoreSignalOrder30(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder30Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 31:
-                    RestoreSignalOrder31(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder31Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 32:
-                    RestoreSignalOrder32(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder32Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 default:
                     throw new FlacException("Invalid FLAC stream!");
@@ -121,7 +124,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder1(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder1Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 1;
             if(coeffs.Length < Order) return;
@@ -167,7 +170,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder3Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 3;
             if(coeffs.Length < Order) return;
@@ -192,7 +195,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder4Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 4;
             if(coeffs.Length < Order) return;
@@ -219,7 +222,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder5Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 5;
             if(coeffs.Length < Order) return;
@@ -248,7 +251,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder6Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 6;
             if(coeffs.Length < Order) return;
@@ -279,7 +282,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder7Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 7;
             if(coeffs.Length < Order) return;
@@ -312,7 +315,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder8Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 8;
             if(coeffs.Length < Order) return;
@@ -347,7 +350,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder9Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 9;
             if(coeffs.Length < Order) return;
@@ -376,7 +379,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder10Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 10;
             if(coeffs.Length < Order) return;
@@ -406,7 +409,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder11Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 11;
             if(coeffs.Length < Order) return;
@@ -437,7 +440,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder12Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 12;
             if(coeffs.Length < Order) return;
@@ -469,7 +472,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder13Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 13;
             if(coeffs.Length < Order) return;
@@ -502,7 +505,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder14Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 14;
             if(coeffs.Length < Order) return;
@@ -536,7 +539,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder15Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 15;
             if(coeffs.Length < Order) return;
@@ -571,7 +574,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder16Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 16;
             if(coeffs.Length < Order) return;
@@ -607,7 +610,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder17Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 17;
             if(coeffs.Length < Order) return;
@@ -644,7 +647,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder18Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 18;
             if(coeffs.Length < Order) return;
@@ -682,7 +685,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder19Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 19;
             if(coeffs.Length < Order) return;
@@ -721,7 +724,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder20Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 20;
             if(coeffs.Length < Order) return;
@@ -761,7 +764,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder21Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 21;
             if(coeffs.Length < Order) return;
@@ -802,7 +805,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder22Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 22;
             if(coeffs.Length < Order) return;
@@ -844,7 +847,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder23Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 23;
             if(coeffs.Length < Order) return;
@@ -887,7 +890,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder24Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 24;
             if(coeffs.Length < Order) return;
@@ -931,7 +934,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder25Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 25;
             if(coeffs.Length < Order) return;
@@ -976,7 +979,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder26Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 26;
             if(coeffs.Length < Order) return;
@@ -1022,7 +1025,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder27Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 27;
             if(coeffs.Length < Order) return;
@@ -1069,7 +1072,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder28Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 28;
             if(coeffs.Length < Order) return;
@@ -1117,7 +1120,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder29Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 29;
             if(coeffs.Length < Order) return;
@@ -1166,7 +1169,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder30Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 30;
             if(coeffs.Length < Order) return;
@@ -1216,7 +1219,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder31Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 31;
             if(coeffs.Length < Order) return;
@@ -1267,7 +1270,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder32Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 32;
             if(coeffs.Length < Order) return;
@@ -1325,100 +1328,103 @@ namespace Shamisen.Codecs.Flac.SubFrames
             switch (order)
             {
                 case 1:
-                    RestoreSignalOrder1Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder1WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 2:
+                    if(RestoreSignalOrder2WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder2WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 3:
-                    RestoreSignalOrder3Wide(shiftsNeeded, residual, coeffs, output);
+                    if(RestoreSignalOrder3WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
+                    RestoreSignalOrder3WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 4:
-                    RestoreSignalOrder4Wide(shiftsNeeded, residual, coeffs, output);
+                    if(RestoreSignalOrder4WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
+                    RestoreSignalOrder4WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 5:
-                    RestoreSignalOrder5Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder5WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 6:
-                    RestoreSignalOrder6Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder6WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 7:
-                    RestoreSignalOrder7Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder7WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 8:
-                    RestoreSignalOrder8Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder8WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 9:
-                    RestoreSignalOrder9Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder9WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 10:
-                    RestoreSignalOrder10Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder10WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 11:
-                    RestoreSignalOrder11Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder11WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 12:
-                    RestoreSignalOrder12Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder12WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 13:
-                    RestoreSignalOrder13Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder13WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 14:
-                    RestoreSignalOrder14Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder14WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 15:
-                    RestoreSignalOrder15Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder15WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 16:
-                    RestoreSignalOrder16Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder16WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 17:
-                    RestoreSignalOrder17Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder17WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 18:
-                    RestoreSignalOrder18Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder18WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 19:
-                    RestoreSignalOrder19Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder19WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 20:
-                    RestoreSignalOrder20Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder20WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 21:
-                    RestoreSignalOrder21Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder21WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 22:
-                    RestoreSignalOrder22Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder22WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 23:
-                    RestoreSignalOrder23Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder23WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 24:
-                    RestoreSignalOrder24Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder24WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 25:
-                    RestoreSignalOrder25Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder25WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 26:
-                    RestoreSignalOrder26Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder26WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 27:
-                    RestoreSignalOrder27Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder27WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 28:
-                    RestoreSignalOrder28Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder28WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 29:
-                    RestoreSignalOrder29Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder29WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 30:
-                    RestoreSignalOrder30Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder30WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 31:
-                    RestoreSignalOrder31Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder31WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 32:
-                    RestoreSignalOrder32Wide(shiftsNeeded, residual, coeffs, output);
+                    RestoreSignalOrder32WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 default:
                     throw new FlacException("Invalid FLAC stream!");
@@ -1426,7 +1432,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder1Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder1WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 1;
             if(coeffs.Length < Order) return;
@@ -1472,7 +1478,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder3Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder3WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 3;
             if(coeffs.Length < Order) return;
@@ -1497,7 +1503,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder4Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder4WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 4;
             if(coeffs.Length < Order) return;
@@ -1524,7 +1530,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder5Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder5WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 5;
             if(coeffs.Length < Order) return;
@@ -1553,7 +1559,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder6Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder6WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 6;
             if(coeffs.Length < Order) return;
@@ -1584,7 +1590,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder7Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder7WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 7;
             if(coeffs.Length < Order) return;
@@ -1617,7 +1623,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder8Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder8WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 8;
             if(coeffs.Length < Order) return;
@@ -1652,7 +1658,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder9Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder9WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 9;
             if(coeffs.Length < Order) return;
@@ -1681,7 +1687,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder10Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder10WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 10;
             if(coeffs.Length < Order) return;
@@ -1711,7 +1717,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder11Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder11WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 11;
             if(coeffs.Length < Order) return;
@@ -1742,7 +1748,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder12Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder12WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 12;
             if(coeffs.Length < Order) return;
@@ -1774,7 +1780,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder13Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder13WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 13;
             if(coeffs.Length < Order) return;
@@ -1807,7 +1813,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder14Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder14WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 14;
             if(coeffs.Length < Order) return;
@@ -1841,7 +1847,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder15Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder15WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 15;
             if(coeffs.Length < Order) return;
@@ -1876,7 +1882,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder16Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder16WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 16;
             if(coeffs.Length < Order) return;
@@ -1912,7 +1918,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder17Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder17WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 17;
             if(coeffs.Length < Order) return;
@@ -1949,7 +1955,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder18Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder18WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 18;
             if(coeffs.Length < Order) return;
@@ -1987,7 +1993,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder19Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder19WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 19;
             if(coeffs.Length < Order) return;
@@ -2026,7 +2032,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder20Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder20WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 20;
             if(coeffs.Length < Order) return;
@@ -2066,7 +2072,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder21Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder21WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 21;
             if(coeffs.Length < Order) return;
@@ -2107,7 +2113,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder22Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder22WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 22;
             if(coeffs.Length < Order) return;
@@ -2149,7 +2155,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder23Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder23WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 23;
             if(coeffs.Length < Order) return;
@@ -2192,7 +2198,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder24Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder24WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 24;
             if(coeffs.Length < Order) return;
@@ -2236,7 +2242,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder25Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder25WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 25;
             if(coeffs.Length < Order) return;
@@ -2281,7 +2287,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder26Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder26WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 26;
             if(coeffs.Length < Order) return;
@@ -2327,7 +2333,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder27Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder27WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 27;
             if(coeffs.Length < Order) return;
@@ -2374,7 +2380,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder28Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder28WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 28;
             if(coeffs.Length < Order) return;
@@ -2422,7 +2428,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder29Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder29WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 29;
             if(coeffs.Length < Order) return;
@@ -2471,7 +2477,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder30Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder30WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 30;
             if(coeffs.Length < Order) return;
@@ -2521,7 +2527,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder31Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder31WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 31;
             if(coeffs.Length < Order) return;
@@ -2572,7 +2578,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void RestoreSignalOrder32Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalOrder32WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 32;
             if(coeffs.Length < Order) return;

@@ -21,6 +21,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// Initializes a new instance of <see cref="FlacConstantSubFrame"/>.
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="wastedBits"></param>
         public FlacConstantSubFrame(int value, int wastedBits)
         {
             this.value = value << wastedBits;
@@ -32,6 +33,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// </summary>
         /// <param name="bitReader">A <see cref="FlacBitReader"/> to read the constant from.</param>
         /// <param name="wastedBits">The number of wasted bits.</param>
+        /// <param name="bitDepth"></param>
         public static FlacConstantSubFrame? ReadFrame(FlacBitReader bitReader, int wastedBits, byte bitDepth)
         {
             (var res, var val) = bitReader.ReadBitsUInt64(bitDepth);

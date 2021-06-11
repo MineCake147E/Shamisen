@@ -661,6 +661,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value"></param>
         /// <param name="rawData"></param>
+        /// <param name="bytesRead"></param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadUtf8UInt32(out uint value, Span<byte> rawData, out int bytesRead)
@@ -703,6 +704,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value"></param>
         /// <param name="rawData"></param>
+        /// <param name="bytesRead"></param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadUtf8UInt64(out ulong value, Span<byte> rawData, out int bytesRead)

@@ -39,8 +39,23 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var flac = new FlacParser(flacSource);
             using var wav = new SimpleWaveParser(new SimpleChunkParserFactory(), wavSource);
             int size = (int)flac.TotalLength * flac.Format.Channels;
-            using var dataF = new PooledArray<int>(size);
-            using var dataW = new PooledArray<Int24>(size);
+            switch (flac.Format.BitDepth)
+            {
+                case 24:
+                    Compare24(flac, wav, size);
+                    break;
+                case 16:
+                    Compare16(flac, wav, size);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private static void Compare24(FlacParser flac, SimpleWaveParser wav, int size)
+        {
+            var dataF = new PooledArray<int>(size);
+            var dataW = new PooledArray<Int24>(size);
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
             Assert.AreEqual(size * sizeof(int), rr.Length);
             var rw = wav.Read(MemoryMarshal.Cast<Int24, byte>(dataW.Span));
@@ -56,6 +71,32 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                     if (sw[i] != (int)(Int24)sf[i])
                     {
                         Assert.AreEqual((int)sw[i], (int)(Int24)sf[i], $"Comparing {i}th element");
+                        err++;
+                        if (err > 128) break;
+                    }
+                }
+            });
+        }
+
+        private static void Compare16(FlacParser flac, SimpleWaveParser wav, int size)
+        {
+            var dataF = new PooledArray<int>(size);
+            var dataW = new PooledArray<short>(size);
+            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
+            Assert.AreEqual(size * sizeof(int), rr.Length);
+            var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
+            Assert.AreEqual(rw.Length / sizeof(short), rr.Length / sizeof(int));
+            Debug.WriteLine("Comparing!");
+            Assert.Multiple(() =>
+            {
+                var err = 0ul;
+                var sw = dataW.Span;
+                var sf = dataF.Span;
+                for (int i = 0; i < sw.Length; i++)
+                {
+                    if (sw[i] != (short)sf[i])
+                    {
+                        Assert.AreEqual(sw[i], (short)sf[i], $"Comparing {i}th element");
                         err++;
                         if (err > 128) break;
                     }

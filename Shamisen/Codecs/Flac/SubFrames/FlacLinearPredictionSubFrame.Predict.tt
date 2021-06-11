@@ -5,12 +5,13 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#
-    var b = new HashSet<int>(){2};
+    var intrinsicsArmed = new HashSet<int>(){2, 3, 4};
     var enregisterPrevious = new HashSet<int>(){1};
     var enregisterCoeffs = new HashSet<int>(){1, 2, 3, 4, 5, 6, 7, 8};
     var c = Enumerable.Range(1, 32);
-    var names = c.Select(f=>(Order: f, Suffix:(b.Contains(f)?"Standard":""), enregisterPrevious: enregisterPrevious.Contains(f),
+    var names = c.Select(f=>(Order: f, intrinsicsArmed:intrinsicsArmed.Contains(f), enregisterPrevious: enregisterPrevious.Contains(f),
     enregisterCoeffs: enregisterCoeffs.Contains(f)));
+    const string Suffix = "Standard";
  #>
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,10 @@ namespace Shamisen.Codecs.Flac.SubFrames
             {
 <#    foreach(var item in names){#>
                 case <#=            item.Order#>:
-                    <#=            $"RestoreSignalOrder{item.Order}{item.Suffix}"#>(shiftsNeeded, residual, coeffs, output);
+<#        if(item.intrinsicsArmed){ #>
+                    if(<#=                $"RestoreSignalOrder{item.Order}Intrinsic"#>(shiftsNeeded, residual, coeffs, output)) return;
+<#        } #>
+                    <#=            $"RestoreSignalOrder{item.Order}{Suffix}"#>(shiftsNeeded, residual, coeffs, output);
                     return;
 <#    }#>
                 default:
@@ -45,7 +49,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
 <#    foreach(var item in names){#>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}{item.Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = <#=            item.Order#>;
             if(coeffs.Length < Order) return;
@@ -111,7 +115,10 @@ namespace Shamisen.Codecs.Flac.SubFrames
             {
 <#    foreach(var item in names){#>
                 case <#=            item.Order#>:
-                    <#=            $"RestoreSignalOrder{item.Order}Wide{item.Suffix}"#>(shiftsNeeded, residual, coeffs, output);
+<#        if(item.intrinsicsArmed){ #>
+                    if(<#=                $"RestoreSignalOrder{item.Order}WideIntrinsic"#>(shiftsNeeded, residual, coeffs, output)) return;
+<#        } #>
+                    <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(shiftsNeeded, residual, coeffs, output);
                     return;
 <#    }#>
                 default:
@@ -121,7 +128,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
 <#    foreach(var item in names){#>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}Wide{item.Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = <#=            item.Order#>;
             if(coeffs.Length < Order) return;
