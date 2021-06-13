@@ -10071,15 +10071,15 @@
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.Dispose">
             <summary>
@@ -11968,41 +11968,103 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.IAudioFormat`1">
+        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
             <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            Represents a format of a half-precision sample source.
             </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
             <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
+            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
             </summary>
             <value>
             The bit depth.
             </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Half"/>s.
+            </value>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -12054,6 +12116,42 @@
             </summary>
             <value>
             The extra data.
+            </value>
+        </member>
+        <member name="T:Shamisen.IAudioFormat`1">
+            <summary>
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
+            <summary>
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
+            </summary>
+            <value>
+            The bit depth.
             </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
@@ -14239,12 +14337,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="T:Shamisen.Pipeline.AudioPipe`2">
@@ -17322,7 +17420,7 @@
         </member>
         <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
             <summary>
-            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/> and converts the value to <see cref="T:System.Single"/>.
+            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
@@ -17400,6 +17498,16 @@
             <summary>
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
             </summary>
+        </member>
+        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
+             <summary>
+            
+             </summary>
+             <param name="vector"></param>
+             <param name="v0"></param>
+             <param name="v1"></param>
+             <param name="v2"></param>
+             <param name="v3"></param>
         </member>
         <member name="T:Shamisen.AudioSourceExtensions">
             <summary>
@@ -19232,22 +19340,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -20567,6 +20675,12 @@
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
             </summary>
             <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
         </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>

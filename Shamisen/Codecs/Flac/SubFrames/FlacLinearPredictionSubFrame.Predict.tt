@@ -5,11 +5,12 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#
-    var intrinsicsArmed = new HashSet<int>(){2, 3, 4};
+    var c = Enumerable.Range(1, 32);
+    var intrinsicsArmed = Enumerable.Range(2, 31).ToHashSet();
+    var intrinsicsArmedWide = Enumerable.Range(2, 31).ToHashSet();
     var enregisterPrevious = new HashSet<int>(){1};
     var enregisterCoeffs = new HashSet<int>(){1, 2, 3, 4, 5, 6, 7, 8};
-    var c = Enumerable.Range(1, 32);
-    var names = c.Select(f=>(Order: f, intrinsicsArmed:intrinsicsArmed.Contains(f), enregisterPrevious: enregisterPrevious.Contains(f),
+    var names = c.Select(f=>(Order: f, intrinsicsArmed:intrinsicsArmed.Contains(f), enregisterPrevious: enregisterPrevious.Contains(f), intrinsicsArmedWide: intrinsicsArmedWide.Contains(f),
     enregisterCoeffs: enregisterCoeffs.Contains(f)));
     const string Suffix = "Standard";
  #>
@@ -69,7 +70,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             ref var c = ref MemoryMarshal.GetReference(coeffs);
 <#        }
 #>
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -115,7 +116,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             {
 <#    foreach(var item in names){#>
                 case <#=            item.Order#>:
-<#        if(item.intrinsicsArmed){ #>
+<#        if(item.intrinsicsArmedWide){ #>
                     if(<#=                $"RestoreSignalOrder{item.Order}WideIntrinsic"#>(shiftsNeeded, residual, coeffs, output)) return;
 <#        } #>
                     <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(shiftsNeeded, residual, coeffs, output);
@@ -148,7 +149,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             ref var c = ref MemoryMarshal.GetReference(coeffs);
 <#        }
 #>
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;

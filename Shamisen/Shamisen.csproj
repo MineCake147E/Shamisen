@@ -73,10 +73,20 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacCrc8.table.tt</DependentUpon>
         </None>
+        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
+        </None>
         <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+        </None>
+        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
         </None>
         <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>
@@ -148,9 +158,17 @@
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
         </None>
+        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacLinearPredictionSubFrame.Intrinsics.g.cs</LastGenOutput>
+        </None>
         <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
+        </None>
+        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>FlacLinearPredictionSubFrame.X86.g.cs</LastGenOutput>
         </None>
         <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
@@ -219,10 +237,20 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacCrc8.table.tt</DependentUpon>
         </Compile>
+        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
+        </Compile>
         <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
         </Compile>
         <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
           <DesignTime>True</DesignTime>

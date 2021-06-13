@@ -178,60 +178,6 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #pragma warning restore IDE0022
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder2Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (X86.RestoreSignalOrder2(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder3Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (X86.RestoreSignalOrder3(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder4Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (X86.RestoreSignalOrder4(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder2WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (X86.RestoreSignalOrder2Wide(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder3WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            //if (X86.RestoreSignalOrder3(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static unsafe bool RestoreSignalOrder4WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            //if (X86.RestoreSignalOrder4(shiftsNeeded, residual, coeffs, output)) return true;
-#endif
-            return false;
-        }
-
         /// <summary>
         /// Implemented for comparison against libFLAC.
         /// </summary>

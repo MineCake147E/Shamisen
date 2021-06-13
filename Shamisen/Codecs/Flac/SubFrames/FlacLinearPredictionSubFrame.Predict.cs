@@ -35,87 +35,115 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     RestoreSignalOrder4Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 5:
+                    if(RestoreSignalOrder5Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder5Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 6:
+                    if(RestoreSignalOrder6Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder6Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 7:
+                    if(RestoreSignalOrder7Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder7Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 8:
+                    if(RestoreSignalOrder8Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder8Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 9:
+                    if(RestoreSignalOrder9Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder9Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 10:
+                    if(RestoreSignalOrder10Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder10Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 11:
+                    if(RestoreSignalOrder11Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder11Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 12:
+                    if(RestoreSignalOrder12Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder12Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 13:
+                    if(RestoreSignalOrder13Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder13Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 14:
+                    if(RestoreSignalOrder14Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder14Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 15:
+                    if(RestoreSignalOrder15Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder15Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 16:
+                    if(RestoreSignalOrder16Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder16Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 17:
+                    if(RestoreSignalOrder17Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder17Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 18:
+                    if(RestoreSignalOrder18Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder18Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 19:
+                    if(RestoreSignalOrder19Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder19Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 20:
+                    if(RestoreSignalOrder20Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder20Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 21:
+                    if(RestoreSignalOrder21Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder21Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 22:
+                    if(RestoreSignalOrder22Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder22Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 23:
+                    if(RestoreSignalOrder23Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder23Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 24:
+                    if(RestoreSignalOrder24Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder24Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 25:
+                    if(RestoreSignalOrder25Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder25Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 26:
+                    if(RestoreSignalOrder26Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder26Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 27:
+                    if(RestoreSignalOrder27Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder27Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 28:
+                    if(RestoreSignalOrder28Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder28Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 29:
+                    if(RestoreSignalOrder29Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder29Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 30:
+                    if(RestoreSignalOrder30Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder30Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 31:
+                    if(RestoreSignalOrder31Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder31Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 32:
+                    if(RestoreSignalOrder32Intrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder32Standard(shiftsNeeded, residual, coeffs, output);
                     return;
                 default:
@@ -131,7 +159,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             _ = coeffs[Order - 1];
 			var prev0 = output[0];
 			var coeff0 = coeffs[0];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -154,7 +182,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             _ = coeffs[Order - 1];
 			var coeff0 = coeffs[0];
 			var coeff1 = coeffs[1];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -178,7 +206,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff0 = coeffs[0];
 			var coeff1 = coeffs[1];
 			var coeff2 = coeffs[2];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -204,7 +232,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff1 = coeffs[1];
 			var coeff2 = coeffs[2];
 			var coeff3 = coeffs[3];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -232,7 +260,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff2 = coeffs[2];
 			var coeff3 = coeffs[3];
 			var coeff4 = coeffs[4];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -262,7 +290,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff3 = coeffs[3];
 			var coeff4 = coeffs[4];
 			var coeff5 = coeffs[5];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -294,7 +322,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff4 = coeffs[4];
 			var coeff5 = coeffs[5];
 			var coeff6 = coeffs[6];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -328,7 +356,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			var coeff5 = coeffs[5];
 			var coeff6 = coeffs[6];
 			var coeff7 = coeffs[7];
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -356,7 +384,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -385,7 +413,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -415,7 +443,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -446,7 +474,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -478,7 +506,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -511,7 +539,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -545,7 +573,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -580,7 +608,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -616,7 +644,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -653,7 +681,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -691,7 +719,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -730,7 +758,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -770,7 +798,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -811,7 +839,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -853,7 +881,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -896,7 +924,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -940,7 +968,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -985,7 +1013,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1031,7 +1059,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1078,7 +1106,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1126,7 +1154,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1175,7 +1203,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1225,7 +1253,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1276,7 +1304,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            int sum = 0;
+            int sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1343,87 +1371,115 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     RestoreSignalOrder4WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 5:
+                    if(RestoreSignalOrder5WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder5WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 6:
+                    if(RestoreSignalOrder6WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder6WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 7:
+                    if(RestoreSignalOrder7WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder7WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 8:
+                    if(RestoreSignalOrder8WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder8WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 9:
+                    if(RestoreSignalOrder9WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder9WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 10:
+                    if(RestoreSignalOrder10WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder10WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 11:
+                    if(RestoreSignalOrder11WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder11WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 12:
+                    if(RestoreSignalOrder12WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder12WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 13:
+                    if(RestoreSignalOrder13WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder13WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 14:
+                    if(RestoreSignalOrder14WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder14WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 15:
+                    if(RestoreSignalOrder15WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder15WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 16:
+                    if(RestoreSignalOrder16WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder16WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 17:
+                    if(RestoreSignalOrder17WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder17WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 18:
+                    if(RestoreSignalOrder18WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder18WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 19:
+                    if(RestoreSignalOrder19WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder19WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 20:
+                    if(RestoreSignalOrder20WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder20WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 21:
+                    if(RestoreSignalOrder21WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder21WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 22:
+                    if(RestoreSignalOrder22WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder22WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 23:
+                    if(RestoreSignalOrder23WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder23WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 24:
+                    if(RestoreSignalOrder24WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder24WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 25:
+                    if(RestoreSignalOrder25WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder25WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 26:
+                    if(RestoreSignalOrder26WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder26WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 27:
+                    if(RestoreSignalOrder27WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder27WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 28:
+                    if(RestoreSignalOrder28WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder28WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 29:
+                    if(RestoreSignalOrder29WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder29WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 30:
+                    if(RestoreSignalOrder30WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder30WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 31:
+                    if(RestoreSignalOrder31WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder31WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 case 32:
+                    if(RestoreSignalOrder32WideIntrinsic(shiftsNeeded, residual, coeffs, output)) return;
                     RestoreSignalOrder32WideStandard(shiftsNeeded, residual, coeffs, output);
                     return;
                 default:
@@ -1439,7 +1495,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             _ = coeffs[Order - 1];
 			var prev0 = output[0];
 			long coeff0 = coeffs[0];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1462,7 +1518,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             _ = coeffs[Order - 1];
 			long coeff0 = coeffs[0];
 			long coeff1 = coeffs[1];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1486,7 +1542,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff0 = coeffs[0];
 			long coeff1 = coeffs[1];
 			long coeff2 = coeffs[2];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1512,7 +1568,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff1 = coeffs[1];
 			long coeff2 = coeffs[2];
 			long coeff3 = coeffs[3];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1540,7 +1596,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff2 = coeffs[2];
 			long coeff3 = coeffs[3];
 			long coeff4 = coeffs[4];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1570,7 +1626,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff3 = coeffs[3];
 			long coeff4 = coeffs[4];
 			long coeff5 = coeffs[5];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1602,7 +1658,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff4 = coeffs[4];
 			long coeff5 = coeffs[5];
 			long coeff6 = coeffs[6];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1636,7 +1692,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 			long coeff5 = coeffs[5];
 			long coeff6 = coeffs[6];
 			long coeff7 = coeffs[7];
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1664,7 +1720,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1693,7 +1749,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1723,7 +1779,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1754,7 +1810,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1786,7 +1842,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1819,7 +1875,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1853,7 +1909,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1888,7 +1944,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1924,7 +1980,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1961,7 +2017,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -1999,7 +2055,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2038,7 +2094,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2078,7 +2134,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2119,7 +2175,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2161,7 +2217,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2204,7 +2260,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2248,7 +2304,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2293,7 +2349,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2339,7 +2395,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2386,7 +2442,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2434,7 +2490,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2483,7 +2539,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2533,7 +2589,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
@@ -2584,7 +2640,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if(coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-            long sum = 0;
+            long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;

@@ -1,0 +1,224 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+
+    var c = new [] { 3 }.Concat(Enumerable.Range(5, 32 - 5 + 1));
+    var generateWideOnly = new HashSet<int>(){3, 4};
+    var names = c.Select(f=>(Order: f, GenerateWideOnly: generateWideOnly.Contains(f)));
+ #>
+#if NETCOREAPP3_1_OR_GREATER
+
+#region License notice
+
+/* libFLAC - Free Lossless Audio Codec library
+ * Copyright (C) 2000-2009  Josh Coalson
+ * Copyright (C) 2011-2018  Xiph.Org Foundation
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the Xiph.org Foundation nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#endregion License notice
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shamisen.Codecs.Flac.SubFrames
+{
+    public sealed partial class FlacLinearPredictionSubFrame
+    {
+        internal static partial class X86
+        {
+<#  foreach(var item in names){#>
+#region Order<#=item.Order#>
+<#if(!item.GenerateWideOnly){#>
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static bool <#=$"RestoreSignalOrder{item.Order}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                if (Sse41.IsSupported)
+                {
+                    <#=$"RestoreSignalOrder{item.Order}Sse41"#>(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
+                return false;
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void <#=$"RestoreSignalOrder{item.Order}Sse41"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = <#=item.Order#>;
+                if (coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                Vector128<int> sum;
+                var vzero = Vector128.Create(0);
+                nint dataLength = output.Length - Order;
+<#      
+        int j;
+        for(j = 0; j < item.Order - 3; j+=4)
+        {
+#>
+                var vcoeff<#=j / 4#> = Sse2.LoadVector128((int*)Unsafe.AsPointer(ref Unsafe.Add(ref c, <#=j#>)));
+<#
+        }
+        if(j < item.Order)
+        {#>
+                var vcoeff<#=j / 4#> = Vector128.Create(<#=string.Join(", ", Enumerable.Range(0, 4).Select(a=>(j + a < item.Order ? $"Unsafe.Add(ref c, {j + a})": "0")))#>);
+<#      }
+        int jmax = item.Order + (item.Order % 4 > 0 ? 1 : 0) - 2;
+        int jmax2 = item.Order - 2;
+        int k = 0;
+        for(j = item.Order; j > 3; j-=4)
+        {
+#>
+                var vprev<#=k++#> = Sse2.Shuffle(Sse2.LoadVector128((int*)Unsafe.AsPointer(ref Unsafe.Add(ref o, <#=j - 4#>))).AsInt32(), 0b00_01_10_11);
+<#
+        }
+        if(j >= 0)
+        {#>
+                var vprev<#=k#> = Vector128.Create(<#=string.Join(", ", Enumerable.Range(0, 4).Select(a=>(j - a > 0 ? $"Unsafe.Add(ref o, {j - a - 1})": "0")))#>);
+<#      }
+#>
+                for (nint i = 0; i < dataLength; i++)
+                {
+                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
+<#      for(int i = 0; i < item.Order; i += 4){#>
+                    sum = <#=(i == 0 ? "" : "Sse2.Add(sum, ")#>Sse41.MultiplyLow(vcoeff<#=i / 4#>, vprev<#=i / 4#>)<#=(i == 0 ? "" : ")")#>;
+<#      }#>
+                    var y = Ssse3.HorizontalAdd(sum, vzero);
+                    y = Ssse3.HorizontalAdd(y, vzero);
+                    y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
+                    y = Sse2.Add(y, res);   //Avoids extract and insert
+#if NET5_0_OR_GREATER
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
+#else
+                    Unsafe.Add(ref d, i) = y.GetElement(0);
+#endif
+                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
+<#      for(int i = 0; i < item.Order - 4; i += 4){#>
+                    vprev<#=(jmax - i) / 4#> = Ssse3.AlignRight(vprev<#=(jmax - i) / 4#>, vprev<#=(jmax - i) / 4 - 1#>, 12);
+<#      }#>
+                    vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+<#  }
+        {#>
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static bool <#=$"RestoreSignalOrder{item.Order}Wide"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                if (Sse41.IsSupported)
+                {
+                    <#=$"RestoreSignalOrder{item.Order}WideSse41"#>(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
+                return false;
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void <#=$"RestoreSignalOrder{item.Order}WideSse41"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = <#=item.Order#>;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar((long)shiftsNeeded);
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<long> sum;
+<#      
+        int j;
+        for(j = 0; j < item.Order - 1; j+=2)
+        {
+#>
+                var vcoeff<#=j / 2#> = Sse41.ConvertToVector128Int64(Sse2.LoadScalarVector128((ulong*)Unsafe.AsPointer(ref Unsafe.Add(ref c, <#=j#>))).AsUInt32()).AsInt32();
+<#
+        }
+        if(j < item.Order)
+        {#>
+                var vcoeff<#=j / 2#> = Sse41.ConvertToVector128Int64(Sse2.LoadScalarVector128((uint*)Unsafe.AsPointer(ref Unsafe.Add(ref c, <#=j#>))).AsUInt32()).AsInt32();
+<#      }
+        int jmax = item.Order + (item.Order & 1) - 2;
+        int jmax2 = item.Order - 2;
+        for(j = 0; j < item.Order - 1; j+=2)
+        {
+#>
+                var vprev<#=j / 2#> = Sse2.Shuffle(Sse2.LoadScalarVector128((ulong*)Unsafe.AsPointer(ref Unsafe.Add(ref o, <#=jmax2 - j#>))).AsInt32(), 0b11_00_11_01);
+<#
+        }
+        if(j < item.Order)
+        {#>
+                var vprev<#=j / 2#> = Sse2.Shuffle(Sse2.LoadScalarVector128((ulong*)Unsafe.AsPointer(ref Unsafe.Add(ref o, <#=jmax2 + 1 - j#>))).AsInt32(), 0b11_00_11_00);
+<#      }
+#>
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
+<#      for(int i = 0; i < item.Order; i += 2){#>
+                    sum = <#=(i == 0 ? "" : "Sse2.Add(sum, ")#>Sse41.Multiply(vcoeff<#=i / 2#>, vprev<#=i / 2#>)<#=(i == 0 ? "" : ")")#>;
+<#      }#>
+                    sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
+                    sum = Sse2.ShiftRightLogical(sum, vshift);
+                    var yy = Sse2.Add(sum.AsInt32(), res);
+#if NET5_0_OR_GREATER
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
+<#      for(int i = 0; i < item.Order - 2; i += 2){#>
+                    vprev<#=(jmax - i) / 2#> = Ssse3.AlignRight(vprev<#=(jmax - i) / 2#>, vprev<#=(jmax - i) / 2 - 1#>, 8);
+<#      }#>
+                    vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
+                }
+            }
+#endregion Order<#=item.Order#>
+<#      }
+    } #>
+        }
+    }
+}
+#endif
