@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+using Shamisen.Data;
+
 namespace Shamisen
 {
     /// <summary>
@@ -30,11 +32,12 @@ namespace Shamisen
                 }
                 else
                 {
-                    Span<TSample> buffer = new TSample[Math.Min(numberOfElementsToSkip, 2048)];
+                    var pbuf = new PooledArray<TSample>((int)Math.Min(numberOfElementsToSkip, 2048));
+                    var buffer = pbuf.Span;
                     ulong h = numberOfElementsToSkip;
-                    while (h > 0)
+                    while (h > 0 && h <= numberOfElementsToSkip)
                     {
-                        var result = source.Read(buffer);
+                        var result = source.Read(buffer.SliceWhile((int)Math.Min((ulong)buffer.Length, h)));
                         if (result.IsEndOfStream) return;
                         h -= (uint)result.Length;
                     }

@@ -331,6 +331,7 @@
         <Folder Include="Codecs\Waveform\Headers\" />
         <Folder Include="Data\Composing\" />
         <Folder Include="Metadata\Id3\" />
+        <Folder Include="Optimization\Intrinsics\X86\" />
         <Folder Include="Utils\Samples\" />
     </ItemGroup>
 </Project>

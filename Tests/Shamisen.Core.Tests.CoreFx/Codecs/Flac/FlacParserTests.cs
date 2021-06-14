@@ -21,7 +21,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
     public class FlacParserTests
     {
         public static IEnumerable<FileInfo> FlacParserParsesCorrectlyTestCaseGenerator()
-            => Directory.EnumerateFiles("./Resources/", "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive })
+            => Directory.EnumerateFiles("./Resources/", "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })
             .Select(a => new FileInfo(a)).Where(a => a.Exists);
 
         [TestCaseSource(nameof(FlacParserParsesCorrectlyTestCaseGenerator))]
