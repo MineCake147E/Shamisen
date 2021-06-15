@@ -255,7 +255,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Converts to string.
         /// </summary>
         /// <returns>
-        /// The converted <see cref="string?"/> instance.
+        /// The converted <see cref="string"/> instance.
         /// </returns>
         public override string? ToString() => GetDebuggerDisplay();
     }

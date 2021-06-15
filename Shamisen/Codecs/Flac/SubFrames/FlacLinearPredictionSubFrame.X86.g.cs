@@ -936,6 +936,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder8Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder8Sse41(shiftsNeeded, residual, coeffs, output);
@@ -979,6 +984,48 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder8Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 8;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 0)), permReverse);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1090,6 +1137,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder9Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder9Sse41(shiftsNeeded, residual, coeffs, output);
@@ -1137,6 +1189,54 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder9Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 9;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 8)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 1)), permReverse);
+                var vprev1 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1257,6 +1357,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder10Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder10Sse41(shiftsNeeded, residual, coeffs, output);
@@ -1304,6 +1409,54 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder10Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 10;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 8))).AsInt32(), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 2)), permReverse);
+                var vprev1 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1424,6 +1577,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder11Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder11Sse41(shiftsNeeded, residual, coeffs, output);
@@ -1471,6 +1629,54 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder11Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 11;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Vector256.Create(Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 7)), 4), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 3)), permReverse);
+                var vprev1 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1604,6 +1810,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder12Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder12Sse41(shiftsNeeded, residual, coeffs, output);
@@ -1651,6 +1862,54 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder12Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 12;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Vector256.Create(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 8)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 4)), permReverse);
+                var vprev1 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b00_01_10_11), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1775,6 +2034,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder13Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder13Sse41(shiftsNeeded, residual, coeffs, output);
@@ -1826,6 +2090,56 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder13Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 13;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var permLoadC = Vector256.Create(3,4,5,6,7,0,0,0);
+                var vcoeff1 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 5)), permLoadC), vzero256, 0b1110_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 5)), permReverse);
+                var permLoad = Vector256.Create(4,3,2,1,0,7,7,7);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -1959,6 +2273,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder14Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder14Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2010,6 +2329,56 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder14Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 14;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var permLoadC = Vector256.Create(2,3,4,5,6,7,0,0);
+                var vcoeff1 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 6)), permLoadC), vzero256, 0b1100_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 6)), permReverse);
+                var permLoad = Vector256.Create(5,4,3,2,1,0,7,7);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -2143,6 +2512,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder15Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder15Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2194,6 +2568,56 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder15Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 15;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var permLoadC = Vector256.Create(1,2,3,4,5,6,7,0);
+                var vcoeff1 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 7)), permLoadC), vzero256, 0b1000_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 7)), permReverse);
+                var permLoad = Vector256.Create(6,5,4,3,2,1,0,7);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -2340,6 +2764,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder16Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder16Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2391,6 +2820,54 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder16Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 16;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 8)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 0)), permReverse);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -2528,6 +3005,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder17Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder17Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2583,6 +3065,60 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder17Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 17;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 16)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 9)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 1)), permReverse);
+                var vprev2 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -2729,6 +3265,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder18Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder18Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2784,6 +3325,60 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder18Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 18;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 16))).AsInt32(), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 10)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 2)), permReverse);
+                var vprev2 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -2930,6 +3525,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder19Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder19Sse41(shiftsNeeded, residual, coeffs, output);
@@ -2985,6 +3585,60 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder19Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 19;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Vector256.Create(Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 15)), 4), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 11)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 3)), permReverse);
+                var vprev2 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -3144,6 +3798,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder20Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder20Sse41(shiftsNeeded, residual, coeffs, output);
@@ -3199,6 +3858,60 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder20Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 20;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Vector256.Create(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 16)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 12)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 4)), permReverse);
+                var vprev2 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b00_01_10_11), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -3349,6 +4062,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder21Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder21Sse41(shiftsNeeded, residual, coeffs, output);
@@ -3408,6 +4126,62 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder21Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 21;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var permLoadC = Vector256.Create(3,4,5,6,7,0,0,0);
+                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 13)), permLoadC), vzero256, 0b1110_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 13)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 5)), permReverse);
+                var permLoad = Vector256.Create(4,3,2,1,0,7,7,7);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -3567,6 +4341,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder22Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder22Sse41(shiftsNeeded, residual, coeffs, output);
@@ -3626,6 +4405,62 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder22Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 22;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var permLoadC = Vector256.Create(2,3,4,5,6,7,0,0);
+                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 14)), permLoadC), vzero256, 0b1100_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 14)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 6)), permReverse);
+                var permLoad = Vector256.Create(5,4,3,2,1,0,7,7);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -3785,6 +4620,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder23Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder23Sse41(shiftsNeeded, residual, coeffs, output);
@@ -3844,6 +4684,62 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder23Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 23;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var permLoadC = Vector256.Create(1,2,3,4,5,6,7,0);
+                var vcoeff2 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 15)), permLoadC), vzero256, 0b1000_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 15)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 7)), permReverse);
+                var permLoad = Vector256.Create(6,5,4,3,2,1,0,7);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -4016,6 +4912,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder24Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder24Sse41(shiftsNeeded, residual, coeffs, output);
@@ -4075,6 +4976,60 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder24Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 24;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 16)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 8)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 0)), permReverse);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum0 = Avx2.Add(sum1, sum0);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -4238,6 +5193,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder25Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder25Sse41(shiftsNeeded, residual, coeffs, output);
@@ -4301,6 +5261,66 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder25Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 25;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vcoeff3 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.Add(ref c, 24)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 17)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 9)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 1)), permReverse);
+                var vprev3 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe((int)o), 0b11_11_11_00), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -4473,6 +5493,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder26Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder26Sse41(shiftsNeeded, residual, coeffs, output);
@@ -4536,6 +5561,66 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder26Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 26;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vcoeff3 = Vector256.Create(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref c, 24))).AsInt32(), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 18)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 10)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 2)), permReverse);
+                var vprev3 = Vector256.Create(Sse2.Shuffle(Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref o)).AsInt32(), 0b11_01_00_01), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -4708,6 +5793,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder27Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder27Sse41(shiftsNeeded, residual, coeffs, output);
@@ -4771,6 +5861,66 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder27Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 27;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vcoeff3 = Vector256.Create(Sse2.ShiftRightLogical128BitLane(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 23)), 4), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 19)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 11)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 3)), permReverse);
+                var vprev3 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b11_00_01_10), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -4956,6 +6106,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder28Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder28Sse41(shiftsNeeded, residual, coeffs, output);
@@ -5019,6 +6174,66 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder28Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 28;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vcoeff3 = Vector256.Create(Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref c, 24)), vzero);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 20)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 12)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 4)), permReverse);
+                var vprev3 = Vector256.Create(Sse2.Shuffle(Unsafe.As<int, Vector128<int>>(ref o), 0b00_01_10_11), vzero);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -5195,6 +6410,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder29Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder29Sse41(shiftsNeeded, residual, coeffs, output);
@@ -5262,6 +6482,68 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder29Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 29;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var permLoadC = Vector256.Create(3,4,5,6,7,0,0,0);
+                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 21)), permLoadC), vzero256, 0b1110_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 21)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 13)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 5)), permReverse);
+                var permLoad = Vector256.Create(4,3,2,1,0,7,7,7);
+                var vprev3 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -5447,6 +6729,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder30Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder30Sse41(shiftsNeeded, residual, coeffs, output);
@@ -5514,6 +6801,68 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder30Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 30;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var permLoadC = Vector256.Create(2,3,4,5,6,7,0,0);
+                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 22)), permLoadC), vzero256, 0b1100_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 22)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 14)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 6)), permReverse);
+                var permLoad = Vector256.Create(5,4,3,2,1,0,7,7);
+                var vprev3 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -5699,6 +7048,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder31Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder31Sse41(shiftsNeeded, residual, coeffs, output);
@@ -5766,6 +7120,68 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder31Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 31;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var permLoadC = Vector256.Create(1,2,3,4,5,6,7,0);
+                var vcoeff3 = Avx2.Blend(Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 23)), permLoadC), vzero256, 0b1000_0000);
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 23)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 15)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 7)), permReverse);
+                var permLoad = Vector256.Create(6,5,4,3,2,1,0,7);
+                var vprev3 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref o), permLoad);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
@@ -5964,6 +7380,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
+                if (Avx2.IsSupported)
+                {
+                    RestoreSignalOrder32Avx2(shiftsNeeded, residual, coeffs, output);
+                    return true;
+                }
                 if (Sse41.IsSupported)
                 {
                     RestoreSignalOrder32Sse41(shiftsNeeded, residual, coeffs, output);
@@ -6031,6 +7452,66 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder32Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 32;
+                if(coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                var vshift = Vector128.CreateScalar(shiftsNeeded);
+                var vzero256 = Vector256.Create(0);
+                var vzero = vzero256.GetLower();
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                int dataLength = output.Length - Order;
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                Vector128<int> sum;
+                var permShift = Vector256.Create(7, 0, 1, 2, 3, 4, 5, 6);
+                var permReverse = Vector256.Create(7, 6, 5, 4, 3, 2, 1, 0);
+                Vector256<int> sum0, sum1, sum2;
+                var vcoeff0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 0));
+                var vcoeff1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 8));
+                var vcoeff2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 16));
+                var vcoeff3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref c, 24));
+                var vprev0 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 24)), permReverse);
+                var vprev1 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 16)), permReverse);
+                var vprev2 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 8)), permReverse);
+                var vprev3 = Avx2.PermuteVar8x32(Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref o, 0)), permReverse);
+                for(nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    //Integer Pairwise Summation
+                    sum0 = Avx2.MultiplyLow(vcoeff0, vprev0);
+                    sum1 = Avx2.MultiplyLow(vcoeff1, vprev1);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum1 = Avx2.MultiplyLow(vcoeff2, vprev2);
+                    sum2 = Avx2.MultiplyLow(vcoeff3, vprev3);
+                    sum1 = Avx2.Add(sum1, sum2);
+                    sum0 = Avx2.Add(sum0, sum1);
+                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var yy = Sse2.Add(sum, res);
+#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
+                    vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
+                    vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
+                    vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
+                    vprev3 = Avx2.Blend(vprev3, vprev2, 0b0000_0001);
+                    vprev2 = Avx2.Blend(vprev2, vprev1, 0b0000_0001);
+                    vprev1 = Avx2.Blend(vprev1, vprev0, 0b0000_0001);
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
                 }
             }
 
