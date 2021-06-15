@@ -8,7 +8,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{448D17C3-9E81-4896-BCE4-6706AFFA145C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE.md = LICENSE.md
 		README.md = README.md
+		Shamisen-Logo.svg = Shamisen-Logo.svg
+		Shamisen-NuGetIcon.svg = Shamisen-NuGetIcon.svg
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Outputs", "Outputs", "{27F90A55-94F9-4FFE-977C-C1A66C3D1E02}"

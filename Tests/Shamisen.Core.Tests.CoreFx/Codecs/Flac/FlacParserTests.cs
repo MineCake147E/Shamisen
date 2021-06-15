@@ -21,10 +21,11 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
     public class FlacParserTests
     {
         public static IEnumerable<FileInfo> FlacParserParsesCorrectlyTestCaseGenerator()
-            => Directory.EnumerateFiles("./Resources/", "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })
+            => new[] { "./Samples", "./Songs" }.Where(a => Directory.Exists(a)).SelectMany(a => Directory.EnumerateFiles(a, "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true }))
             .Select(a => new FileInfo(a)).Where(a => a.Exists);
 
         [TestCaseSource(nameof(FlacParserParsesCorrectlyTestCaseGenerator))]
+        [NonParallelizable]
         public void FlacParserParsesCorrectly(FileInfo path)
         {
             Assert.IsTrue(path.Exists);
@@ -34,35 +35,59 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             var wavFile = archive.Entries.First(a => a.Name.EndsWith(".wav"));
             using var flacStream = flacFile.Open();
             using var wavStream = wavFile.Open();
-            using var flacSource = new StreamDataSource(flacStream);
-            using var wavSource = new StreamDataSource(wavStream);
-            using var flac = new FlacParser(flacSource);
+            var t = new Stopwatch();
+            t.Start();
+            using var flacMemory = new MemoryStream();
+            flacStream.CopyTo(flacMemory);
+            flacMemory.Position = 0;
+            using var wavMemory = new MemoryStream();
+            wavStream.CopyTo(wavMemory);
+            wavMemory.Position = 0;
+            t.Stop();
+            Console.WriteLine($"File preparation took {t.Elapsed.TotalSeconds}[s]");
+            using var flacSource = new StreamDataSource(flacMemory);
+            using var wavSource = new StreamDataSource(wavMemory);
             using var wav = new SimpleWaveParser(new SimpleChunkParserFactory(), wavSource);
-            int size = (int)flac.TotalLength * flac.Format.Channels;
-            switch (flac.Format.BitDepth)
+            Console.WriteLine($"Format: {wav.Format.SampleRate}Hz, {wav.Format.BitDepth}bit LinearPCM, {wav.Format.Channels}ch");
+            Console.WriteLine($"TotalLength : {wav.TotalLength}");
+            int size = (int)wav.TotalLength * wav.Format.Channels;
+            switch (wav.Format.BitDepth)
             {
                 case 24:
-                    Compare24(flac, wav, size);
+                    Compare24(flacSource, wav, size);
                     break;
                 case 16:
-                    Compare16(flac, wav, size);
+                    Compare16(flacSource, wav, size);
                     break;
                 default:
                     break;
             }
         }
 
-        private static void Compare24(FlacParser flac, SimpleWaveParser wav, int size)
+        private static void Compare24(StreamDataSource flacSource, SimpleWaveParser wav, int size)
         {
+            var t = new Stopwatch();
+            t.Start();
             var dataF = new PooledArray<int>(size);
             var dataW = new PooledArray<Int24>(size);
-            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
-            Assert.AreEqual(size * sizeof(int), rr.Length);
+            t.Stop();
+            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
             var rw = wav.Read(MemoryMarshal.Cast<Int24, byte>(dataW.Span));
+            t.Stop();
+            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
+            using var flac = new FlacParser(flacSource);
+            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
+            t.Stop();
+            var duration = (double)wav.TotalLength / wav.Format.SampleRate;
+            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s](around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
+            Assert.AreEqual(size * sizeof(int), rr.Length);
             Assert.AreEqual(rw.Length / 3, rr.Length / sizeof(int));
             Debug.WriteLine("Comparing!");
             Assert.Multiple(() =>
             {
+                t.Restart();
                 var err = 0ul;
                 var sw = dataW.Span;
                 var sf = dataF.Span;
@@ -75,20 +100,35 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                         if (err > 128) break;
                     }
                 }
+                t.Stop();
+                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
             });
         }
 
-        private static void Compare16(FlacParser flac, SimpleWaveParser wav, int size)
+        private static void Compare16(StreamDataSource flacSource, SimpleWaveParser wav, int size)
         {
+            var t = new Stopwatch();
+            t.Start();
             var dataF = new PooledArray<int>(size);
             var dataW = new PooledArray<short>(size);
+            t.Stop();
+            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
+            using var flac = new FlacParser(flacSource);
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
+            t.Stop();
+            var duration = (double)wav.TotalLength / wav.Format.SampleRate;
+            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s](around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
             Assert.AreEqual(size * sizeof(int), rr.Length);
+            t.Restart();
             var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
+            t.Stop();
+            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
             Assert.AreEqual(rw.Length / sizeof(short), rr.Length / sizeof(int));
             Debug.WriteLine("Comparing!");
             Assert.Multiple(() =>
             {
+                t.Restart();
                 var err = 0ul;
                 var sw = dataW.Span;
                 var sf = dataF.Span;
@@ -101,6 +141,8 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                         if (err > 128) break;
                     }
                 }
+                t.Stop();
+                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
             });
         }
     }

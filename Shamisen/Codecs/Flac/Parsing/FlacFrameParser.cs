@@ -109,33 +109,6 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public ulong? TotalLength { get; private set; } = 0;
 
-        private static ReadOnlySpan<(uint bitDepth, BitDepthState state)> BitDepthTable => new (uint bitDepth, BitDepthState state)[8]
-               {
-            (0, BitDepthState.RespectStreamInfo),
-            (8, BitDepthState.Value),
-            (12, BitDepthState.Value),
-            (0, BitDepthState.Reserved),
-            (16, BitDepthState.Value),
-            (20, BitDepthState.Value),
-            (24, BitDepthState.Value),
-            (0, BitDepthState.Reserved),
-               };
-
-        private static ReadOnlySpan<uint> SampleRateTable => new uint[]
-                {
-            88200,
-            176400,
-            192000,
-            8000,
-            16000,
-            22050,
-            24000,
-            32000,
-            44100,
-            48000,
-            96000
-                };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacFrameParser"/> class.
         /// </summary>
@@ -593,7 +566,17 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static (uint bitDepth, BitDepthState state) ParseBitDepth(byte value)
-            => Unsafe.Add(ref MemoryMarshal.GetReference(BitDepthTable), value & 0x7);
+            => (value & 7) switch
+            {
+                0 => (0, BitDepthState.RespectStreamInfo),
+                1 => (8, BitDepthState.Value),
+                2 => (12, BitDepthState.Value),
+                3 => (0, BitDepthState.Reserved),
+                4 => (16, BitDepthState.Value),
+                5 => (20, BitDepthState.Value),
+                6 => (24, BitDepthState.Value),
+                _ => (0, BitDepthState.Reserved),
+            };
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static (uint length, BlockSizeState state) ParseBlockSize(byte value)
@@ -613,7 +596,20 @@ namespace Shamisen.Codecs.Flac.Parsing
             => (value & 0xf) switch
             {
                 0 => (0, SampleRateState.RespectStreamInfo),
-                <= 0b1011 => (Unsafe.Add(ref MemoryMarshal.GetReference(SampleRateTable), value - 1), SampleRateState.Value),
+                <= 0b1011 => ((value - 1) switch
+                {
+                    0 => 88200,
+                    1 => 176400,
+                    2 => 192000,
+                    3 => 8000,
+                    4 => 16000,
+                    5 => 22050,
+                    6 => 24000,
+                    7 => 32000,
+                    8 => 44100,
+                    9 => 48000,
+                    _ => 96000
+                }, SampleRateState.Value),
                 0b1100 => (0, SampleRateState.GetByteKHzFromEnd),
                 0b1101 => (0, SampleRateState.GetUInt16HzFromEnd),
                 0b1110 => (0, SampleRateState.GetUInt16TenHzFromEnd),

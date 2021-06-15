@@ -9,6 +9,12 @@
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="TestSounds\PinkNoise_24bit_Lv8.flac" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="TestSounds\PinkNoise_24bit_Lv8.flac" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
         <PackageReference Include="CSCore" Version="1.2.1.2" />
     </ItemGroup>

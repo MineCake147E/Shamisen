@@ -129,7 +129,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (Table0[value ^ (byte)(state >> 8)])));
+        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (GetTable0At(value ^ (byte)(state >> 8)))));
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.

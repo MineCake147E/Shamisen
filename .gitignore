@@ -342,4 +342,6 @@ healthchecksdb
 
 # Custom ignorable directories
 /Old Codes
-**/Resources/UnpublishableForCopyrightIssue/
+
+# The files in Songs doesn't get published to GitHun, so add your favorite songs to test!
+**/Songs/

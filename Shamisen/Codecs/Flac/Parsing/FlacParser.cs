@@ -206,7 +206,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 {
                     //
                 }
-
+                BitReader.Dispose();
                 disposedValue = true;
             }
         }

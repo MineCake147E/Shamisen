@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1_OR_GREATER
+﻿#if false
 
 #region License notice
 
@@ -60,7 +60,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Sse.IsSupported;
 #endif
 
-            #region Order2
+#region Order2
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
@@ -96,7 +96,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Ssse3.HorizontalAdd(y, vzero);
                     y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
                     y = Sse2.Add(y, res);   //Avoids extract and insert
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
 #else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
@@ -140,7 +140,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Sse2.Add(y, Sse2.ShiftRightLogical128BitLane(y, 8));
                     y = Sse2.ShiftRightLogical(y, vshift);
                     var yy = Sse2.Add(y.AsInt32(), res);
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
 #else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
@@ -151,9 +151,9 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            #endregion Order2
+#endregion Order2
 
-            #region Order3
+#region Order3
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
@@ -195,7 +195,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Ssse3.HorizontalAdd(y, vzero);
                     y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
                     y = Sse2.Add(y, res);   //Avoids extract and insert
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
 #else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
@@ -231,7 +231,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Ssse3.HorizontalAdd(y, vzero);
                     y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
                     y = Sse2.Add(y, res);   //Avoiding extract and insert reduces overall latency and increase throughput.
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
 #else
                     Unsafe.Add(ref d, i) = y.GetElement(0); //netcoreapp3.1 needs 1 more operation
@@ -242,9 +242,9 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            #endregion Order3
+#endregion Order3
 
-            #region Order4
+#region Order4
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static bool RestoreSignalOrder4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
@@ -280,13 +280,13 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Ssse3.HorizontalAdd(y, vzero);
                     y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
                     y = Sse2.Add(y, res);   //Avoids extract and insert
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
 #else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
 #endif
-                    vprev = Sse2.Shuffle(vprev, 0b10_01_00_00);
-                    vprev = Sse41.Blend(vprev.AsSingle(), y.AsSingle(), 0b0000_0001).AsInt32();
+                    y = Sse2.ShiftLeftLogical128BitLane(y, 12);
+                    vprev = Ssse3.AlignRight(vprev, y, 12);
                 }
             }
 
@@ -331,7 +331,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Sse2.Add(y, Sse2.ShiftRightLogical128BitLane(y, 8));
                     y = Sse2.ShiftRightLogical(y, vshift);
                     var yy = Sse2.Add(y.AsInt32(), res);
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
 #else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
@@ -365,7 +365,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     y = Sse2.Add(y, Sse2.ShiftRightLogical128BitLane(y, 8));
                     y = Sse2.ShiftRightLogical(y, vshift);
                     var yy = Sse2.Add(y.AsInt32(), res);
-#if NET5_0_OR_GREATER
+#if !DEBUG && NET5_0_OR_GREATER
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
 #else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
@@ -378,7 +378,46 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            #endregion Order4
+#endregion Order4
+
+#region Order6
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static unsafe void RestoreSignalOrder6Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+            {
+                const int Order = 6;
+                if (coeffs.Length < Order) return;
+                _ = coeffs[Order - 1];
+                ref var o = ref MemoryMarshal.GetReference(output);
+                ref var d = ref Unsafe.Add(ref o, Order);
+                ref var r = ref MemoryMarshal.GetReference(residual);
+                ref var c = ref MemoryMarshal.GetReference(coeffs);
+                var vcoeff0 = Avx2.ConvertToVector256Int64(Sse2.LoadVector128((int*)Unsafe.AsPointer(ref c)).AsUInt32()).AsInt32();
+                var vprev0 = Avx2.ConvertToVector256Int64(Sse2.Shuffle(Sse2.LoadVector128((int*)Unsafe.AsPointer(ref Unsafe.Add(ref o, 0))).AsInt32(), 0b00_01_10_11).AsUInt32()).AsInt32();
+                var vshift = Vector128.CreateScalarUnsafe((long)shiftsNeeded);
+                nint dataLength = output.Length - Order;
+                for (nint i = 0; i < dataLength;)
+                {
+                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
+                    var z0 = Avx2.Multiply(vcoeff0, vprev0);
+                    var y = Sse2.Add(z0.GetLower(), z0.GetUpper());
+                    y = Sse2.Add(y, Sse2.ShiftRightLogical128BitLane(y, 8));
+                    y = Sse2.ShiftRightLogical(y, vshift);
+                    var yy = Sse2.Add(y.AsInt32(), res);
+#if !DEBUG && NET5_0_OR_GREATER
+                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
+#else
+                    Unsafe.Add(ref d, i) = yy.GetElement(0);
+#endif
+                    i++;
+                    var yu = yy.ToVector256();
+                    yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
+                    vprev0 = Avx2.Permute4x64(vprev0.AsInt64(), 0b10_01_00_11).AsInt32();
+                    vprev0 = Avx2.Blend(vprev0, yu, 0b0000_0001);
+                }
+            }
+
+#endregion Order6
         }
     }
 }
