@@ -235,6 +235,16 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ReadResult operator +(ReadResult left, int right) => new ReadResult(left.Length + right);
 
+        /// <summary>
+        /// Multiplies specified <see cref="ReadResult"/> value and <see cref="Int32"/> value.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static ReadResult operator *(ReadResult left, int right) => left.HasData ? left.Length * right : left;
+
         private string GetDebuggerDisplay() => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
 
         /// <summary>

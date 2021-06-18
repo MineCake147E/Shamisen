@@ -12,6 +12,8 @@ namespace Shamisen
     /// </summary>
     public static partial class BinaryExtensions
     {
+        #region ReverseEndianness
+
         /// <summary>
         /// Gets the system endianness.
         /// </summary>
@@ -33,6 +35,66 @@ namespace Shamisen
             q.Item3 = BinaryPrimitives.ReverseEndianness(q.Item3);
             return new Guid(q.Item1, q.Item2, q.Item3, q.Item4, q.Item5, q.Item6, q.Item7, q.Item8, q.Item9, q.Item10, q.Item11);
         }
+
+        /// <summary>
+        /// Reverses internal primitive values by performing an endianness swap of the specified <see cref="Int24" /> value.
+        /// </summary>
+        /// <param name="value">The value to reverse.</param>
+        /// <returns>
+        /// The reversed value.
+        /// </returns>
+        public static Int24 ReverseEndianness(Int24 value) => Int24.ReverseEndianness(value);
+
+        /// <summary>
+        /// Reverses internal primitive values by performing an endianness swap of the specified <see cref="UInt24" /> value.
+        /// </summary>
+        /// <param name="value">The value to reverse.</param>
+        /// <returns>
+        /// The reversed value.
+        /// </returns>
+        public static UInt24 ReverseEndianness(UInt24 value) => UInt24.ReverseEndianness(value);
+
+        #endregion ReverseEndianness
+
+        #region ConvertToLittleEndian
+
+        /// <summary>
+        /// Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+        /// </summary>
+        /// <param name="systemEndianedValue">The value in system endian.</param>
+        /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Int24 ConvertToLittleEndian(Int24 systemEndianedValue) => BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
+
+        /// <summary>
+        /// Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+        /// </summary>
+        /// <param name="systemEndianedValue">The value in system endian.</param>
+        /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static UInt24 ConvertToLittleEndian(UInt24 systemEndianedValue) => BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
+
+        #endregion ConvertToLittleEndian
+
+        #region ConvertToBigEndian
+
+        /// <summary>
+        /// Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+        /// </summary>
+        /// <param name="systemEndianedValue">The value in system endian.</param>
+        /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Int24 ConvertToBigEndian(Int24 systemEndianedValue) => !BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
+
+        /// <summary>
+        /// Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+        /// </summary>
+        /// <param name="systemEndianedValue">The value in system endian.</param>
+        /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static UInt24 ConvertToBigEndian(UInt24 systemEndianedValue) => !BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
+
+        #endregion ConvertToBigEndian
 
 #if NET5_0_OR_GREATER
 
@@ -153,7 +215,7 @@ namespace Shamisen
             return cl;
         }
 #endif
-#if !NETSTANDARD
+#if NETCOREAPP3_1_OR_GREATER
 
         /// <summary>
         /// Converts a single-precision floating-point value into an integer.

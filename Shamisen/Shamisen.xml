@@ -2455,6 +2455,502 @@
             Gets the type of the sub-frame.
             </summary>
         </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack">
+            <summary>
+            Represents a track in FLAC cue-sheet.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.#ctor(System.UInt64,System.Byte,System.ReadOnlyMemory{System.Byte},System.Byte,System.ReadOnlyMemory{Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/> struct.
+            </summary>
+            <param name="trackOffsetInFrames">The track offset in frames.</param>
+            <param name="trackNumber">The track number.</param>
+            <param name="trackISRC">The track ISRC.</param>
+            <param name="field4">The field4 containing <see cref="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.IsAudio"/> and <see cref="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.PreEmphasis"/>.</param>
+            <param name="trackIndexes">The track indexes.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackOffsetInFrames">
+            <summary>
+            Gets the track offset in frames.
+            </summary>
+            <value>
+            The track offset in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackNumber">
+            <summary>
+            Gets the track number of this track.
+            </summary>
+            <value>
+            The track number.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackISRC">
+            <summary>
+            Gets the track International Standard Recording Code.
+            </summary>
+            <value>
+            The track International Standard Recording Code.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.IsAudio">
+            <summary>
+            Gets a value indicating whether this track is audio track.
+            </summary>
+            <value>
+              <c>true</c> if this track is audio track; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.PreEmphasis">
+            <summary>
+            Gets the pre-emphasis flag.
+            </summary>
+            <value>
+            The pre-emphasis flag.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackIndexes">
+            <summary>
+            Gets the track indexes.
+            </summary>
+            <value>
+            The track indexes.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.ReadFrom(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/> from the specified data source.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.ReadFrom(System.ReadOnlySpan{System.Byte},System.Int32@)">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack" /> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bytesConsumed">The bytes consumed.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">The buffer has not enough data! - buffer
+            or
+            The buffer has not enough data! - buffer</exception>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex">
+            <summary>
+            Represents a track index of a <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.#ctor(System.UInt64,System.Byte,Shamisen.UInt24)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> struct.
+            </summary>
+            <param name="offset">The offset.</param>
+            <param name="index">The index.</param>
+            <param name="reserved">The reserved.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.Offset">
+            <summary>
+            Gets the offset.
+            </summary>
+            <value>
+            The offset.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.IndexPointNumber">
+            <summary>
+            Gets the index point number.
+            </summary>
+            <value>
+            The index point number.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.Reserved">
+            <summary>
+            Gets the reserved space.
+            </summary>
+            <value>
+            The reserved space.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ConvertToBigEndian(Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> from the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ReadFrom(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> from the specified <paramref name="dataSource"/>.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet">
+            <summary>
+            Represents a CUE-sheet of FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.#ctor(System.ReadOnlyMemory{System.Byte},System.UInt64,System.Boolean,System.ReadOnlyMemory{Shamisen.Codecs.Flac.Metadata.CueSheetTrack})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet"/> struct.
+            </summary>
+            <param name="mediaCatalogNumber">The media catalog number.</param>
+            <param name="leadInSamples">The lead in samples.</param>
+            <param name="isCD">if set to <c>true</c> [is cd].</param>
+            <param name="tracks">The tracks.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.MediaCatalogNumber">
+            <summary>
+            The Media catalog number
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.LeadInSamples">
+            <summary>
+            Gets the number of lead-in samples.
+            </summary>
+            <value>
+            The number of lead-in samples.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.IsCD">
+            <summary>
+            Gets a value indicating whether this cue sheet corresponds to a Compact Disc.
+            </summary>
+            <value>
+              <c>true</c> if this cue sheet corresponds to a Compact Disc; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.Tracks">
+            <summary>
+            Gets the tracks.
+            </summary>
+            <value>
+            The tracks.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.ReadFrom(System.ReadOnlySpan{System.Byte},System.Int32@)">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bytesConsumed">The bytes consumed.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata">
+            <summary>
+            Represents an application metadata in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.#ctor(Shamisen.VectorB4,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata"/> struct.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.Id">
+            <summary>
+            Gets the registered application identifier.
+            </summary>
+            <value>
+            The application identifier.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.Data">
+            <summary>
+            Gets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacPicture">
+            <summary>
+            Represents a picture in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacPicture.#ctor(Shamisen.Codecs.Flac.Metadata.FlacPictureType,System.ReadOnlyMemory{System.Byte},System.ReadOnlyMemory{System.Byte},System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacPicture"/> struct.
+            </summary>
+            <param name="pictureType">Type of the picture.</param>
+            <param name="mimeType">Type of the MIME.</param>
+            <param name="description">The description.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+            <param name="colorDepth">The color depth.</param>
+            <param name="indexedColors">The indexed colors.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.PictureType">
+            <summary>
+            Gets the type of the picture.
+            </summary>
+            <value>
+            The type of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.MimeType">
+            <summary>
+            Gets the MIME type string.
+            </summary>
+            <value>
+            The MIME type string.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Description">
+            <summary>
+            Gets the description of the picture.
+            </summary>
+            <value>
+            The description of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Width">
+            <summary>
+            Gets the width of the picture.
+            </summary>
+            <value>
+            The width of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Height">
+            <summary>
+            Gets the height of the picture.
+            </summary>
+            <value>
+            The height of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.ColorDepth">
+            <summary>
+            Gets the color depth of the picture in bits per pixel.
+            </summary>
+            <value>
+            The color depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.IndexedColors">
+            <summary>
+            Gets the number of indexed colors. 0 for non-indexed pictures.
+            </summary>
+            <value>
+            The number of indexed colors.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Data">
+            <summary>
+            Gets the binary picture data.
+            </summary>
+            <value>
+            The binary picture data.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacPicture.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacPicture"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacPictureType">
+            <summary>
+            Represents a picture type.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Other">
+            <summary>
+            Other
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.FileIcon">
+            <summary>
+            32x32 pixels 'file icon' (PNG only)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.OtherIcon">
+            <summary>
+            Other file icon
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.FrontCover">
+            <summary>
+            Cover (front)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.BackCover">
+            <summary>
+            Cover (back)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.LeafletPage">
+            <summary>
+            Leaflet page
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Media">
+            <summary>
+            Media (e.g. label side of CD)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.LeadArtist">
+            <summary>
+            Lead artist/lead performer/soloist
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Artist">
+            <summary>
+            Artist/performer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Conductor">
+            <summary>
+            Conductor
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Band">
+            <summary>
+            Band/Orchestra
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Composer">
+            <summary>
+            Composer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Lyricist">
+            <summary>
+            Lyricist/text writer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.RecordingLocation">
+            <summary>
+            Recording Location
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.DuringRecording">
+            <summary>
+            During recording
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.DuringPerformance">
+            <summary>
+            During performance
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.MovieScreenCapture">
+            <summary>
+            Movie/video screen capture
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.BrightColouredFish">
+            <summary>
+            A bright coloured fish
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Illustration">
+            <summary>
+            Illustration
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.ArtistLogotype">
+            <summary>
+            Band/artist logotype
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.StudioLogotype">
+            <summary>
+            Publisher/Studio logotype
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata">
+            <summary>
+            Represents an unused metadata in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.#ctor(Shamisen.Codecs.Flac.FlacMetadataBlockType,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata"/> struct.
+            </summary>
+            <param name="metadataBlockType">Type of the metadata block.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.MetadataBlockType">
+            <summary>
+            Gets the type of the metadata block.
+            </summary>
+            <value>
+            The type of the metadata block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.Data">
+            <summary>
+            Gets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.VorbisComment">
+            <summary>
+            Represents a Vorbis comment without framing bit.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.VorbisComment.#ctor(System.ReadOnlyMemory{System.Byte},System.ReadOnlyMemory{System.ReadOnlyMemory{System.Byte}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.VorbisComment"/> struct.
+            </summary>
+            <param name="vendor">The vendor.</param>
+            <param name="userComments">The user comments.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.RawVendor">
+            <summary>
+            Gets the raw data of <see cref="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.Vendor"/>.
+            </summary>
+            <value>
+            The vendor.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.RawUserComments">
+            <summary>
+            Gets the raw data of user comments.
+            </summary>
+            <value>
+            The user comments.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.Vendor">
+            <summary>
+            Gets the vendor.
+            </summary>
+            <value>
+            The vendor.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.UserComments">
+            <summary>
+            Gets the user comments.
+            </summary>
+            <value>
+            The user comments.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.VorbisComment.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.VorbisComment"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader">
             <summary>
             Provides a functionality for reading bit stream data.
@@ -3036,64 +3532,6 @@
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacParser">
-            <summary>
-            Parses ".flac" files from <see cref="T:Shamisen.IReadableDataSource`1"/>.
-            https://xiph.org/flac/format.html
-            </summary>
-            <seealso cref="T:Shamisen.IWaveSource" />
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacParser.#ctor(Shamisen.IReadableDataSource{System.Byte})">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacParser"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <exception cref="T:System.ArgumentNullException">source</exception>
-        </member>
-        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacParser.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
-        </member>
-        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacParser.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
-        </member>
-        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacParser.Length">
-            <summary>
-            Gets the remaining length.
-            </summary>
-            <value>
-            The length.
-            </value>
-        </member>
-        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacParser.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacParser.Read(System.Span{System.Byte})">
-            <summary>
-            Reads the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacParser.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils">
             <summary>
             Provides some functions for parsing UTF-8 encoded values.
@@ -3154,6 +3592,228 @@
             <param name="crc8">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/>.</param>
             <param name="crc16">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/>.</param>
             <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacParser">
+            <summary>
+            Parses ".flac" files from <see cref="T:Shamisen.IReadableDataSource`1"/>.
+            https://xiph.org/flac/format.html
+            </summary>
+            <seealso cref="T:Shamisen.IWaveSource" />
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.CueSheet">
+            <summary>
+            Gets the cue sheet.
+            </summary>
+            <value>
+            The cue sheet.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Comment">
+            <summary>
+            Gets the vorbis comment.
+            </summary>
+            <value>
+            The vorbis comment.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.ApplicationMetadata">
+            <summary>
+            Gets the application metadata.
+            </summary>
+            <value>
+            The application metadata.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Pictures">
+            <summary>
+            Gets the pictures.
+            </summary>
+            <value>
+            The pictures.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.UnusedMetadata">
+            <summary>
+            Gets the unused metadata.
+            </summary>
+            <value>
+            The unused metadata.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Length">
+            <summary>
+            Gets the remaining length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Position">
+            <summary>
+            Gets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.TotalLength">
+            <summary>
+            Gets the total length.
+            </summary>
+            <value>
+            The total length.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="options">The options.</param>
+            <exception cref="T:System.ArgumentNullException">
+            nameof(source)
+            or
+            nameof(source)
+            or
+            nameof(source)
+            </exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacParserOptions">
+            <summary>
+            Represents some options for <see cref="T:Shamisen.Codecs.Flac.FlacParser"/>
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> struct.
+            </summary>
+            <param name="parseCueSheet">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the cue sheet.</param>
+            <param name="parseVorbisComment">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the vorbis comment.</param>
+            <param name="parsePictures">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the picture metadata excluding actual picture.</param>
+            <param name="preserveApplication">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the application.</param>
+            <param name="preservePadding">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the padding.</param>
+            <param name="preserveUnusedMetadata">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the unused metadata.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseCueSheet">
+            <summary>
+            Gets a value indicating whether to parse cue sheet.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse cue sheet; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseVorbisComment">
+            <summary>
+            Gets a value indicating whether to parse vorbis comment.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse vorbis comment; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParsePictures">
+            <summary>
+            Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse pictures; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveApplication">
+            <summary>
+            Gets a value indicating whether to preserve application metadata.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve application metadata; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreservePadding">
+            <summary>
+            Gets a value indicating whether to preserve padding.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve padding; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveUnusedMetadata">
+            <summary>
+            Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve unused metadata; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Equality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Inequality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame">
             <summary>
@@ -16242,6 +16902,16 @@
             The result of adding <paramref name="left"/> and <paramref name="right"/>.
             </returns>
         </member>
+        <member name="M:Shamisen.ReadResult.op_Multiply(Shamisen.ReadResult,System.Int32)">
+            <summary>
+            Multiplies specified <see cref="T:Shamisen.ReadResult"/> value and <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
         <member name="M:Shamisen.ReadResult.ToString">
             <summary>
             Converts to string.
@@ -16472,6 +17142,111 @@
         <member name="M:Shamisen.UInt24.ToString">
             <summary>
             Converts to string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.VectorB4">
+            <summary>
+            Represents a vector of four <see cref="T:System.Byte"/> elements.
+            </summary>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value0">
+            <summary>
+            Gets the 0th value.
+            </summary>
+            <value>
+            The value0.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value1">
+            <summary>
+            Gets the 1st value.
+            </summary>
+            <value>
+            The value1.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value2">
+            <summary>
+            Gets the 2nd value.
+            </summary>
+            <value>
+            The value2.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value3">
+            <summary>
+            Gets the 3rd value.
+            </summary>
+            <value>
+            The value3.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.StringView">
+            <summary>
+            Gets the string view.
+            </summary>
+            <value>
+            The string view.
+            </value>
+        </member>
+        <member name="M:Shamisen.VectorB4.ToString">
+            <summary>
+            Gets the string view.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.Equals(Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.op_Equality(Shamisen.VectorB4,Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.op_Inequality(Shamisen.VectorB4,Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.GetDebuggerDisplay">
+            <summary>
+            Gets the debugger display.
             </summary>
             <returns></returns>
         </member>
@@ -19239,6 +20014,52 @@
             <param name="value">The value to reverse.</param>
             <returns>The reversed value.</returns>
         </member>
+        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(Shamisen.Int24)">
+            <summary>
+            Reverses internal primitive values by performing an endianness swap of the specified <see cref="T:Shamisen.Int24" /> value.
+            </summary>
+            <param name="value">The value to reverse.</param>
+            <returns>
+            The reversed value.
+            </returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(Shamisen.UInt24)">
+            <summary>
+            Reverses internal primitive values by performing an endianness swap of the specified <see cref="T:Shamisen.UInt24" /> value.
+            </summary>
+            <param name="value">The value to reverse.</param>
+            <returns>
+            The reversed value.
+            </returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(Shamisen.Int24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(Shamisen.UInt24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(Shamisen.Int24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(Shamisen.UInt24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
@@ -19291,87 +20112,87 @@
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.UInt16)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.Int16)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.UInt32)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.Int32)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.UInt64)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.Int64)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.UInt16)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.Int16)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.UInt32)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.Int32)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.UInt64)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(System.Int64)">
             <summary>
-            Converts the specified <paramref name="systemEndianedValue"/> to little endian.
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
-            <returns>The little endianed value.</returns>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
         </member>
         <member name="T:Shamisen.DebugUtils">
             <summary>
@@ -20630,6 +21451,127 @@
             <param name="left">The first vector.</param>
             <param name="right">The second vector.</param>
             <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.PointerExtensions">
+            <summary>
+            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
+            </summary>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.UIntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
+        </member>
+    </members>
+</doc>
+
             The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
             </returns>
         </member>

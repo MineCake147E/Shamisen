@@ -27,5 +27,26 @@ namespace Shamisen
 #endif
             }
         }
+
+        internal static string DumpBinary(ReadOnlySpan<byte> data)
+        {
+            var sb = new StringBuilder();
+            int i;
+            byte[] a = new byte[16];
+            for (i = 0; i < data.Length - 15; i += 16)
+            {
+                _ = sb.Append($"{i:X16}: ");
+                data.Slice(i, 16).CopyTo(a);
+                _ = sb.AppendLine(string.Join(" ", a.Select(g => $"{g:X02}")));
+            }
+            if (i < data.Length)
+            {
+                _ = sb.Append($"{i:X16}: ");
+                a.AsSpan().Fill(0);
+                data.Slice(i).CopyTo(a);
+                _ = sb.AppendLine(string.Join(" ", a.Take(data.Length - i).Select(g => $"{g:X02}")));
+            }
+            return sb.ToString();
+        }
     }
 }
