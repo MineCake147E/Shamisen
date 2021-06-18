@@ -124,6 +124,6 @@ Legends:
 
 | Container Name | Typical File Extensions | Target Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
 |--|--|--|--|--|:--:|:--:|--|
-| FLAC | `.flac` | FLAC | Shamisen(Decoder)<br/>Shamisen.Codecs.Flac(Encoder) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implemented Decoder |
+| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implemented Decoder |
 | Opus | `.opus` | Opus | Shamisen(Decoder)<br/>Shamisen.Codecs.Opus(Encoder) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
-| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ⭕ | ⭕ | Planned |
+| Ogg | `.ogg` | Vorbis | Shamisen.Codecs.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ⭕ | ⭕ | Planned |
