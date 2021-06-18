@@ -93,7 +93,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             Span<int> warmup = stackalloc int[order];
             for (int i = 0; i < warmup.Length; i++)
             {
-                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample) ?? throw new FlacException("Invalid FLAC Stream!", bitReader);
+                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out var value) ? value : throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             order = subFrameType & 0x7;
             //Read residual
@@ -149,16 +149,14 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             #endregion License notice
 
-            var (hasValue, result) = bitReader.ReadBitsUInt64(2);
+            if (!bitReader.ReadBitsUInt32(2, out var result)) throw new FlacException("Invalid FLAC Stream!", bitReader);
             result &= 0x3;
-            if (!hasValue) throw new FlacException("Invalid FLAC Stream!", bitReader);
-
             switch ((FlacEntropyCodingMethod)result)
             {
                 case FlacEntropyCodingMethod.PartitionedRice:
                 case FlacEntropyCodingMethod.PartitionedRice2:
                     //Read partition order
-                    var g = bitReader.ReadBitsUInt32(4) ?? throw new FlacException("Invalid FLAC Stream!", bitReader);
+                    var g = bitReader.ReadBitsUInt32(4, out var cc) ? cc : throw new FlacException("Invalid FLAC Stream!", bitReader);
                     if (blockSize >> (int)g < order) throw new FlacException("Invalid FLAC Stream!", bitReader);
                     partition = (int)g;
                     break;

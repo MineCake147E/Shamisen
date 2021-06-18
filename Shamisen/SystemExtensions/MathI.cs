@@ -477,14 +477,18 @@ namespace Shamisen
 #endif
         public static uint ExtractBitField(uint value, byte start, byte length)
         {
-            if (start == 0) return value & ~(~0u << length);
 #if NETCOREAPP3_1_OR_GREATER
+            if (Bmi2.IsSupported)
+            {
+                value >>= start;
+                return Bmi2.ZeroHighBits(value, length);
+            }
             if (Bmi1.IsSupported)
             {
                 return Bmi1.BitFieldExtract(value, start, length);
             }
 #endif
-            return (value >> start) & ~(~0u << length);
+            return MathIFallbacks.ExtractBitField(value, start, length);
         }
 
         /// <summary>
@@ -502,6 +506,12 @@ namespace Shamisen
         {
             if (start == 0) return value & ~(~0ul << length);
 #if NETCOREAPP3_1_OR_GREATER
+
+            if (Bmi2.X64.IsSupported)
+            {
+                value >>= start;
+                return Bmi2.X64.ZeroHighBits(value, length);
+            }
             if (Bmi1.X64.IsSupported)
             {
                 return Bmi1.X64.BitFieldExtract(value, start, length);
@@ -511,5 +521,43 @@ namespace Shamisen
         }
 
         #endregion ExtractBitField
+
+        #region ZeroHighBits
+
+        /// <summary>
+        /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static uint ZeroHighBits(int index, uint value)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi2.IsSupported)
+            {
+                return Bmi2.ZeroHighBits(value, (uint)index);
+            }
+#endif
+            return value & ~(~0u << index);
+        }
+
+        /// <summary>
+        /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static ulong ZeroHighBits(int index, ulong value)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi2.X64.IsSupported)
+            {
+                return Bmi2.X64.ZeroHighBits(value, (uint)index);
+            }
+#endif
+            return value & ~(~0ul << index);
+        }
+
+        #endregion ZeroHighBits
     }
 }

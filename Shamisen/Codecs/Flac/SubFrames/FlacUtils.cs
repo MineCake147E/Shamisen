@@ -99,9 +99,8 @@ namespace Shamisen.Codecs.Flac.SubFrames
             var bH = buffer;
             for (int partition = 0; partition < partitions; partition++)
             {
-                var t = bitReader.ReadBitsUInt32(encodingParameterLength);
-                if (t is null) return false;
-                var riceParameter = (int)t.Value;
+                if (!bitReader.ReadBitsUInt32(encodingParameterLength, out var t)) return false;
+                var riceParameter = (int)t;
                 if (riceParameter < parameterEscape)
                 {
                     var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
@@ -110,15 +109,13 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
                 else
                 {
-                    t = bitReader.ReadBitsUInt32(5);
-                    if (t is null) return false;
-                    byte bits = (byte)t.Value;
+                    if (!bitReader.ReadBitsUInt32(5, out t)) return false;
+                    byte bits = (byte)t;
                     var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
                     for (int i = 0; i < u; i++)
                     {
-                        t = bitReader.ReadBitsUInt32(bits);
-                        if (t is null) return false;
-                        bH[i] = (int)t.Value;
+                        if (!bitReader.ReadBitsUInt32(bits, out t)) return false;
+                        bH[i] = (int)t;
                     }
                     bH = bH.Slice(u);
                 }

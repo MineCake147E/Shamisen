@@ -275,6 +275,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits to read. must be &lt;=32.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete]
         public int? ReadBitsInt32(byte bits)
         {
             if (bits < 1) return null;
@@ -291,15 +292,15 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadBitsInt32(byte bits, out int value)
         {
-            var h = ReadBitsUInt32(bits);
             value = 0;
-            if (bits < 1 || !h.HasValue)
+            if (bits < 1 || !ReadBitsUInt32(bits, out var h))
             {
                 return false;
             }
-            var gg = h.Value;
+            var gg = h;
             gg <<= 32 - bits;
             value = (int)gg >> (32 - bits);
             return true;
@@ -310,36 +311,65 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="bits">The bits to read. must be &lt;=32.</param>
         /// <returns></returns>
+        [Obsolete("Use ReadBitsUInt32(byte, out int) instead!")]
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public uint? ReadBitsUInt32(byte bits)
+        public uint? ReadBitsUInt32(byte bits) => ReadBitsUInt32(bits, out var value) ? value : null;
+
+        /// <summary>
+        /// Reads the number with specified <paramref name="bits" />.
+        /// </summary>
+        /// <param name="bits">The bits to read. must be &lt;=32.</param>
+        /// <param name="value">The value read.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// bits - The bits must be less than 33!
+        /// or
+        /// bits
+        /// </exception>
+        /// <exception cref="FlacException">
+        /// This is a bug!
+        /// </exception>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public bool ReadBitsUInt32(byte bits, out uint value)
         {
             var buf = AvailableSpan;
             if (bits > 32) throw new ArgumentOutOfRangeException(nameof(bits), "The bits must be less than 33!");
             if (Capacity * 2 < bits) throw new ArgumentOutOfRangeException(nameof(bits), "");
             if (consumedWords > buf.Length) throw new FlacException("", this);
-            if (bits == 0) return 0;
-            bits = (byte)((bits - 1) % 32 + 1);
+            if (bits == 0)
+            {
+                value = 0;
+                return false;
+            }
+            bits = (byte)(((bits - 1) & 31) + 1);
             int bitsToRead = bits;
             while (UnconsumedInputBits < bitsToRead)
             {
-                if (!ReadFromSource()) return null;
+                if (!ReadFromSource())
+                {
+                    value = 0;
+                    return false;
+                }
             }
             buf = FullSpan;
+            ref var bufHead = ref MemoryMarshal.GetReference(buf);
             if (consumedWords < words)
             {
                 if (consumedBits > 0)
                 {
                     var n = BitsPerWord - consumedBits;
-                    var word = buf[consumedWords];
-                    var mask = consumedBits < BitsPerWord ? ~0ul >> consumedBits : 0;
+                    var word = Unsafe.Add(ref bufHead, consumedWords);
+                    word <<= consumedBits;
+                    word >>= consumedBits;
                     if (bitsToRead < n)
                     {
                         var shift = n - bitsToRead;
-                        var res = shift < BitsPerWord ? (uint)((word & mask) >> shift) : 0u;
+                        var res = shift < BitsPerWord ? (uint)(word >> shift) : 0u;
                         consumedBits += bitsToRead;
-                        return res;
+                        value = res;
+                        return true;
                     }
-                    var result = (uint)(word & mask);
+                    var result = (uint)word;
                     bitsToRead -= n;
                     consumedBits = 0;
                     consumedWords++;
@@ -347,39 +377,43 @@ namespace Shamisen.Codecs.Flac.Parsing
                     {
                         var shift = BitsPerWord - bitsToRead;
                         result = bitsToRead < 32 ? result << bitsToRead : 0;
-                        result |= shift < BitsPerWord ? (uint)(buf[consumedWords] >> shift) : 0u;
+                        result |= shift < BitsPerWord ? (uint)(Unsafe.Add(ref bufHead, consumedWords) >> shift) : 0u;
                         consumedBits = bitsToRead;
                     }
-                    return result;
+                    value = result;
+                    return true;
                 }
                 else
                 {
-                    var word = buf[consumedWords];
+                    var word = Unsafe.Add(ref bufHead, consumedWords);
                     if (bitsToRead < BitsPerWord)
                     {
                         var result = (uint)(word >> (BitsPerWord - bitsToRead));
                         consumedBits = bitsToRead;
-                        return result;
+                        value = result;
+                        return true;
                     }
                     consumedWords++;
-                    return (uint)word;
+                    value = (uint)word;
+                    return true;
                 }
             }
             else
             {
-                var s2 = FullSpan;
                 if (consumedBits > 0)
                 {
                     if (consumedBits + bitsToRead > bytesOfIncompleteWord * 8) throw new FlacException("This is a bug!", this);
-                    var result = (uint)((s2[consumedWords] & (~0ul >> consumedBits)) >> (BitsPerWord - consumedBits - bitsToRead));
+                    var result = (uint)(((Unsafe.Add(ref bufHead, consumedWords) & (~0ul >> consumedBits))) >> (BitsPerWord - consumedBits - bitsToRead));
                     consumedBits += bitsToRead;
-                    return result;
+                    value = result;
+                    return true;
                 }
                 else
                 {
-                    var result = (uint)(s2[consumedWords] >> (BitsPerWord - bitsToRead));
+                    var result = (uint)(Unsafe.Add(ref bufHead, consumedWords) >> (BitsPerWord - bitsToRead));
                     consumedBits += bitsToRead;
-                    return result;
+                    value = result;
+                    return true;
                 }
             }
         }
@@ -390,6 +424,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits to read. must be &lt;=64.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete]
         public ulong? ReadBitsUInt64(byte bits)
         {
             if (bits <= 32) return ReadBitsUInt32(bits);
@@ -400,15 +435,25 @@ namespace Shamisen.Codecs.Flac.Parsing
         }
 
         /// <summary>
-        /// Reads an 1-bit value from this <see cref="FlacBitReader"/>.
+        /// Reads the number with specified <paramref name="bits" />.
         /// </summary>
-        /// <param name="doCrc">if set to <c>true</c> this instance does CRC.</param>
+        /// <param name="bits">The bits to read. must be &lt;=64.</param>
+        /// <param name="value">The value read.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public bool? ReadBool(bool doCrc = true)
+        public bool ReadBitsUInt64(byte bits, out ulong value)
         {
-            var h = ReadBitsUInt32(1);
-            return h.HasValue ? h.Value > 0 : null;
+            if (bits <= 32)
+            {
+                var r = ReadBitsUInt32(bits, out var read);
+                value = read;
+                return r;
+            }
+            value = 0;
+            if (ReadBitsUInt32((byte)(bits - 32), out var v)) return false;
+            var r2 = ReadBitsUInt32(32, out var w);
+            value = ((ulong)v << 32) | w;
+            return r2;
         }
 
         /// <summary>
@@ -416,6 +461,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool ReadByte(out byte data)
         {
             var h = Read8Bits();
@@ -439,9 +485,8 @@ namespace Shamisen.Codecs.Flac.Parsing
             //The operation -(value) - 1 is equivalent to ~value.
             var result = ReadUnaryUnsigned(out var g);
             if (!result) return null;
-            var ngg = ReadBitsUInt32((byte)parameter);
-            if (ngg is null) return null;
-            var gg = ngg.Value;
+            if (!ReadBitsUInt32((byte)parameter, out var ngg)) return null;
+            var gg = ngg;
             gg |= g << parameter;
             gg = (gg >> 1) ^ (uint)-(int)(gg & 1);
             return (int)gg;
@@ -554,10 +599,9 @@ namespace Shamisen.Codecs.Flac.Parsing
                         consumedBits = 0;
                         consumedWords = cwords;
                     ProcessLsbs:
-                        var j = ReadBitsUInt32((byte)(parameter - ucbits));
-                        if (!j.HasValue) return false;
+                        if (!ReadBitsUInt32((byte)(parameter - ucbits), out var j)) return false;
                         lsbs = x;
-                        lsbs |= j.Value;
+                        lsbs |= j;
                         x = (msbs << parameter) | lsbs;
                         Unsafe.Add(ref val, i) = (int)(x >> 1) ^ -(int)(x & 1);
                         x = 0;
@@ -589,11 +633,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public uint? ReadUInt32LittleEndian()
-        {
-            var v = ReadBitsUInt32(32);
-            return !v.HasValue ? null : BinaryPrimitives.ReverseEndianness(v.Value);
-        }
+        public uint? ReadUInt32LittleEndian() => !ReadBitsUInt32(32, out var v) ? null : BinaryPrimitives.ReverseEndianness(v);
 
         /// <summary>
         /// Reads the unary code without sign bit.
@@ -751,8 +791,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         {
             if (!IsByteAligned)
             {
-                var q = ReadBitsUInt64((byte)RemainingUnalignedBits);
-                if (q is null || !IsByteAligned) return false;
+                if (!ReadBitsUInt64((byte)RemainingUnalignedBits, out _) || !IsByteAligned) return false;
             }
             return true;
         }
@@ -772,7 +811,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 if (n != 0)
                 {
                     m = Math.Min(8u - n, bits);
-                    if (ReadBitsUInt32((byte)m) is null) return false;
+                    if (!ReadBitsUInt32((byte)m, out _)) return false;
                     bits -= m;
                 }
                 m = bits / 8u;
@@ -781,7 +820,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                     if (!SkipByteBlockWithoutCrc(m)) return false;
                     bits %= 8;
                 }
-                if (bits > 0 && ReadBitsUInt32((byte)bits) is null)
+                if (bits > 0 && !ReadBitsUInt32((byte)bits, out _))
                     return false;
             }
             return true;
@@ -802,35 +841,6 @@ namespace Shamisen.Codecs.Flac.Parsing
                     crc16 *= (byte)(tail >> (BitsPerWord - 8 - crcAlignBits));
                 }
             }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal void UpdateCrcByBlock()
-        {
-            var q = FullSpan;
-            if (consumedWords > crcOffset && crcAlignBits > 0)
-            {
-                UpdateCrcByWord(q[crcOffset++]);
-            }
-            if (consumedWords > crcOffset)
-            {
-                crc16 *= q.Slice(crcOffset, consumedWords - crcOffset);
-            }
-            crcOffset = 0;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal void UpdateCrcByWord(ulong word)
-        {
-            var crc = crc16;
-            var cAl = crcAlignBits;
-            for (; cAl < BitsPerWord; cAl += 8)
-            {
-                int shift = BitsPerWord - 8 - cAl;
-                crc *= (byte)(shift < BitsPerWord ? (word >> shift) : 0);
-            }
-            crc16 = crc;
-            crcAlignBits = 0;
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -900,6 +910,35 @@ namespace Shamisen.Codecs.Flac.Parsing
                 values--;
             }
             return true;
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal void UpdateCrcByBlock()
+        {
+            var q = FullSpan;
+            if (consumedWords > crcOffset && crcAlignBits > 0)
+            {
+                UpdateCrcByWord(q[crcOffset++]);
+            }
+            if (consumedWords > crcOffset)
+            {
+                crc16 *= q.Slice(crcOffset, consumedWords - crcOffset);
+            }
+            crcOffset = 0;
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal void UpdateCrcByWord(ulong word)
+        {
+            var crc = crc16;
+            var cAl = crcAlignBits;
+            for (; cAl < BitsPerWord; cAl += 8)
+            {
+                int shift = BitsPerWord - 8 - cAl;
+                crc *= (byte)(shift < BitsPerWord ? (word >> shift) : 0);
+            }
+            crc16 = crc;
+            crcAlignBits = 0;
         }
 
         #region ReadNBits

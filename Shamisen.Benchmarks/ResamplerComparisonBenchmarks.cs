@@ -13,7 +13,7 @@ using CSCore.DSP;
 
 namespace Shamisen.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.Net50)]
     public class ResamplerComparisonBenchmarks
     {
         private DummySource<float, SampleFormat> sourceMA;

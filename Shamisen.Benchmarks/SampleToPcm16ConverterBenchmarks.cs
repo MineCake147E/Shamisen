@@ -13,7 +13,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
     [DisassemblyDiagnoser(maxDepth: 16)]

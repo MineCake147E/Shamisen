@@ -3062,6 +3062,22 @@
             <param name="bits">The bits to read. must be &lt;=32.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt32(System.Byte,System.UInt32@)">
+            <summary>
+            Reads the number with specified <paramref name="bits" />.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=32.</param>
+            <param name="value">The value read.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            bits - The bits must be less than 33!
+            or
+            bits
+            </exception>
+            <exception cref="T:Shamisen.Codecs.Flac.FlacException">
+            This is a bug!
+            </exception>
+        </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte)">
             <summary>
             Reads the number with specified <paramref name="bits"/>.
@@ -3069,11 +3085,12 @@
             <param name="bits">The bits to read. must be &lt;=64.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBool(System.Boolean)">
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte,System.UInt64@)">
             <summary>
-            Reads an 1-bit value from this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
+            Reads the number with specified <paramref name="bits" />.
             </summary>
-            <param name="doCrc">if set to <c>true</c> this instance does CRC.</param>
+            <param name="bits">The bits to read. must be &lt;=64.</param>
+            <param name="value">The value read.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadByte(System.Byte@)">
@@ -3952,33 +3969,6 @@
              <param name="wastedBits"></param>
              <param name="bitsPerSample"></param>
              <param name="subFrameType"></param>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.RestoreSignalLibFlac(System.Int32,System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.Span{System.Int32})">
-            <summary>
-            Implemented for comparison against libFLAC.
-            </summary>
-            <param name="shiftsNeeded"></param>
-            <param name="residual"></param>
-            <param name="coeffs"></param>
-            <param name="output"></param>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.RestoreSignalLibFlacWide(System.Int32,System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.Span{System.Int32})">
-            <summary>
-            Implemented for comparison against libFLAC.
-            </summary>
-            <param name="shiftsNeeded"></param>
-            <param name="residual"></param>
-            <param name="coeffs"></param>
-            <param name="output"></param>
-        </member>
-        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.RestoreSignalObvious(System.Int32,System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.Span{System.Int32})">
-            <summary>
-            Implemented for comparison against obvious way.
-            </summary>
-            <param name="shiftsNeeded"></param>
-            <param name="residual"></param>
-            <param name="coeffs"></param>
-            <param name="output"></param>
         </member>
         <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Read(System.Span{System.Int32})">
             <summary>
@@ -17917,6 +17907,22 @@
             <param name="length">The length in bits.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt32)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt64)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.MathIFallbacks">
              <summary>
              WARNING: This class is exposed only for testing purposes.<br/>
@@ -18011,6 +18017,24 @@
             Reverses the bits of the specified value in 64bit.
             </summary>
             <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
             <returns></returns>
         </member>
         <member name="T:Shamisen.MathR">
@@ -21451,127 +21475,6 @@
             <param name="left">The first vector.</param>
             <param name="right">The second vector.</param>
             <returns>
-            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The element-wise product vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Divides the first vector by the second.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The vector that results from dividing left by right.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The scalar value.</param>
-            <param name="right">The vector.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Divides the specified vector by a specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The result of the division.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether two specified vectors are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="T:System.PointerExtensions">
-            <summary>
-            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
-            </summary>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.IntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.UIntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
-        </member>
-    </members>
-</doc>
-
             The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
             </returns>
         </member>

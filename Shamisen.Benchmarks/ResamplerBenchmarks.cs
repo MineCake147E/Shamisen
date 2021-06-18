@@ -10,7 +10,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.Net50)]
     [DisassemblyDiagnoser(maxDepth: 16)]
     //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]
     public class ResamplerBenchmarks

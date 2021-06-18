@@ -240,5 +240,27 @@ namespace Shamisen
             value = ((value & 0x0f0f_0f0f_0f0f_0f0f) << 4) | ((value >> 4) & 0x0f0f_0f0f_0f0f_0f0f);
             return BinaryPrimitives.ReverseEndianness(value);
         }
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ExtractBitField(uint value, byte start, byte length)
+            => (value >> start) & ~(~0u << length);
+
+        /// <summary>
+        /// Extracts the bit field inside <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="start">The start from LSB.</param>
+        /// <param name="length">The length in bits.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ExtractBitField(ulong value, byte start, byte length)
+            => (value >> start) & ~(~0ul << length);
     }
 }

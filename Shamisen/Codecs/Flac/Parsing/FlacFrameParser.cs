@@ -134,6 +134,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Finds the next frame.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static FlacFrameParser? ParseNextFrame(FlacBitReader source, FlacStreamInfoBlock streamInfoBlock)
         {
             ushort q = default;
@@ -159,8 +160,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 }
                 Unsafe.As<byte, ushort>(ref rawHeader[0]) = BinaryExtensions.ConvertToBigEndian(q);
                 source.Crc16 = new FlacCrc16(0) * rawHeader.SliceWhile(2);
-                uint? v1 = source.ReadBitsUInt32(16);
-                if (v1 is null) return null;
+                if (!source.ReadBitsUInt32(16, out var v1)) return null;
                 ushort next16 = (ushort)v1;//Contains blockSize to Reserved before CRC
                 var nFrameSize = ParseBlockSize((byte)MathI.ExtractBitField(next16, 12, 4));
                 var (length, state) = nFrameSize;
@@ -169,20 +169,20 @@ namespace Shamisen.Codecs.Flac.Parsing
                 var nBitDepth = ParseBitDepth((byte)MathI.ExtractBitField(next16, 1, 3));
                 Unsafe.As<byte, ushort>(ref rawHeader[2]) = BinaryExtensions.ConvertToBigEndian(next16);
                 int bytesRead = 4;
-                uint bitDepth = 0;
+                uint pBitDepth = 0;
 
-                FlacChannelAssignments channels = 0;
-                Int32Divisor channelsDivisor;
+                FlacChannelAssignments pChannels = 0;
+                Int32Divisor pChannelsDivisor;
 
-                FlacCrc16 crc16 = new(0);
+                FlacCrc16 pCrc16 = new(0);
 
-                ulong? frameNumber = null;
+                ulong? pFrameNumber = null;
 
-                ulong? sampleNumber = null;
+                ulong? pSampleNumber = null;
 
-                uint sampleRate = 0;
+                uint pSampleRate = 0;
 
-                PooledArray<int>? samples;
+                PooledArray<int>? pSamples;
 
                 if ((q & 0b1) > 0)   //variable blocking
                 {
@@ -190,7 +190,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                     bytesRead += a;
                     if (sn)
                     {
-                        sampleNumber = snum;
+                        pSampleNumber = snum;
                     }
                     else
                     {
@@ -204,7 +204,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                     bytesRead += a;
                     if (fn)
                     {
-                        frameNumber = fnum;
+                        pFrameNumber = fnum;
                     }
                     else
                     {
@@ -223,7 +223,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                         length = v + 1u;
                         break;
                     case BlockSizeState.GetUInt16FromEnd:
-                        ushort v2 = (ushort?)source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!", source);
+                        ushort v2 = source.ReadBitsUInt32(16, out var vvv) ? (ushort)vvv : throw new FlacException("The decoder ran out of data!", source);
                         Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v2);
                         bytesRead += 2;
                         length = v2 + 1u;
@@ -245,13 +245,13 @@ namespace Shamisen.Codecs.Flac.Parsing
                         nSampleRate.sampleRate = v * 1000u;
                         break;
                     case SampleRateState.GetUInt16HzFromEnd:
-                        ushort v2 = (ushort?)source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!", source);
+                        ushort v2 = source.ReadBitsUInt32(16, out var vv0) ? (ushort)vv0 : throw new FlacException("The decoder ran out of data!", source);
                         Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v2);
                         bytesRead += 2;
                         nSampleRate.sampleRate = v2;
                         break;
                     case SampleRateState.GetUInt16TenHzFromEnd:
-                        ushort v3 = (ushort?)source.ReadBitsUInt32(16) ?? throw new FlacException("The decoder ran out of data!", source);
+                        ushort v3 = source.ReadBitsUInt32(16, out vv0) ? (ushort)vv0 : throw new FlacException("The decoder ran out of data!", source);
                         Unsafe.As<byte, ushort>(ref rawHeader[bytesRead]) = BinaryExtensions.ConvertToBigEndian(v3);
                         bytesRead += 2;
                         nSampleRate.sampleRate = v3 * 10u;
@@ -272,17 +272,17 @@ namespace Shamisen.Codecs.Flac.Parsing
                     lookahead = rawHeader[bytesRead - 1];
                     continue;
                 }
-                sampleRate = nSampleRate.sampleRate;
-                channels = nChannels;
-                bitDepth = nBitDepth.bitDepth;
+                pSampleRate = nSampleRate.sampleRate;
+                pChannels = nChannels;
+                pBitDepth = nBitDepth.bitDepth;
                 //Read sub frame
                 int chCount = nChannels.GetChannels();
-                var subFrames = new IFlacSubFrame[chCount];
+                var pSubFrames = new IFlacSubFrame[chCount];
                 var bitReader = source;
-                for (int ch = 0; ch < subFrames.Length; ch++)
+                for (int ch = 0; ch < pSubFrames.Length; ch++)
                 {
                     int bps = (int)nBitDepth.bitDepth;
-                    switch ((channels, ch))
+                    switch ((pChannels, ch))
                     {
                         case (FlacChannelAssignments.LeftAndDifference, 1):
                         case (FlacChannelAssignments.RightAndDifference, 0):
@@ -297,9 +297,9 @@ namespace Shamisen.Codecs.Flac.Parsing
                     {
                         break;
                     }
-                    subFrames[ch] = result;
+                    pSubFrames[ch] = result;
                 }
-                if (subFrames.Any(a => a is null))
+                if (pSubFrames.Any(a => a is null))
                 {
                     lookahead = rawHeader[bytesRead - 1];
                     continue;
@@ -310,7 +310,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 }
                 source.UpdateCrc16();
                 var frameCrc = source.Crc16;
-                if (!(source.ReadBitsUInt32(16) is { } expectedCrc16))
+                if (!source.ReadBitsUInt32(16, out var expectedCrc16))
                 {
                     throw new FlacException("The decoder ran out of data!", source);
                 }
@@ -318,34 +318,33 @@ namespace Shamisen.Codecs.Flac.Parsing
                 {
                     throw new FlacException($"The decoder has detected CRC-16 mismatch!\nExpected: {expectedCrc16}\nActual:{frameCrc}", source);
                 }
-                if (subFrames is null) throw new FlacException("The subFrames is null! This is a bug!", source);
-                samples = new((int)length * chCount);
-                var TotalLength = length;
-                channelsDivisor = new(chCount);
-                InterleaveChannels(length, nChannels, samples.Span, subFrames);
+                if (pSubFrames is null) throw new FlacException("The subFrames is null! This is a bug!", source);
+                pSamples = new((int)length * chCount);
+                var pTotalLength = length;
+                pChannelsDivisor = new(chCount);
+                InterleaveChannels(length, nChannels, pSamples.Span, pSubFrames);
 
                 var p = new FlacFrameParser(source, streamInfoBlock)
                 {
-                    subFrames = subFrames,
-                    channels = channels,
-                    channelsDivisor = channelsDivisor,
-                    bitDepth = bitDepth,
-                    crc16 = crc16,
-                    sampleRate = sampleRate,
-                    sampleNumber = sampleNumber,
-                    samples = samples,
-                    frameNumber = frameNumber,
-                    TotalLength = TotalLength
+                    subFrames = pSubFrames,
+                    channels = pChannels,
+                    channelsDivisor = pChannelsDivisor,
+                    bitDepth = pBitDepth,
+                    crc16 = pCrc16,
+                    sampleRate = pSampleRate,
+                    sampleNumber = pSampleNumber,
+                    samples = pSamples,
+                    frameNumber = pFrameNumber,
+                    TotalLength = pTotalLength
                 };
                 return p;
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static IFlacSubFrame? ReadSubFrame(FlacBitReader flacBitReader, int blockSize, int bitDepthToRead)
         {
-            var (hasValue, result) = flacBitReader.ReadBitsUInt64(8);
-
-            if (!hasValue) return null;
+            if (!flacBitReader.ReadBitsUInt64(8, out var result)) return null;
             int wasted = (int)result & 1;
             result &= 0xfe;
             if (wasted > 0)
@@ -376,6 +375,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 #pragma warning restore S907 // "goto" statement should not be used
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void InterleaveChannels(uint length, FlacChannelAssignments nChannels, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             switch ((nChannels, subFrames.Length))
