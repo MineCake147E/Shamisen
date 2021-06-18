@@ -59,8 +59,13 @@ A Cross-Platform Audio Library for:
 
 | Container Name | Typical File Extensions | Implemented Codec | Library contains Decoder/Encoder | License | Decoding | Encoding |
 |--|--|--|--|--|:--:|:--:|
-| Waveform | `.wav` | Linear PCM, IEEE 754 Floating-Point PCM, A-Law | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ |
+| Waveform<br/>RF64 | `.wav` | Linear PCM, IEEE 754 Floating-Point PCM, A-Law | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ |
 | FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ❎(Planned) |
+
+Legends:  
+✅: Supported by Shamisen itself  
+✔: Supported by another library and its wrapper for Shamisen  
+❎: Not supported by Shamisen without any custom integration  
 
 #### Platform-Dependent
 
@@ -94,9 +99,9 @@ A Cross-Platform Audio Library for:
 ❓: Needs more information  
 ❎: Impossible   
 
-| Name of Backend | Author of Backend | License (binding) | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX | Status |
-|--|--|--|:--:|:--:|:--:|:--:|:--:|:--:|--|
-| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ❎ | ✅ | ❎ | ❎ | ❎ | Gathering Information |
+| Name of Backend | Author of Backend | License (binding) | Target Platform | Status |
+|--|--|--|--|--|
+| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Android >10 | Gathering Information |
 
 #### Managed backends
 
@@ -104,21 +109,21 @@ A Cross-Platform Audio Library for:
 ❓: Needs more information  
 ❎: Impossible  
 
-| Name of Backend | Author of Backend | License (binding) | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX | Status |
-|--|--|--|:--:|:--:|:--:|:--:|:--:|:--:|--|
-| Xamarin.iOS | Microsoft | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ❎ | ❎ | ❎ | ❎ | ✅ | ❎ | Planned |
+| Name of Backend | Author of Backend | License (binding) | Target Platforms | Status |
+|--|--|--|--|--|
+| Xamarin.iOS | Microsoft | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | iOS | Planned |
 
 
 ### File Formats and Codecs
 
 #### Cross-Platform
 
-✅: Managed Implementation Planned  
-⭕: Implementation Planned but can be Native one  
-❎: Not Included in Plan 
+✅: Shamisen will have Managed Implementation of decoder/encoder itself  
+⭕: Shamisen will have Managed Wrapper for another library  
+❎: Not included in plan currently  
 
-| Container Name | Typical File Extensions | Implementing Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
+| Container Name | Typical File Extensions | Target Codec | Planned Library containing Decoder/Encoder | Planned Library License | Decoding | Encoding | Status |
 |--|--|--|--|--|:--:|:--:|--|
-| FLAC | `.flac` | FLAC | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implemented Decoder |
-| Opus | `.opus` | Opus | Shamisen | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
-| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
+| FLAC | `.flac` | FLAC | Shamisen(Decoder)<br/>Shamisen.Codecs.Flac(Encoder) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ✅ | Implemented Decoder |
+| Opus | `.opus` | Opus | Shamisen(Decoder)<br/>Shamisen.Codecs.Opus(Encoder) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ✅ | ⭕ | Planned |
+| Ogg | `.ogg` | Vorbis | Shamisen<br/>.Codec.Ogg | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | ⭕ | ⭕ | Planned |
