@@ -135,7 +135,7 @@ namespace Shamisen
         FrontStereo = FrontLeft | FrontRight,
 
         /// <summary>
-        /// The side Stereo combination.
+        /// The side Stereo combination suitable for headphones.
         /// </summary>
         SideStereo = SideLeft | SideRight,
 

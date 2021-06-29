@@ -1,0 +1,3 @@
+﻿Windows.Win32.Media.Audio.CoreAudio
+CoCreateInstance
+CLSID_MMDeviceEnumerator
