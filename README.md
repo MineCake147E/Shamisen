@@ -2,6 +2,8 @@
 
 # Shamisen - .NET Audio Library
 
+[![CodeFactor](https://www.codefactor.io/repository/github/minecake147e/shamisen/badge)](https://www.codefactor.io/repository/github/minecake147e/shamisen)
+
 A Cross-Platform Audio Library for:
 
 - .NET 5
