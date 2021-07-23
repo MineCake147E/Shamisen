@@ -25,7 +25,11 @@ namespace Shamisen.IO
             maxSampleRate = -1;
             var device = ALC.OpenDevice(Name);
             if (device == IntPtr.Zero) return;
-            var context = ALC.CreateContext(device, (int[])null);
+            ALContext context;
+            unsafe
+            {
+                context = ALC.CreateContext(device, (int*)null);
+            }
             if (context == ALContext.Null) return;
             //sampleRate check
             ALC.GetInteger(device, AlcGetInteger.AttributesSize, 1, out int asize);

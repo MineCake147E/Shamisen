@@ -37,7 +37,7 @@ namespace Shamisen.Benchmarks
         public void Setup()
         {
             source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
-            converter = new SampleToPcm16Converter(source, EnableIntrinsics, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics, false, Endianness.Little);
+            converter = new SampleToPcm16Converter(source, EnableIntrinsics, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics, true, Endianness.Little);
             buffer = new byte[1024 * Channels * sizeof(short)];
         }
 

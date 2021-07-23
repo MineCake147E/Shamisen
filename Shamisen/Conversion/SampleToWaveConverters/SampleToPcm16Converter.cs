@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Shamisen.Optimization;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -25,6 +26,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     public sealed partial class SampleToPcm16Converter : SampleToWaveConverterBase
     {
         private const float Multiplier = 32768.0f;
+        private const float MultiplierInv = 1.0f / Multiplier;
         private const int ActualBytesPerSample = sizeof(short);
         private const int BufferMax = 4096;
         private int ActualBufferMax => BufferMax * Source.Format.Channels;
@@ -42,17 +44,17 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// Initializes a new instance of the <see cref="SampleToPcm16Converter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
+        /// <param name="doDeltaSigmaModulation">Turns on <see cref="DoDeltaSigmaModulation"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
-        public SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
-            : this(source, true, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, accuracyNeeded, endianness)
+        public SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool doDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
+            : this(source, true, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, doDeltaSigmaModulation, endianness)
         {
-            if (accuracyNeeded)
+            if (doDeltaSigmaModulation)
             {
                 dsmAccumulator = new float[source.Format.Channels];
                 dsmLastOutput = new short[source.Format.Channels];
             }
-            AccuracyMode = accuracyNeeded;
+            DoDeltaSigmaModulation = doDeltaSigmaModulation;
             Endianness = endianness;
             readBuffer = new float[ActualBufferMax];
         }
@@ -64,9 +66,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <param name="enableIntrinsics"></param>
         /// <param name="enabledX86Intrinsics"></param>
         /// <param name="enabledArmIntrinsics"></param>
-        /// <param name="accuracyNeeded">Turns on <see cref="AccuracyMode"/> when <c>true</c>.</param>
+        /// <param name="soDeltaSigmaModulation">Turns on <see cref="DoDeltaSigmaModulation"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
-        internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool accuracyNeeded = true, Endianness endianness = Endianness.Little)
+        internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool soDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
              : base(source, new WaveFormat(source.Format.SampleRate, 16, source.Format.Channels, AudioEncoding.LinearPcm))
         {
             this.enableIntrinsics = enableIntrinsics;
@@ -80,7 +82,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         ///   <c>true</c> if the accuracy mode is turned on; otherwise, <c>false</c>.
         /// </value>
-        public bool AccuracyMode { get; }
+        public bool DoDeltaSigmaModulation { get; }
 
         /// <summary>
         /// Gets the endianness.
@@ -127,19 +129,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
                 }
 
-                if (AccuracyMode)
+                if (DoDeltaSigmaModulation)
                 {
-                    var dsmAcc = dsmAccumulator.Span;
-                    var dsmLastOut = dsmLastOutput.Span;
-                    dsmChannelPointer %= dsmAcc.Length;
-                    for (int i = 0; i < dest.Length; i++)
-                    {
-                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
-                        dsmAcc[dsmChannelPointer] += diff;
-                        var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
-                        dest[i] = IsEndiannessConversionRequired ? BinaryPrimitives.ReverseEndianness(v) : v;
-                        dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
-                    }
+                    ProcessAccurate(wrote, dest);
                 }
                 else
                 {
@@ -150,6 +142,94 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             return outBuffer.Length * sizeof(ushort);
         }
+
+        #region Accurate
+
+        private void ProcessAccurate(Span<float> wrote, Span<short> dest)
+        {
+            //
+
+            ProcessAccurateStandard(wrote, dest);
+        }
+
+        private void ProcessAccurateStandard(Span<float> wrote, Span<short> dest)
+        {
+            int channels = Format.Channels;
+            if (dsmAccumulator.Length < channels || dsmLastOutput.Length < channels)
+                throw new InvalidOperationException("Channels must be smaller than or equals to dsmAccumulator's length!");
+            switch (channels)
+            {
+                case 1:
+                    ProcessAccurateMonaural(wrote, dest);
+                    break;
+                default:
+                    ProcessAccurateOrdinal(wrote, dest);
+                    break;
+            }
+        }
+
+        private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest)
+        {
+            var dsmAcc = MemoryMarshal.GetReference(dsmAccumulator.Span);
+            var dsmPrev = MemoryMarshal.GetReference(dsmLastOutput.Span);
+            ref var rWrote = ref MemoryMarshal.GetReference(wrote);
+            ref var rDest = ref MemoryMarshal.GetReference(dest);
+            var nLength = (nint)dest.Length;
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
+                dsmAcc += diff;
+                var v = dsmPrev = Convert(dsmAcc);
+                Unsafe.Add(ref rDest, i) = v;
+            }
+            MemoryMarshal.GetReference(dsmAccumulator.Span) = dsmAcc;
+            MemoryMarshal.GetReference(dsmLastOutput.Span) = dsmPrev;
+        }
+
+        private void ProcessAccurateStereoStandard(Span<float> wrote, Span<short> dest)
+        {
+            var dsmAcc = Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(dsmAccumulator.Span));
+            var dsmLastOut = Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dsmLastOutput.Span));
+            var dsmPrev = new Vector2(dsmLastOut.x, dsmLastOut.y);
+            ref var rWrote = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 2;
+            var min = new Vector2(-1.0f);
+            var max = new Vector2(0.999969482421875f);
+            var mul = new Vector2(32768.0f);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
+                dsmAcc += diff;
+                var v = Vector2.Clamp(dsmAcc, min, max);
+                v *= mul;
+                short x = (short)v.X;
+                short y = (short)v.Y;
+                dsmPrev = new Vector2(x, y);
+                Unsafe.Add(ref rDest, i) = (x, y);
+            }
+            Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(dsmAccumulator.Span)) = dsmAcc;
+            Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dsmLastOutput.Span)) = ((short)dsmPrev.X,(short)dsmPrev.Y);
+        }
+
+        private void ProcessAccurateOrdinal(Span<float> wrote, Span<short> dest)
+        {
+            var dsmAcc = dsmAccumulator.Span;
+            var dsmLastOut = dsmLastOutput.Span;
+            dsmChannelPointer %= dsmAcc.Length;
+            for (int i = 0; i < dest.Length; i++)
+            {
+                var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
+                dsmAcc[dsmChannelPointer] += diff;
+                var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
+                dest[i] = IsEndiannessConversionRequired ? BinaryPrimitives.ReverseEndianness(v) : v;
+                dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
+            }
+        }
+
+        #endregion Accurate
+
+        #region Normal
 
         private void ProcessNormal(Span<float> wrote, Span<short> dest)
         {
@@ -209,7 +289,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        //[MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        #endregion Normal
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static short Convert(float srcval) => (short)Math.Min(short.MaxValue, Math.Max(srcval * Multiplier, short.MinValue));
 
         /// <summary>

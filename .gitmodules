@@ -1,0 +1,3 @@
+[submodule "Codecs/Shamisen.Codecs.Native.FLAC/flac"]
+	path = Codecs/Shamisen.Codecs.Native.FLAC/flac
+	url = https://github.com/xiph/flac

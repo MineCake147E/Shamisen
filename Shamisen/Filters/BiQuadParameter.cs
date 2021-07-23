@@ -21,7 +21,10 @@ namespace Shamisen.Filters
         /// <param name="a0">The a0.</param>
         /// <param name="a1">The a1.</param>
         /// <param name="a2">The a2.</param>
-        private BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2) => (B, A) = (new Vector3(b0, b1, b2) / a0, new Vector2(a1, a2) / -a0);  //Invert in advance
+        private BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2)
+        {
+            (B, A) = (new Vector3(b0, b1, b2) / a0, new Vector2(a1, a2) / -a0);  //Invert in advance
+        }
 
         /// <summary>
         /// The normalized B parameters.

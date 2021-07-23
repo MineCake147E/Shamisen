@@ -4,49 +4,37 @@
         <name>Shamisen.IO.NAudio</name>
     </assembly>
     <members>
-        <member name="T:Shamisen.IO.NAudioInteroperatingWaveSource">
+        <member name="T:Shamisen.IO.NAudioInteroperationUtils">
             <summary>
-            Provides audio data to <see cref="T:NAudio.Wave.IWavePlayer"/>.
+            Contains useful methods for interoperating with NAudio.
             </summary>
-            <seealso cref="T:NAudio.Wave.IWaveProvider" />
-            <seealso cref="T:System.IDisposable" />
         </member>
-        <member name="M:Shamisen.IO.NAudioInteroperatingWaveSource.#ctor(Shamisen.IWaveSource)">
+        <member name="M:Shamisen.IO.NAudioInteroperationUtils.AsNAudioPlaybackState(Shamisen.IO.PlaybackState)">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.NAudioInteroperatingWaveSource"/> class.
+            Converts <see cref="T:Shamisen.IO.PlaybackState"/> instance to <see cref="T:NAudio.Wave.PlaybackState"/>.
             </summary>
-            <param name="source">The source.</param>
-            <exception cref="T:System.ArgumentNullException">source</exception>
+            <param name="playbackState">The <see cref="T:Shamisen.IO.PlaybackState"/> getting converted.</param>
+            <returns>
+            The converted <see cref="T:NAudio.Wave.PlaybackState"/> instance.
+            </returns>
         </member>
-        <member name="P:Shamisen.IO.NAudioInteroperatingWaveSource.WaveFormat">
+        <member name="M:Shamisen.IO.NAudioInteroperationUtils.AsShamisenPlaybackState(NAudio.Wave.PlaybackState)">
             <summary>
-            Gets the WaveFormat of this WaveProvider.
+            Converts <see cref="T:NAudio.Wave.PlaybackState"/> instance to <see cref="T:Shamisen.IO.PlaybackState"/>.
             </summary>
-            <value>
-            The wave format.
-            </value>
+            <param name="playbackState">The <see cref="T:NAudio.Wave.PlaybackState"/> getting converted.</param>
+            <returns>
+            The converted <see cref="T:Shamisen.IO.PlaybackState"/> instance.
+            </returns>
         </member>
-        <member name="P:Shamisen.IO.NAudioInteroperatingWaveSource.Source">
+        <member name="M:Shamisen.IO.NAudioInteroperationUtils.AsShamisenWaveFormat(NAudio.Wave.WaveFormat)">
             <summary>
-            Gets the source to read the audio from.
+            Converts <see cref="T:NAudio.Wave.WaveFormat"/> instance to <see cref="T:Shamisen.WaveFormat"/>.
             </summary>
-            <value>
-            The source.
-            </value>
-        </member>
-        <member name="M:Shamisen.IO.NAudioInteroperatingWaveSource.Read(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="offset">The offset to overwrite the <paramref name="buffer"/>.</param>
-            <param name="count">The number of bytes to overwrite the <paramref name="buffer"/>.</param>
-            <returns>The number of bytes read.</returns>
-        </member>
-        <member name="M:Shamisen.IO.NAudioInteroperatingWaveSource.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
+            <param name="sourceFormat">The <see cref="T:Shamisen.WaveFormat"/> getting converted.</param>
+            <returns>
+            The converted <see cref="T:Shamisen.WaveFormat"/> instance.
+            </returns>
         </member>
         <member name="T:Shamisen.IO.NAudioSoundOutput">
             <summary>
@@ -82,7 +70,6 @@
             Initializes the <see cref="T:Shamisen.IO.ISoundOut" /> for playing a <paramref name="source" />.
             </summary>
             <param name="source">The source to play.</param>
-            <exception cref="T:System.NotImplementedException"></exception>
         </member>
         <member name="M:Shamisen.IO.NAudioSoundOutput.Pause">
             <summary>
@@ -105,6 +92,204 @@
             </summary>
         </member>
         <member name="M:Shamisen.IO.NAudioSoundOutput.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.NAudioWaveProviderSource">
+            <summary>
+            Provides <see cref="T:NAudio.Wave.IWaveProvider"/>'s audio data to <see cref="N:Shamisen"/>-styled consumer.
+            </summary>
+            <seealso cref="T:Shamisen.IWaveSource" />
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveProviderSource.#ctor(NAudio.Wave.IWaveProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.NAudioWaveProviderSource"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.Length">
+            <summary>
+            Gets the length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.TotalLength">
+            <summary>
+            Gets the total length.
+            </summary>
+            <value>
+            The total length.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.Position">
+            <summary>
+            Gets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.SkipSupport">
+            <summary>
+            Gets the skip support.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveProviderSource.SeekSupport">
+            <summary>
+            Gets the seek support.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveProviderSource.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveProviderSource.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.IO.NAudioWaveProviderSource"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveProviderSource.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.NAudioWaveStreamSource">
+            <summary>
+            Provides <see cref="T:NAudio.Wave.WaveStream"/>'s audio data to <see cref="N:Shamisen"/>-styled consumer.
+            </summary>
+            <seealso cref="T:Shamisen.IWaveSource" />
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveStreamSource.#ctor(NAudio.Wave.WaveStream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.NAudioWaveStreamSource"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.TotalLength">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.NAudioWaveStreamSource.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveStreamSource.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the data to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.IO.NAudioWaveStreamSource.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.ShamisenWaveProvider">
+            <summary>
+            Provides <see cref="T:Shamisen.IWaveSource"/>'s audio data to <see cref="N:NAudio"/>-styled consumer.
+            </summary>
+            <seealso cref="T:NAudio.Wave.IWaveProvider" />
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="M:Shamisen.IO.ShamisenWaveProvider.#ctor(Shamisen.IWaveSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.ShamisenWaveProvider"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="P:Shamisen.IO.ShamisenWaveProvider.WaveFormat">
+            <summary>
+            Gets the WaveFormat of this WaveProvider.
+            </summary>
+            <value>
+            The wave format.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.ShamisenWaveProvider.Source">
+            <summary>
+            Gets the source to read the audio from.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="M:Shamisen.IO.ShamisenWaveProvider.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="offset">The offset to overwrite the <paramref name="buffer"/>.</param>
+            <param name="count">The number of bytes to overwrite the <paramref name="buffer"/>.</param>
+            <returns>The number of bytes read.</returns>
+        </member>
+        <member name="M:Shamisen.IO.ShamisenWaveProvider.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>

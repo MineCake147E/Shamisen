@@ -118,12 +118,12 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </None>
-        <None Include="SystemExtensions\MathITemplate.cs">
+        <None Include="Utils\MathITemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>MathITemplate.tt</DependentUpon>
         </None>
-        <None Include="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
+        <None Include="Utils\Memory\SpanExtensionsTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
@@ -194,11 +194,11 @@
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
         </None>
-        <None Update="SystemExtensions\MathITemplate.tt">
+        <None Update="Utils\MathITemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>MathITemplate.cs</LastGenOutput>
         </None>
-        <None Update="SystemExtensions\Memory\SpanExtensionsTemplate.tt">
+        <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
         </None>
@@ -282,12 +282,12 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </Compile>
-        <Compile Update="SystemExtensions\MathITemplate.cs">
+        <Compile Update="Utils\MathITemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>MathITemplate.tt</DependentUpon>
         </Compile>
-        <Compile Update="SystemExtensions\Memory\SpanExtensionsTemplate.cs">
+        <Compile Update="Utils\Memory\SpanExtensionsTemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>

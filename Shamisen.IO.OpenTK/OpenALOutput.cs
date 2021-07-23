@@ -24,18 +24,18 @@ namespace Shamisen.IO
         private int[] bufferPointers;
 
         private static readonly TimeSpan MinimumSleep = TimeSpan.FromMilliseconds(1);
-        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource? cancellationTokenSource;
         private bool bufferCreationNeeded = true;
-        private byte[] inbuf;
+        private byte[]? inbuf;
         private ALFormat format;
         private ALContext contextHandle;
         private bool disposedValue = false;
         private ManualResetEventSlim fillFlag = new ManualResetEventSlim(false);
-        private Task fillTask;
+        private Task? fillTask;
         private ALDevice device;
-        private IWaveFormat sourceFormat;
+        private IWaveFormat? sourceFormat;
         private volatile bool running = false;
-        private IWaveSource Source { get; set; }
+        private IWaveSource? Source { get; set; }
 
         /// <summary>
         /// Gets the value which indicates how long does the <see cref="AL"/> takes while delivering the audio data to the hardware.
@@ -87,7 +87,10 @@ namespace Shamisen.IO
         private OpenALOutput(string name, TimeSpan latency)
         {
             device = ALC.OpenDevice(name);
-            contextHandle = ALC.CreateContext(device, (int[])null);
+            unsafe
+            {
+                contextHandle = ALC.CreateContext(device, (int*)null);
+            }
             ALC.GetInteger(device, AlcGetInteger.AttributesSize, 1, out int asize);
             int[] attr = new int[asize];
             ALC.GetInteger(device, AlcGetInteger.AllAttributes, asize, attr);
@@ -109,6 +112,7 @@ namespace Shamisen.IO
             Console.WriteLine($"SampleRate:{sampleRate}");
             Latency = latency / BUFNUM;
             Latency = Latency.TotalMilliseconds < MinLengthInMilliseconds ? TimeSpan.FromMilliseconds(MinLengthInMilliseconds) : Latency;
+            bufferPointers = AL.GenBuffers(BUFNUM); CheckErrors();
 #if DEBUG
             var version = AL.Get(ALGetString.Version); CheckErrors();
             var vendor = AL.Get(ALGetString.Vendor); CheckErrors();
@@ -176,6 +180,7 @@ namespace Shamisen.IO
 
         private async ValueTask FillBufferAsync(CancellationToken token)
         {
+            if (Source is null) throw new Exception("");
             await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
             {
                 try
@@ -249,6 +254,7 @@ namespace Shamisen.IO
 
         private int FillBuffer(int bp)
         {
+            if (Source is null || sourceFormat is null) throw new Exception("");
             while (bp > 0)
             {
                 var buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
@@ -315,6 +321,7 @@ namespace Shamisen.IO
                         if (AL.IsSource(src)) AL.SourcePlay(src);
                         PlaybackState = PlaybackState.Playing;
                         fillFlag.Set();
+                        if (cancellationTokenSource is null) throw new InvalidOperationException();
                         fillTask ??= Task.Run(async () => await FillBufferAsync(cancellationTokenSource.Token), cancellationTokenSource.Token);
                         fillTask.ConfigureAwait(false);
                     });
@@ -351,8 +358,8 @@ namespace Shamisen.IO
             PlaybackState = PlaybackState.Stopped;
             running = false;
             fillFlag.Set();
-            cancellationTokenSource.Cancel();
-            fillTask.Dispose();
+            cancellationTokenSource?.Cancel();
+            fillTask?.Dispose();
         });
 
         #endregion Playback Controls
@@ -377,12 +384,12 @@ namespace Shamisen.IO
                     PlaybackState = PlaybackState.Stopped;
                     running = false;
                     fillFlag.Set();
-                    cancellationTokenSource.Cancel();
-                    fillTask.Dispose();
+                    cancellationTokenSource?.Cancel();
+                    fillTask?.Dispose();
                 }
                 if (disposing)
                 {
-                    Source.Dispose();
+                    Source?.Dispose();
                 }
 
                 if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers); CheckErrors(); }

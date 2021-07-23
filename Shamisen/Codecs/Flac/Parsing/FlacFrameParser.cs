@@ -170,20 +170,13 @@ namespace Shamisen.Codecs.Flac.Parsing
                 Unsafe.As<byte, ushort>(ref rawHeader[2]) = BinaryExtensions.ConvertToBigEndian(next16);
                 int bytesRead = 4;
                 uint pBitDepth = 0;
-
                 FlacChannelAssignments pChannels = 0;
                 Int32Divisor pChannelsDivisor;
-
                 FlacCrc16 pCrc16 = new(0);
-
                 ulong? pFrameNumber = null;
-
                 ulong? pSampleNumber = null;
-
                 uint pSampleRate = 0;
-
                 PooledArray<int>? pSamples;
-
                 if ((q & 0b1) > 0)   //variable blocking
                 {
                     var sn = source.ReadUtf8UInt64(out var snum, rawHeader.Slice(bytesRead), out int a);
@@ -279,26 +272,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 int chCount = nChannels.GetChannels();
                 var pSubFrames = new IFlacSubFrame[chCount];
                 var bitReader = source;
-                for (int ch = 0; ch < pSubFrames.Length; ch++)
-                {
-                    int bps = (int)nBitDepth.bitDepth;
-                    switch ((pChannels, ch))
-                    {
-                        case (FlacChannelAssignments.LeftAndDifference, 1):
-                        case (FlacChannelAssignments.RightAndDifference, 0):
-                        case (FlacChannelAssignments.CenterAndDifference, 1):
-                            bps++;
-                            break;
-                        default:
-                            break;
-                    }
-                    var result = ReadSubFrame(bitReader, (int)length, bps);
-                    if (result is null)
-                    {
-                        break;
-                    }
-                    pSubFrames[ch] = result;
-                }
+                ReadSubFrames(length, nBitDepth, pChannels, pSubFrames, bitReader);
                 if (pSubFrames.Any(a => a is null))
                 {
                     lookahead = rawHeader[bytesRead - 1];
@@ -338,6 +312,31 @@ namespace Shamisen.Codecs.Flac.Parsing
                     TotalLength = pTotalLength
                 };
                 return p;
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ReadSubFrames(uint length, (uint bitDepth, BitDepthState state) nBitDepth, FlacChannelAssignments pChannels, IFlacSubFrame[] pSubFrames, FlacBitReader bitReader)
+        {
+            for (int ch = 0; ch < pSubFrames.Length; ch++)
+            {
+                int bps = (int)nBitDepth.bitDepth;
+                switch ((pChannels, ch))
+                {
+                    case (FlacChannelAssignments.LeftAndDifference, 1):
+                    case (FlacChannelAssignments.RightAndDifference, 0):
+                    case (FlacChannelAssignments.CenterAndDifference, 1):
+                        bps++;
+                        break;
+                    default:
+                        break;
+                }
+                var result = ReadSubFrame(bitReader, (int)length, bps);
+                if (result is null)
+                {
+                    break;
+                }
+                pSubFrames[ch] = result;
             }
         }
 
@@ -388,155 +387,195 @@ namespace Shamisen.Codecs.Flac.Parsing
                     }
                     break;
                 case (FlacChannelAssignments.OrdinalStereo, 2):
-                    {
-                        using var left = new PooledArray<int>((int)length);
-                        using var right = new PooledArray<int>((int)length);
-                        if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.InterleaveStereo(samples, left.Span, right.Span);
-                    }
+                    InterleaveOrdinalStereo(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.FrontThree, 3):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 3);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData || subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData || subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.InterleaveThree(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen));
-                    }
+                    InterleaveFrontThree(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.Quad, 4):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 4);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
-                            subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
-                            subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
-                            subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.InterleaveQuad(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen), j.Slice(iLen * 3, iLen));
-                    }
+                    InterleaveQuad(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.FrontFive, 5):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 5);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
-                            subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
-                            subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
-                            subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
-                            subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.Interleave5Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
-                            , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen));
-                    }
+                    InterleaveFrontFive(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.FivePointOne, 6):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 6);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
-                            subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
-                            subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
-                            subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
-                            subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
-                            subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.Interleave6Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
-                            , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen));
-                    }
+                    InterleaveFivePointOne(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.DolbySixPointOne, 7):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 7);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
-                            subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
-                            subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
-                            subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
-                            subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
-                            subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData ||
-                            subFrames[6].Read(j.Slice(iLen * 6, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.Interleave7Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
-                            , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen)
-                            , j.Slice(iLen * 6, iLen));
-                    }
+                    InterleaveDolbySixPointOne(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.SevenPointOne, 8):
-                    {
-                        int iLen = (int)length;
-                        using var src = new PooledArray<int>(iLen * 8);
-                        var j = src.Span;
-                        if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
-                            subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
-                            subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
-                            subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
-                            subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
-                            subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData ||
-                            subFrames[6].Read(j.Slice(iLen * 6, iLen)).HasNoData ||
-                            subFrames[7].Read(j.Slice(iLen * 7, iLen)).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        AudioUtils.Interleave8Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
-                            , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen)
-                            , j.Slice(iLen * 6, iLen), j.Slice(iLen * 7, iLen));
-                    }
+                    InterleaveSevenPointOne(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.LeftAndDifference, 2):
-                    {
-                        using var left = new PooledArray<int>((int)length);
-                        using var right = new PooledArray<int>((int)length);
-                        if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        FlacSideStereoUtils.DecodeAndInterleaveLeftSideStereo(samples, left.Span, right.Span);
-                    }
+                    InterleaveLeftSideStereo(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.RightAndDifference, 2):
-                    {
-                        using var left = new PooledArray<int>((int)length);
-                        using var right = new PooledArray<int>((int)length);
-                        if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        FlacSideStereoUtils.DecodeAndInterleaveRightSideStereo(samples, left.Span, right.Span);
-                    }
+                    InterleaveRightSideStereo(length, samples, subFrames);
                     break;
                 case (FlacChannelAssignments.CenterAndDifference, 2):
-                    {
-                        using var left = new PooledArray<int>((int)length);
-                        using var right = new PooledArray<int>((int)length);
-                        if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
-                        {
-                            throw new FlacException("Unknown error! This is a bug!");
-                        }
-                        FlacSideStereoUtils.DecodeAndInterleaveMidSideStereo(samples, left.Span, right.Span);
-                    }
+                    InterleaveMidSideStereo(length, samples, subFrames);
                     break;
                 default:
                     throw new FlacException("The channel assignment is not supported!");
             }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveMidSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            using var left = new PooledArray<int>((int)length);
+            using var right = new PooledArray<int>((int)length);
+            if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            FlacSideStereoUtils.DecodeAndInterleaveMidSideStereo(samples, left.Span, right.Span);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveRightSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            using var left = new PooledArray<int>((int)length);
+            using var right = new PooledArray<int>((int)length);
+            if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            FlacSideStereoUtils.DecodeAndInterleaveRightSideStereo(samples, left.Span, right.Span);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveLeftSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            using var left = new PooledArray<int>((int)length);
+            using var right = new PooledArray<int>((int)length);
+            if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            FlacSideStereoUtils.DecodeAndInterleaveLeftSideStereo(samples, left.Span, right.Span);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveSevenPointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 8);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
+                subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
+                subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
+                subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
+                subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
+                subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData ||
+                subFrames[6].Read(j.Slice(iLen * 6, iLen)).HasNoData ||
+                subFrames[7].Read(j.Slice(iLen * 7, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.Interleave8Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
+                , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen)
+                , j.Slice(iLen * 6, iLen), j.Slice(iLen * 7, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveDolbySixPointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 7);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
+                subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
+                subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
+                subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
+                subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
+                subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData ||
+                subFrames[6].Read(j.Slice(iLen * 6, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.Interleave7Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
+                , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen)
+                , j.Slice(iLen * 6, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveFivePointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 6);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
+                subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
+                subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
+                subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
+                subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData ||
+                subFrames[5].Read(j.Slice(iLen * 5, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.Interleave6Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
+                , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveFrontFive(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 5);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
+                subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
+                subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
+                subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData ||
+                subFrames[4].Read(j.Slice(iLen * 4, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.Interleave5Channels(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen)
+                , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveQuad(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 4);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData ||
+                subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData ||
+                subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData ||
+                subFrames[3].Read(j.Slice(iLen * 3, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.InterleaveQuad(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen), j.Slice(iLen * 3, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveFrontThree(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            int iLen = (int)length;
+            using var src = new PooledArray<int>(iLen * 3);
+            var j = src.Span;
+            if (subFrames[0].Read(j.Slice(0, iLen)).HasNoData || subFrames[1].Read(j.Slice(iLen, iLen)).HasNoData || subFrames[2].Read(j.Slice(iLen * 2, iLen)).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.InterleaveThree(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen));
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void InterleaveOrdinalStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
+        {
+            using var left = new PooledArray<int>((int)length);
+            using var right = new PooledArray<int>((int)length);
+            if (subFrames[0].Read(left.Span).HasNoData || subFrames[1].Read(right.Span).HasNoData)
+            {
+                throw new FlacException("Unknown error! This is a bug!");
+            }
+            AudioUtils.InterleaveStereo(samples, left.Span, right.Span);
         }
 
         /// <summary>

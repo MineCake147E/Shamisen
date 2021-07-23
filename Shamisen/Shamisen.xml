@@ -13466,7 +13466,7 @@
         </member>
         <member name="F:Shamisen.Speakers.SideStereo">
             <summary>
-            The side Stereo combination.
+            The side Stereo combination suitable for headphones.
             </summary>
         </member>
         <member name="F:Shamisen.Speakers.RearStereo">
