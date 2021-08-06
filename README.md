@@ -38,16 +38,16 @@ A Cross-Platform Audio Library for:
 - Fast and smooth Up-sampling using Catmull-Rom Spline
   - Utilizes `Vector4` for resampling calculation.
   - Uses Direct/Wrapped caching for Catmull-Rom spline coefficients. 
-  - Benchmarks on .Net Core, Intel Core i7 4790
+  - Benchmarks on .Net Core, Intel Core i7 4790  
     Note that the results are not inversely proportional due to differences in caching strategies.
-    - About 170x faster than playback in 44.1kHz→192kHz **10ch**(e.g. 9.1ch).
-    - About 520x faster than playback in 44.1kHz→192kHz **Stereo**.
-    - About 830x faster than playback in 44.1kHz→192kHz **4ch**(e.g. 3.1ch).
-    - About 1200x faster than playback in 44.1kHz→192kHz **Monaural**.
-    - About 150x faster than playback in 48kHz→192kHz **10ch**(e.g. 9.1ch).
-    - About 580x faster than playback in 48kHz→192kHz **Stereo**.
-    - About 1200x faster than playback in 48kHz→192kHz **4ch**(e.g. 3.1ch).
-    - About 1300x faster than playback in 48kHz→192kHz **Monaural**.
+    - About 230x faster than playback in 44.1kHz→192kHz **10ch**(e.g. 9.1ch).
+    - About 1050x faster than playback in 44.1kHz→192kHz **Stereo**.
+    - About 1427x faster than playback in 44.1kHz→192kHz **4ch**(e.g. 3.1ch).
+    - About 2200x faster than playback in 44.1kHz→192kHz **Monaural**.
+    - About 190x faster than playback in 48kHz→192kHz **10ch**(e.g. 9.1ch).
+    - About 3715x faster than playback in 48kHz→192kHz **Stereo**.
+    - About 2300x faster than playback in 48kHz→192kHz **4ch**(e.g. 3.1ch).
+    - About **10900x faster than playback** in 48kHz→192kHz **Monaural**.
   - Uses `MemoryMarshal.Cast` so it doesn't copy while casting.
 - `FastFill` for some types that fills quickly using `Vector<T>`.
 - Optimized BiQuad Filters that supports some filtering
@@ -75,14 +75,11 @@ Legends:
 
 ## Dependencies and system requirements ##
 
-- The speed of `SplineResampler` depends on the fast C# Integer Division Library **[DivideSharp](https://github.com/MineCake147E/DivideSharp)**
-  - Divides by "almost constant" number, about 2x faster than ordinal division(idiv instruction)!
-  - Implements the same technology that is used in `RyuJIT` constant division optimization, ported to C#!
-  - Improved `SplineResampler`'s performance greatly, about **1.5x** faster on Stereo!
 - Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
   - Because Unity uses older version of `Mono`.
+- Requires [DivideSharp](https://github.com/MineCake147E/DivideSharp) for frequently appearing divide-by-number-of-channels operations.
 - Faster resampling requires `.NET 5` or `.NET Core 3.1`.
-  - Unfortunately, `.NET Framework` does not support Fast `Span<T>`s.
+  - Unfortunately, older versions doesn't support Hardware Intrinsics.
 - The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
