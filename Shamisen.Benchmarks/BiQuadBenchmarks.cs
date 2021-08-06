@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.Resampling.Sample;
@@ -22,9 +24,19 @@ namespace Shamisen.Benchmarks
         private BiQuadFilter filter;
         private float[] buffer;
         private const int SampleRate = 192000;
-
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                _ = AddColumn(new PlaybackSpeedColumn(
+                    a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value,
+                    a => SampleRate));
+            }
+        }
         [Params(2)]
         public int Channels { get; set; }
+        [Params(1441)]
+        public int Frames { get; set; }
 
         [Params(true)]
         public bool EnableIntrinsics { get; set; }
@@ -37,7 +49,7 @@ namespace Shamisen.Benchmarks
         {
             source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
             filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1), EnableIntrinsics, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics);
-            buffer = new float[1024 * Channels];
+            buffer = new float[Frames * Channels];
         }
 
         [Benchmark]

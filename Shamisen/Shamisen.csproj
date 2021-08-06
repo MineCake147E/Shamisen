@@ -103,11 +103,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
         </None>
-        <None Include="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
-        </None>
         <None Include="Data\Binary\DataSinkUtils.g.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -184,7 +179,7 @@
         </None>
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>SplineResampler.Resample.cs</LastGenOutput>
+            <LastGenOutput>SplineResampler.Resample.g.cs</LastGenOutput>
         </None>
         <None Update="Data\Binary\DataSinkUtils.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
@@ -267,7 +262,7 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
         </Compile>
-        <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.cs">
+        <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.g.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.tt</DependentUpon>

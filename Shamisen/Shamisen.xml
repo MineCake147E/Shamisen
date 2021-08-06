@@ -7796,6 +7796,16 @@
             The number to multiply.
             </value>
         </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.GradientIncrement">
+            <summary>
+            Gets the number to increment conversion gradient.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.IndexIncrement">
+            <summary>
+            Gets the number to increment conversion source position.
+            </summary>
+        </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Length">
             <summary>
             Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
@@ -8057,6 +8067,18 @@
             The number to multiply.
             </value>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateX86(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
+            <summary>
+            For arbitral sampling frequency ratio larger than 1
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
+            <param name="ram"></param>
+            <param name="acc"></param>
+            <returns></returns>
+        </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
             <summary>
             Calculate on demand
@@ -8107,6 +8129,32 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
+        <member name="T:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy">
+            <summary>
+            Defines some options for <see cref="T:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter"/> and its close relatives.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.Normal">
+            <summary>
+            The normal conversion.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.DeltaSigmaModulation">
+            <summary>
+            The conversion will be noise-shaped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.AllowFusedMultiplyAdd">
+            <summary>
+            The conversion will be allowed to utilize Fused-Multiply-Add for better performance.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.ReversedOutput">
+            <summary>
+            The output must be BIG-ENDIAN if the system is little-endian.<br/>
+            The output must be little-endian if the system is BIG-ENDIAN.
+            </summary>
+        </member>
         <member name="T:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter">
             <summary>
             Converts samples to 16-bit PCM.
@@ -8118,7 +8166,7 @@
             Initializes a new instance of the <see cref="T:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter"/> class.
             </summary>
             <param name="source">The source.</param>
-            <param name="accuracyNeeded">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.AccuracyMode"/> when <c>true</c>.</param>
+            <param name="doDeltaSigmaModulation">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation"/> when <c>true</c>.</param>
             <param name="endianness">The destination endianness.</param>
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},System.Boolean,Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.ArmIntrinsics,System.Boolean,Shamisen.Endianness)">
@@ -8129,10 +8177,10 @@
             <param name="enableIntrinsics"></param>
             <param name="enabledX86Intrinsics"></param>
             <param name="enabledArmIntrinsics"></param>
-            <param name="accuracyNeeded">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.AccuracyMode"/> when <c>true</c>.</param>
+            <param name="soDeltaSigmaModulation">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation"/> when <c>true</c>.</param>
             <param name="endianness">The destination endianness.</param>
         </member>
-        <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.AccuracyMode">
+        <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation">
             <summary>
             Gets a value indicating whether the <see cref="T:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter"/> does the 16-bit Delta-Sigma modulation.
             </summary>
@@ -12618,41 +12666,103 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.IAudioFormat`1">
+        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
             <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            Represents a format of a half-precision sample source.
             </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
             <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
+            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
             </summary>
             <value>
             The bit depth.
             </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Half"/>s.
+            </value>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -12704,6 +12814,42 @@
             </summary>
             <value>
             The extra data.
+            </value>
+        </member>
+        <member name="T:Shamisen.IAudioFormat`1">
+            <summary>
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
+            <summary>
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
+            </summary>
+            <value>
+            The bit depth.
             </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
@@ -14801,6 +14947,11 @@
             Gets the available arm intrinsics.
             </summary>
             <returns></returns>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.AvoidAvxFloatingPointOperations">
+            <summary>
+            Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
+            </summary>
         </member>
         <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86IntrinsicsMask)">
             <summary>
@@ -17735,481 +17886,6 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
         </member>
-        <member name="T:Shamisen.MathI">
-            <summary>
-            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
-            </summary>
-        </member>
-        <member name="M:Shamisen.MathI.FloorStep(System.Int32,System.Int32)">
-            <summary>
-            Aligns the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.FloorStepRem(System.Int32,System.Int32)">
-            <summary>
-            Aligns the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.Rectify(System.Int32)">
-            <summary>
-            Rectifies the specified <paramref name="value"/>.
-            </summary>
-            <param name="value">The value to rectify.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.Abs(System.Int64)">
-            <summary>
-            Returns the absolute value of the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.Abs(System.Int32)">
-            <summary>
-            Returns the absolute value of the specified value.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
-            <summary>
-            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
-            </summary>
-            <param name="x">The x.</param>
-            <param name="y">The y.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.BigMul(System.UInt64,System.UInt64)">
-            <summary>
-            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
-            </summary>
-            <param name="x">The x.</param>
-            <param name="y">The y.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.Max(Shamisen.ReadResult,Shamisen.ReadResult)">
-            <summary>
-            Determines the maximum of the parameters.
-            </summary>
-            <param name="a">The value a.</param>
-            <param name="b">The value b.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt32)">
-            <summary>
-            Counts the consecutive zero bits on the right.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt64)">
-            <summary>
-            Counts the consecutive zero bits on the right.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.LogBase2(System.UInt32)">
-            <summary>
-            Finds last 1's position from LSB.<br/>
-            When the value is 0, it returns 0.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.LogBase2(System.UInt64)">
-            <summary>
-            Finds last 1's position from LSB.<br/>
-            When the value is 0, it returns 0.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt32)">
-            <summary>
-            Finds last 0's position from MSB.<br/>
-            When the value is 0, it returns 32.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt64)">
-            <summary>
-            Finds last 0's position from MSB.<br/>
-            When the value is 0, it returns 32.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.Pop(System.UInt32)">
-            <summary>
-            Counts how many the bits are 1.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.PopCount(System.UInt64)">
-            <summary>
-            Counts how many the bits are 1.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt32)">
-            <summary>
-            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt64)">
-            <summary>
-            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt32)">
-            <summary>
-            Reverses the bit order of the specified <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt64)">
-            <summary>
-            Reverses the bit order of the specified <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
-            <summary>
-            Extracts the bit field inside <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="start">The start from LSB.</param>
-            <param name="length">The length in bits.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
-            <summary>
-            Extracts the bit field inside <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="start">The start from LSB.</param>
-            <param name="length">The length in bits.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt32)">
-            <summary>
-            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt64)">
-            <summary>
-            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.MathIFallbacks">
-             <summary>
-             WARNING: This class is exposed only for testing purposes.<br/>
-             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions as MathI does.<br/>
-             This class contains hand-written software fallbacks for the places that the HW Intrinsics are not available.<br/>
-            
-             </summary>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt32)">
-            <summary>
-            Counts the consecutive zero bits on the right.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt64)">
-            <summary>
-            Counts the consecutive zero bits on the right.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt32)">
-            <summary>
-            Finds last 1's position from LSB.<br/>
-            When the value is 0, it returns 0.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt64)">
-            <summary>
-            Finds last 1's position from LSB.<br/>
-            When the value is 0, it returns 0.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt32)">
-            <summary>
-            Finds last 0's position from MSB.<br/>
-            When the value is 0, it returns 32.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt64)">
-            <summary>
-            Finds last 0's position from MSB.<br/>
-            When the value is 0, it returns 64.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt64)">
-            <summary>
-            Counts how many the bits are 1.
-            </summary>
-            <param name="x">The x.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt32)">
-            <summary>
-            Counts how many the bits are 1.
-            </summary>
-            <param name="x">The x.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt32)">
-            <summary>
-            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt64)">
-            <summary>
-            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt32)">
-            <summary>
-            Reverses the bits of the specified value in 32bit.
-            </summary>
-            <param name="value">The value to reverse bit order.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt64)">
-            <summary>
-            Reverses the bits of the specified value in 64bit.
-            </summary>
-            <param name="value">The value to reverse bit order.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
-            <summary>
-            Extracts the bit field inside <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="start">The start from LSB.</param>
-            <param name="length">The length in bits.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
-            <summary>
-            Extracts the bit field inside <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="start">The start from LSB.</param>
-            <param name="length">The length in bits.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.MathR">
-            <summary>
-            Contains some utility functions for manipulating <c>ref</c> values.
-            </summary>
-        </member>
-        <member name="M:Shamisen.MathR.Add``1(``0@,System.IntPtr,System.IntPtr)">
-            <summary>
-            Adds the p0 and p1 and p2.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="p0">The p0.</param>
-            <param name="p1">The p1.</param>
-            <param name="p2">The p2.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.Add(System.IntPtr,System.IntPtr)">
-            <summary>
-            Adds the <paramref name="right"/> to the <paramref name="left"/>.
-            </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.Subtract(System.IntPtr,System.IntPtr)">
-            <summary>
-            Subtracts the <paramref name="right"/> from the <paramref name="left"/>.
-            </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns>left - right.</returns>
-        </member>
-        <member name="M:Shamisen.MathR.Multiply(System.IntPtr,System.IntPtr)">
-            <summary>
-            Multiplies the specified left.
-            </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToRefByte(System.IntPtr)">
-            <summary>
-            Converts the specified <see cref="T:System.IntPtr"/> value to <c>ref <see cref="T:System.Byte"/></c>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToIntPtr(System.Byte@)">
-            <summary>
-            Converts the specified <paramref name="value"/> to <see cref="T:System.IntPtr"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToPointer(System.IntPtr)">
-            <summary>
-            Converts the specified <paramref name="value"/> to pointer.
-            </summary>
-            <param name="value">The <see cref="T:System.IntPtr"/> getting converted.</param>
-            <returns>
-            The converted pointer.
-            </returns>
-        </member>
-        <member name="T:Shamisen.MathX">
-            <summary>
-            Contains some mathematical functions for Fixed-Point numbers.
-            </summary>
-        </member>
-        <member name="M:Shamisen.MathX.SinCosPi(Shamisen.Fixed64,System.UInt64)">
-            <summary>
-            Returns the <see cref="T:System.Numerics.Complex"/> value with specified angle.
-            </summary>
-            <param name="value">The value.</param>
-            <param name="mask">The precision mask.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathX.Sin(Shamisen.Fixed64)">
-            <summary>
-            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
-            <summary>
-            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.SystemExtensions.Memory.NativeSpan`1">
-            <summary>
-            Represents a continuous region of memory.
-            </summary>
-            <typeparam name="T">The type of contents.</typeparam>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(System.IntPtr,System.IntPtr)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> struct.
-            </summary>
-            <param name="headPointer">The head pointer.</param>
-            <param name="length">The length.</param>
-        </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Length">
-            <summary>
-            The length of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Item(System.IntPtr)">
-            <summary>
-            Returns the <paramref name="index"/>th element of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Slice(System.IntPtr)">
-            <summary>
-            Slices the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> with the specified start.
-            </summary>
-            <param name="start">The start.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Equality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Inequality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="T:Shamisen.VectorExtensions">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
-            </summary>
-        </member>
-        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
-             <summary>
-            
-             </summary>
-             <param name="vector"></param>
-             <param name="v0"></param>
-             <param name="v1"></param>
-             <param name="v2"></param>
-             <param name="v3"></param>
-        </member>
         <member name="T:Shamisen.AudioSourceExtensions">
             <summary>
             Contains some utility functions about <see cref="T:Shamisen.IAudioSource`2"/>
@@ -18559,6 +18235,21 @@
             <value>
             The value.
             </value>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for SSE2.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Utils.Numerics.Vector2Int16">
+            <summary>
+            Represents a vector with 2 <see cref="T:System.Int16"/> values.
+            </summary>
         </member>
         <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1">
             <summary>
@@ -20015,6 +19706,34 @@
             The result of the conversion.
             </returns>
         </member>
+        <member name="T:Shamisen.Utils.VectorUtils">
+            <summary>
+            Contains some utility functions for manipulating <see cref="T:System.Numerics.Vector"/> values.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Numerics.Vector4,System.Numerics.Vector4)">
+            <summary>
+            Returns the dot product of two vectors.
+            </summary>
+            <param name="vector0">The value to multiply.</param>
+            <param name="vector1">The value to multiply.</param>
+            <returns>The dot product of two vectors.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Returns the dot product of two vectors.
+            </summary>
+            <param name="vector0">The value to multiply.</param>
+            <param name="vector1">The value to multiply.</param>
+            <returns>The dot product of two vectors.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.ReverseElements(System.Numerics.Vector4)">
+            <summary>
+            Returns a new <see cref="T:System.Numerics.Vector4"/> value with reversed elements of <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to reverse elements.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
             Provides some functions that helps you about binary things.
@@ -20087,22 +19806,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -20229,6 +19948,397 @@
             </summary>
             <param name="a"></param>
         </member>
+        <member name="T:Shamisen.MathI">
+            <summary>
+            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathI.FloorStep(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.FloorStepRem(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Rectify(System.Int32)">
+            <summary>
+            Rectifies the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to rectify.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int64)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int32)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
+            <summary>
+            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.BigMul(System.UInt64,System.UInt64)">
+            <summary>
+            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Max(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Determines the maximum of the parameters.
+            </summary>
+            <param name="a">The value a.</param>
+            <param name="b">The value b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Pop(System.UInt32)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.PopCount(System.UInt64)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt32)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt64)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.MathIFallbacks">
+             <summary>
+             WARNING: This class is exposed only for testing purposes.<br/>
+             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions as MathI does.<br/>
+             This class contains hand-written software fallbacks for the places that the HW Intrinsics are not available.<br/>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 64.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt64)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="x">The x.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt32)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="x">The x.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bits of the specified value in 32bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bits of the specified value in 64bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.MathR">
+            <summary>
+            Contains some utility functions for manipulating <c>ref</c> values.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathR.Add``1(``0@,System.IntPtr,System.IntPtr)">
+            <summary>
+            Adds the p0 and p1 and p2.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="p0">The p0.</param>
+            <param name="p1">The p1.</param>
+            <param name="p2">The p2.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.Add(System.IntPtr,System.IntPtr)">
+            <summary>
+            Adds the <paramref name="right"/> to the <paramref name="left"/>.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.Subtract(System.IntPtr,System.IntPtr)">
+            <summary>
+            Subtracts the <paramref name="right"/> from the <paramref name="left"/>.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>left - right.</returns>
+        </member>
+        <member name="M:Shamisen.MathR.Multiply(System.IntPtr,System.IntPtr)">
+            <summary>
+            Multiplies the specified left.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToRefByte(System.IntPtr)">
+            <summary>
+            Converts the specified <see cref="T:System.IntPtr"/> value to <c>ref <see cref="T:System.Byte"/></c>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToIntPtr(System.Byte@)">
+            <summary>
+            Converts the specified <paramref name="value"/> to <see cref="T:System.IntPtr"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToPointer(System.IntPtr)">
+            <summary>
+            Converts the specified <paramref name="value"/> to pointer.
+            </summary>
+            <param name="value">The <see cref="T:System.IntPtr"/> getting converted.</param>
+            <returns>
+            The converted pointer.
+            </returns>
+        </member>
+        <member name="T:Shamisen.MathX">
+            <summary>
+            Contains some mathematical functions for Fixed-Point numbers.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathX.SinCosPi(Shamisen.Fixed64,System.UInt64)">
+            <summary>
+            Returns the <see cref="T:System.Numerics.Complex"/> value with specified angle.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The precision mask.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.Sin(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.MemoryUtils">
             <summary>
             Provides useful methods to interoperate with <see cref="T:System.Span`1"/> and <see cref="T:System.Memory`1"/>.
@@ -20262,6 +20372,90 @@
             <param name="value">The value to deconstruct.</param>
             <param name="hasValue">The value which indicates whether the <paramref name="result"/> is valid.</param>
             <param name="result">The result.</param>
+        </member>
+        <member name="T:Shamisen.SystemExtensions.Memory.NativeSpan`1">
+            <summary>
+            Represents a continuous region of memory.
+            </summary>
+            <typeparam name="T">The type of contents.</typeparam>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(System.IntPtr,System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> struct.
+            </summary>
+            <param name="headPointer">The head pointer.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Length">
+            <summary>
+            The length of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Item(System.IntPtr)">
+            <summary>
+            Returns the <paramref name="index"/>th element of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Slice(System.IntPtr)">
+            <summary>
+            Slices the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> with the specified start.
+            </summary>
+            <param name="start">The start.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Equality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Inequality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.VectorExtensions">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
+            </summary>
+        </member>
+        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
+             <summary>
+            
+             </summary>
+             <param name="vector"></param>
+             <param name="v0"></param>
+             <param name="v1"></param>
+             <param name="v2"></param>
+             <param name="v3"></param>
         </member>
         <member name="T:System.ThrowHelper">
             <summary>

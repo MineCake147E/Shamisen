@@ -7,6 +7,9 @@ using Shamisen.Utils;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Shamisen.Mathematics;
+using System.Runtime.InteropServices;
+using DivideSharp;
+using Shamisen.Optimization;
 
 namespace Shamisen.Conversion.Resampling.Sample
 {
@@ -36,17 +39,14 @@ namespace Shamisen.Conversion.Resampling.Sample
         private bool isEndOfStream = false;
 
         private ResampleStrategy Strategy { get; }
+        private X86Intrinsics X86Intrinsics { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SplineResampler"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="destinationSampleRate">The destination sample rate.</param>
-        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate) :
-            base(source.Format.SampleRate > destinationSampleRate
-                ? new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(source.Format.SampleRate, destinationSampleRate * 0.5, 0.70710678118654752440084436210485))
+        internal SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate, X86Intrinsics x86Intrinsics)
+            : base(source.Format.SampleRate > destinationSampleRate
+                ? new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(source.Format.SampleRate, destinationSampleRate* 0.5, 0.70710678118654752440084436210485))
                 : source, destinationSampleRate)
         {
+            X86Intrinsics = x86Intrinsics;
             bufferWrapper = new ResizablePooledBufferWrapper<float>(1);
             sampleCache = new float[3][];
             for (int i = 0; i < sampleCache.Length; i++)
@@ -57,7 +57,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             preCalculatedCatmullRomCoefficents = new Vector4[] { };
             if (source.Format.SampleRate < destinationSampleRate)
             {
-                if (RateMul < 512)
+                if (RateMul <= 512)
                 {
                     Strategy = ResampleStrategy.CachedDirect;
                     preCalculatedCatmullRomCoefficents = new Vector4[RateMul];
@@ -67,7 +67,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                         preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
                     }
                 }
-                else if (RateMul < 1024)
+                else if (RateMul <= 1024)
                 {
                     if ((RateMul & 1) > 0)
                     {
@@ -91,6 +91,17 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SplineResampler"/> class.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destinationSampleRate">The destination sample rate.</param>
+        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate) :
+            this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
+        {
+            
         }
 
         /// <summary>
@@ -120,7 +131,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
             #endregion Initialize and Read
 
-            if (rr.HasData)
+            if (rr.HasData || readBuffer.Length == 0)
             {
                 return Process(buffer, channels, SampleLengthOut, srcBuffer, lengthReserved, readBuffer, rr);
             }
@@ -186,6 +197,181 @@ namespace Shamisen.Conversion.Resampling.Sample
             return buffer.Length;
         }
 
+        #region Resample
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private int ResampleCachedDirectMonaural(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            return ResampleCachedDirectMonauralX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+#endif
+            return ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static int ResampleCachedDirectMonauralStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            nint i = 0;
+            nint length = buffer.Length;
+            int isx = 0;
+            int psx = x;
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
+            Vector4 values = Unsafe.As<float, Vector4>(ref src);
+            if(facc > 0)
+            {
+                for (i = 0; i < length; i++)
+                {
+                    var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                    psx += acc;
+                    isx += facc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                    }
+                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                }
+            }
+            else
+            {
+                if(acc == 1)
+                {
+                    switch (ram)
+                    {
+                        case 2:
+                            {
+                                var c0 = Unsafe.Add(ref coeffPtr, 0);
+                                var c1 = Unsafe.Add(ref coeffPtr, 1);
+                                if (psx > 0)
+                                {
+                                    var cutmullCoeffs = c1;
+                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                    psx = 0;
+                                    isx++;
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                }
+                                for (i = 0; i < length - 1; i += 2)
+                                {
+                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, c0);
+                                    Unsafe.Add(ref dst, i + 1) = VectorUtils.FastDotProduct(values, c1);
+                                    isx++;
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                }
+                                for (; i < length; i++)
+                                {
+                                    var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                    psx++;
+                                    if (psx >= 2)
+                                    {
+                                        psx -= 2;
+                                        isx++;
+                                        values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                    }
+                                }
+                            }
+                            break;
+                        case 4:
+                            {
+                                var c0 = coeffPtr;
+                                var c1 = Unsafe.Add(ref coeffPtr, 1);
+                                var c2 = Unsafe.Add(ref coeffPtr, 2);
+                                var c3 = Unsafe.Add(ref coeffPtr, 3);
+                                for (i = 0; psx != 0 && psx < 4; i++, psx++)
+                                {
+                                    var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                    psx++;
+                                    if (psx >= 4)
+                                    {
+                                        psx -= 4;
+                                        isx++;
+                                        values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                    }
+                                }
+                                for (; i < length - 3; i += 4)
+                                {
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, c0);
+                                    Unsafe.Add(ref dst, i + 1) = VectorUtils.FastDotProduct(values, c1);
+                                    Unsafe.Add(ref dst, i + 2) = VectorUtils.FastDotProduct(values, c2);
+                                    Unsafe.Add(ref dst, i + 3) = VectorUtils.FastDotProduct(values, c3);
+                                    isx++;
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                }
+                                for (; i < length; i++)
+                                {
+                                    var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                    psx++;
+                                    if (psx >= 4)
+                                    {
+                                        psx -= ram;
+                                        isx++;
+                                        values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            for (i = 0; i < length; i++)
+                            {
+                                var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                                // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                psx++;
+                                if (psx >= ram)
+                                {
+                                    psx -= ram;
+                                    isx++;
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                }
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    for (i = 0; i < length; i++)
+                    {
+                        var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
+                        // Use formula from http://www.mvps.org/directx/articles/catmull/
+                        Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                        psx += acc;
+                        if (psx >= ram)
+                        {
+                            psx -= ram;
+                            isx++;
+                            values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                        }
+                    }
+                }
+            }
+            x = psx;
+            return isx;
+        }
+
+        private int ResampleCachedDirect2Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            return ResampleCachedDirect2ChannelsX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+#endif
+            return ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+        }
+        private int ResampleCachedDirect3Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            return ResampleCachedDirect3ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+        }
+        private int ResampleCachedDirect4Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            return ResampleCachedDirect4ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+        }
+        #endregion
+
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
@@ -211,13 +397,15 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector4 CalculateCatmullRomCoeffs(float x)
         {
-            var xP2 = x * x;
-            var xP3 = xP2 * x;
-            return new Vector4(
-                (-xP3 + (2 * xP2) - x) * 0.5f,
-                ((3 * xP3) - (5 * xP2) + 2) * 0.5f,
-                (-(3 * xP3) + (4 * xP2) + x) * 0.5f,
-                (xP3 - xP2) * 0.5f);
+            var vx = new Vector4(x);
+            var y = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
+            y *= vx;
+            y += new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
+            y *= vx;
+            y += new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
+            y *= vx;
+            y += new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+            return y;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -225,16 +413,28 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             unchecked
             {
-                conversionGradient += RateDiv;
+                conversionGradient += GradientIncrement;
+                var t = IndexIncrement;
                 if (conversionGradient >= RateMul)
                 {
-                    conversionGradient = (int)RateMulDivisor.DivRem((uint)conversionGradient, out var posDiff);
-                    return (int)posDiff;
+                    t++;
                 }
-                else
+                return t;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int AdvanceConversionGradient(ref int conversionGradient, int rad, int ram)
+        {
+            unchecked
+            {
+                conversionGradient += rad;
+                int l = 0;
+                while (conversionGradient >= ram)
                 {
-                    return 0;
+                    conversionGradient -= ram;
+                    l++;
                 }
+                return l;
             }
         }
 

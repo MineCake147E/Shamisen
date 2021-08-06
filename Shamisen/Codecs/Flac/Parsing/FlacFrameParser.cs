@@ -353,7 +353,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 wasted = (int)value + 1;
                 bitDepthToRead -= wasted;
             }
-#pragma warning disable S907 // "goto" statement should not be used
+
             switch (result >> 1)
             {
                 case 0: //CONSTANT
@@ -371,7 +371,6 @@ namespace Shamisen.Codecs.Flac.Parsing
                 default:
                     return null;
             }
-#pragma warning restore S907 // "goto" statement should not be used
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

@@ -9,6 +9,12 @@ using NUnit.Framework;
 using System.Numerics;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Shamisen.Filters;
+using System.IO;
+using Shamisen.Data;
+using Shamisen.Codecs.Waveform.Composing;
+using Shamisen.Conversion.SampleToWaveConverters;
+using System.Linq;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -85,34 +91,37 @@ namespace Shamisen.Core.Tests.CoreFx
             resampler.Dispose();
         }
 
-        [TestCase(1, 24000, 154320)]
-        [TestCase(1, 48000, 192000)]
-        [TestCase(1, 24000, 192000)]
-        [TestCase(2, 24000, 192000, 1021)]
-        [TestCase(2, 23000, 192000, 192, 4096)]
-        public void UpSamplingManyFrameDump(int channels, int sourceSampleRate, int destinationSampleRate, int frameLen = 1024, int framesToWrite = 1024)
+        private static IEnumerable<TestCaseData> UpSamplingManyFrameDumpTestCaseSource()
         {
-            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
-            var resampler = new SplineResampler(src, destinationSampleRate);
-            var h = new System.IO.FileInfo($"SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.raw");
-            Console.WriteLine(h.FullName);
-            using (var file = h.OpenWrite())
+            var ratios = new (int before, int after)[]
             {
-                var buffer = new float[frameLen];
-                var brspan = MemoryMarshal.Cast<float, byte>(buffer);
-                for (int i = 0; i < framesToWrite; i++)
-                {
-                    var rr = resampler.Read(buffer);
-                    if (rr.HasData)
-                    {
-                        var bwspan = brspan.SliceWhile(rr.Length * sizeof(float));
-                        file.Write(bwspan);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                (8000, 192000),  	//Smoothness test
+                (24000, 154320),  	//CachedWrappedOdd
+                (44100, 154320),  	//Direct
+                (44100, 192000),  	//CachedWrappedEven
+                (44100, 48000),  	//CachedDirect
+                (48000, 192000),  	//CachedDirect QuadrupleRate
+                (96000, 192000),  	//CachedDirect DoubleRate
+                (64000, 192000),  	//CachedDirect IntegerRate
+            };
+            var channels = Enumerable.Range(1, 8)/*.Concat(new int[] { })*/.ToArray();
+            return channels.SelectMany(chs => ratios.Select(r => new TestCaseData(chs, r.before, r.after, 1024, 8)));
+        }
+
+        [TestCaseSource(nameof(UpSamplingManyFrameDumpTestCaseSource))]
+        [TestCase(2, 24000, 192000, 1021)]      //Odd length of blocks
+        [TestCase(2, 23000, 192000, 192, 4096)] //Small blocks
+        public void UpSamplingManyFrameDump(int channels, int sourceSampleRate, int destinationSampleRate, int frameLen = 1024, int framesToWrite = 8)
+        {
+            var src = new SinusoidSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
+            var resampler = new SplineResampler(src, destinationSampleRate);
+            var trunc = new LengthTruncationSource<float, SampleFormat>(resampler, (ulong)framesToWrite * (ulong)frameLen * (ulong)channels);
+            var path = new FileInfo($"./dumps/SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
+            Console.WriteLine(path.FullName);
+            if (!Directory.Exists("./dumps")) _ = Directory.CreateDirectory("./dumps");
+            using (var ssink = new StreamDataSink(path.OpenWrite(), false, true))
+            {
+                Assert.DoesNotThrow(() => SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
             }
             Assert.Pass();
             resampler.Dispose();
@@ -128,6 +137,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(8)]   //7.1ch Surround
         [TestCase(9)]   //7.2ch Surround
         [TestCase(10)]   //9.1ch Surround
+        [NonParallelizable]
         public void UpSampleLoadCachedDirect(int channels) => UpSamplingLoadTest(channels, 48000);
 
         [TestCase(1)]   //Monaural
@@ -140,6 +150,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(8)]   //7.1ch Surround
         [TestCase(9)]   //7.2ch Surround
         [TestCase(10)]   //9.1ch Surround
+        [NonParallelizable]
         public void UpSampleLoadCachedWrappedEven(int channels) => UpSamplingLoadTest(channels, 44100);
 
         [TestCase(1)]   //Monaural
@@ -152,6 +163,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(8)]   //7.1ch Surround
         [TestCase(9)]   //7.2ch Surround
         [TestCase(10)]   //9.1ch Surround
+        [NonParallelizable]
         public void UpSampleLoadCachedWrappedOdd(int channels) => UpSamplingLoadTest(channels, 44100, 192300);
 
         [TestCase(1)]   //Monaural
@@ -164,6 +176,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(8)]   //7.1ch Surround
         [TestCase(9)]   //7.2ch Surround
         [TestCase(10)]   //9.1ch Surround
+        [NonParallelizable]
         public void UpSampleLoadDirect(int channels) => UpSamplingLoadTest(channels, 44089);
 
         public void UpSamplingLoadTest(int channels, int sourceSampleRate, int destinationSampleRate = 192000)
@@ -182,8 +195,8 @@ namespace Shamisen.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 1000);
             sw.Stop();
-            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples{Environment.NewLine}(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s]{Environment.NewLine}(about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             samples = 0;
             sw.Reset();
             sw.Start();
@@ -192,8 +205,8 @@ namespace Shamisen.Core.Tests.CoreFx
                 samples += (ulong)resampler.Read(buffer);
             } while (sw.ElapsedMilliseconds < 2000);
             sw.Stop();
-            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples(about {samples * channelsInverse / DestinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s](about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
+            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples{Environment.NewLine}(about {samples * channelsInverse / DestinationSampleRateD}[s])");
+            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s]{Environment.NewLine}(about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
             Assert.Greater(samples, (ulong)destinationSampleRate);
             resampler.Dispose();
         }

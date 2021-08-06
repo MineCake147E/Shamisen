@@ -144,10 +144,14 @@ namespace Shamisen
         public static float SinF(Fixed64 value)
 #endif
         {
-            if (value < Fixed64.Zero) return -SinF(value);   //Wrap negative numbers
+            if(value == Fixed64.MinValue)
+            {
+                return 0.0f;
+            }
+            if (value < Fixed64.Zero) return -SinF(-value);   //Wrap negative numbers
             if ((long)value > 0x3fff_ffff_ffff_ffff)    //Wrap sinusoid
             {
-                value = (Fixed64)(long)(0x8000_0000_0000_0000ul - (ulong)value);    //1 - value
+                value = Fixed64.MaxValue - value;    //1 - value
             }
             return SinFInternal(value);
         }
@@ -157,9 +161,9 @@ namespace Shamisen
             unchecked
             {
 #if NETSTANDARD2_0
-                return (float)Math.Sin((double)value);
+                return (float)Math.Sin(Math.PI * (double)value);
 #else
-                return MathF.Sin((float)(double)value);
+                return MathF.Sin(MathF.PI * (float)(double)value);
 #endif
             }
         }

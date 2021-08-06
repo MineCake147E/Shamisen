@@ -12,11 +12,15 @@ using Shamisen.Utils;
 namespace Shamisen.Conversion.Resampling.Sample {
     public sealed partial class SplineResampler {
         private const int RemSampleOffset = 4;
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private int ResampleCachedDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {
             ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
-            // Use formula from http://www.mvps.org/directx/articles/catmull/
+            
             int inputSampleIndex = 0, x = conversionGradient;
+            int ram = RateMul;
+            int acc = GradientIncrement;
+            int facc = IndexIncrement;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -30,80 +34,31 @@ namespace Shamisen.Conversion.Resampling.Sample {
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
 
-                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                    
                     vBuffer[i] = value1 + value2 + value3 + value4;
-                    inputSampleIndex += AdvanceConversionGradient(ref x);
+                    x += acc;
+                    inputSampleIndex += facc;
+                    if (x >= ram)
+                    {
+                        x -= ram;
+                        inputSampleIndex++;
+                    }
                 }
             } else {
                 switch (channels) {
                     case 1: //Monaural
-                        for (int i = 0; i < buffer.Length; i++) {
-                            var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
-                            var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
-                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                            buffer[i] = Vector4.Dot (values, cutmullCoeffs);
-                            inputSampleIndex += AdvanceConversionGradient(ref x);
-                        }
+                        inputSampleIndex = ResampleCachedDirectMonaural(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
                         break;
-
                         #region SIMD Optimized Multi-Channel Audio Resampling
-                            case 2 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector2> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector2> (srcBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        ref var values = ref Unsafe.As <Vector2,
-                                            ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
-                                        var value1 = values.X * cutmullCoeffs.X; //The control point 1.
-                                        var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
-                                        var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
-                                        var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
-                                    }
-                                }
-                                break;
-                            case 3 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector3> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector3> (srcBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        ref var values = ref Unsafe.As <Vector3,
-                                            ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
-                                        var value1 = values.X * cutmullCoeffs.X; //The control point 1.
-                                        var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
-                                        var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
-                                        var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
-                                    }
-                                }
-                                break;
-                            case 4 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector4> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector4> (srcBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        ref var values = ref Unsafe.As <Vector4,
-                                            ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
-                                        var value1 = values.X * cutmullCoeffs.X; //The control point 1.
-                                        var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
-                                        var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
-                                        var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
-                                    }
-                                }
-                                break;
+                    case 2:
+                        inputSampleIndex = ResampleCachedDirect2Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        break;
+                    case 3:
+                        inputSampleIndex = ResampleCachedDirect3Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        break;
+                    case 4:
+                        inputSampleIndex = ResampleCachedDirect4Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        break;
 
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
 
@@ -114,17 +69,23 @@ namespace Shamisen.Conversion.Resampling.Sample {
                         {
                             unsafe {
                                 fixed (float * srcBufPtr = srcBuffer) {
-                                    for (int i = 0; i < buffer.Length; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex;
+                                    for (int i = 0; i < buffer.Length - channels + 1; i += channels) {
+                                        var cache = srcBufPtr + inputSampleIndex * channels;
                                         var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
                                         for (int ch = 0; ch < channels; ch++) {
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                            destSample = Vector4.Dot(values, cutmullCoeffs);
+                                            
+                                            destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                         }
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                         outputSamplePosition++;
                                     }
                                 }
@@ -140,19 +101,184 @@ namespace Shamisen.Conversion.Resampling.Sample {
             return inputSampleIndex;
         }
 
+        private static int ResampleCachedDirect2ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            int isx = 0;
+            int psx = x;
+            ref var vBuffer = ref Unsafe.As<float, Vector2>(ref GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, Vector2>(ref GetReference(srcBuffer));
+            nint i;
+            nint length = buffer.Length / 2;
+            if (facc > 0)
+            {
+                for (i = 0; i < length; i++)
+                {
+                    var values = Unsafe.As <Vector2,
+                        ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    isx += facc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                    }
+                }
+            }
+            else
+            {
+                var values = Unsafe.As <Vector2, (Vector2 X, Vector2 Y, Vector2 Z, Vector2 W)>(ref vSrcBuffer);
+                for (i = 0; i < length; i++)
+                {
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                        values = Unsafe.As <Vector2,
+                        ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    }
+                }
+            }
+            x = psx;
+            return isx;
+        }
+
+        private static int ResampleCachedDirect3ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            int isx = 0;
+            int psx = x;
+            ref var vBuffer = ref Unsafe.As<float, Vector3>(ref GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, Vector3>(ref GetReference(srcBuffer));
+            nint i;
+            nint length = buffer.Length / 3;
+            if (facc > 0)
+            {
+                for (i = 0; i < length; i++)
+                {
+                    var values = Unsafe.As <Vector3,
+                        ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    isx += facc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                    }
+                }
+            }
+            else
+            {
+                var values = Unsafe.As <Vector3, (Vector3 X, Vector3 Y, Vector3 Z, Vector3 W)>(ref vSrcBuffer);
+                for (i = 0; i < length; i++)
+                {
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                        values = Unsafe.As <Vector3,
+                        ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    }
+                }
+            }
+            x = psx;
+            return isx;
+        }
+
+        private static int ResampleCachedDirect4ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        {
+            int isx = 0;
+            int psx = x;
+            ref var vBuffer = ref Unsafe.As<float, Vector4>(ref GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, Vector4>(ref GetReference(srcBuffer));
+            nint i;
+            nint length = buffer.Length / 4;
+            if (facc > 0)
+            {
+                for (i = 0; i < length; i++)
+                {
+                    var values = Unsafe.As <Vector4,
+                        ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    isx += facc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                    }
+                }
+            }
+            else
+            {
+                var values = Unsafe.As <Vector4, (Vector4 X, Vector4 Y, Vector4 Z, Vector4 W)>(ref vSrcBuffer);
+                for (i = 0; i < length; i++)
+                {
+                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, psx);
+                    var value1 = values.X * cutmullCoeffs.X; //The control point 1.
+                    var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
+                    var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
+                    var value4 = values.W * cutmullCoeffs.W; //The control point 4.
+                    Unsafe.Add(ref vBuffer, i) = value1 + value2 + value3 + value4;
+                    psx += acc;
+                    if (psx >= ram)
+                    {
+                        psx -= ram;
+                        isx++;
+                        values = Unsafe.As <Vector4,
+                        ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref Unsafe.Add(ref vSrcBuffer, isx));
+                    }
+                }
+            }
+            x = psx;
+            return isx;
+        }
+
         private int ResampleCachedWrappedOdd (Span<float> buffer, int channels, Span<float> srcBuffer) {
             ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
-            // Use formula from http://www.mvps.org/directx/articles/catmull/
+            
             Vector4 GetCatmullRomCoefficents (ref Vector4 coeffs, int i)
             {
                 int x = i;
-                if (i <= RateMul / 2) return Unsafe.Add(ref coeffs, x);
+                if (i <= RateMul >> 1) return Unsafe.Add(ref coeffs, x);
                 x = RateMul - i;
                 var q = Unsafe.Add(ref coeffs, x);
-                return new Vector4(q.W, q.Z, q.Y, q.X);
+                return VectorUtils.ReverseElements(q);
             }
             int inputSampleIndex = 0, x = conversionGradient;
+            int ram = RateMul;
+            int acc = GradientIncrement;
+            int facc = IndexIncrement;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -165,10 +291,14 @@ namespace Shamisen.Conversion.Resampling.Sample {
                     var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-
-                    // Use formula from http://www.mvps.org/directx/articles/catmull/
                     vBuffer[i] = value1 + value2 + value3 + value4;
-                    inputSampleIndex += AdvanceConversionGradient(ref x);
+                    x += acc;
+                    inputSampleIndex += facc;
+                    if (x >= ram)
+                    {
+                        x -= ram;
+                        inputSampleIndex++;
+                    }
                 }
             } else {
                 switch (channels) {
@@ -176,10 +306,14 @@ namespace Shamisen.Conversion.Resampling.Sample {
                         for (int i = 0; i < buffer.Length; i++) {
                             var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
                             var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
-
-                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                            buffer[i] = Vector4.Dot (values, cutmullCoeffs);
-                            inputSampleIndex += AdvanceConversionGradient(ref x);
+                            buffer[i] = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                            x += acc;
+                            inputSampleIndex += facc;
+                            if (x >= ram)
+                            {
+                                x -= ram;
+                                inputSampleIndex++;
+                            }
                         }
                         break;
 
@@ -199,7 +333,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -218,7 +358,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -237,7 +383,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -251,8 +403,8 @@ namespace Shamisen.Conversion.Resampling.Sample {
                         {
                             unsafe {
                                 fixed (float * srcBufPtr = srcBuffer) {
-                                    for (int i = 0; i < buffer.Length; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex;
+                                    for (int i = 0; i < buffer.Length - channels + 1; i += channels) {
+                                        var cache = srcBufPtr + inputSampleIndex * channels;
                                         var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                         for (int ch = 0; ch < channels; ch++) {
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
@@ -261,10 +413,16 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                             var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z; //The control point 3.
                                             var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W; //The control point 4.
 
-                                            // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                            
                                             destSample = value1 + value2 + value3 + value4;
                                         }
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                         outputSamplePosition++;
                                     }
                                 }
@@ -283,16 +441,19 @@ namespace Shamisen.Conversion.Resampling.Sample {
             ref var coeffPtr = ref GetReference (preCalculatedCatmullRomCoefficents.AsSpan ());
             int outputSamplePosition = 0;
             int rmul = RateMul;
-            // Use formula from http://www.mvps.org/directx/articles/catmull/
+            
             Vector4 GetCatmullRomCoefficents (ref Vector4 coeffs, int i)
             {
                 int x = i;
-                if (i < RateMul / 2) return Unsafe.Add(ref coeffs, x);
+                if (i < RateMul >> 1) return Unsafe.Add(ref coeffs, x);
                 x = RateMul - i - 1;
                 var q = Unsafe.Add(ref coeffs, x);
-                return new Vector4(q.W, q.Z, q.Y, q.X);
+                return VectorUtils.ReverseElements(q);
             }
             int inputSampleIndex = 0, x = conversionGradient;
+            int ram = RateMul;
+            int acc = GradientIncrement;
+            int facc = IndexIncrement;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -306,9 +467,15 @@ namespace Shamisen.Conversion.Resampling.Sample {
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
 
-                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                    
                     vBuffer[i] = value1 + value2 + value3 + value4;
-                    inputSampleIndex += AdvanceConversionGradient(ref x);
+                    x += acc;
+                    inputSampleIndex += facc;
+                    if (x >= ram)
+                    {
+                        x -= ram;
+                        inputSampleIndex++;
+                    }
                 }
             } else {
                 switch (channels) {
@@ -317,9 +484,15 @@ namespace Shamisen.Conversion.Resampling.Sample {
                             var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
                             var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
 
-                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                            buffer[i] = Vector4.Dot (values, cutmullCoeffs);
-                            inputSampleIndex += AdvanceConversionGradient(ref x);
+                            
+                            buffer[i] = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                            x += acc;
+                            inputSampleIndex += facc;
+                            if (x >= ram)
+                            {
+                                x -= ram;
+                                inputSampleIndex++;
+                            }
                         }
                         break;
 
@@ -339,7 +512,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -358,7 +537,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -377,7 +562,13 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                                         var value4 = values.W * cutmullCoeffs.W; //The control point 4.
                                         vBuffer[i] = value1 + value2 + value3 + value4;
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -391,8 +582,8 @@ namespace Shamisen.Conversion.Resampling.Sample {
                         {
                             unsafe {
                                 fixed (float * srcBufPtr = srcBuffer) {
-                                    for (int i = 0; i < buffer.Length; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex;
+                                    for (int i = 0; i < buffer.Length - channels + 1; i += channels) {
+                                        var cache = srcBufPtr + inputSampleIndex * channels;
                                         var cutmullCoeffs = GetCatmullRomCoefficents (ref coeffPtr, x);
                                         for (int ch = 0; ch < channels; ch++) {
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
@@ -401,10 +592,16 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                             var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z; //The control point 3.
                                             var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W; //The control point 4.
 
-                                            // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                            
                                             destSample = value1 + value2 + value3 + value4;
                                         }
-                                        inputSampleIndex += AdvanceConversionGradient(ref x);
+                                        x += acc;
+                                        inputSampleIndex += facc;
+                                        if (x >= ram)
+                                        {
+                                            x -= ram;
+                                            inputSampleIndex++;
+                                        }
                                         outputSamplePosition++;
                                     }
                                 }
@@ -421,8 +618,14 @@ namespace Shamisen.Conversion.Resampling.Sample {
         }
         private int ResampleDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {
             int outputSamplePosition = 0;
-            // Use formula from http://www.mvps.org/directx/articles/catmull/
+            var c0 = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
+            var c1 = new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
+            var c2 = new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
+            var c3 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
             int inputSampleIndex = 0, cG = conversionGradient;
+            int ram = RateMul;
+            int acc = GradientIncrement;
+            int facc = IndexIncrement;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -438,34 +641,41 @@ namespace Shamisen.Conversion.Resampling.Sample {
                     var value3 = values.Z; //The control point 3.
                     var value4 = values.W; //The control point 4.
 
-                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                    
                     vBuffer[i] = 0.5f * (
                         2.0f * value2 +
                         (-value1 + value3) * x +
                         (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
                         (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
-                    inputSampleIndex += AdvanceConversionGradient(ref cG);
+                    cG += acc;
+                    inputSampleIndex += facc;
+                    if (cG >= ram)
+                    {
+                        cG -= ram;
+                        inputSampleIndex++;
+                    }
                 }
             } else {
                 switch (channels) {
                     case 1: //Monaural
                         for (int i = 0; i < buffer.Length; i++) {
                             float x = cG * RateMulInverse;
-                            float xP2 = x * x;
-                            float xP3 = xP2 * x;
+                            var vx = new Vector4(x);
+                            var y = vx * c0;
+                            y += c1;
+                            y *= vx;
+                            y += c2;
+                            y *= vx;
+                            y += c3;
                             var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
-                            var value1 = values.X; //The control point 1.
-                            var value2 = values.Y; //The control point 2.
-                            var value3 = values.Z; //The control point 3.
-                            var value4 = values.W; //The control point 4.
-
-                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                            buffer[i] = 0.5f * (
-                                2.0f * value2 +
-                                (-value1 + value3) * x +
-                                (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-                                (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
-                            inputSampleIndex += AdvanceConversionGradient(ref cG);
+                            buffer[i] = VectorUtils.FastDotProduct(values, y);
+                            cG += acc;
+                            inputSampleIndex += facc;
+                            if (cG >= ram)
+                            {
+                                cG -= ram;
+                                inputSampleIndex++;
+                            }
                         }
                         break;
 
@@ -478,22 +688,27 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         Vector2> (srcBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
-                                        float xP2 = x * x;
-                                        float xP3 = xP2 * x;
+                                        var vx = new Vector4(x);
+                                        var y = vx * c0;
+                                        y += c1;
+                                        y *= vx;
+                                        y += c2;
+                                        y *= vx;
+                                        y += c3;
                                         ref var values = ref Unsafe.As <Vector2,
                                             ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X; //The control point 1.
-                                        var value2 = values.Y; //The control point 2.
-                                        var value3 = values.Z; //The control point 3.
-                                        var value4 = values.W; //The control point 4.
-
-                                        // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                        vBuffer[i] = 0.5f * (
-                                            2.0f * value2 +
-                                            (-value1 + value3) * x +
-                                            (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-                                            (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
-                                        inputSampleIndex += AdvanceConversionGradient(ref cG);
+                                        var value1 = values.X * y.X; //The control point 1.
+                                        var value2 = values.Y * y.Y; //The control point 2.
+                                        var value3 = values.Z * y.Z; //The control point 3.
+                                        var value4 = values.W * y.W; //The control point 4.
+                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        cG += acc;
+                                        inputSampleIndex += facc;
+                                        if (cG >= ram)
+                                        {
+                                            cG -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -505,22 +720,27 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         Vector3> (srcBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
-                                        float xP2 = x * x;
-                                        float xP3 = xP2 * x;
+                                        var vx = new Vector4(x);
+                                        var y = vx * c0;
+                                        y += c1;
+                                        y *= vx;
+                                        y += c2;
+                                        y *= vx;
+                                        y += c3;
                                         ref var values = ref Unsafe.As <Vector3,
                                             ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X; //The control point 1.
-                                        var value2 = values.Y; //The control point 2.
-                                        var value3 = values.Z; //The control point 3.
-                                        var value4 = values.W; //The control point 4.
-
-                                        // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                        vBuffer[i] = 0.5f * (
-                                            2.0f * value2 +
-                                            (-value1 + value3) * x +
-                                            (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-                                            (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
-                                        inputSampleIndex += AdvanceConversionGradient(ref cG);
+                                        var value1 = values.X * y.X; //The control point 1.
+                                        var value2 = values.Y * y.Y; //The control point 2.
+                                        var value3 = values.Z * y.Z; //The control point 3.
+                                        var value4 = values.W * y.W; //The control point 4.
+                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        cG += acc;
+                                        inputSampleIndex += facc;
+                                        if (cG >= ram)
+                                        {
+                                            cG -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -532,22 +752,27 @@ namespace Shamisen.Conversion.Resampling.Sample {
                                         Vector4> (srcBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
-                                        float xP2 = x * x;
-                                        float xP3 = xP2 * x;
+                                        var vx = new Vector4(x);
+                                        var y = vx * c0;
+                                        y += c1;
+                                        y *= vx;
+                                        y += c2;
+                                        y *= vx;
+                                        y += c3;
                                         ref var values = ref Unsafe.As <Vector4,
                                             ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X; //The control point 1.
-                                        var value2 = values.Y; //The control point 2.
-                                        var value3 = values.Z; //The control point 3.
-                                        var value4 = values.W; //The control point 4.
-
-                                        // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                        vBuffer[i] = 0.5f * (
-                                            2.0f * value2 +
-                                            (-value1 + value3) * x +
-                                            (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-                                            (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
-                                        inputSampleIndex += AdvanceConversionGradient(ref cG);
+                                        var value1 = values.X * y.X; //The control point 1.
+                                        var value2 = values.Y * y.Y; //The control point 2.
+                                        var value3 = values.Z * y.Z; //The control point 3.
+                                        var value4 = values.W * y.W; //The control point 4.
+                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        cG += acc;
+                                        inputSampleIndex += facc;
+                                        if (cG >= ram)
+                                        {
+                                            cG -= ram;
+                                            inputSampleIndex++;
+                                        }
                                     }
                                 }
                                 break;
@@ -562,16 +787,29 @@ namespace Shamisen.Conversion.Resampling.Sample {
                             unsafe {
                                 fixed (float * srcBufPtr = srcBuffer) {
                                     for (int i = 0; i < buffer.Length; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex;
-                                        var m = CalculateCatmullRomCoeffs(cG * RateMulInverse);
-                                        for (int ch = 0; ch < channels; ch++) {
+                                        var cache = srcBufPtr + inputSampleIndex * channels;
+                                        float x = cG * RateMulInverse;
+                                        var vx = new Vector4(x);
+                                        var y = vx * c0;
+                                        y += c1;
+                                        y *= vx;
+                                        y += c2;
+                                        y *= vx;
+                                        y += c3;
+                                        for (int ch = 0; ch < channels - channels + 1; ch++) {
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                            destSample = Vector4.Dot(values, m);
+                                            
+                                            destSample = VectorUtils.FastDotProduct(values, y);
                                         }
-                                        inputSampleIndex += AdvanceConversionGradient(ref cG);
+                                        cG += acc;
+                                        inputSampleIndex += facc;
+                                        if (cG >= ram)
+                                        {
+                                            cG -= ram;
+                                            inputSampleIndex++;
+                                        }
                                         outputSamplePosition++;
                                     }
                                 }

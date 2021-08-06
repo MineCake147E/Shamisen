@@ -23,7 +23,7 @@ namespace Shamisen
         [FieldOffset(0)]
         public readonly long Value;
 
-        private const float V2FRatio = 1.0f / -(float)unchecked((ulong)long.MinValue);
+        private const float V2FRatio = 1.0f / unchecked((ulong)long.MinValue);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Fixed64"/> struct.

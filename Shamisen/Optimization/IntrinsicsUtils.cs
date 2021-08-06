@@ -27,6 +27,40 @@ namespace Shamisen.Optimization
     /// </summary>
     public static class IntrinsicsUtils
     {
+        static IntrinsicsUtils()
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Avx.IsSupported)
+            {
+                if (!Avx2.IsSupported)  //before Haswell
+                {
+                    avoidAvxFloatingPoint = true;
+                }
+                else //after Haswell
+                {
+#if NET5_0_OR_GREATER
+                    var (Eax, Ebx, Ecx, Edx) = X86Base.CpuId(1, 0);
+                    if((Eax & 0x0f00) != 0x600)
+                    {
+                        //Maybe AMD or something
+                        avoidAvxFloatingPoint = false;
+                    }
+                    else
+                    {
+                        avoidAvxFloatingPoint = (Eax & 0x000f_00f0) switch
+                        {
+                            0x60040 or 0x50040 or 0xc0030 or 0xf0030 => true,   //Haswell
+                            _ => false, //post-Broadwell Intel CPUs
+                        };
+                    }
+#else
+                    //There is no way to determine the CPU is post-haswell, so
+                    avoidAvxFloatingPoint = false;
+#endif
+                }
+            }
+#endif
+                }
         /// <summary>
         /// Gets the X86 intrinsics available on this CPU.
         /// </summary>
@@ -127,6 +161,11 @@ namespace Shamisen.Optimization
             return ArmIntrinsics.None;
 #endif
         }
+        static bool avoidAvxFloatingPoint = false;
+        /// <summary>
+        /// Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
+        /// </summary>
+        public static bool AvoidAvxFloatingPointOperations => avoidAvxFloatingPoint;
 
         /// <summary>
         /// Determines whether the specified value has features specified by mask.

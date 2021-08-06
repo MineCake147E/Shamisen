@@ -162,6 +162,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 case 1:
                     ProcessAccurateMonaural(wrote, dest);
                     break;
+                case 2:
+                    ProcessAccurateStereoStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
                 default:
                     ProcessAccurateOrdinal(wrote, dest);
                     break;
@@ -170,8 +173,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
         private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest)
         {
-            var dsmAcc = MemoryMarshal.GetReference(dsmAccumulator.Span);
-            var dsmPrev = MemoryMarshal.GetReference(dsmLastOutput.Span);
+            var accSpan = dsmAccumulator.Span;
+            var dsmAcc = MemoryMarshal.GetReference(accSpan);
+            var loSpan = dsmLastOutput.Span;
+            var dsmPrev = MemoryMarshal.GetReference(loSpan);
             ref var rWrote = ref MemoryMarshal.GetReference(wrote);
             ref var rDest = ref MemoryMarshal.GetReference(dest);
             var nLength = (nint)dest.Length;
@@ -182,14 +187,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var v = dsmPrev = Convert(dsmAcc);
                 Unsafe.Add(ref rDest, i) = v;
             }
-            MemoryMarshal.GetReference(dsmAccumulator.Span) = dsmAcc;
-            MemoryMarshal.GetReference(dsmLastOutput.Span) = dsmPrev;
+            MemoryMarshal.GetReference(accSpan) = dsmAcc;
+            MemoryMarshal.GetReference(loSpan) = dsmPrev;
         }
 
-        private void ProcessAccurateStereoStandard(Span<float> wrote, Span<short> dest)
+        private static void ProcessAccurateStereoStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
         {
-            var dsmAcc = Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(dsmAccumulator.Span));
-            var dsmLastOut = Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dsmLastOutput.Span));
+            var dsmAcc = Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(loSpan));
             var dsmPrev = new Vector2(dsmLastOut.x, dsmLastOut.y);
             ref var rWrote = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(wrote));
             ref var rDest = ref Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dest));
@@ -208,8 +213,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 dsmPrev = new Vector2(x, y);
                 Unsafe.Add(ref rDest, i) = (x, y);
             }
-            Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(dsmAccumulator.Span)) = dsmAcc;
-            Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dsmLastOutput.Span)) = ((short)dsmPrev.X,(short)dsmPrev.Y);
+            Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X,(short)dsmPrev.Y);
         }
 
         private void ProcessAccurateOrdinal(Span<float> wrote, Span<short> dest)

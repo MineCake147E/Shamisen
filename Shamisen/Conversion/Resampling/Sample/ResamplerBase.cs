@@ -103,6 +103,18 @@ namespace Shamisen.Conversion.Resampling.Sample
         protected float RateMulInverse { get; }
 
         /// <summary>
+        /// Gets the number to increment conversion gradient.
+        /// </summary>
+        protected int GradientIncrement { get; }
+
+        /// <summary>
+        /// Gets the number to increment conversion source position.
+        /// </summary>
+        protected int IndexIncrement { get; }
+
+
+
+        /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
         /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
         /// </summary>
@@ -164,6 +176,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             RateDivDivisor = new UInt32Divisor((uint)RateDiv);
             RateDivDivisor64 = new UInt64Divisor((ulong)RateDiv);
             ChannelsDivisor = new UInt32Divisor((uint)Channels);
+            GradientIncrement = (int)RateMulDivisor.DivRem((uint)RateDiv, out var indexIncrement);
+            IndexIncrement = (int)indexIncrement;
             SkipSupport = source.SkipSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
             SeekSupport = source.SeekSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
         }
