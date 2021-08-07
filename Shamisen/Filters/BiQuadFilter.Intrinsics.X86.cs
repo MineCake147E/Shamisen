@@ -31,8 +31,7 @@ namespace Shamisen.Filters
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
                     ref float v = ref buffer[i];
-                    var vv = Vector128.CreateScalar(v);
-                    vv = Sse.Shuffle(vv, vv, 0b1100_0000);
+                    var vv = Vector128.Create(v);
                     var feedForward = Sse.Multiply(vv, fB); //Multiply in one go
                     var sum = Sse.Add(feedForward, iS);
                     var sum1 = sum.GetElement(0);
@@ -47,7 +46,7 @@ namespace Shamisen.Filters
             }
         }
 
-        private void ProcessMonauralAvx(Span<float> buffer)
+        private void ProcessMonauralFma(Span<float> buffer)
         {
             unsafe
             {
@@ -62,12 +61,9 @@ namespace Shamisen.Filters
                 {
                     //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                     //Transformed for SIMD awareness.
-                    //TODO: use AVX
                     ref float v = ref buffer[i];
-                    var vv = Vector128.CreateScalar(v);
-                    vv = Sse.Shuffle(vv, vv, 0b1100_0000);
-                    var feedForward = Sse.Multiply(vv, fB); //Multiply in one go
-                    var sum = Sse.Add(feedForward, iS);
+                    var vv = Vector128.Create(v);
+                    var sum = Fma.MultiplyAdd(vv, fB, iS);  //Multiply and add in one go
                     var sum1 = sum.GetElement(0);
                     v = sum1;
                     var sum1v = Sse.Shuffle(sum, sum, 0b1111_0000);
@@ -110,7 +106,7 @@ namespace Shamisen.Filters
                         var vvR = Vector128.CreateScalar(v.GetElement(1));
                         var vvx = Vector256.Create(vvL, vvR);
                         vvx = Avx.Permute(vvx, 0b1100_0000);
-                        vvx = Avx.Multiply(vvx, fBx);   //Decreased performance on Haswell Refresh in benchmarks but still usable in low load
+                        vvx = Avx.Multiply(vvx, fBx);   //Decreased performance on Haswell Refresh in benchmarks but usable in post-Rocket-Lake
                         vvx = Avx.Add(vvx, iSx);
                         sum = Vector128.CreateScalarUnsafe(vvx.GetElement(0));
                         sum = sum.WithElement(1, vvx.GetElement(4));
@@ -184,10 +180,8 @@ namespace Shamisen.Filters
                     //Transformed for SIMD awareness.
                     ref float vL = ref buffer[i];
                     ref float vR = ref buffer[i + 1];
-                    var vvL = Vector128.CreateScalar(vL);
-                    var vvR = Vector128.CreateScalar(vR);
-                    vvL = Sse.Shuffle(vvL, vvL, 0b1100_0000);
-                    vvR = Sse.Shuffle(vvR, vvR, 0b1100_0000);
+                    var vvL = Vector128.Create(vL);
+                    var vvR = Vector128.Create(vR);
                     vvL = Sse.Multiply(vvL, fB);
                     vvR = Sse.Multiply(vvR, fB);
                     vvL = Sse.Add(vvL, iSL);
@@ -253,8 +247,7 @@ namespace Shamisen.Filters
                         ref var a = ref Unsafe.Add(ref iS, ch);
                         ref float v = ref Unsafe.Add(ref pos, ch);
                         var aa = a;
-                        var vv = Vector128.CreateScalar(v);
-                        vv = Sse.Shuffle(vv, vv, 0b1100_0000);
+                        var vv = Vector128.Create(v);
                         vv = Sse.Multiply(vv, fB); //Multiply in one go
                         vv = Sse.Add(vv, aa);
                         var sum1 = vv.GetElement(0);

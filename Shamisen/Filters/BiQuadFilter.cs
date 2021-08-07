@@ -30,6 +30,11 @@ namespace Shamisen.Filters
         private readonly bool enableIntrinsics;
         private readonly X86Intrinsics enabledX86Intrinsics;
         private readonly ArmIntrinsics enabledArmIntrinsics;
+        
+        /// <summary>
+        /// Gets the value which indicates whether the <see cref="BiQuadFilter"/> can alter results for speed, or not.
+        /// </summary>
+        public bool AllowFusedMultiplyAddForPerformance { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BiQuadFilter"/> class.
@@ -253,7 +258,7 @@ namespace Shamisen.Filters
 #if NETCOREAPP3_1_OR_GREATER
             if (enableIntrinsics)
             {
-                if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
+                if (!IntrinsicsUtils.AvoidAvxFloatingPointOperations && Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
                 {
                     ProcessStereoAvx(buffer);
                     return;
@@ -307,9 +312,9 @@ namespace Shamisen.Filters
 #if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
-                    if (Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
+                    if (Fma.IsSupported && AllowFusedMultiplyAddForPerformance && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Fma))
                     {
-                        ProcessMonauralAvx(buffer);
+                        ProcessMonauralFma(buffer);
                         return;
                     }
                     else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))

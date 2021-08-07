@@ -8079,6 +8079,18 @@
             <param name="acc"></param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
+            <summary>
+            This variant needs more than 8 xmm registers so AVX or SSE-x64 is required<br/>
+            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell microarchitecture.<br/>
+            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
             <summary>
             Calculate on demand
@@ -11219,6 +11231,11 @@
         <member name="T:Shamisen.Filters.BiQuadFilter">
             <summary>
             Provides a function of filtering with Digital BiQuad Filter.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuadFilter.AllowFusedMultiplyAddForPerformance">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Filters.BiQuadFilter"/> can alter results for speed, or not.
             </summary>
         </member>
         <member name="M:Shamisen.Filters.BiQuadFilter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},Shamisen.Filters.BiQuadParameter)">

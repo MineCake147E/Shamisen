@@ -33,8 +33,6 @@ namespace Shamisen.Conversion.Resampling.Sample {
                     var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-
-                    
                     vBuffer[i] = value1 + value2 + value3 + value4;
                     x += acc;
                     inputSampleIndex += facc;

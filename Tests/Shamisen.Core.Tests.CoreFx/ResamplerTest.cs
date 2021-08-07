@@ -15,13 +15,14 @@ using Shamisen.Data;
 using Shamisen.Codecs.Waveform.Composing;
 using Shamisen.Conversion.SampleToWaveConverters;
 using System.Linq;
+using Shamisen.Filters.Buffering;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
     [TestFixture]
     public class ResamplerTest
     {
-        private const double Freq = 523.2511306011972693556999870466094027289077206840796617283;
+        private const double Freq = 523;
 
         [Test]
         public void UpSamplingDoesNotThrow()
@@ -105,23 +106,32 @@ namespace Shamisen.Core.Tests.CoreFx
                 (64000, 192000),  	//CachedDirect IntegerRate
             };
             var channels = Enumerable.Range(1, 8)/*.Concat(new int[] { })*/.ToArray();
-            return channels.SelectMany(chs => ratios.Select(r => new TestCaseData(chs, r.before, r.after, 1024, 8)));
+            return channels.SelectMany(chs => ratios.Select(r => new TestCaseData(chs, r.before, r.after, 1024, 64)));
         }
 
         [TestCaseSource(nameof(UpSamplingManyFrameDumpTestCaseSource))]
         [TestCase(2, 24000, 192000, 1021)]      //Odd length of blocks
         [TestCase(2, 23000, 192000, 192, 4096)] //Small blocks
-        public void UpSamplingManyFrameDump(int channels, int sourceSampleRate, int destinationSampleRate, int frameLen = 1024, int framesToWrite = 8)
+        [TestCase(2, 48000, 192000, 1025)]      //Odd length of blocks
+        public void UpSamplingManyFrameDump(int channels, int sourceSampleRate, int destinationSampleRate, int frameLen = 1024, int framesToWrite = 64)
         {
             var src = new SinusoidSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, destinationSampleRate);
-            var trunc = new LengthTruncationSource<float, SampleFormat>(resampler, (ulong)framesToWrite * (ulong)frameLen * (ulong)channels);
             var path = new FileInfo($"./dumps/SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
             Console.WriteLine(path.FullName);
             if (!Directory.Exists("./dumps")) _ = Directory.CreateDirectory("./dumps");
+            using var dc = new AudioCache<float, SampleFormat>(resampler.Format);
+            float[] buffer = new float[(ulong)frameLen * (ulong)channels];
+            for (int i = 0; i < framesToWrite; i++)
+            {
+                var q = resampler.Read(buffer);
+                dc.Write(buffer.AsSpan().SliceWhile(q.Length));
+            }
+            var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
             using (var ssink = new StreamDataSink(path.OpenWrite(), false, true))
             {
-                Assert.DoesNotThrow(() => SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
+                Assert.DoesNotThrow(() => 
+                SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
             }
             Assert.Pass();
             resampler.Dispose();

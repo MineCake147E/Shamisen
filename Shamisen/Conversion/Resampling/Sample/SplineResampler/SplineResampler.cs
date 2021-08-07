@@ -397,6 +397,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector4 CalculateCatmullRomCoeffs(float x)
         {
+            //Horner's Method for Catmull-Rom Coeffs
             var vx = new Vector4(x);
             var y = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
             y *= vx;
