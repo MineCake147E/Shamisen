@@ -142,19 +142,19 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
-            var xmm0 = Unsafe.Add(ref coeff, psx);
-            var xmm1 = Unsafe.Add(ref coeff, psx ^ 1);
+            var xmm0 = Unsafe.Add(ref coeff, 0);
+            var xmm1 = Unsafe.Add(ref coeff, 1);
             if (psx > 0)
             {
-                var xmm2 = Sse.Multiply(xmm0, xmm7);
+                var xmm2 = Sse.Multiply(xmm1, xmm7);
                 var xmm4 = Sse2.UnpackHigh(xmm2.AsDouble(), xmm2.AsDouble()).AsSingle();
                 xmm2 = Sse.Add(xmm4, xmm2);
                 xmm4 = Sse.Shuffle(xmm2, xmm2, 0b01_01_01_01);
                 xmm2 = Sse.AddScalar(xmm2, xmm4);
                 Unsafe.Add(ref dst, i++) = xmm2.GetElement(0);
-                psx++;
-                isx += psx >> 1;
-                psx &= 1;
+                isx++;
+                xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
+                psx = 0;
             }
             for (; i < length - 1; i += 2)
             {
@@ -196,7 +196,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
-            for (i = 0; i < length; i++)
+            for (i = 0; i < length & psx > 0; i++)
             {
                 var cutmullCoeffs = Unsafe.Add(ref coeff, psx);
                 Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(xmm7, cutmullCoeffs);
@@ -366,6 +366,8 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm4 = Sse.Add(xmm4, xmm5);
                 Unsafe.Add(ref vBuffer, i++) = xmm4.AsDouble().GetElement(0);
                 isx++;
+                xmm6 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx));
+                xmm7 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
                 psx = 0;
             }
             for (; i < length - 1; i += 2)

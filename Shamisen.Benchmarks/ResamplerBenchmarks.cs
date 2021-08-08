@@ -42,20 +42,25 @@ namespace Shamisen.Benchmarks
         public ConversionRatioProps ConversionRatio { get; set; }
 
         public IEnumerable<ConversionRatioProps> ValuesForConversionRatio => new ConversionRatioProps[] {
-            //new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
-            //new (44100, 48000, "CachedDirect"),         //Often used
-            //new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
-            //new (44100, 192000, "CachedWrappedEven"),   //Often used
+            new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
+            new (44100, 48000, "CachedDirect"),         //Often used
+            new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
+            new (44100, 192000, "CachedWrappedEven"),   //Often used
             new (48000, 192000, "CachedDirect"),        //Quadruple Rate
-            //new (64000, 192000, "CachedDirect"),        //Integer Rate
-            //new (96000, 192000, "CachedDirect"),        //Double Rate
+            new (64000, 192000, "CachedDirect"),        //Integer Rate
+            new (96000, 192000, "CachedDirect"),        //Double Rate
         };
 
-        [Params(2, Priority =-4)]
+        [Params(1,2,3,4,5,6,7,8,9,10, Priority =-4)]
         public int Channels { get; set; }
         [Params(2881, Priority = -990)]
         public int Frames { get; set; }
-        [Params(/*(X86Intrinsics)X86IntrinsicsMask.None, (X86Intrinsics)X86IntrinsicsMask.Ssse3, */(X86Intrinsics)X86IntrinsicsMask.Avx2, Priority =100)]
+
+        public IEnumerable<X86Intrinsics> X86IntrinsicsMasks => new[] {
+            IntrinsicsUtils.X86Intrinsics
+        };
+
+        [ParamsSource(nameof(X86IntrinsicsMasks), Priority = 100)]
         public X86Intrinsics EnabledX86Intrinsics { get; set; }
 
         [GlobalSetup]
