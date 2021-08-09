@@ -8081,7 +8081,7 @@
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
             <summary>
-            This variant needs more than 8 xmm registers so AVX or SSE-x64 is required<br/>
+            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
             It does not use 256bit floating-point arithmetic, making it suitable for the Haswell microarchitecture.<br/>
             TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
             </summary>
@@ -8561,6 +8561,21 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToInt16(System.Byte)">
+            <summary>
+            Converts A-law value to <see cref="T:System.Int16"/> value.<br/>
+            Remains only for test uses.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToSingle(System.Byte)">
+            <summary>
+            Converts A-law value to <see cref="T:System.Single"/> value.<br/>
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -8640,6 +8655,83 @@
             </returns>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Float32ToSampleConverter.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter">
+            <summary>
+            Converts 8-bit A-Law PCM to Sample.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Byte,Shamisen.IWaveFormat})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter"/> class.
+            </summary>
+            <param name="source">The source.</param>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.BytesPerSample">
+            <summary>
+            Gets the bytes consumed per sample.
+            </summary>
+            <value>
+            The bytes consumed per sample.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2" />.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2" />.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>

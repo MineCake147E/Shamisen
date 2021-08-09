@@ -17,6 +17,7 @@ namespace Shamisen.Benchmarks
     [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
+    [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: 16)]
     public class BiQuadBenchmarks
     {

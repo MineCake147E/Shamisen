@@ -402,7 +402,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return (int)isx;
         }
         /// <summary>
-        /// This variant needs more than 8 xmm registers so AVX or SSE-x64 is required<br/>
+        /// This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
         /// It does not use 256bit floating-point arithmetic, making it suitable for the Haswell microarchitecture.<br/>
         /// TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
         /// </summary>
