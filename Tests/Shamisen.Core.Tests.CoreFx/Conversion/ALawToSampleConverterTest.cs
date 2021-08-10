@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using Shamisen.Conversion.WaveToSampleConverters;
+using Shamisen.Filters.Buffering;
 using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx.Conversion
@@ -39,12 +40,21 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
         [Test]
         public void BlockConvertsCorrectly()
         {
-            using var source = new DummySource<byte, IWaveFormat>(new WaveFormat(192000, 8, 1, AudioEncoding.Alaw));
+            using var source = new AudioCache<byte, IWaveFormat>(new WaveFormat(192000, 8, 1, AudioEncoding.Alaw));
             var converter = new ALawToSampleConverter(source);
-            var buffer = new float[1024 * 1];
+            var buffer = new float[256];
+            var bb = new byte[256];
+            for(int i = 0; i < bb.Length; i++)
+            {
+                bb[i] = (byte)i;
+            }
+            source.Write(bb);
             var span = buffer.AsSpan();
             var rr = converter.Read(span);
-
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                Assert.AreEqual(ALawToSampleConverter.ConvertALawToSingle((byte)i) * 8192.0f, buffer[i] * 8192.0f);
+            }
         }
     }
 }

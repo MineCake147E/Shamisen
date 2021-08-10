@@ -102,7 +102,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #if NETCOREAPP3_1_OR_GREATER
                     if (rb.Length >= 16 && Avx2.IsSupported)
                     {
-                        ProcessAvx2(rb, wb);
+                        ProcessAvx2M2(rb, wb);
                         return wb.Length;
                     }
 #endif
@@ -220,6 +220,101 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ProcessAvx2M2(Span<byte> rb, Span<float> wb)
+        {
+            unchecked
+            {
+                nint length = rb.Length;
+                nint i;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
+                var ymm1 = Vector256.Create(1u);
+                var xmm2 = Vector128.Create(0x7070_7070u);
+                var xmm3 = Vector128.Create(0u);
+                var ymm4 = Vector256.Create(0x0fu);
+                var ymm7 = Vector256.Create(0x3b80_0000u);
+                var ymm8 = Vector256.Create(0x83fc_0000u);
+                var ymm15 = Vector256.Create(5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1);
+                for (i = 0; i < length - 15; i += 16)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    var ymm11 = ymm10;
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
+
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm11 = ymm10;
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm0.AsSingle();
+                }
+                for (; i < length - 7; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    var ymm11 = ymm10;
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
+                    ymm11 = Avx2.And(ymm11, ymm4);
+                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
+                }
+                for (; i < length; i++)
+                {
+                    var g = Unsafe.Add(ref rsi, i);
+                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
+                }
+            }
+        }
 #endif
 
         /// <summary>
@@ -237,7 +332,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var m = 0x3b80_0000u;
                 if ((value & 0x70) == 0)
                 {
-                    var zs = (uint)MathI.LeadingZeroCount(v << 26); //Here uses LZCNT, but uses cvtdq2ps in vectorized path
+                    var zs = (uint)MathI.LeadingZeroCount(v << 26);
                     v <<= (int)zs;
                     m -= zs << 23;
                 }
