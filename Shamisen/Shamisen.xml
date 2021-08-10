@@ -8561,17 +8561,17 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToInt16(System.Byte)">
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToSingle(System.Byte)">
             <summary>
-            Converts A-law value to <see cref="T:System.Int16"/> value.<br/>
-            Remains only for test uses.
+            Converts A-law value to <see cref="T:System.Single"/> value.<br/>
             </summary>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToSingle(System.Byte)">
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToInt16(System.Byte)">
             <summary>
-            Converts A-law value to <see cref="T:System.Single"/> value.<br/>
+            Converts A-law value to <see cref="T:System.Int16"/> value.<br/>
+            Remains only for test uses.
             </summary>
             <param name="value"></param>
             <returns></returns>

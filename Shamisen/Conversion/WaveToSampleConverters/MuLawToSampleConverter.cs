@@ -89,11 +89,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            buffer = buffer.SliceAlign(2);
             int internalBufferLengthRequired = CheckBuffer(buffer.Length);
-
+            var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
             //Resampling start
-            Span<byte> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            Span<byte> srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired, internalBufferLengthRequired);
             Span<byte> readBuffer = srcBuffer.SliceAlign(Format.Channels);
             var rr = Source.Read(readBuffer);
             if (rr.HasData)
@@ -118,7 +117,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                if (Sse41.IsSupported)
+                if (rb.Length > 8 && Sse41.IsSupported)
                 {
                     ProcessSse41(rb, wb);
                     return;
@@ -218,11 +217,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             int v = sampleLengthOut;
             int samplesRequired = v;
             int internalBufferLengthRequired = samplesRequired;
-            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
-            {
-                ExpandBuffer(internalBufferLengthRequired);
-            }
-
             return internalBufferLengthRequired;
         }
 

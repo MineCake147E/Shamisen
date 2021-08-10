@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.WaveToSampleConverters;
-using Shamisen.Filters;
-using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
@@ -19,7 +12,7 @@ namespace Shamisen.Benchmarks
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: 256)]
-    public class ALawToSampleConverterBenchmarks
+    public class MuawToSampleConverterBenchmarks
     {
         private const int Frames = 4096;
 
@@ -33,7 +26,7 @@ namespace Shamisen.Benchmarks
             }
         }
         private IReadableAudioSource<byte, IWaveFormat> source;
-        private ALawToSampleConverter converter;
+        private MuLawToSampleConverter converter;
         private float[] buffer;
         private const int SampleRate = 192000;
         [Params(1)]
@@ -42,24 +35,17 @@ namespace Shamisen.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            source = new DummySource<byte, IWaveFormat>(new WaveFormat(SampleRate, 8, Channels, AudioEncoding.Alaw));
-            converter = new ALawToSampleConverter(source);
+            source = new DummySource<byte, IWaveFormat>(new WaveFormat(SampleRate, 8, Channels, AudioEncoding.Mulaw));
+            converter = new MuLawToSampleConverter(source);
             buffer = new float[Frames * Channels];
         }
 
         [Benchmark]
-        public void NewConversion()
+        public void MuLawToSampleConverter()
         {
             var span = buffer.AsSpan();
             _ = converter.Read(span);
         }
-        /*[Benchmark]
-        public void OldConversion()
-        {
-            var span = buffer.AsSpan();
-            _ = converter.ReadOld(span);
-        }*/
-
         [GlobalCleanup]
         public void Cleanup()
         {

@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
+
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics.X86;
+using System.Runtime.Intrinsics;
+#endif
 
 using Shamisen.Utils;
 
@@ -82,11 +88,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            buffer = buffer.SliceAlign(2);
-            int internalBufferLengthRequired = CheckBuffer(buffer.Length);
-
-            //Resampling start
-            Span<byte> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            int internalBufferLengthRequired = buffer.Length;
+            var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
+            Span<byte> srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired, internalBufferLengthRequired);
             Span<byte> readBuffer = srcBuffer.SliceAlign(Format.Channels);
             var rr = Source.Read(readBuffer);
             if (rr.HasData)
@@ -95,6 +99,13 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 {
                     var rb = readBuffer.SliceWhile(rr.Length);
                     var wb = buffer.SliceWhile(rb.Length);
+#if NETCOREAPP3_1_OR_GREATER
+                    if (rb.Length >= 16 && Avx2.IsSupported)
+                    {
+                        ProcessAvx2(rb, wb);
+                        return wb.Length;
+                    }
+#endif
                     for (int i = 0; i < rb.Length; i++)
                     {
                         byte v = rb[i];
@@ -108,14 +119,144 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 return rr;
             }
         }
+#if NETCOREAPP3_1_OR_GREATER
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void ProcessAvx2(Span<byte> rb, Span<float> wb)
+        {
+            unchecked
+            {
+                nint length = rb.Length;
+                nint i;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
+                var ymm1 = Vector256.Create(1u);
+                var xmm2 = Vector128.Create(0x7070_7070u);
+                var xmm3 = Vector128.Create(0u);
+                var ymm4 = Vector256.Create(0x1fu);
+                var ymm5 = Vector256.Create(0xffu);
+                var ymm6 = Vector256.Create(0x84u);
+                var ymm7 = Vector256.Create(0x3b80_0000u);
+                var ymm8 = Vector256.Create(0x83fc_0000u);
+                for (i = 0; i < length - 15; i += 16)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    var ymm11 = Avx2.And(ymm10, ymm4);
+                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
+                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
+                    ymm11 = Avx2.And(ymm11, ymm5);
+                    ymm11 = Avx2.Subtract(ymm6, ymm11);
+                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
+
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm11 = Avx2.And(ymm10, ymm4);
+                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
+                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
+                    ymm11 = Avx2.And(ymm11, ymm5);
+                    ymm11 = Avx2.Subtract(ymm6, ymm11);
+                    ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm0.AsSingle();
+
+                }
+                for (; i < length - 7; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
+                    xmm0 = Sse2.Xor(xmm0, xmm9);
+                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    ymm10 = Avx2.Add(ymm10, ymm10);
+                    ymm10 = Avx2.Or(ymm10, ymm1);
+                    xmm0 = Sse2.And(xmm0, xmm2);
+                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
+                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
+                    var ymm11 = Avx2.And(ymm10, ymm4);
+                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
+                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
+                    ymm11 = Avx2.And(ymm11, ymm5);
+                    ymm11 = Avx2.Subtract(ymm6, ymm11);
+                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
+                    ymm12 = Avx2.Subtract(ymm7, ymm12);
+                    ymm11 = Avx2.And(ymm11, ymm0);
+                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
+                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
+                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
+                    ymm10 = Avx2.And(ymm10, ymm8);
+                    ymm0 = Avx2.Add(ymm10, ymm0);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
+                }
+                for (; i < length; i++)
+                {
+                    var g = Unsafe.Add(ref rsi, i);
+                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
+                }
+            }
+        }
+#endif
+
+        /// <summary>
+        /// Converts A-law value to <see cref="float"/> value.<br/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static float ConvertALawToSingle(byte value)
+        {
+            unchecked
+            {
+                value ^= 0b1101_0101;
+                uint v = ((uint)(sbyte)value << 1) | 1;
+                var m = 0x3b80_0000u;
+                if ((value & 0x70) == 0)
+                {
+                    var zs = (uint)MathI.LeadingZeroCount(v << 26); //Here uses LZCNT, but uses cvtdq2ps in vectorized path
+                    v <<= (int)zs;
+                    m -= zs << 23;
+                }
+                v <<= 18;
+                v &= 0x83fc_0000;
+                v += m;
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                return BitConverter.Int32BitsToSingle((int)v);
+#else
+                return Unsafe.As<uint, float>(ref v);
+#endif
+            }
+        }
         internal ReadResult ReadOld(Span<float> buffer)
         {
             buffer = buffer.SliceAlign(2);
-            int internalBufferLengthRequired = CheckBuffer(buffer.Length);
-
-            //Resampling start
-            Span<byte> srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            int internalBufferLengthRequired = buffer.Length;
+            var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
+            Span<byte> srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired);
             Span<byte> readBuffer = srcBuffer.SliceAlign(Format.Channels);
             var rr = Source.Read(readBuffer);
             if (rr.HasData)
@@ -167,38 +308,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        /// <summary>
-        /// Converts A-law value to <see cref="float"/> value.<br/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static float ConvertALawToSingle(byte value)
-        {
-            unchecked
-            {
-                value ^= 0b1101_0101;
-                uint v = (uint)(sbyte)value;
-                v <<= 19;
-                v &= 0x83f8_0000;
-                v |= 262144;
-                return Unsafe.As<uint, float>(ref v) * 6.64613997892458E+35f;
-            }
-        }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CheckBuffer(int sampleLengthOut)
-        {
-            int v = sampleLengthOut;
-            int samplesRequired = v;
-            int internalBufferLengthRequired = samplesRequired;
-            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
-            {
-                ExpandBuffer(internalBufferLengthRequired);
-            }
-
-            return internalBufferLengthRequired;
-        }
 
         private void ExpandBuffer(int internalBufferLengthRequired) => bufferWrapper.Resize(internalBufferLengthRequired);
 
