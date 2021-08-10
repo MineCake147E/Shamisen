@@ -48,7 +48,7 @@ namespace Shamisen.Benchmarks
         }
 
         [Benchmark]
-        public void NewConversion()
+        public void ALawToSampleConverter()
         {
             var span = buffer.AsSpan();
             _ = converter.Read(span);

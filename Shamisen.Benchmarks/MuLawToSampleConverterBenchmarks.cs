@@ -12,7 +12,7 @@ namespace Shamisen.Benchmarks
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: 256)]
-    public class MuawToSampleConverterBenchmarks
+    public class MuLawToSampleConverterBenchmarks
     {
         private const int Frames = 4096;
 
