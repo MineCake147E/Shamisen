@@ -26,7 +26,7 @@ A Cross-Platform Audio Library for:
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- | :-------------: | :-----------: | :-----: | :---: | :-: | :-----: |
 | [UWP](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ✅       |   ❎    |  ❎   | ❎  |   ❎    |
 | [Xamarin.Android](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
-| [NAudio](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❎       |   ❎    |  ❎   | ❎  |   ❎    |
+| [NAudio](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
 | [CSCore](https://github.com/filoe/cscore)                                                            | [Florian](https://github.com/filoe)       | [Ms-PL](https://github.com/filoe/cscore/blob/master/license.md)                        |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
 | [OpenTK](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
 
@@ -59,7 +59,7 @@ A Cross-Platform Audio Library for:
 
 | Container Name    | Typical File Extensions | Implemented Codec                              | Library contains Decoder/Encoder | License                                                                                | Decoding |  Encoding   |
 | ----------------- | ----------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- | :------: | :---------: |
-| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |     ✅      |
+| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |     ✅      |
 | FLAC              | `.flac`                 | FLAC                                           | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
 
 Legends:  
