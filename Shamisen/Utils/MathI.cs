@@ -329,7 +329,7 @@ namespace Shamisen
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static int Pop(uint value)
+        public static int PopCount(uint value)
         {
             //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked

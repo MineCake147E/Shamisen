@@ -4,9 +4,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
+
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
 #endif
 
 using Shamisen.Utils;
@@ -312,6 +316,40 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 {
                     var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
+                }
+            }
+        }
+#endif
+#if NET5_0_OR_GREATER
+        private static void ProcessAdvSimd64(Span<byte> rb, Span<float> wb)
+        {
+            unchecked
+            {
+                nint length = rb.Length;
+                nint i;
+                ref var x0 = ref MemoryMarshal.GetReference(rb);
+                ref var x1 = ref MemoryMarshal.GetReference(wb);
+                var v0_4h = Vector64.Create((ushort)0xd5);
+                var v1_4h = Vector64.Create((ushort)0x70);
+                var v2_4h = Vector64.Create((ushort)0xd5);
+                var v3_4s = Vector128.Create(~0x1au);
+                var v4_4s = Vector128.Create(0x3b80_0000u);
+                var v5_4s = Vector128.Create(0x83fc_0000u);
+                for (i = 0; i < length - 3; i += 4)
+                {
+                    var s6 = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x0, i)));
+                    var v6_8h = AdvSimd.ShiftLeftLogicalWideningLower(s6.AsByte(), 0);
+                    v6_8h = AdvSimd.Xor(v6_8h.GetLower().AsByte(), v0_4h.AsByte()).AsUInt16().ToVector128Unsafe();
+                    //v0_8b = AdvSimd.Xor(v0_8b, v9_8b);  //Sse2.Xor
+                    //var v10_8h = AdvSimd.ShiftLeftLogicalWideningLower(v0_8b.AsSByte(), 0);
+
+                    //var v10_4s = AdvSimd.ShiftLeftLogicalWideningLower(v10_8h.GetLower(), 0).AsUInt32();//Avx2.ConvertToVector256Int32
+                    //var v11_4s = v10_4s;
+                    //v10_4s = AdvSimd.ShiftLeftLogical(v10_4s, 1);
+                    //v10_4s = AdvSimd.Or(v10_4s, v1_4s);
+                    //v0_8b = AdvSimd.And(v0_8b, v9_8b);
+                    //v0_8b = AdvSimd.CompareEqual(v0_8b, v3_2s);
+
                 }
             }
         }

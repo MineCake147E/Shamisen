@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.BiQuad
 {
     [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: 16)]
-    public class BiQuadBenchmarks
+    public class BiQuadFilterBenchmarks
     {
         private IReadableAudioSource<float, SampleFormat> source;
         private BiQuadFilter filter;
@@ -42,7 +39,8 @@ namespace Shamisen.Benchmarks
         [Params(true)]
         public bool EnableIntrinsics { get; set; }
 
-        [Params(/*(X86Intrinsics)X86IntrinsicsMask.None, */(X86Intrinsics)X86IntrinsicsMask.Sse42, (X86Intrinsics)X86IntrinsicsMask.Avx2)]
+        [Params(
+            (X86Intrinsics)X86IntrinsicsMask.Sse2 | X86Intrinsics.X64)]
         public X86Intrinsics EnabledX86Intrinsics { get; set; }
 
         [GlobalSetup]

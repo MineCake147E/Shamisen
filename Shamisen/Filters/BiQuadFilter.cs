@@ -258,12 +258,13 @@ namespace Shamisen.Filters
 #if NETCOREAPP3_1_OR_GREATER
             if (enableIntrinsics)
             {
-                if (!IntrinsicsUtils.AvoidAvxFloatingPointOperations && Avx.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx))
-                {
-                    ProcessStereoAvx(buffer);
-                    return;
-                }
-                else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
+                //if (Sse2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse2))
+                //{
+                //    ProcessStereoSse2(buffer);
+                //    return;
+                //}
+                //else
+                if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                 {
                     ProcessStereoSse(buffer);
                     return;
@@ -319,7 +320,7 @@ namespace Shamisen.Filters
                     }
                     else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                     {
-                        ProcessMonauralSse(buffer);
+                        ProcessMonauralSse(buffer, Parameter, internalStates);
                         return;
                     }
                 }

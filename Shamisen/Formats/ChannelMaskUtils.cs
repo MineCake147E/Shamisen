@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Shamisen.Formats;
 
@@ -19,39 +17,31 @@ namespace Shamisen
         /// <returns>The matching <see cref="Speakers"/> combination.</returns>
         public static Speakers GetChannelMasks<TSample>(this IAudioFormat<TSample> format)
             where TSample : unmanaged
-        {
-            if (format is IChannelMaskedFormat cmFormat)
-            {
-                return cmFormat.ChannelCombination;
-            }
-            else
-            {
-                switch (format.Channels)
+            => format is IChannelMaskedFormat cmFormat
+                ? cmFormat.ChannelCombination
+                : format.Channels switch
                 {
-                    case 1: //Ordinal Monaural
-                        return Speakers.Monaural;
-                    case 2: //Assuming Speaker Stereo
-                        return Speakers.FrontStereo;
-                    case 3: //Assuming 2.1ch Stereo
-                        return Speakers.FrontStereo | Speakers.FrontCenterLowFrequency;
-                    case 4: //Assuming 3.1ch Stereo
-                        return Speakers.ThreePointOne;
-                    case 5: //Assuming 4.1ch Surround
-                        return Speakers.FrontStereo | Speakers.RearLeft | Speakers.RearRight | Speakers.FrontCenterLowFrequency;
-                    case 6: //Assuming 5.1ch Surround
-                        return Speakers.FrontFivePointOne;
-                    case 7: //Assuming 6.1ch Surround
-                        return Speakers.FrontStereo | Speakers.SideStereo | Speakers.RearStereo | Speakers.FrontCenterLowFrequency;
-                    case 8: //Assuming 7.1ch Surround
-                        return Speakers.SevenPointOne;
-                    case 9: //Assuming 8.1ch Surround
-                        return Speakers.SevenPointOne | Speakers.RearCenter;
-                    case 10: //Assuming 7.1.2ch Surround+
-                        return Speakers.SevenPointOne | Speakers.TopSideStereo;
-                    default:
-                        throw new NotSupportedException($"The given number of channels ({format.Channels}) is not supported!");
-                }
-            }
-        }
+                    //Ordinal Monaural
+                    1 => Speakers.Monaural,
+                    //Assuming Speaker Stereo
+                    2 => Speakers.FrontStereo,
+                    //Assuming 2.1ch Stereo
+                    3 => Speakers.FrontStereo | Speakers.FrontCenterLowFrequency,
+                    //Assuming 3.1ch Stereo
+                    4 => Speakers.ThreePointOne,
+                    //Assuming 4.1ch Surround
+                    5 => Speakers.FrontStereo | Speakers.RearLeft | Speakers.RearRight | Speakers.FrontCenterLowFrequency,
+                    //Assuming 5.1ch Surround
+                    6 => Speakers.FrontFivePointOne,
+                    //Assuming 6.1ch Surround
+                    7 => Speakers.FrontStereo | Speakers.SideStereo | Speakers.RearStereo | Speakers.FrontCenterLowFrequency,
+                    //Assuming 7.1ch Surround
+                    8 => Speakers.SevenPointOne,
+                    //Assuming 8.1ch Surround
+                    9 => Speakers.SevenPointOne | Speakers.RearCenter,
+                    //Assuming 7.1.2ch Surround+
+                    10 => Speakers.SevenPointOne | Speakers.TopSideStereo,
+                    _ => throw new NotSupportedException($"The given number of channels ({format.Channels}) is not supported!"),
+                };
     }
 }

@@ -29,7 +29,7 @@ namespace Shamisen.Filters.Mixing
             SourceProperties = sourceProperties ?? throw new ArgumentNullException(nameof(sourceProperties));
             ActualSource = !sourceProperties.IsDynamic
                 ? new StreamBuffer<float, SampleFormat>(Source, Format.GetBufferSizeRequired(TimeSpan.FromSeconds(SourceProperties.PreferredLatency)))
-                : (IReadableAudioSource<float, SampleFormat>)source;
+                : source;
             buffer = ArrayPool<float>.Shared.Rent(1024 * Format.Channels);
         }
 

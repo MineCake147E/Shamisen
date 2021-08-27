@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shamisen.Utils
 {
@@ -12,6 +8,9 @@ namespace Shamisen.Utils
     /// </summary>
     public static partial class AudioUtils
     {
+
+        #region Interleave
+
         /// <summary>
         /// Interleaves and stores Stereo samples to <paramref name="buffer"/>.
         /// </summary>
@@ -90,5 +89,8 @@ namespace Shamisen.Utils
                 Fallback.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
             }
         }
+        #endregion
+
+
     }
 }

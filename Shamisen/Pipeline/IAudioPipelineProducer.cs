@@ -17,12 +17,6 @@ namespace Shamisen.Pipeline
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-        /// <summary>
-        /// Gets a value indicating whether this instance can pre-process.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance can pre-process; otherwise, <c>false</c>.
-        /// </value>
-        bool CanPreProcess { get; }
+
     }
 }

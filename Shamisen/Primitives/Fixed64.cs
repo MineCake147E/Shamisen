@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shamisen
 {
@@ -29,6 +26,7 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="Fixed64"/> struct.
         /// </summary>
         /// <param name="internalValue">The internal value stored in memory.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public Fixed64(long internalValue) => Value = internalValue;
 
         /// <summary>
@@ -77,6 +75,7 @@ namespace Shamisen
         /// <returns>
         /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator +(Fixed64 left, Fixed64 right) => new(left.Value + right.Value);
 
         /// <summary>
@@ -87,6 +86,7 @@ namespace Shamisen
         /// <returns>
         /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator -(Fixed64 left, Fixed64 right) => new(left.Value - right.Value);
 
         /// <summary>
@@ -97,6 +97,7 @@ namespace Shamisen
         /// <returns>
         /// The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator *(Fixed64 left, Fixed64 right)
         {
             var (low, high) = MathI.BigMul(left.Value, right.Value);
@@ -109,6 +110,7 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <param name="power">The power.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 PowerOfInteger(Fixed64 value, uint power)
         {
             switch (power)
@@ -145,6 +147,7 @@ namespace Shamisen
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 PowerPOT(Fixed64 value, uint shift)
         {
             var t = value;
@@ -160,6 +163,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 Square(Fixed64 value) => value * value;
 
         /// <summary>
@@ -170,6 +174,7 @@ namespace Shamisen
         /// <returns>
         /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static double operator /(Fixed64 left, Fixed64 right) => (double)left.Value / right.Value;
 
         /// <summary>
@@ -180,6 +185,7 @@ namespace Shamisen
         /// <returns>
         /// The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator %(Fixed64 left, Fixed64 right) => new(left.Value % right.Value);
 
         /// <summary>
@@ -189,6 +195,7 @@ namespace Shamisen
         /// <returns>
         /// The value of the operand, <paramref name="value"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator +(Fixed64 value) => value;
 
         /// <summary>
@@ -198,6 +205,7 @@ namespace Shamisen
         /// <returns>
         /// The value of <paramref name="value"/> incremented by <see cref="Epsilon"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator ++(Fixed64 value) => new(value.Value + 1);
 
         /// <summary>
@@ -207,6 +215,7 @@ namespace Shamisen
         /// <returns>
         /// The result of <paramref name="value"/> multiplied by negative one (-1).
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator -(Fixed64 value) => new(unchecked(-value.Value));
 
         /// <summary>
@@ -216,6 +225,7 @@ namespace Shamisen
         /// <returns>
         /// The value of <paramref name="value"/> decremented by <see cref="Epsilon"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Fixed64 operator --(Fixed64 value) => new(value.Value - 1);
 
         #endregion Arithmetics
@@ -229,6 +239,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator float(Fixed64 value) => value.FloatValue;
 
         /// <summary>
@@ -238,6 +249,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator double(Fixed64 value) => value.DoubleValue;
 
         /// <summary>
@@ -247,6 +259,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator Fixed64(float value) => new((long)(value * 9.223372036854776E+18f));
 
         /// <summary>
@@ -256,6 +269,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator Fixed64(double value) => new((long)(value * 9.223372036854776E+18));
 
         /// <summary>
@@ -265,6 +279,7 @@ namespace Shamisen
         /// <returns>
         /// The internal <see cref="long"/> value of specified <paramref name="value"/>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator long(Fixed64 value) => value.Value;
 
         /// <summary>
@@ -274,14 +289,17 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static explicit operator Fixed64(long value) => new(value);
 
         /// <summary>
         /// Converts to string.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override string? ToString() => GetDebuggerDisplay();
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private string GetDebuggerDisplay() => $"{DoubleValue}";
 
         #endregion Conversion
@@ -293,6 +311,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="other">An number to compare.</param>
         /// <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public int CompareTo(Fixed64 other) => other.Value.CompareTo(Value);
 
         /// <summary>
@@ -303,6 +322,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <(Fixed64 left, Fixed64 right) => left.Value < right.Value;
 
         /// <summary>
@@ -313,6 +333,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator <=(Fixed64 left, Fixed64 right) => left.Value <= right.Value;
 
         /// <summary>
@@ -323,6 +344,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >(Fixed64 left, Fixed64 right) => left.Value > right.Value;
 
         /// <summary>
@@ -333,6 +355,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator >=(Fixed64 left, Fixed64 right) => left.Value >= right.Value;
 
         #endregion Comparison
@@ -346,6 +369,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override bool Equals(object? obj) => obj is Fixed64 @fixed && Equals(@fixed);
 
         /// <summary>
@@ -355,6 +379,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public bool Equals(Fixed64 other) => Value == other.Value;
 
         /// <summary>
@@ -363,6 +388,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override int GetHashCode() => Value.GetHashCode();
 
         /// <summary>
@@ -373,6 +399,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator ==(Fixed64 left, Fixed64 right) => left.Equals(right);
 
         /// <summary>
@@ -383,6 +410,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator !=(Fixed64 left, Fixed64 right) => !(left == right);
 
         #endregion Equality

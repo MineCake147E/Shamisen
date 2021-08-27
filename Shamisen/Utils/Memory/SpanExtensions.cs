@@ -1,11 +1,10 @@
-﻿using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Buffers.Binary;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+
 using Shamisen;
+
 using DivideSharp;
 
 #if NET5_0_OR_GREATER
@@ -35,7 +34,7 @@ namespace System
         /// <param name="samplesToAdd">The samples to add.</param>
         /// <param name="buffer">The buffer.</param>
         /// <exception cref="ArgumentException">samplesToAdd</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastAdd(ReadOnlySpan<float> samplesToAdd, Span<float> buffer)
         {
             if (samplesToAdd.Length > buffer.Length) throw new ArgumentException("", nameof(samplesToAdd));
@@ -68,7 +67,27 @@ namespace System
         /// </summary>
         /// <param name="span">The span to multiply.</param>
         /// <param name="scale">The value to be multiplied.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastScalarMultiply(this Span<float> span, float scale = default)
+        {
+            if (Vector<float>.Count > span.Length)
+            {
+                ref var rdi = ref MemoryMarshal.GetReference(span);
+                nint i, length = span.Length;
+                for (i = 0; i < length; i++)
+                {
+                    var v = Unsafe.Add(ref rdi, i) * scale;
+                    Unsafe.Add(ref rdi, i) = v;
+                }
+            }
+            else
+            {
+                FastScalarMultiplyStandardVariable(span, scale);
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Remains only for benchmark comparison!")]
+        internal static void FastScalarMultiplyStandardVariableOld(Span<float> span, float scale = default)
         {
             if (Vector<float>.Count > span.Length)
             {
@@ -92,6 +111,106 @@ namespace System
                 }
             }
         }
+        /// <summary>
+        /// Vectorized path using <see cref="Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
+        /// Impractical in Rocket Lake or later due to absense of Haswell's severe CPU clock limits.<br/>
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="scale"></param>
+        internal static void FastScalarMultiplyStandardFixed(Span<float> span, float scale)
+        {
+            var scaleV = new Vector4(scale);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i, length = span.Length;
+            for (i = 0; i < length - (4 * 8 - 1); i += 4 * 8)
+            {
+                var v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) * scaleV;
+                var v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) * scaleV;
+                var v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) * scaleV;
+                var v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) * scaleV;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) = v0;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) = v1;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) = v2;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) = v3;
+                v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4 * 4)) * scaleV;
+                v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 5 * 4)) * scaleV;
+                v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 6 * 4)) * scaleV;
+                v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 7 * 4)) * scaleV;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4 * 4)) = v0;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 5 * 4)) = v1;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 6 * 4)) = v2;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 7 * 4)) = v3;
+            }
+            if (i < length - (4 * 4 - 1))
+            {
+                var v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) * scaleV;
+                var v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) * scaleV;
+                var v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) * scaleV;
+                var v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) * scaleV;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) = v0;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) = v1;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) = v2;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) = v3;
+                i += 4 * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rdi, i) * scaleV.X;
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
+
+        /// <summary>
+        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Only practical in either ARMx8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="scale"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastScalarMultiplyStandardVariable(Span<float> span, float scale)
+        {
+            var scaleV = new Vector<float>(scale);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i, length = span.Length;
+            nint width = Vector<float>.Count;
+            for (i = 0; i < length - (width * 8 - 1); i += width * 8)
+            {
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
+                v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 4 * width)) * scaleV;
+                v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 5 * width)) * scaleV;
+                v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 6 * width)) * scaleV;
+                v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 7 * width)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 4 * width)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 5 * width)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 6 * width)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 7 * width)) = v3;
+            }
+            if (i < length - (width * 4 - 1))
+            {
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
+                i += width * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rdi, i) * scaleV[0];
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
 
         /// <summary>
         /// Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
@@ -100,18 +219,133 @@ namespace System
         /// <param name="buffer">The buffer.</param>
         /// <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
         /// <exception cref="ArgumentException">samplesToMix</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMix(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             if (samplesToMix.Length > buffer.Length) throw new ArgumentException("", nameof(samplesToMix));
+#if NETCOREAPP3_1_OR_GREATER
+            if (Sse.X64.IsSupported)
+            {
+                FastMixSse64(samplesToMix, buffer, scale);
+                return;
+            }
+            else if (Sse.IsSupported)
+            {
+                FastMixSse(samplesToMix, buffer, scale);
+                return;
+            }
+#endif
+            FastMixStandard(samplesToMix, buffer, scale);
+        }
+#if NETCOREAPP3_1_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void FastMixSse64(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
+        {
+            nint i = 0;
+            nint length = samplesToMix.Length;
+            ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var xmm15 = Vector128.Create(scale);
+            for (i = 0; i < length - 15; i += 16)
+            {
+                var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i));
+                var xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 4));
+                var xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i));
+                var xmm5 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4));
+                xmm0 = Sse.Multiply(xmm0, xmm15);
+                xmm1 = Sse.Multiply(xmm0, xmm15);
+                xmm4 = Sse.Add(xmm4, xmm0);
+                xmm5 = Sse.Add(xmm5, xmm1);
+                var xmm2 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 8));
+                var xmm3 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 12));
+                var xmm6 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 8));
+                var xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 12));
+                xmm2 = Sse.Multiply(xmm2, xmm15);
+                xmm3 = Sse.Multiply(xmm3, xmm15);
+                xmm6 = Sse.Add(xmm6, xmm2);
+                xmm7 = Sse.Add(xmm7, xmm3);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm4;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm5;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 8)) = xmm6;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 12)) = xmm7;
+            }
+            for (; i < length - 3; i += 4)
+            {
+                var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i));
+                var xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i));
+                xmm0 = Sse.Multiply(xmm0, xmm15);
+                xmm4 = Sse.Add(xmm4, xmm0);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm4;
+            }
+            for (; i < length; i++)
+            {
+                var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i));
+                var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref rdi, i));
+                xmm0 = Sse.MultiplyScalar(xmm0, xmm15);
+                xmm4 = Sse.AddScalar(xmm4, xmm0);
+                Unsafe.Add(ref rdi, i) = xmm4.GetElement(0);
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void FastMixSse(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
+        {
+            nint i = 0;
+            nint length = samplesToMix.Length;
+            ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var xmm15 = Vector128.Create(scale);
+            for (i = 0; i < length - 7; i += 8)
+            {
+                var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i));
+                var xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 4));
+                var xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i));
+                var xmm5 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4));
+                xmm0 = Sse.Multiply(xmm0, xmm15);
+                xmm1 = Sse.Multiply(xmm1, xmm15);
+                xmm4 = Sse.Add(xmm4, xmm0);
+                xmm5 = Sse.Add(xmm5, xmm1);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm4;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm5;
+                xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 8));
+                xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 12));
+                xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 8));
+                xmm5 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 12));
+                xmm0 = Sse.Multiply(xmm0, xmm15);
+                xmm1 = Sse.Multiply(xmm1, xmm15);
+                xmm4 = Sse.Add(xmm4, xmm0);
+                xmm5 = Sse.Add(xmm5, xmm1);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 8)) = xmm4;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 12)) = xmm5;
+            }
+            for (; i < length - 3; i += 4)
+            {
+                var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i));
+                var xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i));
+                xmm0 = Sse.Multiply(xmm0, xmm15);
+                xmm4 = Sse.Add(xmm4, xmm0);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm4;
+            }
+            for (; i < length; i++)
+            {
+                var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i));
+                var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref rdi, i));
+                xmm0 = Sse.MultiplyScalar(xmm0, xmm15);
+                xmm4 = Sse.AddScalar(xmm4, xmm0);
+                Unsafe.Add(ref rdi, i) = xmm4.GetElement(0);
+            }
+        }
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void FastMixStandard(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
+        {
             unsafe
             {
-                (int newLength, int remainder) = MathI.FloorStepRem(samplesToMix.Length, Vector<float>.Count);
+                (int newLength, int remainder) = MathI.FloorStepRem(samplesToMix.Length, 4);
                 if (newLength != 0)
                 {
-                    var scaleV = new Vector<float>(scale);
-                    var src = MemoryMarshal.Cast<float, Vector<float>>(samplesToMix);
-                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer).Slice(0, src.Length);
+                    var scaleV = new Vector4(scale);
+                    var src = MemoryMarshal.Cast<float, Vector4>(samplesToMix);
+                    var dst = MemoryMarshal.Cast<float, Vector4>(buffer).Slice(0, src.Length);
                     for (int i = 0; i < src.Length; i++)
                     {
                         dst[i] += scaleV * src[i];
@@ -131,6 +365,7 @@ namespace System
 
         /// <summary>
         /// Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
+        /// The data inside <paramref name="buffer"/> will be destroyed.
         /// </summary>
         /// <param name="buffer">The output buffer.</param>
         /// <param name="samplesA">The samples a.</param>
@@ -142,48 +377,158 @@ namespace System
         /// or
         /// samplesA must be as long as samplesB! - samplesA
         /// </exception>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMix(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             // Validation
-            if (buffer.Length < samplesA.Length || buffer.Length < samplesB.Length)
+            if (buffer.Length > samplesA.Length || buffer.Length > samplesB.Length)
                 throw new ArgumentException("buffer must not be shorter than samplesA or samplesB!", nameof(buffer));
-            if (samplesA.Length != samplesB.Length) throw new ArgumentException("samplesA must be as long as samplesB!", nameof(samplesA));
-
-            // Preparation
-            buffer = buffer.Slice(0, samplesA.Length);
-            samplesB = samplesB.Slice(0, samplesA.Length);
+#if NETCOREAPP3_1_OR_GREATER
+            if (Sse.IsSupported)
+            {
+                FastMixSse(buffer, samplesA, volumeA, samplesB, volumeB);
+                return;
+            }
+#endif
+            FastMixStandard(buffer, samplesA, volumeA, samplesB, volumeB);
+        }
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Only usable in Rocket Lake or later due to CPU clock limits
+        /// (but Clang suggests it and actually performs approximately 1.34 times better than 
+        /// <see cref="FastMixSse(Span{float}, ReadOnlySpan{float}, float, ReadOnlySpan{float}, float)"/>, even in Haswell)
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="samplesA"></param>
+        /// <param name="volumeA"></param>
+        /// <param name="samplesB"></param>
+        /// <param name="volumeB"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastMixAvx(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        {
             unsafe
             {
-                (int newLength, int remainder) = MathI.FloorStepRem(samplesA.Length, Vector<float>.Count);
-                if (newLength != 0)
+                nint i, length = buffer.Length;
+                var ymm14 = Vector256.Create(volumeA);
+                var ymm15 = Vector256.Create(volumeB);
+                ref var r8 = ref MemoryMarshal.GetReference(buffer);
+                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
+                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
+                for (i = 0; i < length - 31; i += 32)
                 {
-                    var scaleVA = new Vector<float>(volumeA);
-                    var scaleVB = new Vector<float>(volumeB);
-                    var srcA = MemoryMarshal.Cast<float, Vector<float>>(samplesA);
-                    var srcB = MemoryMarshal.Cast<float, Vector<float>>(samplesB).Slice(0, srcA.Length);
-                    var dst = MemoryMarshal.Cast<float, Vector<float>>(buffer).Slice(0, srcA.Length);
-                    for (int i = 0; i < srcA.Length; i++)
-                    {
-                        var sA = srcA[i];
-                        var sB = srcB[i];
-                        sA *= scaleVA;
-                        sB *= scaleVB;
-                        dst[i] += sA + sB;
-                    }
+                    var ymm0 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i)));
+                    var ymm1 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 8)));
+                    var ymm2 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 16)));
+                    var ymm3 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 24)));
+                    var ymm4 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i)));
+                    ymm0 = Avx.Add(ymm0, ymm4);
+                    var ymm5 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 8)));
+                    ymm1 = Avx.Add(ymm1, ymm5);
+                    var ymm6 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 16)));
+                    ymm2 = Avx.Add(ymm2, ymm6);
+                    var ymm7 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 24)));
+                    ymm3 = Avx.Add(ymm3, ymm7);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i)) = ymm0;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 8)) = ymm1;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 16)) = ymm2;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 24)) = ymm3;
                 }
-                if (remainder != 0)
+                for (; i < length; i++)
                 {
-                    var srcARem = samplesA.Slice(newLength);
-                    var srcBRem = samplesB.Slice(newLength).Slice(0, srcARem.Length);
-                    var dstRem = buffer.Slice(newLength).Slice(0, srcARem.Length);
-                    for (int i = 0; i < srcARem.Length; i++)
-                    {
-                        float sA = srcARem[i];
-                        float sB = srcBRem[i];
-                        sA *= volumeA;
-                        sB *= volumeB;
-                        dstRem[i] += sA + sB;
-                    }
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r10, i));
+                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r11, i));
+                    xmm0 = Sse.MultiplyScalar(xmm0, ymm14.GetLower());
+                    xmm4 = Sse.MultiplyScalar(xmm4, ymm15.GetLower());
+                    xmm0 = Sse.AddScalar(xmm0, xmm4);
+                    Unsafe.Add(ref r8, i) = xmm0.GetElement(0);
+                }
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastMixSse(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        {
+            unsafe
+            {
+                nint i, length = buffer.Length;
+                var xmm14 = Vector128.Create(volumeA);
+                var xmm15 = Vector128.Create(volumeB);
+                ref var r8 = ref MemoryMarshal.GetReference(buffer);
+                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
+                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
+                for (i = 0; i < length - 15; i += 16)
+                {
+                    var xmm0 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i)));
+                    var xmm1 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 4)));
+                    var xmm2 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 8)));
+                    var xmm3 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 12)));
+                    var xmm4 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i)));
+                    xmm0 = Sse.Add(xmm0, xmm4);
+                    var xmm5 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 4)));
+                    xmm1 = Sse.Add(xmm1, xmm5);
+                    var xmm6 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 8)));
+                    var xmm7 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 12)));
+                    xmm2 = Sse.Add(xmm2, xmm6);
+                    xmm3 = Sse.Add(xmm3, xmm7);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i)) = xmm0;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 4)) = xmm1;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 8)) = xmm2;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 12)) = xmm3;
+                }
+                for (; i < length; i++)
+                {
+                    var xmm0 = Sse.MultiplyScalar(xmm14, Vector128.CreateScalarUnsafe(Unsafe.Add(ref r10, i)));
+                    var xmm4 = Sse.MultiplyScalar(xmm15, Vector128.CreateScalarUnsafe(Unsafe.Add(ref r11, i)));
+                    xmm0 = Sse.AddScalar(xmm0, xmm4);
+                    Unsafe.Add(ref r8, i) = xmm0.GetElement(0);
+                }
+            }
+        }
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastMixStandard(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        {
+            unsafe
+            {
+                nint i, length = buffer.Length;
+                var scaleVA = new Vector4(volumeA);
+                var scaleVB = new Vector4(volumeB);
+                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                for (i = 0; i < length - 15; i += 16)
+                {
+                    var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0)) * scaleVA;
+                    var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 4)) * scaleVA;
+                    var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 8)) * scaleVA;
+                    var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 12)) * scaleVA;
+                    var sB0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0)) * scaleVB;
+                    sA0 += sB0;
+                    var sB1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 4)) * scaleVB;
+                    sA1 += sB1;
+                    var sB2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 8)) * scaleVB;
+                    var sB3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 12)) * scaleVB;
+                    sA2 += sB2;
+                    sA3 += sB3;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0)) = sA0;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 4)) = sA1;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 8)) = sA2;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 12)) = sA3;
+                }
+                //for (; i < length - 3; i += 4)
+                //{
+                //    var sA = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i));
+                //    var sB = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i));
+                //    sA *= scaleVA;
+                //    sB *= scaleVB;
+                //    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i)) = sA + sB;
+                //}
+                for (; i < length; i++)
+                {
+                    var sA = Unsafe.Add(ref rsA, i);
+                    var sB = Unsafe.Add(ref rsB, i);
+                    sA *= scaleVA.X;
+                    sB *= scaleVB.X;
+                    Unsafe.Add(ref rD, i) = sA + sB;
                 }
             }
         }

@@ -242,6 +242,6 @@ namespace Shamisen
         /// </summary>
         /// <param name="speakers">The speakers.</param>
         /// <returns></returns>
-        public static int CountChannels(this Speakers speakers) => MathI.PopCount((uint)speakers);
+        public static int CountChannels(this Speakers speakers) => MathI.PopCount((ulong)(uint)speakers);
     }
 }

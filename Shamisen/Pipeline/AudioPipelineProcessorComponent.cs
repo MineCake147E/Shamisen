@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Shamisen.Pipeline
 {
     /// <summary>
-    /// Defines a base infrastructure of an audio pipeline consumer.
+    /// Provides an implementation of simple audio processor in pipeline.
     /// </summary>
-    public interface IAudioPipelineConsumer<TSample, TFormat>
-        : IAudioPipelineComponent<TSample, TFormat>
+    /// <typeparam name="TSample"></typeparam>
+    /// <typeparam name="TFormat"></typeparam>
+    public sealed class AudioPipelineProcessorComponent<TSample, TFormat>
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
+
     }
 }

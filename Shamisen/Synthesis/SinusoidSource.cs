@@ -91,11 +91,7 @@ namespace Shamisen.Synthesis
             switch (channels)   //Unrolling assignations
             {
                 case 1:
-                    for (int i = 0; i < buffer.Length; i++)
-                    {
-                        buffer[i] = GenerateMonauralSample(theta);
-                        theta = AppendTheta(theta, omega);
-                    }
+                    theta = GenerateMonauralBlock(buffer, omega, theta);
                     Theta = theta;
                     return buffer.Length;
                 case 2:
@@ -141,6 +137,17 @@ namespace Shamisen.Synthesis
                     Theta = theta;
                     return buffer.Length;
             }
+        }
+
+        private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta)
+        {
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = GenerateMonauralSample(theta);
+                theta = AppendTheta(theta, omega);
+            }
+
+            return theta;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
