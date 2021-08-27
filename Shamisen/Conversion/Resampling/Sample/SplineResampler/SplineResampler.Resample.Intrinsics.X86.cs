@@ -18,23 +18,23 @@ using Shamisen.Utils;
 namespace Shamisen.Conversion.Resampling.Sample
 {
     public partial class SplineResampler
-    { 
+    {
         #region Monaural
         private int ResampleCachedDirectMonauralX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
             => (facc, acc, ram) switch
-        {
-            (0, 1, 2) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
-            => ResampleCachedDirectMonauralDoubleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
-            (0, 1, 4) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
-            => ResampleCachedDirectMonauralQuadrupleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
-            (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectMonauralIntegerMultipleRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram),
-            (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectMonauralUpAnyRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
-            (_, _, _) when Sse3.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse3)
-            => ResampleCachedDirectMonauralAnyRateSse3(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-            _ => ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-        };
+            {
+                (0, 1, 2) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
+                => ResampleCachedDirectMonauralDoubleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, 4) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
+                => ResampleCachedDirectMonauralQuadrupleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectMonauralIntegerMultipleRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram),
+                (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectMonauralUpAnyRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
+                (_, _, _) when Sse3.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse3)
+                => ResampleCachedDirectMonauralAnyRateSse3(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+                _ => ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+            };
 
         /// <summary>
         /// For arbitral sampling frequency ratio larger than 1
@@ -252,19 +252,19 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private int ResampleCachedDirect2ChannelsX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
             => (facc, acc, ram) switch
-        {
-            (0, 1, 2) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectStereoDoubleRateSse(buffer, srcBuffer, ref coeffPtr, ref x),
-            (0, 1, 4) when Sse.X64.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse | X86IntrinsicsMask.X64)
-            => ResampleCachedDirectStereoQuadrupleRateX64(buffer, srcBuffer, ref coeffPtr, ref x),
-            (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectStereoIntegerRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram),
-            (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectStereoUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
-            (_, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-            => ResampleCachedDirectStereoAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-            _ => ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-        };
+            {
+                (0, 1, 2) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectStereoDoubleRateSse(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, 4) when Sse.X64.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse | X86IntrinsicsMask.X64)
+                => ResampleCachedDirectStereoQuadrupleRateX64(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectStereoIntegerRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram),
+                (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectStereoUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
+                (_, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
+                => ResampleCachedDirectStereoAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+                _ => ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+            };
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static int ResampleCachedDirectStereoUpAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc)
@@ -348,7 +348,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i = 0;
             nint length = buffer.Length / 2;
-            
+
             var xmm1 = Unsafe.Add(ref coeff, 0);
             var xmm3 = Unsafe.Add(ref coeff, 1);
             var xmm0 = Sse.Shuffle(xmm1, xmm1, 0b01_01_00_00);  //C0, C0, C1, C1
@@ -482,7 +482,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm14 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx));
                 xmm15 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
             }
-            for(;i<length; i++)
+            for (; i < length; i++)
             {
                 var xmm9 = Unsafe.Add(ref coeff, psx);
                 var xmm8 = Sse.Shuffle(xmm9, xmm9, 0b01_01_00_00);

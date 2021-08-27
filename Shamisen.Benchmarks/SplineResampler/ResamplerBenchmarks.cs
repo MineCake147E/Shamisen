@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -16,7 +15,7 @@ namespace Shamisen.Benchmarks
 {
     [SimpleJob(RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
-    [DisassemblyDiagnoser(maxDepth: 256)]
+    [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]
     public partial class ResamplerBenchmarks
     {
@@ -37,21 +36,21 @@ namespace Shamisen.Benchmarks
         #endregion
 
 
-        [ParamsSource(nameof(ValuesForConversionRatio), Priority =0)]
-        
+        [ParamsSource(nameof(ValuesForConversionRatio), Priority = 0)]
+
         public ConversionRatioProps ConversionRatio { get; set; }
 
         public IEnumerable<ConversionRatioProps> ValuesForConversionRatio => new ConversionRatioProps[] {
-            new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
+            //new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
             new (44100, 48000, "CachedDirect"),         //Often used
-            new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
-            new (44100, 192000, "CachedWrappedEven"),   //Often used
-            new (48000, 192000, "CachedDirect"),        //Quadruple Rate
-            new (64000, 192000, "CachedDirect"),        //Integer Rate
-            new (96000, 192000, "CachedDirect"),        //Double Rate
+            //new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
+            //new (44100, 192000, "CachedWrappedEven"),   //Often used
+            //new (48000, 192000, "CachedDirect"),        //Quadruple Rate
+            //new (64000, 192000, "CachedDirect"),        //Integer Rate
+            //new (96000, 192000, "CachedDirect"),        //Double Rate
         };
 
-        [Params(1,2,3,4,5,6,7,8,9,10, Priority =-4)]
+        [Params(2, /*1,2,3,4,5,6,7,8,9,10,*/ Priority = -4)]
         public int Channels { get; set; }
         [Params(2881, Priority = -990)]
         public int Frames { get; set; }

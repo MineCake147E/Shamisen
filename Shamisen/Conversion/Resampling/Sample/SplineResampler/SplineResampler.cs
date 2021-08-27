@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static System.Runtime.InteropServices.MemoryMarshal;
-using Shamisen.Filters;
-using Shamisen.Utils;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Shamisen.Mathematics;
 using System.Runtime.InteropServices;
-using DivideSharp;
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
+#endif
+
+using Shamisen.Filters;
 using Shamisen.Optimization;
+using Shamisen.Utils;
 
 namespace Shamisen.Conversion.Resampling.Sample
 {
@@ -41,9 +44,20 @@ namespace Shamisen.Conversion.Resampling.Sample
         private ResampleStrategy Strategy { get; }
         private X86Intrinsics X86Intrinsics { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SplineResampler"/> class.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destinationSampleRate">The destination sample rate.</param>
+        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate) :
+            this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
+        {
+
+        }
+
         internal SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate, X86Intrinsics x86Intrinsics)
             : base(source.Format.SampleRate > destinationSampleRate
-                ? new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(source.Format.SampleRate, destinationSampleRate* 0.5, 0.70710678118654752440084436210485))
+                ? new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(source.Format.SampleRate, destinationSampleRate * 0.5, 0.70710678118654752440084436210485))
                 : source, destinationSampleRate)
         {
             X86Intrinsics = x86Intrinsics;
@@ -53,57 +67,304 @@ namespace Shamisen.Conversion.Resampling.Sample
             {
                 sampleCache[i] = new float[Channels];
             }
-            Strategy = ResampleStrategy.Direct;
-            preCalculatedCatmullRomCoefficents = new Vector4[] { };
-            if (source.Format.SampleRate < destinationSampleRate)
+            (Strategy, preCalculatedCatmullRomCoefficents) = GenerateCatmullRomCoefficents(source.Format.SampleRate, destinationSampleRate, RateMulInverse, RateMul);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static (ResampleStrategy, Vector4[]) GenerateCatmullRomCoefficents(int sourceSampleRate, int destinationSampleRate, float rateMulInverse, int rateMul)
+        {
+            if (sourceSampleRate < destinationSampleRate)
             {
-                if (RateMul <= 512)
+                if (rateMul <= 512)
                 {
-                    Strategy = ResampleStrategy.CachedDirect;
-                    preCalculatedCatmullRomCoefficents = new Vector4[RateMul];
-                    for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
-                    {
-                        var x = i * RateMulInverse;
-                        preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
-                    }
+                    var coeffs = new Vector4[rateMul];
+                    GenerateCoeffs(coeffs, rateMulInverse);
+                    return (ResampleStrategy.CachedDirect, coeffs);
                 }
-                else if (RateMul <= 1024)
+                else if (rateMul <= 1024)
                 {
-                    if ((RateMul & 1) > 0)
+                    if ((rateMul & 1) > 0)
                     {
-                        Strategy = ResampleStrategy.CachedWrappedOdd;
-                        preCalculatedCatmullRomCoefficents = new Vector4[(RateMul / 2) + 1];
-                        for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
-                        {
-                            var x = i * RateMulInverse;
-                            preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
-                        }
+                        var coeffs = new Vector4[rateMul / 2 + 1];
+                        GenerateCoeffs(coeffs, rateMulInverse);
+                        return (ResampleStrategy.CachedWrappedOdd, coeffs);
                     }
                     else
                     {
-                        Strategy = ResampleStrategy.CachedWrappedEven;
-                        preCalculatedCatmullRomCoefficents = new Vector4[(RateMul / 2)];
-                        for (int i = 0; i < preCalculatedCatmullRomCoefficents.Length; i++)
-                        {
-                            var x = i * RateMulInverse;
-                            preCalculatedCatmullRomCoefficents[i] = CalculateCatmullRomCoeffs(x);
-                        }
+                        var coeffs = new Vector4[(rateMul / 2)];
+                        GenerateCoeffs(coeffs, rateMulInverse);
+                        return (ResampleStrategy.CachedWrappedEven, coeffs);
                     }
                 }
             }
+            return (ResampleStrategy.Direct, Array.Empty<Vector4>());
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SplineResampler"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="destinationSampleRate">The destination sample rate.</param>
-        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate) :
-            this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void GenerateCoeffs(Span<Vector4> coeffs, float rateMulInverse)
         {
-            
+#if NETCOREAPP3_1_OR_GREATER
+            if (Sse2.IsSupported)
+            {
+                GenerateCoeffsSse2(coeffs, rateMulInverse);
+                return;
+            }
+#endif
+            GenerateCoeffsStandard(coeffs, rateMulInverse);
         }
 
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// SSE2 vectorized path
+        /// x1.1 faster than Standard on Core i7-4790 at 3.90GHz
+        /// </summary>
+        /// <param name="coeffs"></param>
+        /// <param name="rateMulInverse"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void GenerateCoeffsSse2(Span<Vector4> coeffs, float rateMulInverse)
+        {
+            var xmm0 = Vector128.Create(-0.5f, 1.5f, -1.5f, 0.5f);
+            var xmm1 = Vector128.Create(1.0f, -2.5f, 2.0f, -0.5f);
+            var xmm2 = Vector128.Create(-0.5f, 0.0f, 0.5f, 0.0f);
+            var xmm3 = Vector128.Create(0.0f, 1.0f, 0.0f, 0.0f);
+            var xmm4 = Vector128.Create(rateMulInverse);
+            Vector128<int> xmm5;
+            var xmm6 = Vector128.Create(0, 1, 2, 3);
+            ref var rdi = ref Unsafe.As<Vector4, Vector128<float>>(ref MemoryMarshal.GetReference(coeffs));
+            nint i = 0, length = coeffs.Length;
+            if (length >= 8)
+            {
+                xmm5 = Vector128.Create(4);
+                for (; i < length - 3; i += 4)
+                {
+                    Vector128<float> xmm12, xmm13, xmm14, xmm15;
+                    xmm12 = xmm13 = xmm14 = xmm15 = xmm0;
+                    var xmm7 = Sse2.ConvertToVector128Single(xmm6);
+                    xmm7 = Sse.Multiply(xmm7, xmm4);
+                    var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
+                    var xmm9 = Sse.Shuffle(xmm7, xmm7, 0b01_01_01_01);
+                    var xmm10 = Sse.Shuffle(xmm7, xmm7, 0b10_10_10_10);
+                    var xmm11 = Sse.Shuffle(xmm7, xmm7, 0b11_11_11_11);
+                    xmm12 = Sse.Multiply(xmm8, xmm12);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
+                    xmm12 = Sse.Add(xmm12, xmm1);
+                    xmm13 = Sse.Add(xmm13, xmm1);
+                    xmm14 = Sse.Add(xmm14, xmm1);
+                    xmm15 = Sse.Add(xmm15, xmm1);
+                    xmm12 = Sse.Multiply(xmm8, xmm12);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
+                    xmm12 = Sse.Add(xmm12, xmm2);
+                    xmm13 = Sse.Add(xmm13, xmm2);
+                    xmm14 = Sse.Add(xmm14, xmm2);
+                    xmm15 = Sse.Add(xmm15, xmm2);
+                    xmm12 = Sse.Multiply(xmm8, xmm12);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
+                    xmm12 = Sse.Add(xmm12, xmm3);
+                    xmm13 = Sse.Add(xmm13, xmm3);
+                    xmm14 = Sse.Add(xmm14, xmm3);
+                    xmm15 = Sse.Add(xmm15, xmm3);
+                    xmm6 = Sse2.Add(xmm5, xmm6);
+                    Unsafe.Add(ref rdi, i) = xmm12;
+                    Unsafe.Add(ref rdi, i + 1) = xmm13;
+                    Unsafe.Add(ref rdi, i + 2) = xmm14;
+                    Unsafe.Add(ref rdi, i + 3) = xmm15;
+                }
+            }
+            xmm5 = Vector128.CreateScalarUnsafe(1);
+            for (; i < length; i++)
+            {
+                Vector128<float> xmm12;
+                xmm12 = xmm0;
+                var xmm7 = Sse2.ConvertToVector128Single(xmm6);
+                xmm7 = Sse.MultiplyScalar(xmm7, xmm4);
+                var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
+                xmm12 = Sse.Multiply(xmm8, xmm12);
+                xmm12 = Sse.Add(xmm12, xmm1);
+                xmm12 = Sse.Multiply(xmm8, xmm12);
+                xmm12 = Sse.Add(xmm12, xmm2);
+                xmm12 = Sse.Multiply(xmm8, xmm12);
+                xmm12 = Sse.Add(xmm12, xmm3);
+                Unsafe.Add(ref rdi, i) = xmm12;
+                xmm6 = Sse2.Add(xmm5, xmm6);
+            }
+        }
+        /// <summary>
+        /// FMA vectorized path
+        /// x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
+        /// </summary>
+        /// <param name="coeffs"></param>
+        /// <param name="rateMulInverse"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void GenerateCoeffsFma128(Span<Vector4> coeffs, float rateMulInverse)
+        {
+            var xmm0 = Vector128.Create(-0.5f, 1.5f, -1.5f, 0.5f);
+            var xmm1 = Vector128.Create(1.0f, -2.5f, 2.0f, -0.5f);
+            var xmm2 = Vector128.Create(-0.5f, 0.0f, 0.5f, 0.0f);
+            var xmm3 = Vector128.Create(0.0f, 1.0f, 0.0f, 0.0f);
+            var xmm4 = Vector128.Create(rateMulInverse);
+            Vector128<int> xmm5;
+            var xmm6 = Vector128.Create(0, 1, 2, 3);
+            ref var rdi = ref Unsafe.As<Vector4, Vector128<float>>(ref MemoryMarshal.GetReference(coeffs));
+            nint i = 0, length = coeffs.Length;
+            if (length >= 8)
+            {
+                xmm5 = Vector128.Create(4);
+                for (; i < length - 3; i += 4)
+                {
+                    Vector128<float> xmm12, xmm13, xmm14, xmm15;
+                    xmm12 = xmm13 = xmm14 = xmm15 = xmm0;
+                    var xmm7 = Sse2.ConvertToVector128Single(xmm6);
+                    xmm7 = Sse.Multiply(xmm7, xmm4);
+                    var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
+                    xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm1);
+                    var xmm9 = Sse.Shuffle(xmm7, xmm7, 0b01_01_01_01);
+                    xmm13 = Fma.MultiplyAdd(xmm13, xmm9, xmm1);
+                    var xmm10 = Sse.Shuffle(xmm7, xmm7, 0b10_10_10_10);
+                    xmm14 = Fma.MultiplyAdd(xmm14, xmm10, xmm1);
+                    var xmm11 = Sse.Shuffle(xmm7, xmm7, 0b11_11_11_11);
+                    xmm15 = Fma.MultiplyAdd(xmm15, xmm11, xmm1);
+                    xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm2);
+                    xmm13 = Fma.MultiplyAdd(xmm13, xmm9, xmm2);
+                    xmm14 = Fma.MultiplyAdd(xmm14, xmm10, xmm2);
+                    xmm15 = Fma.MultiplyAdd(xmm15, xmm11, xmm2);
+                    xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm3);
+                    xmm13 = Fma.MultiplyAdd(xmm13, xmm9, xmm3);
+                    xmm14 = Fma.MultiplyAdd(xmm14, xmm10, xmm3);
+                    xmm15 = Fma.MultiplyAdd(xmm15, xmm11, xmm3);
+                    xmm6 = Sse2.Add(xmm5, xmm6);
+                    Unsafe.Add(ref rdi, i) = xmm12;
+                    Unsafe.Add(ref rdi, i + 1) = xmm13;
+                    Unsafe.Add(ref rdi, i + 2) = xmm14;
+                    Unsafe.Add(ref rdi, i + 3) = xmm15;
+                }
+            }
+            xmm5 = Vector128.CreateScalarUnsafe(1);
+            for (; i < length; i++)
+            {
+                Vector128<float> xmm12;
+                xmm12 = xmm0;
+                var xmm7 = Sse2.ConvertToVector128Single(xmm6);
+                xmm7 = Sse.MultiplyScalar(xmm7, xmm4);
+                var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
+                xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm1);
+                xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm2);
+                xmm12 = Fma.MultiplyAdd(xmm12, xmm8, xmm3);
+                Unsafe.Add(ref rdi, i) = xmm12;
+                xmm6 = Sse2.Add(xmm5, xmm6);
+            }
+        }
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void GenerateCoeffsStandard(Span<Vector4> coeffs, float rateMulInverse)
+        {
+            var c0 = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
+            var c1 = new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
+            var c2 = new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
+            var c3 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+            ref var rdi = ref MemoryMarshal.GetReference(coeffs);
+            nint i = 0, length = coeffs.Length;
+            for (; i < length; i++)
+            {
+                var x = i * rateMulInverse;
+                var vx = new Vector4(x);
+                var y = c0;
+                y *= vx;
+                y += c1;
+                y *= vx;
+                y += c2;
+                y *= vx;
+                y += c3;
+                Unsafe.Add(ref rdi, i) = y;
+            }
+        }
+
+
+        #region Misc
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint Abs(int value)
+        {
+            //TODO: get outside
+            int mask = value >> 31;
+            return (uint)((value + mask) ^ mask);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector4 CalculateCatmullRomCoeffs(float x)
+        {
+            //Horner's Method for Catmull-Rom Coeffs
+            var vx = new Vector4(x);
+            var y = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
+            y *= vx;
+            y += new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
+            y *= vx;
+            y += new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
+            y *= vx;
+            y += new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+            return y;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int AdvanceConversionGradient(ref int conversionGradient)
+        {
+            unchecked
+            {
+                conversionGradient += GradientIncrement;
+                var t = IndexIncrement;
+                if (conversionGradient >= RateMul)
+                {
+                    t++;
+                }
+                return t;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int AdvanceConversionGradient(ref int conversionGradient, int rad, int ram)
+        {
+            unchecked
+            {
+                conversionGradient += rad;
+                int l = 0;
+                while (conversionGradient >= ram)
+                {
+                    conversionGradient -= ram;
+                    l++;
+                }
+                return l;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int CheckBuffer(int channels, int sampleLengthOut)
+        {
+            //Internal buffer length check and some boundary-sample copies
+            //Reserving some samples ahead
+            //Row 1: #=to read $=not to read %=read and copied to $s
+            //$$$############################%%%%
+            // ^ process head                 ^process tail
+            int v = sampleLengthOut * RateDiv + conversionGradient;
+            var h = RateMulDivisor.DivRem((uint)v, out var b);
+            int samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
+            int internalBufferLengthRequired = samplesRequired * channels;
+            return internalBufferLengthRequired;
+        }
+
+        private void ExpandBuffer(int internalBufferLengthRequired)
+        {
+            int lengthReserved = framesReserved * Channels;
+            Span<float> a = stackalloc float[lengthReserved];
+
+            if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer.Slice(0, lengthReserved).CopyTo(a);
+            bufferWrapper.Resize(internalBufferLengthRequired);
+            a.CopyTo(bufferWrapper.Buffer);
+        }
+        #endregion
         /// <summary>
         /// Reads the audio to the specified buffer.
         /// </summary>
@@ -122,7 +383,10 @@ namespace Shamisen.Conversion.Resampling.Sample
 
             int SampleLengthOut = (int)((uint)buffer.Length / ChannelsDivisor);
             int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
-
+            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
+            {
+                ExpandBuffer(internalBufferLengthRequired);
+            }
             //Resampling start
             var srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
             int lengthReserved = channels * framesReserved;
@@ -216,7 +480,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values = Unsafe.As<float, Vector4>(ref src);
-            if(facc > 0)
+            if (facc > 0)
             {
                 for (i = 0; i < length; i++)
                 {
@@ -235,7 +499,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             else
             {
-                if(acc == 1)
+                if (acc == 1)
                 {
                     switch (ram)
                     {
@@ -386,87 +650,5 @@ namespace Shamisen.Conversion.Resampling.Sample
             //sampleCache = null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Abs(int value)
-        {
-            //TODO: get outside
-            int mask = value >> 31;
-            return (uint)((value + mask) ^ mask);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Vector4 CalculateCatmullRomCoeffs(float x)
-        {
-            //Horner's Method for Catmull-Rom Coeffs
-            var vx = new Vector4(x);
-            var y = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
-            y *= vx;
-            y += new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
-            y *= vx;
-            y += new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
-            y *= vx;
-            y += new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
-            return y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int AdvanceConversionGradient(ref int conversionGradient)
-        {
-            unchecked
-            {
-                conversionGradient += GradientIncrement;
-                var t = IndexIncrement;
-                if (conversionGradient >= RateMul)
-                {
-                    t++;
-                }
-                return t;
-            }
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int AdvanceConversionGradient(ref int conversionGradient, int rad, int ram)
-        {
-            unchecked
-            {
-                conversionGradient += rad;
-                int l = 0;
-                while (conversionGradient >= ram)
-                {
-                    conversionGradient -= ram;
-                    l++;
-                }
-                return l;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CheckBuffer(int channels, int sampleLengthOut)
-        {
-            //Internal buffer length check and some boundary-sample copies
-            //Reserving some samples ahead
-            //Row 1: #=to read $=not to read %=read and copied to $s
-            //$$$############################%%%%
-            // ^ process head                 ^process tail
-            int v = sampleLengthOut * RateDiv + conversionGradient;
-            var h = RateMulDivisor.DivRem((uint)v, out var b);
-            int samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
-            int internalBufferLengthRequired = samplesRequired * channels;
-            if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
-            {
-                ExpandBuffer(internalBufferLengthRequired);
-            }
-
-            return internalBufferLengthRequired;
-        }
-
-        private void ExpandBuffer(int internalBufferLengthRequired)
-        {
-            int lengthReserved = framesReserved * Channels;
-            Span<float> a = stackalloc float[lengthReserved];
-
-            if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer.Slice(0, lengthReserved).CopyTo(a);
-            bufferWrapper.Resize(internalBufferLengthRequired);
-            a.CopyTo(bufferWrapper.Buffer);
-        }
     }
 }

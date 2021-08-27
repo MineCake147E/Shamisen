@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+using System;
 #endif
 #if NET5_0_OR_GREATER
 using System.Runtime.Intrinsics.Arm;
@@ -150,6 +146,7 @@ namespace Shamisen.Utils
 #endif
 
         #endregion
+        #region ReverseElements
         /// <summary>
         /// Returns a new <see cref="Vector4"/> value with reversed elements of <paramref name="value"/>.
         /// </summary>
@@ -168,5 +165,50 @@ namespace Shamisen.Utils
 #endif
             return new(value.W, value.Z, value.Y, value.X);
         }
+        #endregion
+
+        #region AddAsInt32
+        /// <summary>
+        /// Adds two <see cref="Vector4"/> values as if values are <see cref="int"/>.
+        /// </summary>
+        /// <param name="left">The first value to add.</param>
+        /// <param name="right">The second value to add.</param>
+        /// <returns>The added value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector4 AddAsInt32(Vector4 left, Vector4 right)
+        {
+#if NET5_0_OR_GREATER
+            if (AdvSimd.IsSupported)
+            {
+                return AdvSimd.Add(left.AsVector128().AsInt32(), right.AsVector128().AsInt32()).AsSingle().AsVector4();
+            }
+            if (Sse2.IsSupported)
+            {
+                return Sse2.Add(left.AsVector128(), right.AsVector128()).AsVector4();
+            }
+#elif NETCOREAPP3_1_OR_GREATER
+            if (Sse2.IsSupported)
+            {
+                var xmm0 = Unsafe.As<Vector4, Vector128<int>>(ref left);
+                var xmm1 = Unsafe.As<Vector4, Vector128<int>>(ref right);
+                var xmm3 = Sse2.Add(xmm0, xmm1);
+                return Unsafe.As<Vector128<int>, Vector4>(ref xmm3);
+            }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+
+            return new(
+                BitConverter.SingleToInt32Bits(left.X) + BitConverter.SingleToInt32Bits(right.X),
+                BitConverter.SingleToInt32Bits(left.Y) + BitConverter.SingleToInt32Bits(right.Y),
+                BitConverter.SingleToInt32Bits(left.Z) + BitConverter.SingleToInt32Bits(right.Z),
+                BitConverter.SingleToInt32Bits(left.W) + BitConverter.SingleToInt32Bits(right.W));
+#else
+            var l = Unsafe.As<Vector4, (int X, int Y, int Z, int W)>(ref left);
+            var r = Unsafe.As<Vector4, (int X, int Y, int Z, int W)>(ref right);
+            var s = (l.X + r.X, l.Y + r.Y, l.Z + r.Z, l.W + r.W);
+            return Unsafe.As<(int X, int Y, int Z, int W), Vector4>(ref s);
+#endif
+        }
+        #endregion
     }
 }

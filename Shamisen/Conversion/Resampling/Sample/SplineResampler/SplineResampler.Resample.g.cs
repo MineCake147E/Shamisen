@@ -9,8 +9,10 @@ using Shamisen.Filters;
 using Shamisen.Formats;
 using Shamisen.Utils;
 
-namespace Shamisen.Conversion.Resampling.Sample {
-    public sealed partial class SplineResampler {
+namespace Shamisen.Conversion.Resampling.Sample
+{
+    public sealed partial class SplineResampler
+    {
         private const int RemSampleOffset = 4;
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private int ResampleCachedDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {

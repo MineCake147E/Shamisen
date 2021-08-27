@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
+//using CSCodec.Filters.Transformation;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Runtime.Intrinsics.X86;
+
 using NUnit.Framework;
 
-//using CSCodec.Filters.Transformation;
-using System.Numerics;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Shamisen.Filters;
-using System.IO;
-using Shamisen.Data;
 using Shamisen.Codecs.Waveform.Composing;
+using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
-using System.Linq;
+using Shamisen.Data;
+using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -48,6 +49,65 @@ namespace Shamisen.Core.Tests.CoreFx
             var buffer = new float[Channels * 1024];
             Assert.DoesNotThrow(() => resampler.Read(buffer));
             resampler.Dispose();
+        }
+
+        [TestCase(2, 0.5f)]
+        [TestCase(3, 1.0f / 3)]
+        [TestCase(4, 0.25f)]
+        [TestCase(1024, 1.0f / 1024)]
+        [TestCase(1027, 1.0f / 1027)]
+        public void UpSamplingCoeffsSse2Consistency(int length, float rateMulInverse)
+        {
+            if (Sse2.IsSupported)
+            {
+                using var std = new PooledArray<Vector4>(length);
+                using var cmp = new PooledArray<Vector4>(length);
+                SplineResampler.GenerateCoeffsStandard(std.Span, rateMulInverse);
+                SplineResampler.GenerateCoeffsSse2(cmp.Span, rateMulInverse);
+                double sumd = 0.0;
+                var sstd = std.Span;
+                var scmp = cmp.Span;
+                for (int i = 0; i < sstd.Length && i < scmp.Length; i++)
+                {
+                    var d = sstd[i] - scmp[i];
+                    sumd += d.LengthSquared();
+                }
+                Assert.AreEqual(0.0, sumd);
+            }
+            else
+            {
+                Assert.Warn("SSE2 is not supported!");
+            }
+        }
+
+        [TestCase(2, 0.5f)]
+        [TestCase(3, 1.0f / 3)]
+        [TestCase(4, 0.25f)]
+        [TestCase(1024, 1.0f / 1024)]
+        [TestCase(1027, 1.0f / 1027)]
+        public void UpSamplingCoeffsFma128Consistency(int length, float rateMulInverse)
+        {
+            if (Sse2.IsSupported)
+            {
+                using var std = new PooledArray<Vector4>(length);
+                using var cmp = new PooledArray<Vector4>(length);
+                SplineResampler.GenerateCoeffsStandard(std.Span, rateMulInverse);
+                SplineResampler.GenerateCoeffsFma128(cmp.Span, rateMulInverse);
+                double sumd = 0.0;
+                var sstd = std.Span;
+                var scmp = cmp.Span;
+                for (int i = 0; i < sstd.Length && i < scmp.Length; i++)
+                {
+                    var d = sstd[i] - scmp[i];
+                    sumd += d.LengthSquared();
+                }
+                Assert.AreEqual(0.0, sumd, 1.0 / (1u << 24));
+                Console.WriteLine($"Difference: {sumd}");
+            }
+            else
+            {
+                Assert.Warn("SSE2 is not supported!");
+            }
         }
 
         [Test]
@@ -130,7 +190,7 @@ namespace Shamisen.Core.Tests.CoreFx
             var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
             using (var ssink = new StreamDataSink(path.OpenWrite(), false, true))
             {
-                Assert.DoesNotThrow(() => 
+                Assert.DoesNotThrow(() =>
                 SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
             }
             Assert.Pass();
