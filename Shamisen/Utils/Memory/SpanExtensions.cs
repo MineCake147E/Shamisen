@@ -253,7 +253,7 @@ namespace System
                 var xmm4 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i));
                 var xmm5 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4));
                 xmm0 = Sse.Multiply(xmm0, xmm15);
-                xmm1 = Sse.Multiply(xmm0, xmm15);
+                xmm1 = Sse.Multiply(xmm1, xmm15);
                 xmm4 = Sse.Add(xmm4, xmm0);
                 xmm5 = Sse.Add(xmm5, xmm1);
                 var xmm2 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 8));

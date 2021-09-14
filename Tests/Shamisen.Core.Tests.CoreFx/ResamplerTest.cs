@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Collections.Generic;
 //using CSCodec.Filters.Transformation;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -199,88 +198,5 @@ namespace Shamisen.Core.Tests.CoreFx
             resampler.Dispose();
         }
 
-        [TestCase(1)]   //Monaural
-        [TestCase(2)]   //Stereo
-        [TestCase(3)]   //2.1ch / 3ch Surround
-        [TestCase(4)]   //3.1ch / 4ch Surround
-        [TestCase(5)]   //4.1ch / 5ch Surround
-        [TestCase(6)]   //5.1ch Surround
-        [TestCase(7)]   //5.2ch Surround
-        [TestCase(8)]   //7.1ch Surround
-        [TestCase(9)]   //7.2ch Surround
-        [TestCase(10)]   //9.1ch Surround
-        [NonParallelizable]
-        public void UpSampleLoadCachedDirect(int channels) => UpSamplingLoadTest(channels, 48000);
-
-        [TestCase(1)]   //Monaural
-        [TestCase(2)]   //Stereo
-        [TestCase(3)]   //2.1ch / 3ch Surround
-        [TestCase(4)]   //3.1ch / 4ch Surround
-        [TestCase(5)]   //4.1ch / 5ch Surround
-        [TestCase(6)]   //5.1ch Surround
-        [TestCase(7)]   //5.2ch Surround
-        [TestCase(8)]   //7.1ch Surround
-        [TestCase(9)]   //7.2ch Surround
-        [TestCase(10)]   //9.1ch Surround
-        [NonParallelizable]
-        public void UpSampleLoadCachedWrappedEven(int channels) => UpSamplingLoadTest(channels, 44100);
-
-        [TestCase(1)]   //Monaural
-        [TestCase(2)]   //Stereo
-        [TestCase(3)]   //2.1ch / 3ch Surround
-        [TestCase(4)]   //3.1ch / 4ch Surround
-        [TestCase(5)]   //4.1ch / 5ch Surround
-        [TestCase(6)]   //5.1ch Surround
-        [TestCase(7)]   //5.2ch Surround
-        [TestCase(8)]   //7.1ch Surround
-        [TestCase(9)]   //7.2ch Surround
-        [TestCase(10)]   //9.1ch Surround
-        [NonParallelizable]
-        public void UpSampleLoadCachedWrappedOdd(int channels) => UpSamplingLoadTest(channels, 44100, 192300);
-
-        [TestCase(1)]   //Monaural
-        [TestCase(2)]   //Stereo
-        [TestCase(3)]   //2.1ch / 3ch Surround
-        [TestCase(4)]   //3.1ch / 4ch Surround
-        [TestCase(5)]   //4.1ch / 5ch Surround
-        [TestCase(6)]   //5.1ch Surround
-        [TestCase(7)]   //5.2ch Surround
-        [TestCase(8)]   //7.1ch Surround
-        [TestCase(9)]   //7.2ch Surround
-        [TestCase(10)]   //9.1ch Surround
-        [NonParallelizable]
-        public void UpSampleLoadDirect(int channels) => UpSamplingLoadTest(channels, 44089);
-
-        public void UpSamplingLoadTest(int channels, int sourceSampleRate, int destinationSampleRate = 192000)
-        {
-            double DestinationSampleRateD = destinationSampleRate;
-            double channelsInverse = 1.0 / channels;
-            var src = new DummySource<float, SampleFormat>(new SampleFormat(channels, sourceSampleRate));
-            var resampler = new SplineResampler(src, destinationSampleRate);
-            var buffer = new float[2048];
-            //Warm up
-            var sw = new Stopwatch();
-            ulong samples = 0;
-            sw.Start();
-            do
-            {
-                samples += (ulong)resampler.Read(buffer);
-            } while (sw.ElapsedMilliseconds < 1000);
-            sw.Stop();
-            Console.WriteLine($"Samples read in warm up while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples{Environment.NewLine}(about {samples * channelsInverse / DestinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s]{Environment.NewLine}(about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
-            samples = 0;
-            sw.Reset();
-            sw.Start();
-            do
-            {
-                samples += (ulong)resampler.Read(buffer);
-            } while (sw.ElapsedMilliseconds < 2000);
-            sw.Stop();
-            Console.WriteLine($"Samples read while {sw.Elapsed.TotalSeconds}[s]: {samples * channelsInverse} samples{Environment.NewLine}(about {samples * channelsInverse / DestinationSampleRateD}[s])");
-            Console.WriteLine($"Sample process rate: {samples * channelsInverse / sw.Elapsed.TotalSeconds}[samples/s]{Environment.NewLine}(about {samples * channelsInverse / sw.Elapsed.TotalSeconds / DestinationSampleRateD} times faster than real life)");
-            Assert.Greater(samples, (ulong)destinationSampleRate);
-            resampler.Dispose();
-        }
     }
 }
