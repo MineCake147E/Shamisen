@@ -1,23 +1,20 @@
-﻿using System;
-
+﻿
 #if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+
 using AesX86 = System.Runtime.Intrinsics.X86.Aes;
 
 #endif
 #if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
+
 using AesArm = System.Runtime.Intrinsics.Arm.Aes;
 
 #endif
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
 namespace Shamisen.Optimization
@@ -32,7 +29,7 @@ namespace Shamisen.Optimization
 #if NETCOREAPP3_1_OR_GREATER
             if (Avx.IsSupported)
             {
-                if (!Avx2.IsSupported)  //before Haswell
+                if (!Avx2.IsSupported)  //Sandy Bridge or Ivy Bridge
                 {
                     avoidAvxFloatingPoint = true;
                 }
@@ -40,27 +37,32 @@ namespace Shamisen.Optimization
                 {
 #if NET5_0_OR_GREATER
                     var (Eax, Ebx, Ecx, Edx) = X86Base.CpuId(1, 0);
-                    if((Eax & 0x0f00) != 0x600)
+                    if ((Eax & 0x0f00) != 0x600)
                     {
                         //Maybe AMD or something
                         avoidAvxFloatingPoint = false;
+                        if ((Eax & 0x0ff0_0f00) == 0x00a0_0f00)
+                        {
+                            //AMD Zen3
+                            enableExtremeLoopUnrolling = true;
+                        }
                     }
                     else
                     {
                         avoidAvxFloatingPoint = (Eax & 0x000f_00f0) switch
                         {
                             0x60040 or 0x50040 or 0xc0030 or 0xf0030 => true,   //Haswell
-                            _ => false, //post-Broadwell Intel CPUs
+                            _ => false, //Broadwell or later
                         };
                     }
 #else
                     //There is no way to determine the CPU is post-haswell, so
-                    avoidAvxFloatingPoint = false;
+                    avoidAvxFloatingPoint = true;
 #endif
                 }
             }
 #endif
-                }
+        }
         /// <summary>
         /// Gets the X86 intrinsics available on this CPU.
         /// </summary>
@@ -162,10 +164,15 @@ namespace Shamisen.Optimization
 #endif
         }
         static bool avoidAvxFloatingPoint = false;
+        static bool enableExtremeLoopUnrolling = false;
         /// <summary>
         /// Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
         /// </summary>
-        public static bool AvoidAvxFloatingPointOperations => avoidAvxFloatingPoint;
+        public static bool AvoidAvxHeavyOperations => avoidAvxFloatingPoint;
+        /// <summary>
+        /// Gets the value which indicates whether the Shamisen should enable extreme loop unrolling for Zen3-like microarchitecture.
+        /// </summary>
+        public static bool EnableExtremeLoopUnrolling => enableExtremeLoopUnrolling;
 
         /// <summary>
         /// Determines whether the specified value has features specified by mask.

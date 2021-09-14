@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -300,7 +298,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
                     var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
                     ymm11 = Avx2.And(ymm11, ymm4);
-                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
+                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go with lookup table
                     ymm11 = Avx2.And(ymm11, ymm4);
                     var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
                     ymm12 = Avx2.Subtract(ymm7, ymm12);

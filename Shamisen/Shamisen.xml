@@ -7973,16 +7973,7 @@
              </summary>
              <seealso cref="T:Shamisen.Conversion.Resampling.Sample.ResamplerBase" />
         </member>
-        <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.CachedDirectStereoResampler.preCalculatedCatmullRomCoefficents">
-            <summary>
-            The pre calculated catmull-rom coefficents.<br/>
-            X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
-            Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
-            Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
-            W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
-            </summary>
-        </member>
-        <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficents">
+        <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficients">
             <summary>
             The pre calculated catmull-rom coefficents.<br/>
             X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
@@ -7998,6 +7989,40 @@
             <param name="source">The source.</param>
             <param name="destinationSampleRate">The destination sample rate.</param>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedOdd(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
+            <summary>
+            [WIP] Rearranges coefficents for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd"/>.
+            
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMul"></param>
+            <param name="acc"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedEven(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
+            <summary>
+            [WIP] Rearranges coefficents for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedEven"/>.
+            
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMul"></param>
+            <param name="acc"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            SSE2 vectorized path
+            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            FMA vectorized path
+            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -8011,63 +8036,19 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.ChannelsDivisor">
-            <summary>
-            Gets the divisor for dividing a number by Channels.
-            </summary>
-            <value>
-            The divisor object.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDivDivisor">
-            <summary>
-            Gets the divisor for converting source sample rate to destination sample rate.
-            </summary>
-            <value>
-            The divisor object.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDiv">
-            <summary>
-            Gets the rate source sample rate.
-            </summary>
-            <value>
-            The number to divide with.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateDivInverse">
-            <summary>
-            Gets the divisor source sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMulDivisor">
-            <summary>
-            Gets the divisor for converting destination sample rate to source sample rate.
-            </summary>
-            <value>
-            The divisor object.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMul">
-            <summary>
-            Gets the rate destination sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
-        <member name="P:Shamisen.Conversion.Resampling.Sample.SplineResampler.InternalResampler.RateMulInverse">
-            <summary>
-            Gets the divisor destination sample rate.
-            </summary>
-            <value>
-            The number to multiply.
-            </value>
-        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateX86(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
+            <summary>
+            For arbitral sampling frequency ratio larger than 1
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
+            <param name="ram"></param>
+            <param name="acc"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
             <summary>
             For arbitral sampling frequency ratio larger than 1
             </summary>
@@ -12738,103 +12719,41 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
+        <member name="T:Shamisen.IAudioFormat`1">
             <summary>
-            Represents a format of a half-precision sample source.
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
             </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
-            </summary>
-            <param name="channels">The channels.</param>
-            <param name="sampleRate">The sample rate.</param>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
-            <summary>
-            Gets the number of channels.
-            It does not describe how these loudspeakers of each channels are placed in the room.
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
-            <summary>
-            Gets the number indicates how many times the audio signal is sampled.
-            </summary>
-            <value>
-            The sample rate.
-            </value>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
             </summary>
             <value>
             The bit depth.
             </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
-            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <value>
-            The size of block.
-            </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
-            </summary>
-            <value>
-            The size of a frame in <see cref="T:System.Half"/>s.
-            </value>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
-            <summary>Returns a hash code for this instance.</summary>
-            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -12886,42 +12805,6 @@
             </summary>
             <value>
             The extra data.
-            </value>
-        </member>
-        <member name="T:Shamisen.IAudioFormat`1">
-            <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
-            <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
-            </summary>
-            <value>
-            The number of channels.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
-            <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
-            </summary>
-            <value>
-            The bit depth.
             </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
@@ -15020,9 +14903,14 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="P:Shamisen.Optimization.IntrinsicsUtils.AvoidAvxFloatingPointOperations">
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.AvoidAvxHeavyOperations">
             <summary>
             Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.EnableExtremeLoopUnrolling">
+            <summary>
+            Gets the value which indicates whether the Shamisen should enable extreme loop unrolling for Zen3-like microarchitecture.
             </summary>
         </member>
         <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86IntrinsicsMask)">
@@ -18432,6 +18320,31 @@
             Represents a vector with 2 <see cref="T:System.Int16"/> values.
             </summary>
         </member>
+        <member name="T:Shamisen.Utils.Numerics.Vector4Int32">
+            <summary>
+            Represents a vector of 4 <see cref="T:System.Int32"/> numbers.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.X">
+            <summary>
+            Gets the X value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Y">
+            <summary>
+            Gets the Y value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Z">
+            <summary>
+            Gets the Z value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.W">
+            <summary>
+            Gets the W value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            </summary>
+        </member>
         <member name="T:Shamisen.Utils.ReadOnceObjectContainer`1">
             <summary>
             Prevents the stored <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> from being read after the <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> has been read for the first time.
@@ -19931,6 +19844,30 @@
             <param name="value">The value to reverse elements.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple2Channels(System.Numerics.Vector2@,System.Numerics.Vector4)">
+            <summary>
+            Returns the dot product of 4 frames x 2 channels tensor at <paramref name="head"/> and specified <paramref name="coeffs"/>.
+            </summary>
+            <param name="head">The location of frames to read.</param>
+            <param name="coeffs">The coefficents to multiply.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple3Channels(System.Numerics.Vector3@,System.Numerics.Vector4)">
+            <summary>
+            Returns the dot product of 4 frames x 3 channels at <paramref name="head"/> and specified <paramref name="coeffs"/>.
+            </summary>
+            <param name="head">The location of frames to read.</param>
+            <param name="coeffs">The coefficents to multiply.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple4Channels(System.Numerics.Vector4@,System.Numerics.Vector4)">
+            <summary>
+            Returns the dot product of 4 frames x 4 channels at <paramref name="head"/> and specified <paramref name="coeffs"/>.
+            </summary>
+            <param name="head">The location of frames to read.</param>
+            <param name="coeffs">The coefficents to multiply.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.
@@ -20011,22 +19948,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -20181,6 +20118,9 @@
             <param name="value">The value to rectify.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.MathI.Min(System.IntPtr,System.IntPtr)">
+            <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+        </member>
         <member name="M:Shamisen.MathI.Abs(System.Int64)">
             <summary>
             Returns the absolute value of the specified value.
@@ -20210,6 +20150,15 @@
             <param name="x">The x.</param>
             <param name="y">The y.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ModularMultiplicativeInverse(System.Int32,System.Int32)">
+            <summary>
+            Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.
+            <paramref name="a"/> * x % <paramref name="n"/> = 1.
+            </summary>
+            <param name="a">The multiplier.</param>
+            <param name="n">The modulus.</param>
+            <returns>The Modular Multiplicative Inverse of <paramref name="a"/>.</returns>
         </member>
         <member name="M:Shamisen.MathI.Max(Shamisen.ReadResult,Shamisen.ReadResult)">
             <summary>
@@ -20708,7 +20657,7 @@
         <member name="M:System.SpanExtensions.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.Single)">
             <summary>
             Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
-            Only practical in either ARMx8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Only practical in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
             Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
             </summary>
             <param name="span"></param>

@@ -1,13 +1,11 @@
 ﻿#define DEBUG_MATHI_NON_USER_CODE
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Numerics;
-using DivideSharp;
+
 using DSUtils = DivideSharp.Utils;
+
 using System.Diagnostics;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -29,6 +27,7 @@ namespace Shamisen
     /// </summary>
     public static partial class MathI
     {
+        #region FloorStep
         /// <summary>
         /// Aligns the specified value.
         /// </summary>
@@ -56,7 +55,9 @@ namespace Shamisen
             var m = value % step;
             return (value - m, m);
         }
+        #endregion
 
+        #region Rectify
         /// <summary>
         /// Rectifies the specified <paramref name="value"/>.
         /// </summary>
@@ -71,6 +72,23 @@ namespace Shamisen
             var h = value >> 31;
             return value & ~h;
         }
+        #endregion
+
+        #region nint Math
+
+        /// <inheritdoc cref="Math.Min(long, long)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nint Min(nint val1, nint val2)
+        {
+            bool g = val1 > val2;
+            nint y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            nint r = y & val2;
+            nint q = ~y & val1;
+            return r | q;
+        }
+
+        #endregion
 
         #region Abs
 
@@ -149,6 +167,37 @@ namespace Shamisen
         }
 
         #endregion BigMul Polyfill
+
+        #region ModularMultiplicativeInverse
+        /// <summary>
+        /// Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.
+        /// <paramref name="a"/> * x % <paramref name="n"/> = 1.
+        /// </summary>
+        /// <param name="a">The multiplier.</param>
+        /// <param name="n">The modulus.</param>
+        /// <returns>The Modular Multiplicative Inverse of <paramref name="a"/>.</returns>
+        public static int ModularMultiplicativeInverse(int a, int n)
+        {
+            if (a == 1) return 1;
+            int t = 0;
+            int nt = 1;
+            int r = n;
+            int nr = a;
+            while (nr != 0)
+            {
+                var q = r / nr;
+                var ot = t;
+                var or = r;
+                t = nt;
+                r = nr;
+                nt = ot - q * nt;
+                nr = or - q * nr;
+            }
+            if (r > 1) return int.MinValue;
+            if (t < 0) t += n;
+            return t;
+        }
+        #endregion
 
         #region ReadResult functions
 

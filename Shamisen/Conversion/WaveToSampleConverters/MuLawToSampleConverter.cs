@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-
-using System.Text;
 using System.Runtime.InteropServices;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -212,13 +209,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private int CheckBuffer(int sampleLengthOut)
-        {
-            int v = sampleLengthOut;
-            int samplesRequired = v;
-            int internalBufferLengthRequired = samplesRequired;
-            return internalBufferLengthRequired;
-        }
+        private int CheckBuffer(int sampleLengthOut) => sampleLengthOut;
 
         private void ExpandBuffer(int internalBufferLengthRequired) => bufferWrapper.Resize(internalBufferLengthRequired);
 

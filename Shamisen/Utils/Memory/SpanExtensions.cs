@@ -162,7 +162,7 @@ namespace System
 
         /// <summary>
         /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
-        /// Only practical in either ARMx8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+        /// Only practical in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
         /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
         /// </summary>
         /// <param name="span"></param>

@@ -14,6 +14,8 @@ using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Utils;
 
+using System.Buffers;
+
 namespace Shamisen.Conversion.Resampling.Sample
 {
     /// <summary>
@@ -23,9 +25,13 @@ namespace Shamisen.Conversion.Resampling.Sample
     /// <seealso cref="ResamplerBase" />
     public sealed partial class SplineResampler : ResamplerBase
     {
+        private const int CacheThreshold = 512;
         private ResizableBufferWrapper<float> bufferWrapper;
         private int conversionGradient = 0;
         private int framesReserved = 1;
+        private int rearrangedCoeffsIndex = 0;
+        private int rearrangedCoeffsDirection = 0;
+
 
         /// <summary>
         /// The pre calculated catmull-rom coefficents.<br/>
@@ -34,7 +40,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
         /// W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
         /// </summary>
-        private Vector4[] preCalculatedCatmullRomCoefficents;
+        private Vector4[] preCalculatedCatmullRomCoefficients;
 
         private float[][] sampleCache;
         private int samplesRemaining = 0;
@@ -67,38 +73,119 @@ namespace Shamisen.Conversion.Resampling.Sample
             {
                 sampleCache[i] = new float[Channels];
             }
-            (Strategy, preCalculatedCatmullRomCoefficents) = GenerateCatmullRomCoefficents(source.Format.SampleRate, destinationSampleRate, RateMulInverse, RateMul);
+            (Strategy, preCalculatedCatmullRomCoefficients, rearrangedCoeffsIndex, rearrangedCoeffsDirection) = GenerateCatmullRomCoefficents(source.Format.SampleRate, destinationSampleRate, RateMulInverse, RateMul, GradientIncrement);
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static (ResampleStrategy, Vector4[]) GenerateCatmullRomCoefficents(int sourceSampleRate, int destinationSampleRate, float rateMulInverse, int rateMul)
+        private static (ResampleStrategy, Vector4[], int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) GenerateCatmullRomCoefficents(int sourceSampleRate, int destinationSampleRate, float rateMulInverse, int rateMul, int acc)
         {
             if (sourceSampleRate < destinationSampleRate)
             {
-                if (rateMul <= 512)
+                if (rateMul <= CacheThreshold)
                 {
                     var coeffs = new Vector4[rateMul];
                     GenerateCoeffs(coeffs, rateMulInverse);
-                    return (ResampleStrategy.CachedDirect, coeffs);
+                    //CachedDirect couldn't benefit from sequentialization at all.
+                    return (ResampleStrategy.CachedDirect, coeffs, 0, 1);
                 }
-                else if (rateMul <= 1024)
+                else if (rateMul <= CacheThreshold * 2)
                 {
                     if ((rateMul & 1) > 0)
                     {
                         var coeffs = new Vector4[rateMul / 2 + 1];
                         GenerateCoeffs(coeffs, rateMulInverse);
-                        return (ResampleStrategy.CachedWrappedOdd, coeffs);
+                        RearrangeCoefficentsCachedWrappedOdd(coeffs, rateMul, acc);
+                        return (ResampleStrategy.CachedWrappedOdd, coeffs, 0, 1);
                     }
                     else
                     {
                         var coeffs = new Vector4[(rateMul / 2)];
                         GenerateCoeffs(coeffs, rateMulInverse);
-                        return (ResampleStrategy.CachedWrappedEven, coeffs);
+                        var h = RearrangeCoefficentsCachedWrappedEven(coeffs, rateMul, acc);
+                        return (ResampleStrategy.CachedWrappedEven, coeffs, h.initialPosition, h.initialDirection);
                     }
                 }
             }
-            return (ResampleStrategy.Direct, Array.Empty<Vector4>());
+            return (ResampleStrategy.Direct, Array.Empty<Vector4>(), 0, 1);
         }
+
+        /// <summary>
+        /// [WIP] Rearranges coefficents for <see cref="ResampleStrategy.CachedWrappedOdd"/>.
+        /// 
+        /// </summary>
+        /// <param name="coeffs"></param>
+        /// <param name="rateMul"></param>
+        /// <param name="acc"></param>
+        private static void RearrangeCoefficentsCachedWrappedOdd(Span<Vector4> coeffs, int rateMul, int acc)
+        {
+            if (acc == 1) return;
+
+            static Vector4 GetCatmullRomCoefficentsOdd(ref Vector4 coeffs, int i, int rateMul)
+            {
+                int x = i;
+                if (i <= rateMul >> 1) return Unsafe.Add(ref coeffs, x);
+                x = rateMul - i;
+                var q = Unsafe.Add(ref coeffs, x);
+                return VectorUtils.ReverseElements(q);
+            }
+            var g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
+            var gs = MemoryMarshal.Cast<float, Vector4>(g.AsSpan(0, 4 * coeffs.Length));
+            coeffs.CopyTo(gs);
+            ref var vd = ref MemoryMarshal.GetReference(gs);
+            var h = 0;
+            for (int i = 0; i < coeffs.Length; i++)
+            {
+                coeffs[i] = GetCatmullRomCoefficentsOdd(ref vd, h, rateMul);
+                h += acc;
+                bool j = h >= rateMul;
+                int f = Unsafe.As<bool, byte>(ref j);
+                h -= -f & rateMul;
+            }
+            g.AsSpan().FastFill(default);
+            ArrayPool<float>.Shared.Return(g);
+        }
+
+        /// <summary>
+        /// [WIP] Rearranges coefficents for <see cref="ResampleStrategy.CachedWrappedEven"/>.
+        /// 
+        /// </summary>
+        /// <param name="coeffs"></param>
+        /// <param name="rateMul"></param>
+        /// <param name="acc"></param>
+        private static (int initialPosition, int initialDirection) RearrangeCoefficentsCachedWrappedEven(Span<Vector4> coeffs, int rateMul, int acc)
+        {
+            if (acc == 1) return (0, 1);
+
+            static Vector4 GetCatmullRomCoefficentsEven(ref Vector4 coeffs, int i, int rateMul)
+            {
+                int x = i;
+                if (i < rateMul >> 1) return Unsafe.Add(ref coeffs, x);
+                x = rateMul - i - 1;
+                var q = Unsafe.Add(ref coeffs, x);
+                return VectorUtils.ReverseElements(q);
+            }
+            var g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
+            var gs = MemoryMarshal.Cast<float, Vector4>(g.AsSpan(0, 4 * coeffs.Length));
+            coeffs.CopyTo(gs);
+            ref var vd = ref MemoryMarshal.GetReference(gs);
+            var inverse = MathI.ModularMultiplicativeInverse(acc, rateMul);
+            var pred = (rateMul - 1) * inverse % rateMul;
+            var wpred = (pred + 1) >> 1;
+            var h = wpred * acc % rateMul;
+            for (int i = 0; i < coeffs.Length; i++)
+            {
+                coeffs[i] = GetCatmullRomCoefficentsEven(ref vd, h, rateMul);
+                h += acc;
+                bool j = h >= rateMul;
+                int f = Unsafe.As<bool, byte>(ref j);
+                h -= -f & rateMul;
+            }
+            g.AsSpan().FastFill(default);
+            ArrayPool<float>.Shared.Return(g);
+            return (pred - wpred, -1);
+        }
+        #region GenerateCoeffs
+
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void GenerateCoeffs(Span<Vector4> coeffs, float rateMulInverse)
@@ -146,28 +233,28 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var xmm10 = Sse.Shuffle(xmm7, xmm7, 0b10_10_10_10);
                     var xmm11 = Sse.Shuffle(xmm7, xmm7, 0b11_11_11_11);
                     xmm12 = Sse.Multiply(xmm8, xmm12);
-                    xmm13 = Sse.Multiply(xmm9, xmm13);
-                    xmm14 = Sse.Multiply(xmm10, xmm14);
-                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm12 = Sse.Add(xmm12, xmm1);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
                     xmm13 = Sse.Add(xmm13, xmm1);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
                     xmm14 = Sse.Add(xmm14, xmm1);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm15 = Sse.Add(xmm15, xmm1);
                     xmm12 = Sse.Multiply(xmm8, xmm12);
-                    xmm13 = Sse.Multiply(xmm9, xmm13);
-                    xmm14 = Sse.Multiply(xmm10, xmm14);
-                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm12 = Sse.Add(xmm12, xmm2);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
                     xmm13 = Sse.Add(xmm13, xmm2);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
                     xmm14 = Sse.Add(xmm14, xmm2);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm15 = Sse.Add(xmm15, xmm2);
                     xmm12 = Sse.Multiply(xmm8, xmm12);
-                    xmm13 = Sse.Multiply(xmm9, xmm13);
-                    xmm14 = Sse.Multiply(xmm10, xmm14);
-                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm12 = Sse.Add(xmm12, xmm3);
+                    xmm13 = Sse.Multiply(xmm9, xmm13);
                     xmm13 = Sse.Add(xmm13, xmm3);
+                    xmm14 = Sse.Multiply(xmm10, xmm14);
                     xmm14 = Sse.Add(xmm14, xmm3);
+                    xmm15 = Sse.Multiply(xmm11, xmm15);
                     xmm15 = Sse.Add(xmm15, xmm3);
                     xmm6 = Sse2.Add(xmm5, xmm6);
                     Unsafe.Add(ref rdi, i) = xmm12;
@@ -283,6 +370,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 Unsafe.Add(ref rdi, i) = y;
             }
         }
+        #endregion
 
 
         #region Misc
@@ -462,7 +550,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         #region Resample
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private int ResampleCachedDirectMonaural(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -475,8 +563,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint i = 0;
             nint length = buffer.Length;
-            int isx = 0;
-            int psx = x;
+            nint isx = 0;
+            nint psx = x;
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values = Unsafe.As<float, Vector4>(ref src);
@@ -485,15 +573,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                 for (i = 0; i < length; i++)
                 {
                     var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
-                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+
                     Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
+                    bool h = psx >= ram;
+                    int y = Unsafe.As<bool, byte>(ref h);
                     isx += facc;
-                    if (psx >= ram)
-                    {
-                        psx -= ram;
-                        isx++;
-                    }
+                    isx += y;
+                    psx -= -y & ram;
                     values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 }
             }
@@ -507,27 +594,36 @@ namespace Shamisen.Conversion.Resampling.Sample
                             {
                                 var c0 = Unsafe.Add(ref coeffPtr, 0);
                                 var c1 = Unsafe.Add(ref coeffPtr, 1);
+                                Vector4 values2 = default;
                                 if (psx > 0)
                                 {
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                                     var cutmullCoeffs = c1;
-                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
-                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+                                    Unsafe.Add(ref dst, i++) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                     psx = 0;
                                     isx++;
-                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+
                                 }
-                                for (i = 0; i < length - 1; i += 2)
+                                for (; i < length - 3; i += 4)
                                 {
-                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
+                                    values2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx + 1));
+                                    Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, c0);
+                                    Unsafe.Add(ref dst, i + 1) = VectorUtils.FastDotProduct(values, c1);
+                                    Unsafe.Add(ref dst, i + 2) = VectorUtils.FastDotProduct(values2, c0);
+                                    Unsafe.Add(ref dst, i + 3) = VectorUtils.FastDotProduct(values2, c1);
+                                    isx += 2;
+                                }
+                                for (; i < length - 1; i += 2)
+                                {
+                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                                     Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, c0);
                                     Unsafe.Add(ref dst, i + 1) = VectorUtils.FastDotProduct(values, c1);
                                     isx++;
-                                    values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                                 }
                                 for (; i < length; i++)
                                 {
                                     var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
-                                    // Use formula from http://www.mvps.org/directx/articles/catmull/
                                     Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                     psx++;
                                     if (psx >= 2)
@@ -584,7 +680,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                             for (i = 0; i < length; i++)
                             {
                                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
-                                // Use formula from http://www.mvps.org/directx/articles/catmull/
                                 Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                 psx++;
                                 if (psx >= ram)
@@ -593,6 +688,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                     isx++;
                                     values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                                 }
+
                             }
                             break;
                     }
@@ -602,7 +698,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                     for (i = 0; i < length; i++)
                     {
                         var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
-                        // Use formula from http://www.mvps.org/directx/articles/catmull/
                         Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                         psx += acc;
                         if (psx >= ram)
@@ -614,8 +709,8 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            x = psx;
-            return isx;
+            x = (int)psx;
+            return (int)isx;
         }
 
         private int ResampleCachedDirect2Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)

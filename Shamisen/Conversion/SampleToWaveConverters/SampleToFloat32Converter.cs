@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shamisen.Conversion.SampleToWaveConverters
 {
@@ -37,6 +35,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </returns>
         public override ReadResult Read(Span<byte> buffer)
         {
+            //No conversion needed at all
             var rr = Source.Read(MemoryMarshal.Cast<byte, float>(buffer));
             return rr.HasData ? sizeof(float) * rr.Length : rr;
         }

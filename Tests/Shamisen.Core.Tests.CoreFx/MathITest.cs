@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 //using CSCodec.Filters.Transformation;
-using System.Numerics;
-using System.Diagnostics;
-using Shamisen.Filters;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -40,5 +32,13 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(-2, 0)]
         [TestCase(-1, 0)]
         public void RectifyReturnsCorrectly(int value, int expected) => Assert.AreEqual(expected, MathI.Rectify(value));
+
+        [TestCase(0, 0)]
+        [TestCase(1, 0)]
+        [TestCase(2, 1)]
+        [TestCase(7, 4)]
+        [TestCase(-2, 5)]
+        [TestCase(-1, -4)]
+        public void MinReturnsCorrectly(int val1, int val2) => Assert.AreEqual(val1 > val2 ? (nint)val2 : (nint)val1, MathI.Min(val1, val2));
     }
 }

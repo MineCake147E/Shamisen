@@ -13,6 +13,7 @@ using NUnit.Framework;
 using Shamisen.Codecs.Waveform.Composing;
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Data;
 using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
@@ -64,7 +65,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 using var cmp = new PooledArray<Vector4>(length);
                 SplineResampler.GenerateCoeffsStandard(std.Span, rateMulInverse);
                 SplineResampler.GenerateCoeffsSse2(cmp.Span, rateMulInverse);
-                double sumd = 0.0;
+                NeumaierAccumulator sumd = new(0, 0);
                 var sstd = std.Span;
                 var scmp = cmp.Span;
                 for (int i = 0; i < sstd.Length && i < scmp.Length; i++)
@@ -72,7 +73,8 @@ namespace Shamisen.Core.Tests.CoreFx
                     var d = sstd[i] - scmp[i];
                     sumd += d.LengthSquared();
                 }
-                Assert.AreEqual(0.0, sumd);
+                Assert.AreEqual(0.0, sumd.Sum, 1.0 / (1u << 24));
+                Console.WriteLine($"Difference: {sumd.Sum}");
             }
             else
             {
@@ -93,7 +95,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 using var cmp = new PooledArray<Vector4>(length);
                 SplineResampler.GenerateCoeffsStandard(std.Span, rateMulInverse);
                 SplineResampler.GenerateCoeffsFma128(cmp.Span, rateMulInverse);
-                double sumd = 0.0;
+                NeumaierAccumulator sumd = new(0, 0);
                 var sstd = std.Span;
                 var scmp = cmp.Span;
                 for (int i = 0; i < sstd.Length && i < scmp.Length; i++)
@@ -101,8 +103,8 @@ namespace Shamisen.Core.Tests.CoreFx
                     var d = sstd[i] - scmp[i];
                     sumd += d.LengthSquared();
                 }
-                Assert.AreEqual(0.0, sumd, 1.0 / (1u << 24));
-                Console.WriteLine($"Difference: {sumd}");
+                Assert.AreEqual(0.0, sumd.Sum, 1.0 / (1u << 24));
+                Console.WriteLine($"Difference: {sumd.Sum}");
             }
             else
             {
@@ -185,7 +187,7 @@ namespace Shamisen.Core.Tests.CoreFx
             for (int i = 0; i < framesToWrite; i++)
             {
                 var q = resampler.Read(buffer);
-                dc.Write(buffer.AsSpan().SliceWhile(q.Length));
+                dc.Write(buffer.AsSpan(0, q.Length));
             }
             var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
             using (var ssink = new StreamDataSink(path.OpenWrite(), false, true))

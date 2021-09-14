@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -10,7 +7,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
 {
-    [SimpleJob(runtimeMoniker:RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FastMixBenchmarks
@@ -20,11 +17,13 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
         {
             public Config()
             {
+                static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                _ = AddColumn(new FrameThroughputColumn(frameSelector));
                 _ = AddColumn(new PlaybackSpeedColumn(
-                    a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value,
+                    frameSelector,
                     a => SampleRate));
             }
-            
+
         }
         [Params(1024, 1441)]
         public int Frames { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 using BenchmarkDotNet.Attributes;
@@ -13,6 +12,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
+    //[DryJob(RuntimeMoniker.Net50)]
     [SimpleJob(RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
@@ -28,9 +28,12 @@ namespace Shamisen.Benchmarks
         {
             public Config()
             {
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                //_ = AddColumn(new FrameThroughputColumn(FrameSelector));
                 _ = AddColumn(new PlaybackSpeedColumn(
-                    a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value,
+                    FrameSelector,
                     a => ((ConversionRatioProps)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "ConversionRatio")).Value).After));
+
             }
         }
         #endregion
@@ -44,13 +47,13 @@ namespace Shamisen.Benchmarks
             //new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
             new (44100, 48000, "CachedDirect"),         //Often used
             //new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
-            //new (44100, 192000, "CachedWrappedEven"),   //Often used
+            //new (44100, 192000, "CachedWrappedEven"),   //Example of CachedWrappedEven, Often used
             //new (48000, 192000, "CachedDirect"),        //Quadruple Rate
             //new (64000, 192000, "CachedDirect"),        //Integer Rate
             //new (96000, 192000, "CachedDirect"),        //Double Rate
         };
 
-        [Params(2, /*1,2,3,4,5,6,7,8,9,10,*/ Priority = -4)]
+        [Params(/*1, 2, 3, */4/*, 5, 6, 7, 8, 9, 10*/, Priority = -4)]
         public int Channels { get; set; }
         [Params(2881, Priority = -990)]
         public int Frames { get; set; }
@@ -84,50 +87,5 @@ namespace Shamisen.Benchmarks
             var span = buffer.AsSpan();
             _ = resampler.Read(span);
         }
-    }
-
-    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public struct ConversionRatioProps
-    {
-        public int Before { get; set; }
-        public int After { get; set; }
-        public string Strategy { get; set; }
-
-        public ConversionRatioProps(int before, int after, string strategy)
-        {
-            Before = before;
-            After = after;
-            Strategy = strategy;
-        }
-
-        public override bool Equals(object obj) => obj is ConversionRatioProps other && Before == other.Before && After == other.After && Strategy == other.Strategy;
-        public override int GetHashCode() => HashCode.Combine(Before, After, Strategy);
-
-        public void Deconstruct(out int before, out int after, out string strategy)
-        {
-            before = Before;
-            after = After;
-            strategy = Strategy;
-        }
-
-        public static implicit operator (int before, int after, string strategy)(ConversionRatioProps value) => (value.Before, value.After, value.Strategy);
-        public static implicit operator ConversionRatioProps((int before, int after, string strategy) value) => new ConversionRatioProps(value.before, value.after, value.strategy);
-
-        public static bool operator ==(ConversionRatioProps left, ConversionRatioProps right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ConversionRatioProps left, ConversionRatioProps right)
-        {
-            return !(left == right);
-        }
-
-        private string GetDebuggerDisplay()
-        {
-            return $"{Before} -> {After} ({Strategy})";
-        }
-
-        public override string ToString() => GetDebuggerDisplay();
     }
 }
