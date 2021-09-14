@@ -15416,7 +15416,123 @@
         </member>
         <member name="M:Shamisen.Primitives.Angle128.Equals(System.Object)">
             <summary>
-            Indicmparer.</param>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.Equals(Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Primitives.AngleCounter">
+            <summary>
+            Implements a extreme-precision angle counter.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Angle">
+            <summary>
+            Gets the current angle.
+            </summary>
+            <value>
+            The angle.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Omega">
+            <summary>
+            Gets the omega.
+            </summary>
+            <value>
+            The omega.
+            </value>
+        </member>
+        <member name="T:Shamisen.Primitives.DisposableArray`1">
+            <summary>
+            Provides a disposable array.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+            <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the <typeparamref name="T"/> value at the specified index.
+            </summary>
+            <value>
+            The <typeparamref name="T"/> value.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
+            <summary>
+            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <param name="comparer">The comparer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
+            <summary>
+            Determines whether this instance contains the object.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+            </summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <param name="comparer">The comparer.</param>
             <returns>
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
             </returns>
@@ -18229,185 +18345,232 @@
             <value>
             The buffer.
             </value>
-      <summary>
-            Provides a simple internal buffer instancing.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <seealso cref="T:System.IDisposable" />
         </member>
-        <member name="T:Shamisen.Utils.Buffers.PooledArrayResizer`1">
-            <summary>
-            Handles resizing of <see cref="T:System.Array"/>s.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> class.
-            </summary>
-            <param name="initialSize">The initial size.</param>
-        </member>
-        <member name="P:Shamisen.Utils.Buffers.PooledArrayResizer`1.Array">
-            <summary>
-            Gets the array.
-            </summary>
-            <value>
-            The array.
-            </value>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Resize(System.Int32)">
-            <summary>
-            Resizes this <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> to specified size.
-            </summary>
-            <param name="newSize">The new size.</param>
-            <returns>The resized array.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.ResizableBufferWrapper`1">
-            <summary>
-            Provides a Buffer wrapper.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Utils.ResizableBufferWrapper`1"/> class.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.CurrentSizeInBytes">
-            <summary>
-            Gets the current size in bytes.
-            </summary>
-            <value>
-            The current size in bytes.
-            </value>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.ActualBuffer">
-            <summary>
-            Gets the buffer.
-            </summary>
-            <value>
-            The buffer.
-            </value>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.Buffer">
-            <summary>
-            Gets the buffer.
-            </summary>
-            <value>
-            The buffer.
-            </value>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Resize(System.Int32)">
-            <summary>
-            Resizes the buffer to the specified new size.
-            </summary>
-            <param name="newSize">The new size in <typeparamref name="T"/>.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.ResizeInternal(System.Int32)">
-            <summary>
-            Resizes the buffer to the specified new size.
-            </summary>
-            <param name="newSize">The new size in bytes.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Dispose(System.Boolean)">
+        <member name="M:Shamisen.Utils.ResizablePooledBufferWrapper`1.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:Shamisen.ector4Int32">
+        <member name="M:Shamisen.Utils.ResizablePooledBufferWrapper`1.ResizeInternal(System.Int32)">
             <summary>
-            Represents a vector of 4 <see cref="T:System.Int32"/> numbers.
+            Resizes the buffer to the specified new size.
             </summary>
+            <param name="newSize">The new size in bytes.</param>
         </member>
-        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.X">
+        <member name="T:Shamisen.Utils.ContentSwapper`1">
             <summary>
-            Gets the X value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Y">
-            <summary>
-            Gets the Y value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Z">
-            <summary>
-            Gets the Z value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Numerics.Vector4Int32.W">
-            <summary>
-            Gets the W value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.ReadOnceObjectContainer`1">
-            <summary>
-            Prevents the stored <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> from being read after the <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> has been read for the first time.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.ReadOnceObjectContainer`1.#ctor(`0)">
-            <summary>
-            Initializes a new instance of <see cref="T:Shamisen.Utils.ReadOnceObjectContainer`1"/>.
-            </summary>
-            <param name="value">The value to store.</param>
-        </member>
-        <member name="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value">
-            <summary>
-            Gets the contained value.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1">
-            <summary>
-            TODO: Documentation
+            Swaps two <typeparamref name="T"/> instances.
             </summary>
             <typeparam name="T"></typeparam>
         </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.Item0">
+        <member name="M:Shamisen.Utils.ContentSwapper`1.#ctor(`0,`0)">
             <summary>
-            The item No.0.
+            Initializes a new instance of the <see cref="T:Shamisen.Utils.ContentSwapper`1"/> class.
+            </summary>
+            <param name="initialVisibleValue">The value initial visible.</param>
+            <param name="initiallyHiddenValue">The value initially hidden.</param>
+        </member>
+        <member name="M:Shamisen.Utils.ContentSwapper`1.Swap">
+            <summary>
+            Swaps two values of this instance.
             </summary>
         </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.Item1">
+        <member name="P:Shamisen.Utils.ContentSwapper`1.Value">
             <summary>
-            The item No.1.
+            Gets the current value.
+            </summary>
+            <value>
+            The value.
+            </value>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.#ctor(`0,`0)">
-            <summary>
-            Initializes this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1"/> from values.
-            </summary>
-            <param name="v0">The value No.0.</param>
-            <param name="v1">The value No.1.</param>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
         </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.Deconstruct(`0@,`0@)">
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
             <summary>
-            Deconstructs this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1"/> to values.
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
             </summary>
-            <param name="v0">The output value No.0.</param>
-            <param name="v1">The output value No.1.</param>
         </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.op_Implicit(Shamisen.Utils.Tuples.UnmanagedTupleX2{`0})~System.ValueTuple{`0,`0}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1"/> to <see cref="T:System.ValueTuple`2"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
         </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX2`1.op_Implicit(System.ValueTuple{`0,`0})~Shamisen.Utils.Tuples.UnmanagedTupleX2{`0}">
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
             <summary>
-            Performs an implicit conversion from <see cref="T:System.ValueTuple`2"/> to <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1"/>.
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
             </summary>
-            <paral128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
             <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
         </member>
         <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
@@ -19807,83 +19970,102 @@
             The item No.3.
             </summary>
         </member>
-        <member name="P:Shamiseity functions for manipulating <see cref="T:System.Numerics.Vector"/> values.
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item4">
+            <summary>
+            The item No.4.
             </summary>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Numerics.Vector4,System.Numerics.Vector4)">
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item5">
             <summary>
-            Returns the dot product of two vectors.
-            </summary>
-            <param name="vector0">The value to multiply.</param>
-            <param name="vector1">The value to multiply.</param>
-            <returns>The dot product of two vectors.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Returns the dot product of two vectors.
-            </summary>
-            <param name="vector0">The value to multiply.</param>
-            <param name="vector1">The value to multiply.</param>
-            <returns>The dot product of two vectors.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.ReverseElements(System.Numerics.Vector4)">
-            <summary>
-            Returns a new <see cref="T:System.Numerics.Vector4"/> value with reversed elements of <paramref name="value"/>.
-            </summary>
-            <param name="value">The value to reverse elements.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple2Channels(System.Numerics.Vector2@,System.Numerics.Vector4)">
-            <summary>
-            Returns the dot product of 4 frames x 2 channels tensor at <paramref name="head"/> and specified <paramref name="coeffs"/>.
-            </summary>
-            <param name="head">The location of frames to read.</param>
-            <param name="coeffs">The coefficents to multiply.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple3Channels(System.Numerics.Vector3@,System.Numerics.Vector4)">
-            <summary>
-            Returns the dot product of 4 frames x 3 channels at <paramref name="head"/> and specified <paramref name="coeffs"/>.
-            </summary>
-            <param name="head">The location of frames to read.</param>
-            <param name="coeffs">The coefficents to multiply.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple4Channels(System.Numerics.Vector4@,System.Numerics.Vector4)">
-            <summary>
-            Returns the dot product of 4 frames x 4 channels at <paramref name="head"/> and specified <paramref name="coeffs"/>.
-            </summary>
-            <param name="head">The location of frames to read.</param>
-            <param name="coeffs">The coefficents to multiply.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
-            <summary>
-            Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.
-            </summary>
-            <param name="left">The first value to add.</param>
-            <param name="right">The second value to add.</param>
-            <returns>The added value.</returns>
-        </member>
-        <member name="T:Shamisen.BinaryExtensions">
-            <summary>
-            Provides some functions that helps you about binary things.
-            </summary>
-            <summary>
-            Provides some functions that helps you about binary things.
+            The item No.5.
             </summary>
         </member>
-        <member name="P:Shamisen.BinaryExtensions.SystemEndianness">
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item6">
             <summary>
-            Gets the system endianness.
+            The item No.6.
             </summary>
-            <value>
-            The system endianness.
-            </value>
         </member>
-        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(System.Guid)">
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item7">
             <summary>
-   m name="v10">The output value No.10.</param>
+            The item No.7.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item8">
+            <summary>
+            The item No.8.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item9">
+            <summary>
+            The item No.9.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item10">
+            <summary>
+            The item No.10.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item11">
+            <summary>
+            The item No.11.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item12">
+            <summary>
+            The item No.12.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item13">
+            <summary>
+            The item No.13.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item14">
+            <summary>
+            The item No.14.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Item15">
+            <summary>
+            The item No.15.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.#ctor(`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0)">
+            <summary>
+            Initializes this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX16`1"/> from values.
+            </summary>
+            <param name="v0">The value No.0.</param>
+            <param name="v1">The value No.1.</param>
+            <param name="v2">The value No.2.</param>
+            <param name="v3">The value No.3.</param>
+            <param name="v4">The value No.4.</param>
+            <param name="v5">The value No.5.</param>
+            <param name="v6">The value No.6.</param>
+            <param name="v7">The value No.7.</param>
+            <param name="v8">The value No.8.</param>
+            <param name="v9">The value No.9.</param>
+            <param name="v10">The value No.10.</param>
+            <param name="v11">The value No.11.</param>
+            <param name="v12">The value No.12.</param>
+            <param name="v13">The value No.13.</param>
+            <param name="v14">The value No.14.</param>
+            <param name="v15">The value No.15.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX16`1.Deconstruct(`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@)">
+            <summary>
+            Deconstructs this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX16`1"/> to values.
+            </summary>
+            <param name="v0">The output value No.0.</param>
+            <param name="v1">The output value No.1.</param>
+            <param name="v2">The output value No.2.</param>
+            <param name="v3">The output value No.3.</param>
+            <param name="v4">The output value No.4.</param>
+            <param name="v5">The output value No.5.</param>
+            <param name="v6">The output value No.6.</param>
+            <param name="v7">The output value No.7.</param>
+            <param name="v8">The output value No.8.</param>
+            <param name="v9">The output value No.9.</param>
+            <param name="v10">The output value No.10.</param>
             <param name="v11">The output value No.11.</param>
             <param name="v12">The output value No.12.</param>
             <param name="v13">The output value No.13.</param>
@@ -20804,7 +20986,6 @@
             <summary>
             Moves the elements of specified <paramref name="span"/> right by 1 element.
             </summary>
-            <typeparam name="TSample"></typeparam>
             <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
         </member>
         <member name="M:System.SpanExtensions.ShiftRight``1(System.Span{``0})">

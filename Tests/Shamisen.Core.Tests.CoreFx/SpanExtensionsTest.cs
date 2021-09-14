@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Buffers.Binary;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography;
 
 using NUnit.Framework;
 
@@ -81,6 +86,95 @@ namespace Shamisen.Core.Tests.CoreFx
             }
             Assert.Pass();
         }
-
+        [Test]
+        public void ReverseEndiannessFallbackWorksCorrectly()
+        {
+            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanD = new ulong[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessFallback(spanD);
+            for (int i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != BinaryPrimitives.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+        [Test]
+        public void ReverseEndiannessAvx2WorksCorrectly()
+        {
+            if (!Avx2.IsSupported)
+            {
+                Assert.Warn("AVX2 is not supported!");
+                return;
+            }
+            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanD = new ulong[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessAvx2(spanD);
+            for (int i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != BinaryPrimitives.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+        [Test]
+        public void ReverseEndiannessSsse3WorksCorrectly()
+        {
+            if (!Ssse3.IsSupported)
+            {
+                Assert.Warn("Ssse3 is not supported!");
+                return;
+            }
+            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanD = new ulong[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessSsse3(spanD);
+            for (int i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != BinaryPrimitives.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+        [Test]
+        public void ReverseEndiannessAdvSimdWorksCorrectly()
+        {
+            if (!AdvSimd.IsSupported)
+            {
+                Assert.Warn("AdvSimd is not supported!");
+                return;
+            }
+            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanD = new ulong[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessAdvSimd(spanD);
+            for (int i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != BinaryPrimitives.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+        [Test]
+        public void ReverseEndiannessAdvSimdArm64WorksCorrectly()
+        {
+            if (!AdvSimd.Arm64.IsSupported)
+            {
+                Assert.Warn("AdvSimd.Arm64 is not supported!");
+                return;
+            }
+            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanD = new ulong[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessAdvSimdArm64(spanD);
+            for (int i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != BinaryPrimitives.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
     }
 }

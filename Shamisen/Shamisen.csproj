@@ -113,6 +113,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
         </None>
+        <None Include="Utils\Intrinsics\AdvSimdUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
+        </None>
         <None Include="Utils\MathITemplate.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -188,6 +193,10 @@
         <None Update="Formats\PcmSampleFormats.g.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
+        </None>
+        <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
         </None>
         <None Update="Utils\MathITemplate.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -276,6 +285,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+        </Compile>
+        <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
         </Compile>
         <Compile Update="Utils\MathITemplate.cs">
             <DesignTime>True</DesignTime>
