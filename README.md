@@ -74,7 +74,6 @@ Legends:
 ## Dependencies and system requirements
 
 - Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
-  - Because Unity uses older version of `Mono`.
 - Requires [DivideSharp](https://github.com/MineCake147E/DivideSharp) for frequently appearing divide-by-number-of-channels operations.
 - Faster resampling requires `.NET 5` or `.NET Core 3.1`.
   - Unfortunately, older versions doesn't support Hardware Intrinsics.
