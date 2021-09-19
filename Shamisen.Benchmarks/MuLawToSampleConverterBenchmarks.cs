@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.WaveToSampleConverters;
-using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
@@ -14,19 +14,15 @@ namespace Shamisen.Benchmarks
     [DisassemblyDiagnoser(maxDepth: 256)]
     public class MuLawToSampleConverterBenchmarks
     {
-        private const int Frames = 4096;
+        private const int Frames = 1441;
 
         private class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new PlaybackSpeedColumn(
-                    a => Frames,
-                    a => SampleRate));
+                _ = AddColumn(new FrameThroughputColumn(a => Frames));
             }
         }
-        private IReadableAudioSource<byte, IWaveFormat> source;
-        private MuLawToSampleConverter converter;
         private float[] buffer;
         private const int SampleRate = 192000;
         [Params(1)]
@@ -35,22 +31,36 @@ namespace Shamisen.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            source = new DummySource<byte, IWaveFormat>(new WaveFormat(SampleRate, 8, Channels, AudioEncoding.Mulaw));
-            converter = new MuLawToSampleConverter(source);
             buffer = new float[Frames * Channels];
         }
 
         [Benchmark]
-        public void MuLawToSampleConverter()
+        public void Sse41()
         {
             var span = buffer.AsSpan();
-            _ = converter.Read(span);
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            MuLawToSampleConverter.ProcessSse41(byteSpan, span);
+        }
+        [Benchmark]
+        public void Avx2MM128()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            MuLawToSampleConverter.ProcessAvx2MM128(byteSpan, span);
+        }
+        [Benchmark]
+        public void Avx2MM256()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            MuLawToSampleConverter.ProcessAvx2MM256(byteSpan, span);
         }
         [GlobalCleanup]
         public void Cleanup()
         {
-            converter?.Dispose();
-            source?.Dispose();
             buffer = null;
         }
     }

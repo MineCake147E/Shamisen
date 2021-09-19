@@ -21031,6 +21031,15 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
+        <member name="M:System.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="length">The length to slice back.</param>
+            <returns></returns>
+        </member>
         <member name="M:System.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.

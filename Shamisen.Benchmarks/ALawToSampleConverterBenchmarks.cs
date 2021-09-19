@@ -1,70 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.WaveToSampleConverters;
-using Shamisen.Filters;
-using Shamisen.Optimization;
-using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
-    [DisassemblyDiagnoser(maxDepth: 256)]
+    [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class ALawToSampleConverterBenchmarks
     {
-        private const int Frames = 4096;
+        private const int Frames = 1441;
 
         private class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new PlaybackSpeedColumn(
-                    a => Frames,
-                    a => SampleRate));
+                _ = AddColumn(new FrameThroughputColumn(a => Frames));
             }
         }
-        private IReadableAudioSource<byte, IWaveFormat> source;
-        private ALawToSampleConverter converter;
         private float[] buffer;
-        private const int SampleRate = 192000;
         [Params(1)]
         public int Channels { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            source = new DummySource<byte, IWaveFormat>(new WaveFormat(SampleRate, 8, Channels, AudioEncoding.Alaw));
-            converter = new ALawToSampleConverter(source);
             buffer = new float[Frames * Channels];
         }
 
         [Benchmark]
-        public void ALawToSampleConverter()
+        public void Avx2M2()
         {
             var span = buffer.AsSpan();
-            _ = converter.Read(span);
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            ALawToSampleConverter.ProcessAvx2M2(byteSpan, span);
         }
-        /*[Benchmark]
-        public void OldConversion()
+        [Benchmark]
+        public void Avx2M3()
         {
             var span = buffer.AsSpan();
-            _ = converter.ReadOld(span);
-        }*/
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            ALawToSampleConverter.ProcessAvx2M3(byteSpan, span);
+        }
+        [Benchmark]
+        public void Avx2FP()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            ALawToSampleConverter.ProcessAvx2FP(byteSpan, span);
+        }
+        [Benchmark]
+        public void Avx2()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+#pragma warning disable CS0618 
+            ALawToSampleConverter.ProcessAvx2(byteSpan, span);
+#pragma warning restore CS0618 
+        }
 
         [GlobalCleanup]
         public void Cleanup()
         {
-            converter?.Dispose();
-            source?.Dispose();
             buffer = null;
         }
     }

@@ -1,35 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Text;
+using System.Threading.Tasks;
+
+using Shamisen.Codecs.Waveform.Parsing;
+using Shamisen.Conversion.ChannelConverters;
+using Shamisen.Conversion.Resampling.Sample;
+using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Data;
+using Shamisen.Filters;
+using Shamisen.Filters.Mixing;
+using Shamisen.IO;
+using Shamisen.Synthesis;
+
+using Windows.Devices.Enumeration;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Shamisen.Synthesis;
-using Shamisen.Formats;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Conversion.SampleToWaveConverters;
-using Shamisen.IO;
-using Windows.Media.Devices;
-using Windows.Devices.Enumeration;
-using System.Text;
-using Shamisen.Filters;
-using Shamisen.Filters.Mixing;
-using Shamisen.Pipeline;
-using Windows.Storage;
-using Shamisen.Codecs.Waveform;
-using Shamisen.Codecs.Waveform.Parsing;
-using Shamisen.Data;
-using Shamisen.Conversion.WaveToSampleConverters;
-using System.Threading.Tasks;
-using Shamisen.Conversion.ChannelConverters;
 
 namespace Shamisen.Output.Tests.UWP
 {

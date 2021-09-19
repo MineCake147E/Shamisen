@@ -12,6 +12,8 @@ namespace Shamisen.Core.Tests.CoreFx
     [TestFixture]
     public class SpanExtensionsTest
     {
+        private const int Size = 8209;
+
         [Test]
         public void QuickFillFillsCorrectly()
         {
@@ -89,7 +91,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [Test]
         public void ReverseEndiannessFallbackWorksCorrectly()
         {
-            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanS = new ulong[SpanExtensionsTest.Size];
             Span<ulong> spanD = new ulong[spanS.Length];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
             spanS.CopyTo(spanD);
@@ -108,7 +110,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 Assert.Warn("AVX2 is not supported!");
                 return;
             }
-            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanS = new ulong[SpanExtensionsTest.Size];
             Span<ulong> spanD = new ulong[spanS.Length];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
             spanS.CopyTo(spanD);
@@ -127,7 +129,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 Assert.Warn("Ssse3 is not supported!");
                 return;
             }
-            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanS = new ulong[SpanExtensionsTest.Size];
             Span<ulong> spanD = new ulong[spanS.Length];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
             spanS.CopyTo(spanD);
@@ -146,7 +148,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 Assert.Warn("AdvSimd is not supported!");
                 return;
             }
-            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanS = new ulong[SpanExtensionsTest.Size];
             Span<ulong> spanD = new ulong[spanS.Length];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
             spanS.CopyTo(spanD);
@@ -165,7 +167,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 Assert.Warn("AdvSimd.Arm64 is not supported!");
                 return;
             }
-            Span<ulong> spanS = new ulong[8209];
+            Span<ulong> spanS = new ulong[SpanExtensionsTest.Size];
             Span<ulong> spanD = new ulong[spanS.Length];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
             spanS.CopyTo(spanD);

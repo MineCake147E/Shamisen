@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
+//using CSCodec.Filters.Transformation;
 using NUnit.Framework;
 
-//using CSCodec.Filters.Transformation;
-using System.Numerics;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using Shamisen.Codecs.Waveform.Composing;
+using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Data;
+using Shamisen.Filters;
+using Shamisen.Filters.Buffering;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -17,31 +16,35 @@ namespace Shamisen.Core.Tests.CoreFx
     {
         private const double Freq = 523.2511306011972693556999870466094027289077206840796617283;
 
-        [TestCase(1, 24000)]
-        [TestCase(2, 24000)]
-        public void SinusoidManyFrameDump(int channels, int sourceSampleRate)
+        [TestCase(1, 24000, 1024 + 7, 64)]
+        [TestCase(2, 24000, 1024 + 7, 64)]
+        [TestCase(1, 192000, 1024 + 7, 187)]
+        public void SinusoidManyFrameDump(int channels, int sourceSampleRate, int frameLen = 1024, int framesToWrite = 64)
         {
-            var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
-            var h = new System.IO.FileInfo($"SinusoidDump_{channels}ch_{sourceSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.raw");
-            Console.WriteLine(h.FullName);
-            using (var file = h.OpenWrite())
+            var src = new SinusoidSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
+            var path = new System.IO.FileInfo($"./dumps/SinusoidDump_{channels}ch_{sourceSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
+            using var dc = new AudioCache<float, SampleFormat>(src.Format);
+            Console.WriteLine(path.FullName);
+            float[] buffer = new float[(ulong)frameLen * (ulong)channels];
+            for (int i = 0; i < framesToWrite; i++)
             {
-                var buffer = new float[1024];
-                var brspan = MemoryMarshal.Cast<float, byte>(buffer);
-                for (int i = 0; i < 1024; i++)
+                var rr = src.Read(buffer);
+                if (rr.HasData)
                 {
-                    var rr = src.Read(buffer);
-                    if (rr.HasData)
-                    {
-                        var bwspan = brspan.SliceWhile(rr.Length * sizeof(float));
-                        file.Write(bwspan);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    dc.Write(buffer.AsSpan(0, rr.Length));
+                }
+                else
+                {
+                    break;
                 }
             }
+            var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
+            using (var ssink = new StreamDataSink(path.OpenWrite(), true, true))
+            {
+                Assert.DoesNotThrow(() =>
+                SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
+            }
+
             Assert.Pass();
             src.Dispose();
         }

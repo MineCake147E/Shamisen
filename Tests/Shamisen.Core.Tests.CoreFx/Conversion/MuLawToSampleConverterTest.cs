@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 
@@ -9,37 +10,23 @@ using Shamisen.Conversion.WaveToSampleConverters;
 namespace Shamisen.Core.Tests.CoreFx.Conversion
 {
     [TestFixture]
-    public class ALawToSampleConverterTest
+    public class MuLawToSampleConverterTest
     {
-        private const int Mask = 0b01010101;
-
-        [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)0b0_000000_1_1010_1_000))]
-        [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)-0b1_1111_1_000000_000))]
+        private const int Mask = byte.MaxValue;
+        [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)(-73 << 2)))]
+        [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)(8031 << 2)))]
         public void ConvertsCorrectly(byte value, short expected)
-            => Assert.AreEqual(expected, ALawToSampleConverter.ConvertALawToInt16(value));
-
-        [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)0b0_000000_1_1010_1_000))]
-        [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)-0b1_1111_1_000000_000))]
-        public void SingleVariantConvertsCorrectly(byte value, short expected)
-            => Assert.AreEqual(expected, (short)(ALawToSampleConverter.ConvertALawToSingle(value) * 32768.0f));
-        [Test]
-        public void SingleVariantConsistency()
-            => Assert.Multiple(() =>
-            {
-                for (int i = 0; i < byte.MaxValue + 1; i++)
-                {
-                    Assert.AreEqual((float)ALawToSampleConverter.ConvertALawToInt16((byte)i), ALawToSampleConverter.ConvertALawToSingle((byte)i) * 32768.0f);
-                }
-            });
+            => Assert.AreEqual(expected, (short)(MuLawToSampleConverter.ConvertMuLawToSingle(value) * 32768.0f));
         [Test]
         public void BlockConvertsCorrectly()
         {
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessStandard(bb, buffer);
+            MuLawToSampleConverter.ProcessStandard(bb, buffer);
             AssertBlock(buffer);
         }
+
         [Test]
-        public void BlockConvertsCorrectlyAvx2M2()
+        public void BlockConvertsCorrectlyAvx2MM256()
         {
             if (!Avx2.IsSupported)
             {
@@ -47,11 +34,11 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2M2(bb, buffer);
+            MuLawToSampleConverter.ProcessAvx2MM256(bb, buffer);
             AssertBlock(buffer);
         }
         [Test]
-        public void BlockConvertsCorrectlyAvx2M3()
+        public void BlockConvertsCorrectlyAvx2MM128()
         {
             if (!Avx2.IsSupported)
             {
@@ -59,7 +46,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2M3(bb, buffer);
+            MuLawToSampleConverter.ProcessAvx2MM128(bb, buffer);
             AssertBlock(buffer);
         }
         [Test]
@@ -71,11 +58,23 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessSse41(bb, buffer);
+            MuLawToSampleConverter.ProcessSse41(bb, buffer);
             AssertBlock(buffer);
         }
         [Test]
-        public void BlockConvertsCorrectlyAdvSimd64()
+        public void BlockConvertsCorrectlyAdvSimd()
+        {
+            if (!AdvSimd.IsSupported)
+            {
+                Assert.Warn("AdvSimd is not supported!");
+                return;
+            }
+            PrepareBlock(out var buffer, out var bb);
+            MuLawToSampleConverter.ProcessAdvSimd(bb, buffer);
+            AssertBlock(buffer);
+        }
+        [Test]
+        public void BlockConvertsCorrectlyAdvSimdArm64()
         {
             if (!AdvSimd.Arm64.IsSupported)
             {
@@ -83,7 +82,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAdvSimd64(bb, buffer);
+            MuLawToSampleConverter.ProcessAdvSimdArm64(bb, buffer);
             AssertBlock(buffer);
         }
 
@@ -97,7 +96,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                     for (int i = 0; i < buffer.Length; i++)
                     {
                         var s = Hash(i);
-                        float expected = ALawToSampleConverter.ConvertALawToSingle(s) * 8192.0f;
+                        float expected = MuLawToSampleConverter.ConvertMuLawToSingle(s) * 8192.0f;
                         float actual = buffer[i] * 8192.0f;
                         Assert.AreEqual(expected, actual, $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
                         if (expected != actual)
@@ -112,8 +111,6 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
                 });
             }
         }
-
-
 
         private static void PrepareBlock(out float[] buffer, out byte[] bb)
         {

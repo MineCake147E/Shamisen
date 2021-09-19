@@ -33,6 +33,10 @@ namespace System
 			{
 				span.Fill(value);
 			}
+            else if(Vector<float>.Count == span.Length)
+            {
+                Unsafe.As<float, Vector<float>>(ref MemoryMarshal.GetReference(span)) = new Vector<float>(value);
+            }
 			else
 			{
 				var spanV = MemoryMarshal.Cast<float, Vector<float>>(span);

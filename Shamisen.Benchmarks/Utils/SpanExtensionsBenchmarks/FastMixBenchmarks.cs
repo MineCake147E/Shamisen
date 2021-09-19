@@ -25,12 +25,12 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
             }
 
         }
-        [Params(1024, 1441)]
+        [Params(1441)]
         public int Frames { get; set; }
         [Params(1)]
         public int Channels { get; set; }
 
-        [Params(MathF.PI)]
+        [Params(MathF.PI, 1.17549421069E-38f)]
         public float ScaleA { get; set; }
 
         [Params(MathF.E)]
@@ -61,7 +61,7 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
         [Benchmark]
         public void Standard()
         {
-            SpanExtensions.FastMixStandard(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
+            SpanExtensions.FastMixStandardFixed(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
         }
     }
 }

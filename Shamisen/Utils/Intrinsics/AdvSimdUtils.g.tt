@@ -33,8 +33,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref <#=t#> address, Vector128<<#=t#>> value1, Vector128<<#=t#>> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<<#=t#>, Vector128<<#=t#>>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<<#=t#>, Vector128<<#=t#>>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -52,8 +52,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref <#=t#> address, Vector64<<#=t#>> value1, Vector64<<#=t#>> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<<#=t#>, Vector64<<#=t#>>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<<#=t#>, Vector64<<#=t#>>>(ref address), 1) = value2;
 #else
                 unsafe
                 {

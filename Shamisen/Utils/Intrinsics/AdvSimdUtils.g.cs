@@ -25,8 +25,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref float address, Vector128<float> value1, Vector128<float> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<float, Vector128<float>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<float, Vector128<float>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -44,8 +44,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref float address, Vector64<float> value1, Vector64<float> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<float, Vector64<float>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<float, Vector64<float>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -63,8 +63,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref double address, Vector128<double> value1, Vector128<double> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<double, Vector128<double>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<double, Vector128<double>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -82,8 +82,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref double address, Vector64<double> value1, Vector64<double> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<double, Vector64<double>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<double, Vector64<double>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -101,8 +101,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref byte address, Vector128<byte> value1, Vector128<byte> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<byte, Vector128<byte>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<byte, Vector128<byte>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -120,8 +120,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref byte address, Vector64<byte> value1, Vector64<byte> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<byte, Vector64<byte>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<byte, Vector64<byte>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -139,8 +139,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref ushort address, Vector128<ushort> value1, Vector128<ushort> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<ushort, Vector128<ushort>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<ushort, Vector128<ushort>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -158,8 +158,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref ushort address, Vector64<ushort> value1, Vector64<ushort> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<ushort, Vector64<ushort>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<ushort, Vector64<ushort>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -177,8 +177,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref uint address, Vector128<uint> value1, Vector128<uint> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<uint, Vector128<uint>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<uint, Vector128<uint>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -196,8 +196,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref uint address, Vector64<uint> value1, Vector64<uint> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<uint, Vector64<uint>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<uint, Vector64<uint>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -253,8 +253,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref sbyte address, Vector128<sbyte> value1, Vector128<sbyte> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<sbyte, Vector128<sbyte>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<sbyte, Vector128<sbyte>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -272,8 +272,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref sbyte address, Vector64<sbyte> value1, Vector64<sbyte> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<sbyte, Vector64<sbyte>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<sbyte, Vector64<sbyte>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -291,8 +291,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref short address, Vector128<short> value1, Vector128<short> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<short, Vector128<short>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<short, Vector128<short>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -310,8 +310,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref short address, Vector64<short> value1, Vector64<short> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<short, Vector64<short>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<short, Vector64<short>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -329,8 +329,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref int address, Vector128<int> value1, Vector128<int> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<int, Vector128<int>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<int, Vector128<int>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -348,8 +348,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref int address, Vector64<int> value1, Vector64<int> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<int, Vector64<int>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<int, Vector64<int>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -367,8 +367,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref long address, Vector128<long> value1, Vector128<long> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector128<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector128<ulong>>(ref address), 1) = value2;
+                Unsafe.As<long, Vector128<long>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<long, Vector128<long>>(ref address), 1) = value2;
 #else
                 unsafe
                 {
@@ -386,8 +386,8 @@ namespace Shamisen.Utils.Intrinsics
             public static void StorePair(ref long address, Vector64<long> value1, Vector64<long> value2)
             {
 #if DEBUG
-                Unsafe.As<ulong, Vector64<ulong>>(ref address) = value1;
-                Unsafe.Add(ref Unsafe.As<ulong, Vector64<ulong>>(ref address), 1) = value2;
+                Unsafe.As<long, Vector64<long>>(ref address) = value1;
+                Unsafe.Add(ref Unsafe.As<long, Vector64<long>>(ref address), 1) = value2;
 #else
                 unsafe
                 {

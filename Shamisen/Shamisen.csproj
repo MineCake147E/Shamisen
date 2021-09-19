@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
         <RootNamespace>Shamisen</RootNamespace>
         <AssemblyName>Shamisen</AssemblyName>
         <LangVersion>9.0</LangVersion>
@@ -23,13 +23,6 @@
         <LangVersion>latest</LangVersion>
 
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0' or '$(TargetFramework)' == 'netcoreapp3.1'">
-        <DefineConstants>INTRINSICS</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-        <DefineConstants>NET5</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

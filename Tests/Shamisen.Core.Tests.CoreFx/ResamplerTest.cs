@@ -189,7 +189,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 dc.Write(buffer.AsSpan(0, q.Length));
             }
             var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
-            using (var ssink = new StreamDataSink(path.OpenWrite(), false, true))
+            using (var ssink = new StreamDataSink(path.OpenWrite(), true, true))
             {
                 Assert.DoesNotThrow(() =>
                 SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));

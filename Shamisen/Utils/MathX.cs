@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-
-using DivideSharp;
 
 using DSUtils = DivideSharp.Utils;
 
@@ -144,18 +138,23 @@ namespace Shamisen
         public static float SinF(Fixed64 value)
 #endif
         {
-            if(value == Fixed64.MinValue)
-            {
-                return 0.0f;
-            }
-            if (value < Fixed64.Zero) return -SinF(-value);   //Wrap negative numbers
-            if ((long)value > 0x3fff_ffff_ffff_ffff)    //Wrap sinusoid
-            {
-                value = Fixed64.MaxValue - value;    //1 - value
-            }
-            return SinFInternal(value);
+            int u = (int)(value.Value >> 32);
+            uint a = MathI.Abs(u);
+            a = Math.Min(a, 0x8000_0000u - a);
+            return Math.Sign(u) * SinFInternal32((int)a);
         }
-
+        const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
+        private static float SinFInternal32(int value)
+        {
+            unchecked
+            {
+#if NETSTANDARD2_0
+                return (float)Math.Sin(value * PiOverTwoToThe31stPower);
+#else
+                return MathF.Sin(value * PiOverTwoToThe31stPower);
+#endif
+            }
+        }
         private static float SinFInternal(Fixed64 value)
         {
             unchecked

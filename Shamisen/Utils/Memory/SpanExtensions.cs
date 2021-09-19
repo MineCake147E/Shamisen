@@ -30,7 +30,7 @@ namespace System
     public static partial class SpanExtensions
     {
         #region SIMD-Related Functions
-        #region FastAdd
+        #region FastAddTwoOperands
 
         /// <summary>
         /// Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
@@ -41,10 +41,199 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastAdd(ReadOnlySpan<float> samplesToAdd, Span<float> buffer)
         {
-            FastMix(samplesToAdd, buffer, 1.0f);
+#if NET5_0_OR_GREATER
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                FastAddAdvSimdArm64(buffer, buffer, samplesToAdd);
+                return;
+            }
+            if (AdvSimd.IsSupported)
+            {
+                FastAddAdvSimd(buffer, buffer, samplesToAdd);
+                return;
+            }
+#endif
+            FastAddStandardVariable(buffer, buffer, samplesToAdd);
+        }
+#if NET5_0_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastAddAdvSimd(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
+        {
+            nint i, length = buffer.Length;
+            ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+            ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+            ref var rD = ref MemoryMarshal.GetReference(buffer);
+            var olen = length - 2 * 4 + 1;
+            for (i = 0; i < olen; i += 2 * 4)
+            {
+                var sA0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 0));
+                var sA1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 4));
+                var sB0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsB, i + 0));
+                sA0 = AdvSimd.Add(sA0, sB0);
+                var sB1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsB, i + 4));
+                sA1 = AdvSimd.Add(sA1, sB1);
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rD, i + 0)) = sA0;
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rD, i + 4)) = sA1;
+            }
+            for (; i < length; i++)
+            {
+                var sA = Unsafe.Add(ref rsA, i);
+                Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastAddAdvSimdArm64(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
+        {
+            nint i, length = buffer.Length;
+            ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+            ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+            ref var rD = ref MemoryMarshal.GetReference(buffer);
+            //This is a loop for Cortex-A75, probably not optimal in A64FX.
+            //The `ldp` instruction isn't available at all, so we use simpler load.
+            var olen = length - 2 * 4 + 1;
+            for (i = 0; i < olen; i += 2 * 4)
+            {
+                var sA0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 0));
+                var sA1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 4));
+                var sB0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsB, i + 0));
+                sA0 = AdvSimd.Add(sA0, sB0);
+                var sB1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsB, i + 4));
+                sA1 = AdvSimd.Add(sA1, sB1);
+                AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref rD, i), sA0, sA1);
+            }
+            for (; i < length; i++)
+            {
+                var sA = Unsafe.Add(ref rsA, i);
+                Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
+            }
+        }
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastAddStandardFixed(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
+        {
+            unsafe
+            {
+                nint i, length = buffer.Length;
+                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                //This is a loop for Haswell, probably not optimal in Alder Lake.
+                var olen = length - 8 * 4 + 1;
+                for (i = 0; i < olen; i += 8 * 4)
+                {
+                    var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0 * 4));
+                    var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 1 * 4));
+                    var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 2 * 4));
+                    var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 3 * 4));
+                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0 * 4));
+                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 1 * 4));
+                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 2 * 4));
+                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 3 * 4));
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0 * 4)) = sA0;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 1 * 4)) = sA1;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 2 * 4)) = sA2;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 3 * 4)) = sA3;
+                    sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 4 * 4));
+                    sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 5 * 4));
+                    sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 6 * 4));
+                    sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 7 * 4));
+                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 4 * 4));
+                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 5 * 4));
+                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 6 * 4));
+                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 7 * 4));
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 4 * 4)) = sA0;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 5 * 4)) = sA1;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 6 * 4)) = sA2;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 7 * 4)) = sA3;
+                }
+                olen = length - 4 * 4 + 1;
+                for (; i < olen; i += 4 * 4)
+                {
+                    var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0 * 4));
+                    var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 1 * 4));
+                    var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 2 * 4));
+                    var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 3 * 4));
+                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0 * 4));
+                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 1 * 4));
+                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 2 * 4));
+                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 3 * 4));
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0 * 4)) = sA0;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 1 * 4)) = sA1;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 2 * 4)) = sA2;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 3 * 4)) = sA3;
+                }
+                for (; i < length; i++)
+                {
+                    var sA = Unsafe.Add(ref rsA, i);
+                    Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
+                }
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastAddStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
+        {
+            unsafe
+            {
+                nint i, length = buffer.Length;
+                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                //This is a loop for Alder Lake, probably not optimal in Haswell.
+                var olen = length - 8 * Vector<float>.Count + 1;
+                for (i = 0; i < olen; i += 8 * Vector<float>.Count)
+                {
+                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
+                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count));
+                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count));
+                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count));
+                    sA0 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count));
+                    sA1 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count));
+                    sA2 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count));
+                    sA3 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
+                    sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 4 * Vector<float>.Count));
+                    sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 5 * Vector<float>.Count));
+                    sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 6 * Vector<float>.Count));
+                    sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 7 * Vector<float>.Count));
+                    sA0 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 4 * Vector<float>.Count));
+                    sA1 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 5 * Vector<float>.Count));
+                    sA2 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 6 * Vector<float>.Count));
+                    sA3 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 7 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 4 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 5 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 6 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 7 * Vector<float>.Count)) = sA3;
+                }
+                olen = length - 4 * Vector<float>.Count + 1;
+                for (; i < olen; i += 4 * Vector<float>.Count)
+                {
+                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
+                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count));
+                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count));
+                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count));
+                    sA0 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count));
+                    sA1 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count));
+                    sA2 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count));
+                    sA3 += Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
+                }
+                for (; i < length; i++)
+                {
+                    var sA = Unsafe.Add(ref rsA, i);
+                    Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
+                }
+            }
         }
 
-        private static void FastAddOld(ReadOnlySpan<float> samplesToAdd, Span<float> buffer)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Remains only for benchmark comparison!")]
+        internal static void FastAddOld(ReadOnlySpan<float> samplesToAdd, Span<float> buffer)
         {
             if (samplesToAdd.Length > buffer.Length) throw new ArgumentException("", nameof(samplesToAdd));
             unsafe
@@ -406,7 +595,7 @@ namespace System
                 return;
             }
 #endif
-            FastMixStandard(buffer, samplesA, volumeA, samplesB, volumeB);
+            FastMixStandardFixed(buffer, samplesA, volumeA, samplesB, volumeB);
         }
 #if NETCOREAPP3_1_OR_GREATER
         /// <summary>
@@ -501,7 +690,54 @@ namespace System
         }
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastMixStandard(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        internal static void FastMixStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
+        {
+            unsafe
+            {
+                nint i, length = buffer.Length;
+                var scaleVA = new Vector<float>(volumeA);
+                var scaleVB = new Vector<float>(volumeB);
+                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                var olen = length - 4 * Vector<float>.Count + 1;
+                for (i = 0; i < olen; i += 4 * Vector<float>.Count)
+                {
+                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count)) * scaleVA;
+                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count)) * scaleVA;
+                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count)) * scaleVA;
+                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count)) * scaleVA;
+                    var sB0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count)) * scaleVB;
+                    sA0 += sB0;
+                    var sB1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count)) * scaleVB;
+                    sA1 += sB1;
+                    var sB2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count)) * scaleVB;
+                    var sB3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count)) * scaleVB;
+                    sA2 += sB2;
+                    sA3 += sB3;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
+                }
+                //for (; i < length - 3; i += 4)
+                //{
+                //    var sA = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i));
+                //    var sB = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i));
+                //    sA *= scaleVA;
+                //    sB *= scaleVB;
+                //    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i)) = sA + sB;
+                //}
+                for (; i < length; i++)
+                {
+                    var sA = scaleVA[0] * Unsafe.Add(ref rsA, i);
+                    var sB = scaleVB[0] * Unsafe.Add(ref rsB, i);
+                    Unsafe.Add(ref rD, i) = sA + sB;
+                }
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastMixStandardFixed(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             unsafe
             {
@@ -532,18 +768,14 @@ namespace System
                 }
                 //for (; i < length - 3; i += 4)
                 //{
-                //    var sA = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i));
-                //    var sB = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i));
-                //    sA *= scaleVA;
-                //    sB *= scaleVB;
+                //    var sA = scaleVA * Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i));
+                //    var sB = scaleVB * Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i));
                 //    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i)) = sA + sB;
                 //}
                 for (; i < length; i++)
                 {
-                    var sA = Unsafe.Add(ref rsA, i);
-                    var sB = Unsafe.Add(ref rsB, i);
-                    sA *= scaleVA.X;
-                    sB *= scaleVB.X;
+                    var sA = scaleVA.X * Unsafe.Add(ref rsA, i);
+                    var sB = scaleVB.X * Unsafe.Add(ref rsB, i);
                     Unsafe.Add(ref rD, i) = sA + sB;
                 }
             }
@@ -633,6 +865,8 @@ namespace System
         public static Span<T> Skip<T>(this Span<T> span, int step) => span.Slice(step);
 
         #endregion LinqLikeForSpan
+        #region Slice
+
 
         /// <summary>
         /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
@@ -666,6 +900,16 @@ namespace System
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
 
+        /// <summary>
+        /// Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
+        /// <param name="length">The length to slice back.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceFromEnd<T>(this Span<T> span, int length) => span.Slice(span.Length - length);
+        #endregion
         #region ReverseEndianness
 
         /// <summary>
@@ -731,7 +975,7 @@ namespace System
             nint i = 0, length = span.Length;
             unsafe
             {
-                //This is a loop for Fujitsu A64FX, probably not optimal in Qualcomm Snapdragon 845
+                //This is a loop for A64FX, probably not optimal in Cortex-A75.
                 //The `ldp` instruction isn't available at all, so we use simpler load.
                 for (; i < length - 15; i += 16)
                 {
@@ -767,7 +1011,7 @@ namespace System
                     v2_2d = AdvSimd.ReverseElement8(v2_2d);
                     v3_2d = AdvSimd.ReverseElement8(v3_2d);
                     AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref rdi, i), v0_2d, v1_2d);
-                    AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref rdi, i + 4), v0_2d, v1_2d);
+                    AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref rdi, i + 4), v2_2d, v3_2d);
                 }
             }
             for (; i < length; i++)
