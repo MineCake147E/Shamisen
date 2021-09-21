@@ -37,7 +37,7 @@ namespace Shamisen.Benchmarks
                 var frames = (double)nf * 1.0E9f;
                 double mean = summary[benchmarkCase].ResultStatistics.Mean;
                 var throughput = frames / mean;
-                return $"{throughput}";
+                return $"{throughput:#,#.00000000}";
             }
             catch (Exception ex)
             {

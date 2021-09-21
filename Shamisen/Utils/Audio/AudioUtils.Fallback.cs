@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-
-using Shamisen.Utils.Tuples;
 
 namespace Shamisen.Utils
 {
@@ -14,6 +9,9 @@ namespace Shamisen.Utils
     {
         internal static partial class Fallback
         {
+            #region Interleave
+
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
@@ -200,6 +198,31 @@ namespace Shamisen.Utils
                     }
                 }
             }
+            #endregion
+
+            #region DuplicateMonauralToStereo
+
+            internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
+                var olen = length - 3;
+                for (; i < olen; i += 4)
+                {
+                    var h = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, i));
+                    Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2 + 0)) = new Vector2(h.X);
+                    Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2 + 2)) = new Vector2(h.Y);
+                    Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2 + 4)) = new Vector2(h.Z);
+                    Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2 + 6)) = new Vector2(h.W);
+                }
+                for (; i < length; i++)
+                {
+                    var h = Unsafe.Add(ref src, i);
+                    Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2)) = new Vector2(h);
+                }
+            }
+            #endregion
         }
     }
 }

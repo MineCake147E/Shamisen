@@ -866,6 +866,7 @@ namespace System
 
         #endregion LinqLikeForSpan
         #region Slice
+        #region SliceWhileIfLongerThan
 
 
         /// <summary>
@@ -887,9 +888,49 @@ namespace System
         /// <param name="maxLength">The maximum length.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlySpan<T> SliceWhileIfLongerThan<T>(this ReadOnlySpan<T> span, int maxLength)
+            => span.Length > maxLength ? span.SliceWhile(maxLength) : span;
+
+        /// <summary>
+        /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="maxLength">The maximum length.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<T> SliceWhileIfLongerThan<T>(this Span<T> span, ulong maxLength)
             => maxLength > int.MaxValue ? span : span.SliceWhileIfLongerThan((int)maxLength);
+        /// <summary>
+        /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+        /// <param name="divisor">The number to divide.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceWhileIfLongerThanWithLazyDivide<T>(this Span<T> span, int maxLength, int divisor)
+        {
+            divisor = MathI.Rectify(divisor);
+            return (divisor > 0 || span.Length * divisor > maxLength) ? span.SliceWhile(maxLength / divisor) : span;
+        }
 
+        /// <summary>
+        /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span.</param>
+        /// <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+        /// <param name="divisor">The number to divide.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlySpan<T> SliceWhileIfLongerThanWithLazyDivide<T>(this ReadOnlySpan<T> span, int maxLength, int divisor)
+        {
+            divisor = MathI.Rectify(divisor);
+            return (divisor > 0 || span.Length * divisor > maxLength) ? span.SliceWhile(maxLength / divisor) : span;
+        }
+        #endregion
         /// <summary>
         /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>

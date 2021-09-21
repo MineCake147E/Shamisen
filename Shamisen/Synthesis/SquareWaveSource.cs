@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
+
+using Shamisen.Utils;
+
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics.X86;
+using System.Runtime.Intrinsics;
+#endif
 
 using DivideSharp;
-
-using Shamisen.Mathematics;
-
-using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace Shamisen.Synthesis
 {
@@ -28,6 +29,7 @@ namespace Shamisen.Synthesis
             Format = format;
             ChannelsDivisor = new(format.Channels);
         }
+
 
         /// <summary>
         /// Gets the format of the audio data.
@@ -49,7 +51,7 @@ namespace Shamisen.Synthesis
             set
             {
                 frequency = value;
-                Omega = (Fixed64)Math.Abs(2 * value * SamplingFrequencyInverse);
+                Omega = (Fixed64)Math.Abs(2.0 * value / Format.SampleRate);
                 OmegaDivisor = new((ulong)Omega.Value);
             }
         }
@@ -105,39 +107,9 @@ namespace Shamisen.Synthesis
             var omega = Omega;
             var theta = Theta;
             var omegaDivisor = OmegaDivisor;
-            return Process(buffer, omega, theta, omegaDivisor, channels, ChannelsDivisor);
-        }
-
-        private ReadResult Process(Span<float> buffer, Fixed64 omega, Fixed64 theta, UInt64Divisor omegaDivisor, int channels, Int32Divisor channelsDivisor)
-        {
-            var rem = buffer;
-            while (!rem.IsEmpty)
-            {
-                ulong d = GetDurationOfSameValue(omegaDivisor, theta);
-                var q = d * (uint)channels;
-                if (q > (uint)rem.Length)
-                {
-                    rem.FastFill(GenerateMonauralSample(theta));
-                    theta += new Fixed64(omega.Value * (rem.Length / channelsDivisor));
-                    rem = default;
-                }
-                else
-                {
-                    int q1 = (int)q;
-                    rem.SliceWhile(q1).FastFill(GenerateMonauralSample(theta));
-                    theta += new Fixed64(omega.Value * (long)d);
-                    rem = rem.Slice(q1);
-                }
-            }
-            Theta = theta;
-            return buffer.Length;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
-        {
-            var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
-            return r > 0 ? q + 1 : q;
+            var r = Process(buffer, omega, theta, omegaDivisor, channels, ChannelsDivisor, out var nt);
+            Theta = nt;
+            return r;
         }
 
         /// <summary>
@@ -145,8 +117,192 @@ namespace Shamisen.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float GenerateMonauralSample(Fixed64 theta) => (float)((theta.Value >> 63) * 2 + 1);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float GenerateMonauralSample(Fixed64 theta)
+        {
+            int y = (int)(theta.Value >> 32) & int.MinValue;
+            y |= 0x3f80_0000;
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+            return BitConverter.Int32BitsToSingle(y);
+#else
+            return Unsafe.As<int, float>(ref y);
+#endif
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
+        {
+            var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
+            return r > 0 ? q + 1 : q;
+        }
+
+        internal static ReadResult Process(Span<float> buffer, Fixed64 omega, Fixed64 theta, UInt64Divisor omegaDivisor, int channels, Int32Divisor channelsDivisor, out Fixed64 newTheta)
+        {
+            var bspan = buffer.SliceFromEnd(buffer.Length / channelsDivisor);
+            theta = GenerateMonauralBlock(bspan, omega, theta);
+            newTheta = theta;
+            if (channels == 1) return buffer.Length;
+            AudioUtils.DuplicateMonauralToChannels(buffer, bspan, channels);
+            return buffer.Length;
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Avx2.IsSupported)
+            {
+                return GenerateMonauralBlockAvx2MM256(buffer, omega, theta);
+            }
+#endif
+            return GenerateMonauralBlockStandard(buffer, omega, theta);
+        }
+
+#if NETCOREAPP3_1_OR_GREATER
+        #region X86 intrinsics
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
+        {
+            var t = theta.Value;
+            var o = omega.Value;
+            var ymm12 = Vector256.Create(o * 8);
+            var ymm0 = Vector256.Create(t);
+            var ymm1 = Vector256.Create(t + o * 2);
+            var ymm15 = Vector256.Create(0L, o * 1, o * 4, o * 5).AsSingle();
+            ymm0 = Avx2.Add(ymm0, ymm15.AsInt64());
+            ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
+            ymm15 = Vector256.Create(0x8000_0000u).AsSingle();
+            var ymm14 = Vector256.Create(1.0f).AsInt32();
+            var ymm13 = Vector256.Create(int.MinValue).AsInt32();
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            nint i = 0, length = buffer.Length;
+            var olen = length - 31;
+            for (; i < olen; i += 32)
+            {
+                var ymm2 = Avx2.Add(ymm0, ymm12);
+                var ymm3 = Avx2.Add(ymm1, ymm12);
+                var ymm5 = Avx2.Add(ymm3, ymm12);
+                var ymm4 = Avx2.Add(ymm2, ymm12);
+                var ymm6 = Avx2.Add(ymm4, ymm12);
+                var ymm7 = Avx2.Add(ymm5, ymm12);
+                var ymm8 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
+                var ymm9 = Avx.Shuffle(ymm2.AsSingle(), ymm3.AsSingle(), 0b11_01_11_01).AsInt32();
+                var ymm10 = Avx.Shuffle(ymm4.AsSingle(), ymm5.AsSingle(), 0b11_01_11_01).AsInt32();
+                var ymm11 = Avx.Shuffle(ymm6.AsSingle(), ymm7.AsSingle(), 0b11_01_11_01).AsInt32();
+                ymm8 = Avx2.And(ymm8, ymm13);
+                ymm9 = Avx2.And(ymm9, ymm13);
+                ymm10 = Avx2.And(ymm10, ymm13);
+                ymm11 = Avx2.And(ymm11, ymm13);
+                ymm8 = Avx2.Or(ymm8, ymm14);
+                ymm9 = Avx2.Or(ymm9, ymm14);
+                ymm10 = Avx2.Or(ymm10, ymm14);
+                ymm11 = Avx2.Or(ymm11, ymm14);
+                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm8;
+                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm9;
+                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm10;
+                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm11;
+                ymm1 = Avx2.Add(ymm7, ymm12);
+                ymm0 = Avx2.Add(ymm6, ymm12);
+            }
+            t = ymm0.GetElement(0);
+            olen = length - 7;
+            for (; i < olen; i += 8)
+            {
+                var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
+                var ymm4 = Avx2.And(ymm3, ymm13);
+                var ymm5 = Avx2.Or(ymm4, ymm14);
+                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i)) = ymm5;
+                ymm0 = Avx2.Add(ymm0, ymm12);
+                ymm1 = Avx2.Add(ymm1, ymm12);
+            }
+            t = ymm0.GetElement(0);
+            if (i < length)
+            {
+                var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
+                var ymm4 = Avx2.And(ymm3, ymm13);
+                var ymm5 = Avx2.Or(ymm4, ymm14).AsSingle();
+                var xmm6 = ymm5.GetUpper();
+                var xmm5 = ymm5.GetLower();
+                if (i < length - 3)
+                {
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm5;
+                    xmm5 = xmm6;
+                    i += 4;
+                    t += 4 * o;
+                }
+                if (i < length - 1)
+                {
+                    Unsafe.As<float, double>(ref Unsafe.Add(ref rdi, i)) = xmm5.AsDouble().GetElement(0);
+                    xmm5 = Ssse3.AlignRight(xmm5.AsInt32(), xmm5.AsInt32(), 8).AsSingle();
+                    i += 2;
+                    t += 2 * o;
+                }
+                if (i < length)
+                {
+                    Unsafe.Add(ref rdi, i) = xmm5.GetElement(0);
+                    t += o;
+                    i++;
+                }
+            }
+            for (; i < length; i++)
+            {
+                var y = (int)(t >> 32);
+                t += o;
+                y &= int.MinValue;
+                y |= 0x3f80_0000;
+                Unsafe.As<float, int>(ref Unsafe.Add(ref rdi, i)) = y;
+            }
+            return new Fixed64(t);
+        }
+        #endregion
+#endif
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, Fixed64 theta)
+        {
+            var t = theta.Value;
+            var o = omega.Value;
+            ref var rdi = ref Unsafe.As<float, int>(ref MemoryMarshal.GetReference(buffer));
+            nint i = 0, length = buffer.Length;
+            var olen = length - 7;
+            for (; i < olen; i += 8)
+            {
+                var y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 0) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 1) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 2) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 3) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 4) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 5) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 6) = y;
+                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                t += o;
+                Unsafe.Add(ref rdi, i + 7) = y;
+            }
+            for (; i < length; i++)
+            {
+                var y = (int)(t >> 32);
+                t += o;
+                y &= int.MinValue;
+                y |= 0x3f80_0000;
+                Unsafe.Add(ref rdi, i) = y;
+            }
+            return new Fixed64(t);
+        }
+
+
 
         #region IDisposable Support
 

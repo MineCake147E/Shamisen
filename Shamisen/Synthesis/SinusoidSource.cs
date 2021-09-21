@@ -92,69 +92,12 @@ namespace Shamisen.Synthesis
             buffer = buffer.SliceAlign(channels);
             var omega = Omega;
             var theta = Theta;
-            switch (channels)   //Unrolling assignations
-            {
-                case 1:
-                    theta = GenerateMonauralBlock(buffer, omega, theta);
-                    Theta = theta;
-                    return buffer.Length;
-                case 2:
-                    {
-                        var bspan = buffer.SliceFromEnd(buffer.Length / 2);
-                        theta = GenerateMonauralBlock(bspan, omega, theta);
-                        Theta = theta;
-                        var bispan = MemoryMarshal.Cast<float, int>(bspan);
-                        AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(buffer), bispan, bispan);
-                        return buffer.Length;
-                    }
-                case 3:
-                    {
-                        var bspan = buffer.SliceFromEnd(buffer.Length / 3);
-                        theta = GenerateMonauralBlock(bspan, omega, theta);
-                        Theta = theta;
-                        var bispan = MemoryMarshal.Cast<float, int>(bspan);
-                        AudioUtils.InterleaveThree(MemoryMarshal.Cast<float, int>(buffer), bispan, bispan, bispan);
-                        return buffer.Length;
-                    }
-                case 4:
-                    {
-                        var bspan = buffer.SliceFromEnd(buffer.Length / 4);
-                        theta = GenerateMonauralBlock(bspan, omega, theta);
-                        Theta = theta;
-                        var bispan = MemoryMarshal.Cast<float, int>(bspan);
-                        AudioUtils.InterleaveQuad(MemoryMarshal.Cast<float, int>(buffer), bispan, bispan, bispan, bispan);
-                        return buffer.Length;
-                    }
-                case < 8:
-                    {
-                        var bspan = buffer.SliceFromEnd(buffer.Length / channels);
-                        theta = GenerateMonauralBlock(bspan, omega, theta);
-                        Theta = theta;
-                        int h = 0;
-                        for (int i = 0; i < bspan.Length; i++, h += channels)
-                        {
-                            var value = bspan[i];
-                            for (int j = 0; j < channels; j++)
-                            {
-                                buffer[h + j] = value;
-                            }
-                        }
-                        return buffer.Length;
-                    }
-                default:
-                    {
-                        var bspan = buffer.SliceFromEnd(buffer.Length / channels);
-                        theta = GenerateMonauralBlock(bspan, omega, theta);
-                        Theta = theta;
-                        int h = 0;
-                        for (int i = 0; i < bspan.Length; i++, h += channels)
-                        {
-                            var value = bspan[i];
-                            buffer.Slice(h, channels).FastFill(value);
-                        }
-                        return buffer.Length;
-                    }
-            }
+            var bspan = buffer.SliceFromEnd(buffer.Length / channels);
+            theta = GenerateMonauralBlock(bspan, omega, theta);
+            Theta = theta;
+            if (channels == 1) return buffer.Length;
+            AudioUtils.DuplicateMonauralToChannels(buffer, bspan, channels);
+            return buffer.Length;
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

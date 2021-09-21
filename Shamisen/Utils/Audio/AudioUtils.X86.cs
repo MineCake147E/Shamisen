@@ -3,12 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shamisen.Utils
 {
@@ -22,7 +23,8 @@ namespace Shamisen.Utils
 
 #else
                 Sse.IsSupported;
-#endif
+#endif            
+            #region Interleave
 
             #region Stereo
 
@@ -54,6 +56,7 @@ namespace Shamisen.Utils
                         Fallback.InterleaveStereoInt32(buffer, left, right);
                         return;
                     }
+                    //TODO: modernize
                     right = right.SliceWhile(left.Length);
                     buffer = buffer.SliceWhile(left.Length * 2);
                     //These pre-touches may avoid some range checks
@@ -322,6 +325,83 @@ namespace Shamisen.Utils
             }
 
             #endregion Quad
+
+
+            #endregion
+
+            #region DuplicateMonauralToStereo
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                if (Avx.IsSupported)
+                {
+                    DuplicateMonauralToStereoAvx(destination, source);
+                    return;
+                }
+                if (Sse.IsSupported)
+                {
+                    DuplicateMonauralToStereoSse(destination, source);
+                    return;
+                }
+                Fallback.DuplicateMonauralToStereo(destination, source);
+            }
+            internal static void DuplicateMonauralToStereoAvx(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
+                var olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<float, double>(ref Unsafe.Add(ref src, i + 0))).AsSingle();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<float, double>(ref Unsafe.Add(ref src, i + 2))).AsSingle();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<float, double>(ref Unsafe.Add(ref src, i + 4))).AsSingle();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<float, double>(ref Unsafe.Add(ref src, i + 6))).AsSingle();
+                    xmm0 = Avx.Permute(xmm0, 0x50);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 0)) = xmm0;
+                    xmm0 = Avx.Permute(xmm1, 0x50);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 4)) = xmm0;
+                    xmm0 = Avx.Permute(xmm2, 0x50);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 8)) = xmm0;
+                    xmm0 = Avx.Permute(xmm3, 0x50);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 12)) = xmm0;
+                }
+                for (; i < length; i++)
+                {
+                    var h = Unsafe.Add(ref src, i);
+                    Unsafe.Add(ref dst, i * 2 + 0) = h;
+                    Unsafe.Add(ref dst, i * 2 + 1) = h;
+                }
+            }
+            internal static void DuplicateMonauralToStereoSse(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
+                var olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, i + 0));
+                    var xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, i + 4));
+                    var xmm2 = Sse.UnpackLow(xmm0, xmm0);
+                    xmm0 = Sse.UnpackHigh(xmm0, xmm0);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 0)) = xmm0;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 4)) = xmm2;
+                    xmm2 = Sse.UnpackLow(xmm1, xmm1);
+                    xmm0 = Sse.UnpackHigh(xmm1, xmm1);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 8)) = xmm0;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 12)) = xmm2;
+
+                }
+                for (; i < length; i++)
+                {
+                    var h = Unsafe.Add(ref src, i);
+                    Unsafe.Add(ref dst, i * 2 + 0) = h;
+                    Unsafe.Add(ref dst, i * 2 + 1) = h;
+                }
+            }
+            #endregion
         }
     }
 }

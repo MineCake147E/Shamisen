@@ -43,27 +43,43 @@ namespace Shamisen
         /// <value>
         /// The float value.
         /// </value>
-        public double DoubleValue => Value * V2FRatio;
+        public double DoubleValue => Value * (double)V2FRatio;
 
         /// <summary>
         /// Represents the largest possible value of <see cref="Fixed64"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed64 MaxValue = new(long.MaxValue);
+        public static Fixed64 MaxValue
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => new(long.MaxValue);
+        }
 
         /// <summary>
         /// Represents the smallest possible value of <see cref="Fixed64"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed64 MinValue = new(long.MaxValue);
+        public static Fixed64 MinValue
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => new(long.MaxValue);
+        }
 
         /// <summary>
         /// Represents the number zero (0).
         /// </summary>
-        public static readonly Fixed64 Zero = new(0);
+        public static Fixed64 Zero
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => new(0);
+        }
 
         /// <summary>
         /// Represents the smallest positive <see cref="Fixed64"/> value that is greater than zero. This field is constant and read-only.
         /// </summary>
-        public static readonly Fixed64 Epsilon = new(1);
+        public static Fixed64 Epsilon
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => new(1);
+        }
 
         #region Arithmetics
 
@@ -270,7 +286,11 @@ namespace Shamisen
         /// The result of the conversion.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static explicit operator Fixed64(double value) => new((long)(value * 9.223372036854776E+18));
+        public static explicit operator Fixed64(double value)
+        {
+            if (value == 1.0) return Fixed64.MinValue; //-1 == 1
+            return new((long)(value * 9.223372036854776E+18));
+        }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Fixed64"/> to <see cref="long"/>.

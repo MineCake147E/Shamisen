@@ -16359,22 +16359,22 @@
             The float value.
             </value>
         </member>
-        <member name="F:Shamisen.Fixed64.MaxValue">
+        <member name="P:Shamisen.Fixed64.MaxValue">
             <summary>
             Represents the largest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
-        <member name="F:Shamisen.Fixed64.MinValue">
+        <member name="P:Shamisen.Fixed64.MinValue">
             <summary>
             Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
-        <member name="F:Shamisen.Fixed64.Zero">
+        <member name="P:Shamisen.Fixed64.Zero">
             <summary>
             Represents the number zero (0).
             </summary>
         </member>
-        <member name="F:Shamisen.Fixed64.Epsilon">
+        <member name="P:Shamisen.Fixed64.Epsilon">
             <summary>
             Represents the smallest positive <see cref="T:Shamisen.Fixed64"/> value that is greater than zero. This field is constant and read-only.
             </summary>
@@ -16455,11 +16455,11 @@
         </member>
         <member name="M:Shamisen.Fixed64.op_Increment(Shamisen.Fixed64)">
             <summary>
-            Increments the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="F:Shamisen.Fixed64.Epsilon"/>.
+            Increments the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
             </summary>
             <param name="value">The value to increment.</param>
             <returns>
-            The value of <paramref name="value"/> incremented by <see cref="F:Shamisen.Fixed64.Epsilon"/>.
+            The value of <paramref name="value"/> incremented by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
             </returns>
         </member>
         <member name="M:Shamisen.Fixed64.op_UnaryNegation(Shamisen.Fixed64)">
@@ -16473,11 +16473,11 @@
         </member>
         <member name="M:Shamisen.Fixed64.op_Decrement(Shamisen.Fixed64)">
             <summary>
-            Decrements the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="F:Shamisen.Fixed64.Epsilon"/>.
+            Decrements the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
             </summary>
             <param name="value">The value to decrement.</param>
             <returns>
-            The value of <paramref name="value"/> decremented by <see cref="F:Shamisen.Fixed64.Epsilon"/>.
+            The value of <paramref name="value"/> decremented by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
             </returns>
         </member>
         <member name="M:Shamisen.Fixed64.op_Explicit(Shamisen.Fixed64)~System.Single">
@@ -18155,6 +18155,21 @@
             <param name="frontRight">The input buffer for front right channel.</param>
             <param name="rearLeft">The input buffer for rear left channel.</param>
             <param name="rearRight">The input buffer for rear right channel.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.DuplicateMonauralToStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Duplicates specified monaural signal <paramref name="source"/> to the specified stereo <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+            <param name="source">The source.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.DuplicateMonauralToChannels(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Int32)">
+            <summary>
+            Duplicates specified monaural samples <paramref name="source"/> to <paramref name="channels"/>, and writes to <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The multi-channel destination.</param>
+            <param name="source">The monaural source.</param>
+            <param name="channels">The number of channels.</param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.Interleave5Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -21013,6 +21028,15 @@
             <param name="maxLength">The maximum length.</param>
             <returns></returns>
         </member>
+        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
         <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
@@ -21020,6 +21044,26 @@
             <typeparam name="T"></typeparam>
             <param name="span">The span.</param>
             <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+            <param name="divisor">The number to divide.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+            <param name="divisor">The number to divide.</param>
             <returns></returns>
         </member>
         <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
