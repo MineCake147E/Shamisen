@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shamisen.Filters
 {
@@ -255,7 +252,7 @@ namespace Shamisen.Filters
         private static double CalculateAlphaFromQuality(double quality, double sinW0) => sinW0 / (2 * quality);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static double CalculateAlphaFromSlope(double slope, double A, double sinW0) => 0.5 * sinW0 * Math.Sqrt((A + 1 / A) * (1 / slope - 1) + 2);
+        private static double CalculateAlphaFromSlope(double slope, double a, double sinW0) => 0.5 * sinW0 * Math.Sqrt((a + 1 / a) * (1 / slope - 1) + 2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void CalculateOmega0RelatedValues(double samplingFrequency, double cutOffFrequency, out double w0, out double cosW0, out double sinW0)
@@ -344,24 +341,24 @@ namespace Shamisen.Filters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BiQuadParameter CreatePeakingEqualizerCoefficients(double cosW0, double alpha, double A)
+        private static BiQuadParameter CreatePeakingEqualizerCoefficients(double cosW0, double alpha, double a)
         {
-            var alphamA = alpha * A;
-            var alphadA = alpha / A;
+            var alphamA = alpha * a;
+            var alphadA = alpha / a;
             float b1a1 = -2f * (float)cosW0;
             return new BiQuadParameter((float)(1 + alphamA), b1a1, (float)(1 - alphamA), (float)(1 + alphadA), b1a1, (float)(1 - alphadA));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BiQuadParameter CreateLowShelfCoefficients(double cosW0, double A, double alpha)
+        private static BiQuadParameter CreateLowShelfCoefficients(double cosW0, double a, double alpha)
         {
-            var TwomSqrtAmAlpha = 2 * Math.Sqrt(A) * alpha;
-            var Ap1 = A + 1;
-            var As1 = A - 1;
+            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            var Ap1 = a + 1;
+            var As1 = a - 1;
             double As1CosW0 = As1 * cosW0;
-            float b0 = (float)(A * (Ap1 - As1CosW0 + TwomSqrtAmAlpha));
-            float b1 = (float)(2 * A * (As1 - Ap1 * cosW0));
-            float b2 = (float)(A * (Ap1 - As1CosW0 - TwomSqrtAmAlpha));
+            float b0 = (float)(a * (Ap1 - As1CosW0 + TwomSqrtAmAlpha));
+            float b1 = (float)(2 * a * (As1 - Ap1 * cosW0));
+            float b2 = (float)(a * (Ap1 - As1CosW0 - TwomSqrtAmAlpha));
             float a0 = (float)(Ap1 + As1CosW0 + TwomSqrtAmAlpha);
             float a1 = (float)(-2 * (As1 + Ap1 * cosW0));
             float a2 = (float)(Ap1 + As1CosW0 - TwomSqrtAmAlpha);

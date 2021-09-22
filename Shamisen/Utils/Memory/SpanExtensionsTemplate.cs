@@ -10,7 +10,7 @@ using DivideSharp;
 using Shamisen;
 using System.Diagnostics;
 
-namespace System
+namespace Shamisen
 {
     /// <summary>
     /// Provides some extension functions.
@@ -33,16 +33,9 @@ namespace System
 			{
 				span.Fill(value);
 			}
-            else if(Vector<float>.Count == span.Length)
-            {
-                Unsafe.As<float, Vector<float>>(ref MemoryMarshal.GetReference(span)) = new Vector<float>(value);
-            }
 			else
 			{
-				var spanV = MemoryMarshal.Cast<float, Vector<float>>(span);
-				spanV.Fill(new Vector<float>(value));
-				var spanR = span.Slice(spanV.Length * Vector<float>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -62,10 +55,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<double, Vector<double>>(span);
-				spanV.Fill(new Vector<double>(value));
-				var spanR = span.Slice(spanV.Length * Vector<double>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -85,10 +75,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<byte, Vector<byte>>(span);
-				spanV.Fill(new Vector<byte>(value));
-				var spanR = span.Slice(spanV.Length * Vector<byte>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -108,10 +95,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<ushort, Vector<ushort>>(span);
-				spanV.Fill(new Vector<ushort>(value));
-				var spanR = span.Slice(spanV.Length * Vector<ushort>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -131,10 +115,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<uint, Vector<uint>>(span);
-				spanV.Fill(new Vector<uint>(value));
-				var spanR = span.Slice(spanV.Length * Vector<uint>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -154,10 +135,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<ulong, Vector<ulong>>(span);
-				spanV.Fill(new Vector<ulong>(value));
-				var spanR = span.Slice(spanV.Length * Vector<ulong>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -177,10 +155,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<sbyte, Vector<sbyte>>(span);
-				spanV.Fill(new Vector<sbyte>(value));
-				var spanR = span.Slice(spanV.Length * Vector<sbyte>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -200,10 +175,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<short, Vector<short>>(span);
-				spanV.Fill(new Vector<short>(value));
-				var spanR = span.Slice(spanV.Length * Vector<short>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -223,10 +195,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<int, Vector<int>>(span);
-				spanV.Fill(new Vector<int>(value));
-				var spanR = span.Slice(spanV.Length * Vector<int>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 		/// <summary>
@@ -246,10 +215,7 @@ namespace System
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<long, Vector<long>>(span);
-				spanV.Fill(new Vector<long>(value));
-				var spanR = span.Slice(spanV.Length * Vector<long>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 #endregion FastFill

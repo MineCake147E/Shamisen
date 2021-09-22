@@ -15,11 +15,12 @@ namespace Shamisen.Core.Tests.CoreFx
     public class SpanExtensionsTest
     {
         private const int Size = 8209;
+        #region QuickFillFillsCorrectly
 
         [Test]
-        public void QuickFillFillsCorrectly()
+        public void QuickFillFillsCorrectlyDecimal()
         {
-            Span<decimal> span = new decimal[127];
+            Span<decimal> span = new decimal[131071];
             const decimal Value = -1m;
             span.QuickFill(Value);
             for (int i = 0; i < span.Length; i++)
@@ -30,10 +31,26 @@ namespace Shamisen.Core.Tests.CoreFx
         }
 
         [Test]
-        public void FastFillFillsCorrectly()
+        public void QuickFillFillsCorrectlyInt24()
         {
-            Span<float> span = new float[32];
-            const int Value = 1;
+            Span<Int24> span = new Int24[699049];
+            Int24 Value = new Int24(unchecked((int)0x8076_5432));
+            span.QuickFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        #endregion
+
+        #region FastFillFillsCorrectly
+        [Test]
+        public void FastFillFillsCorrectlyByte()
+        {
+            Span<byte> span = new byte[2097151];
+            const byte Value = (byte)0x55;
             span.FastFill(Value);
             for (int i = 0; i < span.Length; i++)
             {
@@ -42,6 +59,46 @@ namespace Shamisen.Core.Tests.CoreFx
             Assert.Pass();
         }
 
+        [Test]
+        public void FastFillFillsCorrectlyInt16()
+        {
+            Span<short> span = new short[1048575];
+            const short Value = (short)0x55aa;
+            span.FastFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
+        public void FastFillFillsCorrectlySingle()
+        {
+            Span<float> span = new float[524287];
+            const float Value = MathF.PI;
+            span.FastFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
+        public void FastFillFillsCorrectlyDouble()
+        {
+            Span<double> span = new double[262143];
+            const double Value = Math.PI;
+            span.FastFill(Value);
+            for (int i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        #endregion
 
         [Test]
         public void FastAddAddsCorrectly()
@@ -90,6 +147,9 @@ namespace Shamisen.Core.Tests.CoreFx
             }
             Assert.Pass();
         }
+
+
+        #region ReverseEndiannessWorksCorrectly
         [Test]
         public void ReverseEndiannessFallbackWorksCorrectly()
         {
@@ -180,5 +240,6 @@ namespace Shamisen.Core.Tests.CoreFx
             }
             Assert.Pass();
         }
+        #endregion
     }
 }

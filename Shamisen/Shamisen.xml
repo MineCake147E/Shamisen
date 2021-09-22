@@ -11217,12 +11217,7 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.Scale">
             <summary>
@@ -11233,62 +11228,25 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Attenuator.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Attenuator.Read(System.Span{System.Single})">
-            <summary>
-            Reads the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns></returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Attenuator.Dispose(System.Boolean)">
             <summary>
@@ -11297,9 +11255,7 @@
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:Shamisen.Filters.Attenuator.Dispose">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Filters.BiQuadFilter">
             <summary>
@@ -12139,14 +12095,6 @@
             Defines a base infrastructure of mixer item.
             </summary>
         </member>
-        <member name="P:Shamisen.Filters.Mixing.IMixerItem.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
-        </member>
         <member name="P:Shamisen.Filters.Mixing.IMixerItem.Volume">
             <summary>
             Gets or sets the volume.
@@ -12163,19 +12111,32 @@
             The source properties.
             </value>
         </member>
-        <member name="P:Shamisen.Filters.Mixing.IMixerItem.Buffer">
+        <member name="T:Shamisen.Filters.Mixing.ISourceBufferPair">
             <summary>
-            Gets the buffer.
+            Defines a base infrastructure of a pair of <see cref="T:Shamisen.ISampleSource"/> and buffer.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.ISourceBufferPair.Buffer">
+            <summary>
+            Gets the buffer associated with this <see cref="T:Shamisen.Filters.Mixing.ISourceBufferPair"/>.
             </summary>
             <value>
-            The buffer.
+            The buffer associated with this <see cref="T:Shamisen.Filters.Mixing.ISourceBufferPair"/>.
             </value>
         </member>
-        <member name="M:Shamisen.Filters.Mixing.IMixerItem.CheckBuffer(System.Int32)">
+        <member name="M:Shamisen.Filters.Mixing.ISourceBufferPair.CheckBuffer(System.Int32)">
             <summary>
-            Checks and stretches the buffer.
+            Checks and stretches the <see cref="P:Shamisen.Filters.Mixing.ISourceBufferPair.Buffer"/>.
             </summary>
             <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.ISourceBufferPair.Source">
+            <summary>
+            Gets the source associated with this <see cref="T:Shamisen.Filters.Mixing.ISourceBufferPair"/>.
+            </summary>
+            <value>
+            The source associated with this <see cref="T:Shamisen.Filters.Mixing.ISourceBufferPair"/>.
+            </value>
         </member>
         <member name="T:Shamisen.Filters.Mixing.MixerItem">
             <summary>
@@ -12191,84 +12152,40 @@
             <exception cref="T:System.ArgumentNullException">sourceProperties</exception>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Source">
-            <summary>
-            Gets the source of this <see cref="T:Shamisen.Filters.Mixing.MixerItem"/>.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Volume">
-            <summary>
-            Gets the volume of this <see cref="T:Shamisen.Filters.Mixing.MixerItem"/>.
-            </summary>
-            <value>
-            The volume.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.SourceProperties">
-            <summary>
-            Gets the source properties.
-            </summary>
-            <value>
-            The source properties.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.MixerItem.Shamisen#IAudioSource{System#Single,Shamisen#SampleFormat}#SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.MixerItem.Shamisen#IAudioSource{System#Single,Shamisen#SampleFormat}#SeekSupport">
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Mixing.MixerItem.Buffer">
-            <summary>
-            Gets the buffer.
-            </summary>
-            <value>
-            The buffer.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Mixing.MixerItem.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Mixing.MixerItem.CheckBuffer(System.Int32)">
-            <summary>
-            Checks and stretches the buffer.
-            </summary>
-            <param name="length">The length.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Mixing.MixerItem.Dispose(System.Boolean)">
             <summary>
@@ -12277,22 +12194,20 @@
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:Shamisen.Filters.Mixing.MixerItem.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Filters.Mixing.SimpleMixer">
             <summary>
-            Mixes down two signal into one signal.
+            Mixes down two signals into one signal.
             </summary>
             <seealso cref="T:Shamisen.ISampleSource" />
         </member>
         <member name="M:Shamisen.Filters.Mixing.SimpleMixer.#ctor(Shamisen.Filters.Mixing.IMixerItem,Shamisen.Filters.Mixing.IMixerItem)">
-             <summary>
-            
-             </summary>
-             <param name="itemA"></param>
-             <param name="itemB"></param>
+            <summary>
+            TODO: Docs
+            </summary>
+            <param name="itemA"></param>
+            <param name="itemB"></param>
         </member>
         <member name="P:Shamisen.Filters.Mixing.SimpleMixer.Format">
             <inheritdoc/>
@@ -12338,9 +12253,114 @@
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:Shamisen.Filters.Mixing.SimpleMixer.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.Filters.Mixing.SimpleSourceBufferPair">
             <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            
             </summary>
+        </member>
+        <member name="M:Shamisen.Filters.Mixing.SimpleSourceBufferPair.#ctor(Shamisen.ISampleSource)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Source">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Buffer">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Mixing.SimpleSourceBufferPair.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Mixing.SimpleSourceBufferPair.CheckBuffer(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Finalize">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Mixing.SimpleSourceBufferPair.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.Filters.Multiplier">
+            <summary>
+            Multiplies the instantaneous values of the two sources.<br/>
+            It can be used to gradually modify the volume of a <see cref="T:Shamisen.ISampleSource"/>.<br/>
+            If you put two <see cref="T:Shamisen.Synthesis.SinusoidSource"/> with different frequencies, the output will be a mix of two new sinusoid with two different frequencies, one at sum, and the other at difference.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.Multiplier.#ctor(Shamisen.Filters.Mixing.ISourceBufferPair,Shamisen.Filters.Mixing.ISourceBufferPair)">
+            <summary>
+            TODO: Docs
+            </summary>
+            <param name="itemA"></param>
+            <param name="itemB"></param>
+            <exception cref="T:System.ArgumentNullException">Either <paramref name="itemA"/> or <paramref name="itemB"/> were <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="itemA"/>'s <see cref="P:Shamisen.IAudioSource`2.Format"/> is not same as <paramref name="itemB"/>'s <see cref="P:Shamisen.IAudioSource`2.Format"/>.</exception>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.ItemA">
+            <summary>
+            Gets the item A.
+            </summary>
+            <value>
+            The item A.
+            </value>
+        </member>
+        <member name="P:Shamisen.Filters.Multiplier.ItemB">
+            <summary>
+            Gets the item B.
+            </summary>
+            <value>
+            The item B.
+            </value>
+        </member>
+        <member name="M:Shamisen.Filters.Multiplier.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Multiplier.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.Multiplier.Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Filters.SimplePlaylistSource`2">
              <summary>
@@ -12719,103 +12739,41 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
+        <member name="T:Shamisen.IAudioFormat`1">
             <summary>
-            Represents a format of a half-precision sample source.
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
             </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
-            </summary>
-            <param name="channels">The channels.</param>
-            <param name="sampleRate">The sample rate.</param>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
-            <summary>
-            Gets the number of channels.
-            It does not describe how these loudspeakers of each channels are placed in the room.
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
-            <summary>
-            Gets the number indicates how many times the audio signal is sampled.
-            </summary>
-            <value>
-            The sample rate.
-            </value>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
             </summary>
             <value>
             The bit depth.
             </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
-            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <value>
-            The size of block.
-            </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
-            </summary>
-            <value>
-            The size of a frame in <see cref="T:System.Half"/>s.
-            </value>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
-            <summary>Returns a hash code for this instance.</summary>
-            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -12867,42 +12825,6 @@
             </summary>
             <value>
             The extra data.
-            </value>
-        </member>
-        <member name="T:Shamisen.IAudioFormat`1">
-            <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
-            <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
-            </summary>
-            <value>
-            The number of channels.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
-            <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
-            </summary>
-            <value>
-            The bit depth.
             </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
@@ -17774,61 +17696,50 @@
         </member>
         <member name="T:Shamisen.Synthesis.SilenceSource`2">
             <summary>
-            Generates a silence.
+            Generates a silence or DC offset.
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <typeparam name="TFormat">The type of the format.</typeparam>
             <seealso cref="T:Shamisen.IReadableAudioSource`2" />
         </member>
         <member name="P:Shamisen.Synthesis.SilenceSource`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceSource`2.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSource`2.Offset">
             <summary>
-            Gets or sets where the <see cref="T:Shamisen.IAudioSource`2" /> is.
-            Some implementation could not support this property.
+            Gets and sets the DC offset that this <see cref="T:Shamisen.Synthesis.SilenceSource`2"/> generates.
             </summary>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceSource`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceSource`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
-        <member name="M:Shamisen.Synthesis.SilenceSource`2.#ctor(`1)">
+        <member name="P:Shamisen.Synthesis.SilenceSource`2.Shamisen#IAudioSource{TSample,TFormat}#Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSource`2.Shamisen#IAudioSource{TSample,TFormat}#TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSource`2.Shamisen#IAudioSource{TSample,TFormat}#Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Synthesis.SilenceSource`2.#ctor(`1,`0)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Synthesis.SilenceSource`2"/> class.
             </summary>
             <param name="format">The format.</param>
+            <param name="offset">The DC offset to generate.</param>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceSource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceSource`2.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceSource`2.Dispose(System.Boolean)">
             <summary>
@@ -18171,6 +18082,14 @@
             <param name="span"></param>
             <param name="scale"></param>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMultiply(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Multiplies specified <paramref name="sourceA"/> and <paramref name="sourceB"/> and stores to <paramref name="destination"/>.
+            </summary>
+            <param name="destination"></param>
+            <param name="sourceA"></param>
+            <param name="sourceB"></param>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.FastMix(System.ReadOnlySpan{System.Single},System.Span{System.Single},System.Single)">
             <summary>
             Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
@@ -18477,182 +18396,6 @@
             <value>
             The value.
             </value>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
-            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
-            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
             <summary>
@@ -20316,22 +20059,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -20488,6 +20231,41 @@
         </member>
         <member name="M:Shamisen.MathI.Min(System.IntPtr,System.IntPtr)">
             <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Min(System.Int32,System.Int32)">
+            <inheritdoc cref="M:System.Math.Min(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Int32,System.Int32)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.Int32"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.UInt32,System.UInt32)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.UInt32"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Int64,System.Int64)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.Int64"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.UInt64,System.UInt64)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.UInt64"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
         </member>
         <member name="M:Shamisen.MathI.Abs(System.Int64)">
             <summary>
@@ -20964,6 +20742,509 @@
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:Shamisen.SpanExtensions">
+            <summary>
+            Provides some extension functions.
+            </summary>
+            <summary>
+            Provides some extension functions.
+            </summary>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
+            <summary>
+            Quickly (but slower than <see cref="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ShiftRight(System.Span{System.Int32})">
+            <summary>
+            Moves the elements of specified <paramref name="span"/> right by 1 element.
+            </summary>
+            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ShiftRight``1(System.Span{``0})">
+            <summary>
+            Moves the elements of specified <paramref name="span"/> right by 1 element.
+            </summary>
+            <typeparam name="TSample"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.Skip``1(System.Span{``0},System.Int32)">
+            <summary>
+            Skips the specified step.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+            <param name="divisor">The number to divide.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
+            <summary>
+            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The span.</param>
+            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
+            <param name="divisor">The number to divide.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="length">The length to slice back.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="span"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="memory"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="channels">The align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.Memory`1"/> into a destination <see cref="T:System.Span`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.ReadOnlyMemory`1"/> into a destination <see cref="T:System.Span`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
+            <summary>
+            Attempts to copy the current <see cref="T:System.Memory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+            <summary>
+            Attempts to copy the current <see cref="T:System.ReadOnlyMemory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.Span{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of current <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of current <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.VectorExtensions">
             <summary>
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
@@ -20990,509 +21271,6 @@
             </summary>
             <typeparam name="T">The type of exception.</typeparam>
             <param name="exception">The exception.</param>
-        </member>
-        <member name="T:System.SpanExtensions">
-            <summary>
-            Provides some extension functions.
-            </summary>
-            <summary>
-            Provides some extension functions.
-            </summary>
-        </member>
-        <member name="M:System.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
-            <summary>
-            Quickly (but slower than <see cref="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.ShiftRight(System.Span{System.Int32})">
-            <summary>
-            Moves the elements of specified <paramref name="span"/> right by 1 element.
-            </summary>
-            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
-        </member>
-        <member name="M:System.SpanExtensions.ShiftRight``1(System.Span{``0})">
-            <summary>
-            Moves the elements of specified <paramref name="span"/> right by 1 element.
-            </summary>
-            <typeparam name="TSample"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
-        </member>
-        <member name="M:System.SpanExtensions.Skip``1(System.Span{``0},System.Int32)">
-            <summary>
-            Skips the specified step.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
-            <param name="divisor">The number to divide.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
-            <param name="divisor">The number to divide.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="length">The length to slice back.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.Memory{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.Memory{``0})">
-            <summary>
-            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlySpan{``0})">
-            <summary>
-            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlyMemory{``0})">
-            <summary>
-            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Memory{``0})">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlyMemory{``0})">
-            <summary>
-            Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlySpan`1"/></typeparam>
-            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Memory{``0})">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlySpan{``0})">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">
-            <summary>
-            Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.ReadOnlyMemory`1"/></typeparam>
-            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.CopyTo``1(System.Memory{``0},System.Span{``0})">
-            <summary>
-            Copies the contents of this <see cref="T:System.Memory`1"/> into a destination <see cref="T:System.Span`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
-            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
-            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.CopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
-            <summary>
-            Copies the contents of this <see cref="T:System.ReadOnlyMemory`1"/> into a destination <see cref="T:System.Span`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
-            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
-            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.CopyTo``1(System.Span{``0},System.Memory{``0})">
-            <summary>
-            Copies the contents of this <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
-            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
-            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.CopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
-            <summary>
-            Copies the contents of this <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
-            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
-            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
-            <summary>
-            Attempts to copy the current <see cref="T:System.Memory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
-            <param name="source">The <see cref="T:System.Memory`1"/> to copy from.</param>
-            <param name="destination">The target of the copy operation.</param>
-            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:System.SpanExtensions.TryCopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
-            <summary>
-            Attempts to copy the current <see cref="T:System.ReadOnlyMemory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Span`1"/></typeparam>
-            <param name="source">The <see cref="T:System.ReadOnlyMemory`1"/> to copy from.</param>
-            <param name="destination">The target of the copy operation.</param>
-            <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:System.SpanExtensions.TryCopyTo``1(System.Span{``0},System.Memory{``0})">
-            <summary>
-            Copies the contents of current <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
-            <param name="source">The <see cref="T:System.Span`1"/> to copy from.</param>
-            <param name="destination">The target of the copy operation.</param>
-            <returns></returns>
-        </member>
-        <member name="M:System.SpanExtensions.TryCopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
-            <summary>
-            Copies the contents of current <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
-            </summary>
-            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
-            <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
-            <param name="destination">The target of the copy operation.</param>
-            <returns></returns>
         </member>
         <member name="T:System.Numerics.Vector5">
             <summary>

@@ -311,3 +311,9 @@ dotnet_diagnostic.CS8625.severity = error
 
 # CS8604: Null 参照引数の可能性があります。
 dotnet_diagnostic.CS8604.severity = error
+
+# CS0628: 新規の protected メンバーが sealed 型で宣言されました
+dotnet_diagnostic.CS0628.severity = error
+
+# IDE1006: 命名スタイル
+dotnet_diagnostic.IDE1006.severity = error

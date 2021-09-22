@@ -1,27 +1,23 @@
-﻿using System.Buffers.Binary;
+﻿using System;
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-
-using Shamisen;
+using System.Numerics;
 
 using DivideSharp;
 
 #if NET5_0_OR_GREATER
-
 using System.Runtime.Intrinsics.Arm;
-
 #endif
 #if NETCOREAPP3_1_OR_GREATER
-
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 
 using Shamisen.Utils.Intrinsics;
-
 #endif
 
-namespace System
+namespace Shamisen
 {
     /// <summary>
     /// Provides some extension functions.
@@ -37,6 +33,7 @@ namespace System
         /// <typeparam name="TSample">The type of the sample.</typeparam>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void QuickFill<TSample>(this Span<TSample> span, TSample value)
         {
             if (span.Length < 32)
@@ -44,19 +41,111 @@ namespace System
                 span.Fill(value);
                 return;
             }
-            var fillled = span.SliceWhile(16);
-            var remaining = span.Slice(fillled.Length);
-            fillled.Fill(value);
+            var filled = span.SliceWhile(16);
+            var remaining = span.Slice(filled.Length);
+            filled.Fill(value);
             do
             {
-                fillled.CopyTo(remaining);
-                remaining = remaining.Slice(fillled.Length);
-                fillled = span.SliceWhile(fillled.Length << 1);
-            } while (remaining.Length >= fillled.Length);
-            fillled.Slice(fillled.Length - remaining.Length).CopyTo(remaining);
+                filled.CopyTo(remaining);
+                remaining = remaining.Slice(filled.Length);
+                filled = span.SliceWhile(filled.Length << 1);
+            } while (remaining.Length >= filled.Length);
+            filled.Slice(filled.Length - remaining.Length).CopyTo(remaining);
         }
 
         #endregion QuickFill
+
+        #region VectorFill
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void VectorFill<T>(Span<T> dst, T value) where T : unmanaged
+        {
+            if (!Vector.IsHardwareAccelerated)
+            {
+                dst.Fill(value);
+                return;
+            }
+            ref var rdi = ref MemoryMarshal.GetReference(dst);
+            var vv = new Vector<T>(value);
+            nint i = 0, length = dst.Length;
+            nint olen;
+#if NETCOREAPP3_1_OR_GREATER
+            if (Avx2.IsSupported)
+            {
+                olen = length - 32 * Vector<T>.Count + 1;
+                for (; i < olen; i += 32 * Vector<T>.Count)
+                {
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 4 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 5 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 6 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 7 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 8 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 9 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 10 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 11 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 12 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 13 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 14 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 15 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 16 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 17 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 18 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 19 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 20 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 21 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 22 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 23 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 24 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 25 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 26 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 27 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 28 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 29 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 30 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 31 * Vector<T>.Count)) = vv;
+                }
+            }
+            else if (Sse.IsSupported)
+            {
+                olen = length - 16 * Vector<T>.Count + 1;
+                for (; i < olen; i += 16 * Vector<T>.Count)
+                {
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 4 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 5 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 6 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 7 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 8 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 9 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 10 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 11 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 12 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 13 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 14 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 15 * Vector<T>.Count)) = vv;
+                }
+            }
+#endif
+            olen = length - 4 * Vector<T>.Count + 1;
+            for (; i < olen; i += 4 * Vector<T>.Count)
+            {
+                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
+                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
+                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
+                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
+            }
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref rdi, i) = vv[0];
+            }
+        }
+        #endregion
 
         #region MoveByOffset
 

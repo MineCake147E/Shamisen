@@ -90,6 +90,95 @@ namespace Shamisen
 
         #endregion
 
+        #region Fast Math
+        /// <inheritdoc cref="Math.Min(int, int)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int Min(int val1, int val2)
+        {
+            bool g = val1 > val2;
+            int y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            int r = y & val2;
+            int q = AndNot(y, val1);
+            return r | q;
+        }
+        #endregion
+
+        #region Fast Bit Operations
+        #region AndNot
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="int"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int AndNot(int a, int b) => (int)AndNot((uint)a, (uint)b);
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="uint"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint AndNot(uint a, uint b)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi1.IsSupported)
+            {
+                return Bmi1.AndNot(a, b);
+            }
+#endif
+            return ~a & b;
+        }
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="long"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static long AndNot(long a, long b) => (long)AndNot((ulong)a, (ulong)b);
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="ulong"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong AndNot(ulong a, ulong b)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi1.X64.IsSupported)
+            {
+                return Bmi1.X64.AndNot(a, b);
+            }
+#endif
+            return ~a & b;
+        }
+        #endregion
+        #endregion
+
         #region Abs
 
         /// <summary>

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shamisen.Utils
 {
@@ -13,7 +10,7 @@ namespace Shamisen.Utils
     /// <seealso cref="Utils.ResizableBufferWrapper{T}" />
     public sealed class ResizablePooledBufferWrapper<T> : ResizableBufferWrapper<T> where T : unmanaged
     {
-        private ArrayPool<byte> Pool = ArrayPool<byte>.Shared;
+        private static ArrayPool<byte> Pool => ArrayPool<byte>.Shared;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResizablePooledBufferWrapper{T}"/> class.
@@ -23,7 +20,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                array = Pool.Rent(initialSize * sizeof(T));
+                array = ResizablePooledBufferWrapper<T>.Pool.Rent(initialSize * sizeof(T));
             }
         }
 
@@ -43,7 +40,7 @@ namespace Shamisen.Utils
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (array != null) Pool.Return(array);
+            if (array != null) ResizablePooledBufferWrapper<T>.Pool.Return(array);
             //array = null;
             //Pool = null;
         }
@@ -55,8 +52,8 @@ namespace Shamisen.Utils
         protected override void ResizeInternal(int newSize)
         {
             ActualBuffer.FastFill(0);
-            Pool.Return(array);
-            array = Pool.Rent(newSize);
+            ResizablePooledBufferWrapper<T>.Pool.Return(array);
+            array = ResizablePooledBufferWrapper<T>.Pool.Rent(newSize);
             ActualBuffer.FastFill(0);
         }
     }

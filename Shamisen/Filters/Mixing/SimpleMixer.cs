@@ -5,7 +5,7 @@ using Shamisen.Utils;
 namespace Shamisen.Filters.Mixing
 {
     /// <summary>
-    /// Mixes down two signal into one signal.
+    /// Mixes down two signals into one signal.
     /// </summary>
     /// <seealso cref="ISampleSource" />
     public sealed class SimpleMixer : ISampleSource
@@ -13,7 +13,7 @@ namespace Shamisen.Filters.Mixing
         private bool disposedValue = false;
 
         /// <summary>
-        ///
+        /// TODO: Docs
         /// </summary>
         /// <param name="itemA"></param>
         /// <param name="itemB"></param>
@@ -62,8 +62,10 @@ namespace Shamisen.Filters.Mixing
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
+            ItemA.CheckBuffer(buffer.Length);
             ItemB.CheckBuffer(buffer.Length);
-            var rA = ItemA.Read(buffer);
+            var mA = ItemA.Buffer.SliceWhile(buffer.Length);
+            var rA = ItemA.Read(mA.Span);
             if (rA.IsEndOfStream)
             {
                 var rA2 = ItemB.Read(buffer);
@@ -82,19 +84,16 @@ namespace Shamisen.Filters.Mixing
             }
             else if (rA.Length < buffer.Length)
             {
-                buffer.SliceWhile(rA.Length).FastScalarMultiply(ItemA.Volume);
-                buffer.Slice(rA.Length).FastFill(0);
                 var memory = ItemB.Buffer.SliceWhile(buffer.Length);
                 var rB = ItemB.Read(memory.Span);
-                AudioUtils.FastMix(memory.Span, buffer, ItemB.Volume);
-                return rB;
+                AudioUtils.FastMix(buffer, mA.Span.SliceWhileIfLongerThan(rA.Length), ItemA.Volume, memory.Span.SliceWhileIfLongerThan(rB.Length), ItemB.Volume);
+                return MathI.Max(rA, rB);
             }
             else
             {
-                buffer.FastScalarMultiply(ItemA.Volume);
                 var memory = ItemB.Buffer.SliceWhile(buffer.Length);
                 var rB = ItemB.Read(memory.Span);
-                AudioUtils.FastMix(memory.Span, buffer, ItemB.Volume);
+                AudioUtils.FastMix(buffer, mA.Span, ItemA.Volume, memory.Span.SliceWhileIfLongerThan(rB.Length), ItemB.Volume);
                 return MathI.Max(rA, rB);
             }
         }
@@ -119,9 +118,7 @@ namespace Shamisen.Filters.Mixing
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);

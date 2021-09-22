@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shamisen.Synthesis
 {
     /// <summary>
-    /// Generates a silence.
+    /// Generates a silence or DC offset.
     /// </summary>
     /// <typeparam name="TSample">The type of the sample.</typeparam>
     /// <typeparam name="TFormat">The type of the format.</typeparam>
@@ -17,67 +14,54 @@ namespace Shamisen.Synthesis
     {
         private bool disposedValue = false;
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format { get; }
 
-        /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}" /> is.
-        /// Some implementation could not support this property.
-        /// </summary>
+        /// <inheritdoc/>
         public long Position { get; set; }
 
         /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
+        /// Gets and sets the DC offset that this <see cref="SilenceSource{TSample, TFormat}"/> generates.
         /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        public TSample Offset { get; set; }
+
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
 
+        /// <inheritdoc/>
         ulong? IAudioSource<TSample, TFormat>.Length => null;
 
+        /// <inheritdoc/>
         ulong? IAudioSource<TSample, TFormat>.TotalLength => null;
 
+        /// <inheritdoc/>
         ulong? IAudioSource<TSample, TFormat>.Position => null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SilenceSource{TSample, TFormat}"/> class.
         /// </summary>
         /// <param name="format">The format.</param>
-        public SilenceSource(TFormat format) => Format = format;
+        /// <param name="offset">The DC offset to generate.</param>
+        public SilenceSource(TFormat format, TSample offset = default)
+        {
+            Format = format;
+            Offset = offset;
+        }
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>
-        /// The length of the data written.
-        /// </returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer)
         {
-            var span = MemoryMarshal.Cast<TSample, int>(buffer);
-            span.FastFill(0);
+            var offset = Offset;
+            buffer.QuickFill(offset);
             return buffer.Length;
         }
 
         #region IDisposable Support
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);

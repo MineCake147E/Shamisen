@@ -22,7 +22,7 @@ using DivideSharp;
 using Shamisen;
 using System.Diagnostics;
 
-namespace System
+namespace Shamisen
 {
     /// <summary>
     /// Provides some extension functions.
@@ -41,18 +41,15 @@ namespace System
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<<#=            item#>> span, <#=            item#> value = default)
+        public static void FastFill(this Span<<#=item#>> span, <#=item#> value = default)
         {
-            if(Vector<<#=            item#>>.Count > span.Length)
+            if(Vector<<#=item#>>.Count > span.Length)
 			{
 				span.Fill(value);
 			}
 			else
 			{
-				var spanV = MemoryMarshal.Cast<<#=            item#>, Vector<<#=            item#>>>(span);
-				spanV.Fill(new Vector<<#=            item#>>(value));
-				var spanR = span.Slice(spanV.Length * Vector<<#=            item#>>.Count);
-				spanR.Fill(value);
+				VectorFill(span, value);
 			}
         }
 <#
@@ -63,54 +60,54 @@ namespace System
     {
         var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
 #>
-#region Extensions for <#=            item#><T>
+#region Extensions for <#=item#><T>
         /// <summary>
-        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
+        /// Slices the <paramref name="<#=nameCamel#>"/> aligned with the multiple of <paramref name="channels"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="<#=            nameCamel#>">The <see cref="<#=            item#>{T}"/> to slice.</param>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static <#=            item#><T> SliceAlign<T>(this <#=            item#><T> <#=            nameCamel#>, int channels) => <#=            nameCamel#>.Slice(0, MathI.FloorStep(<#=            nameCamel#>.Length, channels));
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, int channels) => <#=nameCamel#>.Slice(0, MathI.FloorStep(<#=nameCamel#>.Length, channels));
 
         /// <summary>
-        /// Slices the <paramref name="<#=            nameCamel#>"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// Slices the <paramref name="<#=nameCamel#>"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="<#=            nameCamel#>">The <see cref="<#=            item#>{T}"/> to slice.</param>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static <#=            item#><T> SliceAlign<T>(this <#=            item#><T> <#=            nameCamel#>, UInt32Divisor channelsDivisor) => <#=            nameCamel#>.Slice(0, (int)channelsDivisor.Floor((uint)<#=            nameCamel#>.Length));
+        public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, UInt32Divisor channelsDivisor) => <#=nameCamel#>.Slice(0, (int)channelsDivisor.Floor((uint)<#=nameCamel#>.Length));
 
         /// <summary>
-        /// Slices the <paramref name="<#=            nameCamel#>"/> with the specified length.
+        /// Slices the <paramref name="<#=nameCamel#>"/> with the specified length.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="<#=            nameCamel#>">The <see cref="<#=            item#>{T}"/> to slice.</param>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static <#=            item#><T> SliceWhile<T>(this <#=            item#><T> <#=            nameCamel#>, int length) => <#=            nameCamel#>.Slice(0, length);
+        public static <#=item#><T> SliceWhile<T>(this <#=item#><T> <#=nameCamel#>, int length) => <#=nameCamel#>.Slice(0, length);
 <#
         foreach(var item2 in typesMemoryReadable)
         {
 #>
 
         /// <summary>
-        /// Slices the <paramref name="<#=                nameCamel#>"/> with the length of specified <paramref name="criterion"/>.
+        /// Slices the <paramref name="<#=nameCamel#>"/> with the length of specified <paramref name="criterion"/>.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="<#=                item#>{T}"/></typeparam>
-        /// <param name="<#=                nameCamel#>">The <see cref="<#=                item#>{T}"/> to slice.</param>
+        /// <typeparam name="T">The type of <see cref="<#=item#>{T}"/></typeparam>
+        /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static <#=                item#><T> AlignWith<T>(this <#=                item#><T> <#=                nameCamel#>, <#=                item2#><T> criterion) => <#=                nameCamel#>.Slice(0, criterion.Length);
+        public static <#=item#><T> AlignWith<T>(this <#=item#><T> <#=nameCamel#>, <#=item2#><T> criterion) => <#=nameCamel#>.Slice(0, criterion.Length);
 
 <#
         }#>
-#endregion Extensions for <#=            item#><T>
+#endregion Extensions for <#=item#><T>
 <#
     }#>
 #region CopyTo alternatives
@@ -120,14 +117,14 @@ namespace System
         var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
 #>
         /// <summary>
-        /// Copies the contents of this <see cref="<#=            item#>{T}"/> into a destination <see cref="Span{T}"/>.
+        /// Copies the contents of this <see cref="<#=item#>{T}"/> into a destination <see cref="Span{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of destination <see cref="Span{T}"/></typeparam>
-        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void CopyTo<T>(this <#=            item#><T> source, Span<T> destination) => source.Span.CopyTo(destination);
+        public static void CopyTo<T>(this <#=item#><T> source, Span<T> destination) => source.Span.CopyTo(destination);
 
 <#
     }#>
@@ -137,14 +134,14 @@ namespace System
         var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
 #>
         /// <summary>
-        /// Copies the contents of this <see cref="<#=            item#>{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// Copies the contents of this <see cref="<#=item#>{T}"/> into a destination <see cref="Memory{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
-        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void CopyTo<T>(this <#=            item#><T> source, Memory<T> destination) => source.CopyTo(destination.Span);
+        public static void CopyTo<T>(this <#=item#><T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
 <#
     }#>
@@ -156,14 +153,14 @@ namespace System
         var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
 #>
         /// <summary>
-        /// Attempts to copy the current <see cref="<#=            item#>{T}"/> to a destination <see cref="Span{T}"/> and returns a value that indicates whether the copy operation succeeded.
+        /// Attempts to copy the current <see cref="<#=item#>{T}"/> to a destination <see cref="Span{T}"/> and returns a value that indicates whether the copy operation succeeded.
         /// </summary>
         /// <typeparam name="T">The type of destination <see cref="Span{T}"/></typeparam>
-        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryCopyTo<T>(this <#=            item#><T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
+        public static bool TryCopyTo<T>(this <#=item#><T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
 
 <#
     }#>
@@ -173,14 +170,14 @@ namespace System
         var nameCamel = char.ToLowerInvariant(item[0]) + item.Substring(1);
 #>
         /// <summary>
-        /// Copies the contents of current <see cref="<#=            item#>{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// Copies the contents of current <see cref="<#=item#>{T}"/> into a destination <see cref="Memory{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
-        /// <param name="source">The <see cref="<#=            item#>{T}"/> to copy from.</param>
+        /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryCopyTo<T>(this <#=            item#><T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
+        public static bool TryCopyTo<T>(this <#=item#><T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
 <#
     }#>

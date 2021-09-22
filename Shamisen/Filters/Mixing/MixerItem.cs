@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 using Shamisen.Filters.Mixing.Advanced;
 using Shamisen.Pipeline;
-using Shamisen.Utils;
 
 namespace Shamisen.Filters.Mixing
 {
@@ -33,86 +29,41 @@ namespace Shamisen.Filters.Mixing
             buffer = ArrayPool<float>.Shared.Rent(1024 * Format.Channels);
         }
 
-        /// <summary>
-        /// Gets the source of this <see cref="MixerItem"/>.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc/>
         public ISampleSource Source { get; }
 
         private IReadableAudioSource<float, SampleFormat> ActualSource { get; }
 
-        /// <summary>
-        /// Gets the volume of this <see cref="MixerItem"/>.
-        /// </summary>
-        /// <value>
-        /// The volume.
-        /// </value>
+        /// <inheritdoc/>
         public float Volume { get; set; }
 
-        /// <summary>
-        /// Gets the source properties.
-        /// </summary>
-        /// <value>
-        /// The source properties.
-        /// </value>
+        /// <inheritdoc/>
         public AudioSourceProperties<float, SampleFormat> SourceProperties { get; }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => Source.Length;
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => Source.TotalLength;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => Source.Position;
 
+        /// <inheritdoc/>
         ISkipSupport? IAudioSource<float, SampleFormat>.SkipSupport => Source.SkipSupport;
 
+        /// <inheritdoc/>
         ISeekSupport? IAudioSource<float, SampleFormat>.SeekSupport => Source.SeekSupport;
 
-        /// <summary>
-        /// Gets the buffer.
-        /// </summary>
-        /// <value>
-        /// The buffer.
-        /// </value>
+        /// <inheritdoc/>
         public Memory<float> Buffer => buffer;
 
         private float[] buffer;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
             var res = ActualSource.Read(buffer);
@@ -130,10 +81,7 @@ namespace Shamisen.Filters.Mixing
             return res;
         }
 
-        /// <summary>
-        /// Checks and stretches the buffer.
-        /// </summary>
-        /// <param name="length">The length.</param>
+        /// <inheritdoc/>
         public void CheckBuffer(int length)
         {
             if (Buffer.Length < length)
@@ -156,14 +104,13 @@ namespace Shamisen.Filters.Mixing
                 {
                     //
                 }
-
+                var pool = ArrayPool<float>.Shared;
+                pool.Return(buffer);
                 disposedValue = true;
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(disposing: true);
