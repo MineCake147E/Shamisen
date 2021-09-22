@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 
 using NUnit.Framework;
 
+using Shamisen.Utils;
+
 namespace Shamisen.Core.Tests.CoreFx
 {
     [TestFixture]
@@ -50,7 +52,7 @@ namespace Shamisen.Core.Tests.CoreFx
             source.FastFill(Value);
             destination.FastFill(-1);
 
-            SpanExtensions.FastAdd(source, destination);
+            AudioUtils.FastAdd(source, destination);
             for (int i = 0; i < source.Length; i++)
             {
                 if (destination[i] != 0) Assert.Fail("The FastAdd doesn't add correctly!");
@@ -81,7 +83,7 @@ namespace Shamisen.Core.Tests.CoreFx
             source.FastFill(Value);
             destination.FastFill(-1);
 
-            SpanExtensions.FastMix(source, destination, 2);
+            AudioUtils.FastMix(source, destination, 2);
             for (int i = 0; i < source.Length; i++)
             {
                 if (destination[i] != 1) Assert.Fail("The FastMix doesn't mix correctly!");

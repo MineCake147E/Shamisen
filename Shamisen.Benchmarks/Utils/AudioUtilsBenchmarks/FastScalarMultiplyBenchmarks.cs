@@ -5,7 +5,9 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
+using Shamisen.Utils;
+
+namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
@@ -39,12 +41,12 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
         }
         [Benchmark]
 #pragma warning disable CS0618
-        public void FastScalarMultiplyStandardVariableOld() => SpanExtensions.FastScalarMultiplyStandardVariableOld(bufferDst.AsSpan(), Scale);
+        public void FastScalarMultiplyStandardVariableOld() => AudioUtils.FastScalarMultiplyStandardVariableOld(bufferDst.AsSpan(), Scale);
 #pragma warning restore CS0618
 
         [Benchmark]
-        public void FastScalarMultiplyStandardFixed() => SpanExtensions.FastScalarMultiplyStandardFixed(bufferDst.AsSpan(), Scale);
+        public void FastScalarMultiplyStandardFixed() => AudioUtils.FastScalarMultiplyStandardFixed(bufferDst.AsSpan(), Scale);
         [Benchmark]
-        public void FastScalarMultiplyStandardVariable() => SpanExtensions.FastScalarMultiplyStandardVariable(bufferDst.AsSpan(), Scale);
+        public void FastScalarMultiplyStandardVariable() => AudioUtils.FastScalarMultiplyStandardVariable(bufferDst.AsSpan(), Scale);
     }
 }

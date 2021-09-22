@@ -17918,6 +17918,11 @@
             The frequency.
             </value>
         </member>
+        <member name="P:Shamisen.Synthesis.SinusoidSource.AngularVelocity">
+            <summary>
+            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.SinusoidSource"/>.
+            </summary>
+        </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.SkipSupport">
             <summary>
             Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
@@ -17991,6 +17996,11 @@
             <summary>
             Gets or sets where the <see cref="T:Shamisen.IAudioSource`2"/> is.
             Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.SquareWaveSource.AngularVelocity">
+            <summary>
+            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.SquareWaveSource"/>.
             </summary>
         </member>
         <member name="P:Shamisen.Synthesis.SquareWaveSource.SkipSupport">
@@ -18128,6 +18138,75 @@
             <summary>
             Contains some utility functions for manipulating audio data.
             </summary>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastAdd(System.ReadOnlySpan{System.Single},System.Span{System.Single})">
+            <summary>
+            Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesToAdd">The samples to add.</param>
+            <param name="buffer">The buffer.</param>
+            <exception cref="T:System.ArgumentException">samplesToAdd</exception>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Single},System.Single)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+            </summary>
+            <param name="span">The span to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardFixed(System.Span{System.Single},System.Single)">
+            <summary>
+            Vectorized path using <see cref="T:System.Numerics.Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
+            Impractical in Rocket Lake or later due to absense of Haswell's severe CPU clock limits.<br/>
+            </summary>
+            <param name="span"></param>
+            <param name="scale"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.Single)">
+            <summary>
+            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Only practical in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
+            </summary>
+            <param name="span"></param>
+            <param name="scale"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMix(System.ReadOnlySpan{System.Single},System.Span{System.Single},System.Single)">
+            <summary>
+            Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesToMix">The samples to add.</param>
+            <param name="buffer">The buffer.</param>
+            <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
+            <exception cref="T:System.ArgumentException">samplesToMix</exception>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMix(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
+            The data inside <paramref name="buffer"/> will be destroyed.
+            </summary>
+            <param name="buffer">The output buffer.</param>
+            <param name="samplesA">The samples a.</param>
+            <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
+            <param name="samplesB">The samples b.</param>
+            <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
+            <exception cref="T:System.ArgumentException">
+            buffer must not be shorter than samplesA or samplesB! - buffer
+            or
+            samplesA must be as long as samplesB! - samplesA
+            </exception>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMixAvx(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Only usable in Rocket Lake or later due to CPU clock limits
+            (but Clang suggests it and actually performs approximately 1.34 times better than 
+            <see cref="M:Shamisen.Utils.AudioUtils.FastMixSse(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)"/>, even in Haswell)
+            </summary>
+            <param name="buffer"></param>
+            <param name="samplesA"></param>
+            <param name="volumeA"></param>
+            <param name="samplesB"></param>
+            <param name="volumeB"></param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -20919,75 +20998,6 @@
             <summary>
             Provides some extension functions.
             </summary>
-        </member>
-        <member name="M:System.SpanExtensions.FastAdd(System.ReadOnlySpan{System.Single},System.Span{System.Single})">
-            <summary>
-            Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
-            </summary>
-            <param name="samplesToAdd">The samples to add.</param>
-            <param name="buffer">The buffer.</param>
-            <exception cref="T:System.ArgumentException">samplesToAdd</exception>
-        </member>
-        <member name="M:System.SpanExtensions.FastScalarMultiply(System.Span{System.Single},System.Single)">
-            <summary>
-            Multiplies the specified samples faster, with the given <paramref name="scale"/>.
-            </summary>
-            <param name="span">The span to multiply.</param>
-            <param name="scale">The value to be multiplied.</param>
-        </member>
-        <member name="M:System.SpanExtensions.FastScalarMultiplyStandardFixed(System.Span{System.Single},System.Single)">
-            <summary>
-            Vectorized path using <see cref="T:System.Numerics.Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
-            Impractical in Rocket Lake or later due to absense of Haswell's severe CPU clock limits.<br/>
-            </summary>
-            <param name="span"></param>
-            <param name="scale"></param>
-        </member>
-        <member name="M:System.SpanExtensions.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.Single)">
-            <summary>
-            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
-            Only practical in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
-            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
-            </summary>
-            <param name="span"></param>
-            <param name="scale"></param>
-        </member>
-        <member name="M:System.SpanExtensions.FastMix(System.ReadOnlySpan{System.Single},System.Span{System.Single},System.Single)">
-            <summary>
-            Mixes the <paramref name="samplesToMix"/> to <paramref name="buffer"/>.
-            </summary>
-            <param name="samplesToMix">The samples to add.</param>
-            <param name="buffer">The buffer.</param>
-            <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
-            <exception cref="T:System.ArgumentException">samplesToMix</exception>
-        </member>
-        <member name="M:System.SpanExtensions.FastMix(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
-            <summary>
-            Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
-            The data inside <paramref name="buffer"/> will be destroyed.
-            </summary>
-            <param name="buffer">The output buffer.</param>
-            <param name="samplesA">The samples a.</param>
-            <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
-            <param name="samplesB">The samples b.</param>
-            <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
-            <exception cref="T:System.ArgumentException">
-            buffer must not be shorter than samplesA or samplesB! - buffer
-            or
-            samplesA must be as long as samplesB! - samplesA
-            </exception>
-        </member>
-        <member name="M:System.SpanExtensions.FastMixAvx(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
-            <summary>
-            Only usable in Rocket Lake or later due to CPU clock limits
-            (but Clang suggests it and actually performs approximately 1.34 times better than 
-            <see cref="M:System.SpanExtensions.FastMixSse(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)"/>, even in Haswell)
-            </summary>
-            <param name="buffer"></param>
-            <param name="samplesA"></param>
-            <param name="volumeA"></param>
-            <param name="samplesB"></param>
-            <param name="volumeB"></param>
         </member>
         <member name="M:System.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
             <summary>

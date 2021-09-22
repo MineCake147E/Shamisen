@@ -5,7 +5,9 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
+using Shamisen.Utils;
+
+namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
@@ -50,18 +52,18 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionsBenchmarks
         [Benchmark]
         public void Avx()
         {
-            SpanExtensions.FastMixAvx(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
+            AudioUtils.FastMixAvx(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
         }
         [Benchmark]
         public void Sse()
         {
-            SpanExtensions.FastMixSse(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
+            AudioUtils.FastMixSse(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
         }
 
         [Benchmark]
         public void Standard()
         {
-            SpanExtensions.FastMixStandardFixed(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
+            AudioUtils.FastMixStandardFixed(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
         }
     }
 }

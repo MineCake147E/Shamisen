@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shamisen.Utils
 {
@@ -11,6 +9,7 @@ namespace Shamisen.Utils
     /// <typeparam name="TSample">The type of the sample.</typeparam>
     /// <seealso cref="IDisposable" />
     internal sealed class BufferInstance<TSample> : IDisposable
+        where TSample : struct
     {
         private bool disposedValue;
         private TSample[] array;

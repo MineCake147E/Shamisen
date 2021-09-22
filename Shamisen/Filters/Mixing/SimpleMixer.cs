@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Shamisen.Utils;
+
 namespace Shamisen.Filters.Mixing
 {
     /// <summary>
@@ -84,7 +86,7 @@ namespace Shamisen.Filters.Mixing
                 buffer.Slice(rA.Length).FastFill(0);
                 var memory = ItemB.Buffer.SliceWhile(buffer.Length);
                 var rB = ItemB.Read(memory.Span);
-                SpanExtensions.FastMix(memory.Span, buffer, ItemB.Volume);
+                AudioUtils.FastMix(memory.Span, buffer, ItemB.Volume);
                 return rB;
             }
             else
@@ -92,7 +94,7 @@ namespace Shamisen.Filters.Mixing
                 buffer.FastScalarMultiply(ItemA.Volume);
                 var memory = ItemB.Buffer.SliceWhile(buffer.Length);
                 var rB = ItemB.Read(memory.Span);
-                SpanExtensions.FastMix(memory.Span, buffer, ItemB.Volume);
+                AudioUtils.FastMix(memory.Span, buffer, ItemB.Volume);
                 return MathI.Max(rA, rB);
             }
         }

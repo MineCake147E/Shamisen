@@ -45,19 +45,17 @@ namespace Shamisen.Synthesis
         /// </value>
         public double Frequency
         {
-            get => frequency;
-            set
-            {
-                frequency = value;
-                Omega = (Fixed64)Math.Abs(2 * value * SamplingFrequencyInverse);
-            }
+            get => AngularVelocity.DoubleValue * Format.SampleRate * 0.5;
+            set => AngularVelocity = (Fixed64)Math.Abs(2.0 * value / Format.SampleRate);
         }
 
         private double SamplingFrequencyInverse { get; }
 
         private Fixed64 Theta { get; set; } = Fixed64.Zero;
-
-        private Fixed64 Omega { get; set; }
+        /// <summary>
+        /// Gets or sets the angular velocity of this <see cref="SinusoidSource"/>.
+        /// </summary>
+        public Fixed64 AngularVelocity { get; set; }
 
         /// <summary>
         /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -90,7 +88,7 @@ namespace Shamisen.Synthesis
         {
             var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            var omega = Omega;
+            var omega = AngularVelocity;
             var theta = Theta;
             var bspan = buffer.SliceFromEnd(buffer.Length / channels);
             theta = GenerateMonauralBlock(bspan, omega, theta);

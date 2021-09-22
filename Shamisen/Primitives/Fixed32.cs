@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shamisen
 {
@@ -96,7 +91,7 @@ namespace Shamisen
         /// <returns>
         /// The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        public static Fixed32 operator *(Fixed32 left, Fixed32 right) => new((int)((left.Value * (long)right.Value) >> 31));
+        public static Fixed32 operator *(Fixed32 left, Fixed32 right) => new((int)(left.Value * (long)right.Value / 2147483648));
 
         /// <summary>
         /// Returns the specified value to the <paramref name="power"/>th power.

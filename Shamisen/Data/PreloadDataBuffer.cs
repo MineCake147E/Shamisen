@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +14,7 @@ namespace Shamisen.Data
     /// </summary>
     public sealed class PreloadDataBuffer<TSample> : IReadableDataSource<TSample> where TSample : unmanaged
     {
-        private ManualResetEventSlim fillFlag = new ManualResetEventSlim(true);
+        private ManualResetEventSlim fillFlag = new(true);
         private ManualResetEventSlim readFlag = new(true);
         private ManualResetEventSlim peekFlag = new(true);
         private ManualResetEventSlim fallbackFlag = new(true);

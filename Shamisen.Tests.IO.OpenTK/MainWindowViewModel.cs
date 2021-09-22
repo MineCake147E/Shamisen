@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -69,7 +68,7 @@ namespace Shamisen.Tests.IO.OpenTK
             foreach (var item in Devices.ToArray().Where(a => a.Checked))
             {
                 var t = item.Device.CreateSoundOut();
-                var source = new SinusoidSource(new SampleFormat(2, 192000)) { Frequency = 440 * y++ };
+                var source = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
                 t.Initialize(new SampleToPcm16Converter(source, false));
                 outputs.Add(t);
                 sinusoidSources.Add(source);

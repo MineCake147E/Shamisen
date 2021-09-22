@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shamisen
 {
@@ -92,7 +90,7 @@ namespace Shamisen
         /// <returns>
         /// The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new((short)(left.Value * right.Value >> 15));
+        public static Fixed16 operator *(Fixed16 left, Fixed16 right) => new((short)((left.Value * right.Value) / 32768));
 
         /// <summary>
         /// Divides two specified <see cref="Fixed16"/> values.

@@ -3,8 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Shamisen.Formats;
-using OpenTK;
+
 using OpenTK.Audio.OpenAL;
 
 namespace Shamisen.IO
@@ -189,13 +188,14 @@ namespace Shamisen.IO
                     if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
                     bufferPointers = AL.GenBuffers(BUFNUM); CheckErrors();
                     src = AL.GenSource(); CheckErrors();
+                    var sf = sourceFormat ?? throw new ArgumentNullException();
 
-                    inbuf = new byte[sourceFormat.GetBufferSizeRequired(Latency)];
-                    format = GetALFormat(sourceFormat);
+                    inbuf = new byte[sf.GetBufferSizeRequired(Latency)];
+                    format = GetALFormat(sf);
                     foreach (var item in bufferPointers)
                     {
                         var cnt = Source.Read(inbuf.AsSpan());
-                        AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sourceFormat.SampleRate); CheckErrors();
+                        AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
                     }
                     if (AL.IsExtensionPresent("AL_SOFT_direct_channels_remix"))
                     {

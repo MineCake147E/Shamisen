@@ -47,13 +47,8 @@ namespace Shamisen.Synthesis
         /// </value>
         public double Frequency
         {
-            get => frequency;
-            set
-            {
-                frequency = value;
-                Omega = (Fixed64)Math.Abs(2.0 * value / Format.SampleRate);
-                OmegaDivisor = new((ulong)Omega.Value);
-            }
+            get => AngularVelocity.DoubleValue * Format.SampleRate * 0.5;
+            set => AngularVelocity = (Fixed64)Math.Abs(2.0 * value / Format.SampleRate);
         }
 
         private double SamplingFrequencyInverse { get; }
@@ -62,14 +57,14 @@ namespace Shamisen.Synthesis
         /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
         /// Some implementation could not support this property.
         /// </summary>
-        [Obsolete("Not Supported", true)]
-        public long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public long Position { get => Theta.Value; set => Theta = new(value); }
 
         private Fixed64 Theta { get; set; } = Fixed64.Zero;
 
-        private Fixed64 Omega { get; set; }
-
-        private UInt64Divisor OmegaDivisor { get; set; }
+        /// <summary>
+        /// Gets or sets the angular velocity of this <see cref="SquareWaveSource"/>.
+        /// </summary>
+        public Fixed64 AngularVelocity { get; set; }
 
         private Int32Divisor ChannelsDivisor { get; set; }
 
@@ -104,10 +99,9 @@ namespace Shamisen.Synthesis
         {
             var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            var omega = Omega;
+            var omega = AngularVelocity;
             var theta = Theta;
-            var omegaDivisor = OmegaDivisor;
-            var r = Process(buffer, omega, theta, omegaDivisor, channels, ChannelsDivisor, out var nt);
+            var r = Process(buffer, omega, theta, channels, ChannelsDivisor, out var nt);
             Theta = nt;
             return r;
         }
@@ -135,7 +129,7 @@ namespace Shamisen.Synthesis
             return r > 0 ? q + 1 : q;
         }
 
-        internal static ReadResult Process(Span<float> buffer, Fixed64 omega, Fixed64 theta, UInt64Divisor omegaDivisor, int channels, Int32Divisor channelsDivisor, out Fixed64 newTheta)
+        internal static ReadResult Process(Span<float> buffer, Fixed64 omega, Fixed64 theta, int channels, Int32Divisor channelsDivisor, out Fixed64 newTheta)
         {
             var bspan = buffer.SliceFromEnd(buffer.Length / channelsDivisor);
             theta = GenerateMonauralBlock(bspan, omega, theta);
