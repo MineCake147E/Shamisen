@@ -9,9 +9,8 @@ using System.Text;
 using Shamisen.Codecs.Waveform.Parsing.Chunks;
 using Shamisen.Codecs.Waveform.Rf64;
 using Shamisen.Codecs.Waveform.Riff;
-using Shamisen.Data;
 using Shamisen.Data.Binary;
-using Shamisen.Extensions;
+
 
 namespace Shamisen.Codecs.Waveform.Parsing
 {

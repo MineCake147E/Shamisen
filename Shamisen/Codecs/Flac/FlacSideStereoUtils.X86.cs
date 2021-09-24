@@ -3,12 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shamisen.Codecs.Flac
 {
@@ -29,9 +29,18 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                if (Avx2.IsSupported)
+                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                buffer = buffer.SliceWhileIfLongerThan(min * 2);
+                left = left.SliceWhileIfLongerThan(min);
+                right = right.SliceWhileIfLongerThan(min);
+                if (min > 32 && Avx2.IsSupported)
                 {
                     DecodeAndInterleaveLeftSideStereoInt32Avx2(buffer, left, right);
+                    return;
+                }
+                if (Sse2.IsSupported)
+                {
+                    DecodeAndInterleaveLeftSideStereoInt32Sse2(buffer, left, right);
                     return;
                 }
                 Fallback.DecodeAndInterleaveLeftSideStereoInt32(buffer, left, right);
@@ -40,44 +49,146 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                unsafe
+                ref var rL = ref MemoryMarshal.GetReference(left);
+                ref var rR = ref MemoryMarshal.GetReference(right);
+                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                nint i = 0, length = left.Length;
+                var olen = length - 31;
+                for (; i < olen; i += 32)
                 {
-                    if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                    if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
-                    if (left.Length < Vector256<int>.Count)
-                    {
-                        Fallback.DecodeAndInterleaveLeftSideStereoInt32(buffer, left, right);
-                        return;
-                    }
-                    right = right.SliceWhile(left.Length);
-                    buffer = buffer.SliceWhile(left.Length * 2);
-                    //These pre-touches may avoid some range checks
-                    _ = right[left.Length - 1];
-                    _ = buffer[left.Length * 2 - 1];
-                    _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
-                    var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out var rleft);
-                    _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out var rright);
-                    ref var rL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(left));
-                    ref var rR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(right));
-                    ref var rB = ref Unsafe.As<int, (Vector256<int>, Vector256<int>)>(ref MemoryMarshal.GetReference(buffer));
-                    var length = ((IntPtr)(vL.Length * sizeof(Vector256<int>))).ToPointer();
-                    var j = IntPtr.Zero;
-                    for (var i = IntPtr.Zero; i.ToPointer() < length; i += sizeof(Vector256<int>))
-                    {
-                        var ymm0 = Unsafe.AddByteOffset(ref rL, i);
-                        var ymm1 = Unsafe.AddByteOffset(ref rR, i);
-                        ymm1 = Avx2.Subtract(ymm0, ymm1);
-                        var x = Avx2.UnpackLow(ymm0, ymm1);
-                        var y = Avx2.UnpackHigh(ymm0, ymm1);
-                        var d = Avx2.Permute2x128(x, y, 0x20);
-                        var q = Avx2.Permute2x128(x, y, 0x31);
-                        Unsafe.AddByteOffset(ref rB, j) = (d, q);
-                        j += 2 * sizeof(Vector256<int>);
-                    }
-                    Fallback.DecodeAndInterleaveLeftSideStereoInt32(rbuffer, rleft, rright);
+                    var ymm0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i));
+                    var ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 8));
+                    var ymm1 = Avx2.Subtract(ymm0, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i)));
+                    var ymm3 = Avx2.Subtract(ymm2, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 8)));
+                    var ymm4 = Avx2.UnpackHigh(ymm0, ymm1);
+                    var ymm5 = Avx2.UnpackHigh(ymm2, ymm3);
+                    ymm0 = Avx2.UnpackLow(ymm0, ymm1);
+                    ymm2 = Avx2.UnpackLow(ymm2, ymm3);
+                    ymm1 = Avx2.Permute2x128(ymm0, ymm4, 0x20);
+                    ymm0 = Avx2.Permute2x128(ymm0, ymm4, 0x31);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm5, 0x20);
+                    ymm2 = Avx2.Permute2x128(ymm2, ymm5, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 0)) = ymm1;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = ymm0;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 16)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 24)) = ymm2;
+                    ymm0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 16));
+                    ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 24));
+                    ymm1 = Avx2.Subtract(ymm0, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 16)));
+                    ymm3 = Avx2.Subtract(ymm2, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 24)));
+                    ymm4 = Avx2.UnpackHigh(ymm0, ymm1);
+                    ymm5 = Avx2.UnpackHigh(ymm2, ymm3);
+                    ymm0 = Avx2.UnpackLow(ymm0, ymm1);
+                    ymm2 = Avx2.UnpackLow(ymm2, ymm3);
+                    ymm1 = Avx2.Permute2x128(ymm0, ymm4, 0x20);
+                    ymm0 = Avx2.Permute2x128(ymm0, ymm4, 0x31);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm5, 0x20);
+                    ymm2 = Avx2.Permute2x128(ymm2, ymm5, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 32)) = ymm1;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 40)) = ymm0;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 48)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 56)) = ymm2;
+                }
+                olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm2 = Sse2.Subtract(xmm0, xmm2);
+                    xmm3 = Sse2.Subtract(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 4))).AsInt32();
+                    xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 6))).AsInt32();
+                    xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 4))).AsInt32();
+                    xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 6))).AsInt32();
+                    xmm2 = Sse2.Subtract(xmm0, xmm2);
+                    xmm3 = Sse2.Subtract(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
+
+                }
+                olen = length - 3;
+                for (; i < olen; i += 4)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm2 = Sse2.Subtract(xmm0, xmm2);
+                    xmm3 = Sse2.Subtract(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                }
+                for (; i < length; i += 1)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    Unsafe.Add(ref rB, i * 2) = a;
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
                 }
             }
 
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DecodeAndInterleaveLeftSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
+            {
+                ref var rL = ref MemoryMarshal.GetReference(left);
+                ref var rR = ref MemoryMarshal.GetReference(right);
+                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                nint i = 0, length = left.Length;
+                var olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm2 = Sse2.Subtract(xmm0, xmm2);
+                    xmm3 = Sse2.Subtract(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 4))).AsInt32();
+                    xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 6))).AsInt32();
+                    xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 4))).AsInt32();
+                    xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 6))).AsInt32();
+                    xmm2 = Sse2.Subtract(xmm0, xmm2);
+                    xmm3 = Sse2.Subtract(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
+                }
+                olen = length - 1;
+                for (; i < olen; i += 2)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    Unsafe.Add(ref rB, i * 2) = a;
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
+                    a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 2) = a;
+                    b = Unsafe.Add(ref Unsafe.Add(ref rR, i), 1);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 3) = a - b;
+                }
+                for (; i < length; i += 1)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    Unsafe.Add(ref rB, i * 2) = a;
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
+                }
+            }
             #endregion LeftSide
 
             #region RightSide
@@ -85,9 +196,18 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                if (Avx2.IsSupported)
+                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                buffer = buffer.SliceWhileIfLongerThan(min * 2);
+                left = left.SliceWhileIfLongerThan(min);
+                right = right.SliceWhileIfLongerThan(min);
+                if (left.Length > 32 && Avx2.IsSupported)
                 {
                     DecodeAndInterleaveRightSideStereoInt32Avx2(buffer, left, right);
+                    return;
+                }
+                if (Sse2.IsSupported)
+                {
+                    DecodeAndInterleaveRightSideStereoInt32Sse2(buffer, left, right);
                     return;
                 }
                 Fallback.DecodeAndInterleaveRightSideStereoInt32(buffer, left, right);
@@ -96,44 +216,143 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                unsafe
+                ref var rL = ref MemoryMarshal.GetReference(left);
+                ref var rR = ref MemoryMarshal.GetReference(right);
+                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                nint i = 0, length = left.Length;
+                var olen = length - 31;
+                for (; i < olen; i += 32)
                 {
-                    unsafe
-                    {
-                        if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                        if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
-                        if (left.Length < Vector256<int>.Count)
-                        {
-                            Fallback.DecodeAndInterleaveRightSideStereoInt32(buffer, left, right);
-                            return;
-                        }
-                        right = right.SliceWhile(left.Length);
-                        buffer = buffer.SliceWhile(left.Length * 2);
-                        //These pre-touches may avoid some range checks
-                        _ = right[left.Length - 1];
-                        _ = buffer[left.Length * 2 - 1];
-                        _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
-                        var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out var rleft);
-                        _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out var rright);
-                        ref var rL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(left));
-                        ref var rR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(right));
-                        ref var rB = ref Unsafe.As<int, (Vector256<int>, Vector256<int>)>(ref MemoryMarshal.GetReference(buffer));
-                        var length = ((IntPtr)(vL.Length * sizeof(Vector256<int>))).ToPointer();
-                        var j = IntPtr.Zero;
-                        for (var i = IntPtr.Zero; i.ToPointer() < length; i += sizeof(Vector256<int>))
-                        {
-                            var ymm0 = Unsafe.AddByteOffset(ref rL, i);
-                            var ymm1 = Unsafe.AddByteOffset(ref rR, i);
-                            ymm0 = Avx2.Add(ymm0, ymm1);
-                            var x = Avx2.UnpackLow(ymm0, ymm1);
-                            var y = Avx2.UnpackHigh(ymm0, ymm1);
-                            var d = Avx2.Permute2x128(x, y, 0x20);
-                            var q = Avx2.Permute2x128(x, y, 0x31);
-                            Unsafe.AddByteOffset(ref rB, j) = (d, q);
-                            j += 2 * sizeof(Vector256<int>);
-                        }
-                        Fallback.DecodeAndInterleaveRightSideStereoInt32(rbuffer, rleft, rright);
-                    }
+                    var ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i));
+                    var ymm3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 8));
+                    var ymm0 = Avx2.Add(ymm1, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i)));
+                    var ymm2 = Avx2.Add(ymm3, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 8)));
+                    var ymm4 = Avx2.UnpackHigh(ymm0, ymm1);
+                    var ymm5 = Avx2.UnpackHigh(ymm2, ymm3);
+                    ymm0 = Avx2.UnpackLow(ymm0, ymm1);
+                    ymm2 = Avx2.UnpackLow(ymm2, ymm3);
+                    ymm1 = Avx2.Permute2x128(ymm0, ymm4, 0x20);
+                    ymm0 = Avx2.Permute2x128(ymm0, ymm4, 0x31);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm5, 0x20);
+                    ymm2 = Avx2.Permute2x128(ymm2, ymm5, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 0)) = ymm1;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = ymm0;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 16)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 24)) = ymm2;
+                    ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 16));
+                    ymm3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 24));
+                    ymm0 = Avx2.Add(ymm1, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 16)));
+                    ymm2 = Avx2.Add(ymm3, Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 24)));
+                    ymm4 = Avx2.UnpackHigh(ymm0, ymm1);
+                    ymm5 = Avx2.UnpackHigh(ymm2, ymm3);
+                    ymm0 = Avx2.UnpackLow(ymm0, ymm1);
+                    ymm2 = Avx2.UnpackLow(ymm2, ymm3);
+                    ymm1 = Avx2.Permute2x128(ymm0, ymm4, 0x20);
+                    ymm0 = Avx2.Permute2x128(ymm0, ymm4, 0x31);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm5, 0x20);
+                    ymm2 = Avx2.Permute2x128(ymm2, ymm5, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 32)) = ymm1;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 40)) = ymm0;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 48)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 56)) = ymm2;
+                }
+                olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm0 = Sse2.Add(xmm2, xmm0);
+                    xmm1 = Sse2.Add(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 4))).AsInt32();
+                    xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 6))).AsInt32();
+                    xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 4))).AsInt32();
+                    xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 6))).AsInt32();
+                    xmm0 = Sse2.Add(xmm2, xmm0);
+                    xmm1 = Sse2.Add(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
+
+                }
+                olen = length - 3;
+                for (; i < olen; i += 4)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm0 = Sse2.Add(xmm2, xmm0);
+                    xmm1 = Sse2.Add(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                }
+                for (; i < length; i += 1)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref rB, i * 2) = a + b;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DecodeAndInterleaveRightSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
+            {
+                ref var rL = ref MemoryMarshal.GetReference(left);
+                ref var rR = ref MemoryMarshal.GetReference(right);
+                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                nint i = 0, length = left.Length;
+                var olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 2))).AsInt32();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i))).AsInt32();
+                    var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 2))).AsInt32();
+                    xmm0 = Sse2.Add(xmm2, xmm0);
+                    xmm1 = Sse2.Add(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 4)) = xmm1;
+                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 4))).AsInt32();
+                    xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i + 6))).AsInt32();
+                    xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 4))).AsInt32();
+                    xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rR, i + 6))).AsInt32();
+                    xmm0 = Sse2.Add(xmm2, xmm0);
+                    xmm1 = Sse2.Add(xmm1, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm2);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
+                    xmm1 = Sse2.UnpackLow(xmm1, xmm3);
+                    Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
+                }
+                olen = length - 1;
+                for (; i < olen; i += 2)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref rB, i * 2) = a + b;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
+                    a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
+                    b = Unsafe.Add(ref Unsafe.Add(ref rR, i), 1);
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 2) = a + b;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 3) = b;
+                }
+                for (; i < length; i += 1)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    var b = Unsafe.Add(ref rR, i);
+                    Unsafe.Add(ref rB, i * 2) = a + b;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
                 }
             }
 
@@ -144,6 +363,10 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveMidSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
+                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                buffer = buffer.SliceWhileIfLongerThan(min * 2);
+                left = left.SliceWhileIfLongerThan(min);
+                right = right.SliceWhileIfLongerThan(min);
                 if (Avx2.IsSupported)
                 {
                     DecodeAndInterleaveMidSideStereoInt32Avx2(buffer, left, right);
@@ -155,51 +378,69 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveMidSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                unsafe
+                ref var rL = ref MemoryMarshal.GetReference(left);
+                ref var rR = ref MemoryMarshal.GetReference(right);
+                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                var ymm0 = Vector256.Create(1);
+                nint i = 0, length = left.Length;
+                var olen = length - 15;
+                for (; i < olen; i += 16)
                 {
-                    unsafe
-                    {
-                        if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                        if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
-                        if (left.Length < Vector256<int>.Count)
-                        {
-                            Fallback.DecodeAndInterleaveMidSideStereoInt32(buffer, left, right);
-                            return;
-                        }
-                        right = right.SliceWhile(left.Length);
-                        buffer = buffer.SliceWhile(left.Length * 2);
-                        //These pre-touches may avoid some range checks
-                        _ = right[left.Length - 1];
-                        _ = buffer[left.Length * 2 - 1];
-                        _ = MemoryUtils.CastSplit<int, (Vector256<int>, Vector256<int>)>(buffer, out var rbuffer);
-                        var vL = MemoryUtils.CastSplit<int, Vector256<int>>(left, out var rleft);
-                        _ = MemoryUtils.CastSplit<int, Vector256<int>>(right, out var rright);
-                        ref var rL = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(left));
-                        ref var rR = ref Unsafe.As<int, Vector256<int>>(ref MemoryMarshal.GetReference(right));
-                        ref var rB = ref Unsafe.As<int, (Vector256<int>, Vector256<int>)>(ref MemoryMarshal.GetReference(buffer));
-                        var length = ((IntPtr)(vL.Length * sizeof(Vector256<int>))).ToPointer();
-                        var j = IntPtr.Zero;
-                        var ymm15 = Vector256.Create(1);
-                        for (var i = IntPtr.Zero; i.ToPointer() < length; i += sizeof(Vector256<int>))
-                        {
-                            var ymm0 = Unsafe.AddByteOffset(ref rL, i);
-                            var ymm1 = Unsafe.AddByteOffset(ref rR, i);
-                            ymm0 = Avx2.Add(ymm0, ymm0);
-                            var ymm2 = Avx2.And(ymm1, ymm15);
-                            ymm0 = Avx2.Or(ymm0, ymm2);
-                            var ymm3 = Avx2.Add(ymm0, ymm1);
-                            var ymm4 = Avx2.Subtract(ymm0, ymm1);
-                            ymm3 = Avx2.ShiftRightArithmetic(ymm3, 1);
-                            ymm4 = Avx2.ShiftRightArithmetic(ymm4, 1);
-                            var x = Avx2.UnpackLow(ymm3, ymm4);
-                            var y = Avx2.UnpackHigh(ymm3, ymm4);
-                            var d = Avx2.Permute2x128(x, y, 0x20);
-                            var q = Avx2.Permute2x128(x, y, 0x31);
-                            Unsafe.AddByteOffset(ref rB, j) = (d, q);
-                            j += 2 * sizeof(Vector256<int>);
-                        }
-                        Fallback.DecodeAndInterleaveMidSideStereoInt32(rbuffer, rleft, rright);
-                    }
+                    var ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i));
+                    var ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i));
+                    ymm1 = Avx2.Add(ymm1, ymm1);
+                    var ymm3 = Avx2.And(ymm2, ymm0);
+                    ymm1 = Avx2.Or(ymm3, ymm1);
+                    ymm3 = Avx2.Add(ymm1, ymm2);
+                    ymm3 = Avx2.ShiftRightArithmetic(ymm3, 1);
+                    ymm1 = Avx2.Subtract(ymm1, ymm2);
+                    ymm1 = Avx2.ShiftRightArithmetic(ymm1, 1);
+                    ymm2 = Avx2.UnpackLow(ymm3, ymm1);
+                    ymm1 = Avx2.UnpackHigh(ymm3, ymm1);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm1, 0x20);
+                    ymm1 = Avx2.Permute2x128(ymm2, ymm1, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = ymm1;
+                    ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i + 8));
+                    ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i + 8));
+                    ymm1 = Avx2.Add(ymm1, ymm1);
+                    ymm3 = Avx2.And(ymm2, ymm0);
+                    ymm1 = Avx2.Or(ymm3, ymm1);
+                    ymm3 = Avx2.Add(ymm1, ymm2);
+                    ymm3 = Avx2.ShiftRightArithmetic(ymm3, 1);
+                    ymm1 = Avx2.Subtract(ymm1, ymm2);
+                    ymm1 = Avx2.ShiftRightArithmetic(ymm1, 1);
+                    ymm2 = Avx2.UnpackLow(ymm3, ymm1);
+                    ymm1 = Avx2.UnpackHigh(ymm3, ymm1);
+                    ymm3 = Avx2.Permute2x128(ymm2, ymm1, 0x20);
+                    ymm1 = Avx2.Permute2x128(ymm2, ymm1, 0x31);
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 16)) = ymm3;
+                    Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rB, i * 2 + 24)) = ymm1;
+                }
+                olen = length - 1;
+                for (; i < olen; i += 2)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    var b = Unsafe.Add(ref rR, i);
+                    a <<= 1;
+                    a |= b & 1;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 0) = (a + b) >> 1;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = (a - b) >> 1;
+                    a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
+                    b = Unsafe.Add(ref Unsafe.Add(ref rR, i), 1);
+                    a <<= 1;
+                    a |= b & 1;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 2) = (a + b) >> 1;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 3) = (a - b) >> 1;
+                }
+                for (; i < length; i += 1)
+                {
+                    var a = Unsafe.Add(ref rL, i);
+                    var b = Unsafe.Add(ref rR, i);
+                    a <<= 1;
+                    a |= b & 1;
+                    Unsafe.Add(ref rB, i * 2) = (a + b) >> 1;
+                    Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = (a - b) >> 1;
                 }
             }
 

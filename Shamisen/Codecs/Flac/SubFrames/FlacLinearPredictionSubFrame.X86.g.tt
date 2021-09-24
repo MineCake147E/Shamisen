@@ -105,7 +105,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
             internal static unsafe void <#=$"RestoreSignalOrder{item.Order}Sse41"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = <#=item.Order#>;
@@ -142,6 +142,9 @@ namespace Shamisen.Codecs.Flac.SubFrames
         int jmaxNSse41 = item.Order + (item.Order % 4 > 0 ? 1 : 0) - 2;
         int jmax2NSse41 = item.Order - 2;
         int k = 0;
+        var orderO4 = item.Order / 4;
+        var orderM4 = item.Order % 4;
+        var maxVsSse41 = orderO4 + (orderM4 > 0 ? 1 : 0);
         for(j = item.Order; j > 3; j-=4)
         {
 #>
@@ -162,16 +165,48 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 break;
         }
 #>
+                Vector128<int> <#=string.Join(", ", Enumerable.Range(0, Log2(maxVsSse41)).Select(a=>$"sum{a}"))#>;
                 for (nint i = 0; i < dataLength; i++)
                 {
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
-<#      for(int i = 0; i < item.Order; i += 4){#>
-                    sum = <#=(i == 0 ? "" : "Sse2.Add(sum, ")#>Sse41.MultiplyLow(vcoeff<#=i / 4#>, vprev<#=i / 4#>)<#=(i == 0 ? "" : ")")#>;
-<#      }#>
-                    var y = Ssse3.HorizontalAdd(sum, vzero);
-                    y = Ssse3.HorizontalAdd(y, vzero);
-                    y = Sse2.ShiftRightArithmetic(y, vshift);   //C# shift operator handling sucks so SSE2 is used instead(same latency, same throughput).
-                    y = Sse2.Add(y, res);   //Avoids extract and insert
+<#      int p;
+        Stack<(int order, int index)> tower = new();
+        for(p = 0; p < maxVsSse41; p++){
+            var nind = tower.Count > 0 ? tower.Peek().index + 1 : 0;
+        #>
+                    sum<#=nind#> = Sse41.MultiplyLow(vcoeff<#=p#>, vprev<#=p#>);
+<#
+            tower.Push((0, nind));
+            while(tower.Count > 1){
+                var t1 = tower.Pop();
+                if(tower.Peek().order == t1.order){
+                    var t2 = tower.Pop();
+                    tower.Push((t2.order + 1, t2.index));
+#>
+                    sum<#=t2.index#> = Sse2.Add(sum<#=t2.index#>, sum<#=t1.index#>);
+<#              
+                }else{
+                    tower.Push(t1);
+                    break;
+                }
+            }
+        }
+        while(tower.Count > 1){
+            var t = tower.Pop();
+            var t2 = tower.Pop();
+            tower.Push((t2.order + 1, t2.index));
+#>
+                    sum<#=t2.index#> = Sse2.Add(sum<#=t.index#>, sum<#=t2.index#>);
+<#
+        }
+        
+#>
+                    var sumx = Sse2.Shuffle(sum0, 0xee);
+                    sum = Sse2.Add(sum0, sumx);
+                    sumx = Sse2.Shuffle(sum, 0x55);
+                    sum = Sse2.Add(sum, sumx);
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
+                    sum = Sse2.ShiftRightArithmetic(sum, vshift);
+                    var y = Sse2.Add(sum, res);
 #if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
                     Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
 #else
@@ -191,7 +226,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         var orderM8 = item.Order % 8;
         var maxVs = orderO8 + (orderM8 > 0 ? 1 : 0);
 #>
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
             internal static unsafe void <#=$"RestoreSignalOrder{item.Order}Avx2"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = <#=item.Order#>;
@@ -285,7 +320,6 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }#>
                 for(nint i = 0; i < dataLength;)
                 {
-                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     //Integer Pairwise Summation
 <#      int p;
         Stack<(int order, int index)> tower = new();
@@ -319,9 +353,12 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
         
 #>
-                    sum = Ssse3.Add(sum0.GetUpper(), sum0.GetLower());
-                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
-                    sum = Ssse3.HorizontalAdd(sum, vzero256.GetLower());
+                    sum = Sse2.Add(sum0.GetUpper(), sum0.GetLower());
+                    var sumx = Sse2.Shuffle(sum, 0xee);
+                    sum = Sse2.Add(sum, sumx);
+                    sumx = Sse2.Shuffle(sum, 0x55);
+                    sum = Sse2.Add(sum, sumx);
+                    var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
 #if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
@@ -360,7 +397,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
             internal static unsafe void <#=$"RestoreSignalOrder{item.Order}WideSse41"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = <#=item.Order#>;
@@ -397,11 +434,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #>
                 for(nint i = 0; i < dataLength;)
                 {
-                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
 <#      for(int i = 0; i < item.Order; i += 2){#>
                     sum = <#=(i == 0 ? "" : "Sse2.Add(sum, ")#>Sse41.Multiply(vcoeff<#=i / 2#>, vprev<#=i / 2#>)<#=(i == 0 ? "" : ")")#>;
 <#      }#>
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
+                    var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
 #if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
@@ -418,7 +455,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
             internal static unsafe void <#=$"RestoreSignalOrder{item.Order}WideAvx2"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
 <#

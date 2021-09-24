@@ -11190,19 +11190,6 @@
             The big endian
             </summary>
         </member>
-        <member name="T:Shamisen.Extensions.EndiannessExtensions">
-             <summary>
-            
-             </summary>
-        </member>
-        <member name="F:Shamisen.Extensions.EndiannessExtensions.EnvironmentEndianness">
-            <summary>
-            Gets the environment's endianness.
-            </summary>
-            <value>
-            The environment endianness.
-            </value>
-        </member>
         <member name="T:Shamisen.Filters.Attenuator">
             <summary>
             Modifies the velocity of <see cref="P:Shamisen.Filters.Attenuator.Source"/>
@@ -17792,6 +17779,49 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
         </member>
+        <member name="T:Shamisen.Synthesis.SilenceSampleSource">
+            <summary>
+            Generates a silence or DC offset with <see cref="T:Shamisen.SampleFormat"/>.<br/>
+            This variant is specialized for <see cref="T:System.Single"/> samples for performance reason.<br/>
+            If the type of sample is known to be <see cref="T:System.Single"/>, use this instead of <see cref="T:Shamisen.Synthesis.SilenceSource`2"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Synthesis.SilenceSampleSource.#ctor(Shamisen.SampleFormat,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Synthesis.SilenceSampleSource"/> class.
+            </summary>
+            <param name="format">The format.</param>
+            <param name="offset">The DC offset to generate.</param>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.Shamisen#IAudioSource{System#Single,Shamisen#SampleFormat}#Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.Shamisen#IAudioSource{System#Single,Shamisen#SampleFormat}#TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.Shamisen#IAudioSource{System#Single,Shamisen#SampleFormat}#Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.Offset">
+            <summary>
+            Gets and sets the DC offset that this <see cref="T:Shamisen.Synthesis.SilenceSampleSource"/> generates.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.SilenceSampleSource.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Synthesis.SilenceSampleSource.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Synthesis.SilenceSampleSource.Dispose">
+            <inheritdoc/>
+        </member>
         <member name="T:Shamisen.Synthesis.SilenceSource`2">
             <summary>
             Generates a silence or DC offset.
@@ -18053,19 +18083,6 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
         </member>
-        <member name="T:Shamisen.AudioSourceExtensions">
-            <summary>
-            Contains some utility functions about <see cref="T:Shamisen.IAudioSource`2"/>
-            </summary>
-        </member>
-        <member name="M:Shamisen.AudioSourceExtensions.ReadAsAsync``2(Shamisen.IReadableAudioSource{``0,``1},System.Memory{``0})">
-            <summary>
-            Reads the audio to the specified buffer asynchronously if possible.
-            </summary>
-            <param name="source"></param>
-            <param name="destination">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
         <member name="T:Shamisen.AudioSourceUtils">
             <summary>
             Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>.
@@ -18095,34 +18112,10 @@
             <returns></returns>
         </member>
         <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.ISampleSource,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="initialBlockSize">
-            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-            </param>
-            <param name="internalBufferNumber">The number of internal buffer.</param>
-            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+            <inheritdoc cref="M:Shamisen.Filters.StreamBuffer`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.Int32,System.Int32,System.Boolean)"/>
         </member>
         <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.IWaveSource,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> class.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="initialBlockSize">
-            The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-            The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-            </param>
-            <param name="internalBufferNumber">The number of internal buffer.</param>
-            <param name="allowWaitForRead">The value which indicates whether the <see cref="T:Shamisen.Filters.StreamBuffer`2"/> should wait for another sample block or not.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+            <inheritdoc cref="M:Shamisen.Filters.StreamBuffer`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.Int32,System.Int32,System.Boolean)"/>
         </member>
         <member name="M:Shamisen.AudioSourceUtils.Loop``2(Shamisen.IReadableAudioSource{``0,``1})">
             <summary>
@@ -18139,6 +18132,14 @@
             </summary>
             <param name="source">The source.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ReadAsAsync``2(Shamisen.IReadableAudioSource{``0,``1},System.Memory{``0})">
+            <summary>
+            Reads the audio to the specified buffer asynchronously if possible.
+            </summary>
+            <param name="source"></param>
+            <param name="destination">The buffer.</param>
+            <returns>The length of the data written.</returns>
         </member>
         <member name="T:Shamisen.Utils.AudioUtils">
             <summary>
@@ -18493,6 +18494,19 @@
             </summary>
             <value>
             The value.
+            </value>
+        </member>
+        <member name="T:Shamisen.Utils.EndiannessExtensions">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:Shamisen.Utils.EndiannessExtensions.EnvironmentEndianness">
+            <summary>
+            Gets the environment's endianness.
+            </summary>
+            <value>
+            The environment endianness.
             </value>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">

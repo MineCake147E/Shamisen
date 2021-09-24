@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
-
-using Shamisen.Data;
-using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
 {
@@ -22,8 +16,6 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             96, 97,
             //tiny load test
             1024, 1048576,
-            //small benchmark
-            16777216
         };
 
         internal static void AssertArray(int[] b)

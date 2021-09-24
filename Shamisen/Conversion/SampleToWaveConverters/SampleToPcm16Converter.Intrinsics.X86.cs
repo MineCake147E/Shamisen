@@ -1,12 +1,8 @@
-﻿using Shamisen.Extensions;
+﻿
 
 using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using System.Text;
-using Shamisen.Optimization;
 using System.Runtime.CompilerServices;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -128,7 +124,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             ref var dh = ref MemoryMarshal.GetReference(dest);
             nint length = wrote.Length / 2;
             nint i;
-            for (i = 0; i < length - 1; i+=2)
+            for (i = 0; i < length - 1; i += 2)
             {
                 var lo = Sse2.ConvertToVector128Single(Sse41.ConvertToVector128Int32(lov));
                 var xmm5 = Vector128.CreateScalar(Unsafe.Add(ref wh, i)).AsSingle();
@@ -153,7 +149,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 Unsafe.Add(ref dh, 2 * i + 3) = xmm1.AsInt16().GetElement(2);
                 lov = Sse2.PackSignedSaturate(xmm1, xmm1);
             }
-            if(i < length)
+            if (i < length)
             {
                 var lo = Sse2.ConvertToVector128Single(Sse41.ConvertToVector128Int32(lov));
                 var xmm5 = Vector128.CreateScalar(Unsafe.Add(ref wh, i)).AsSingle();

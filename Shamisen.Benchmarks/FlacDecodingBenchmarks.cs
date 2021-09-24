@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Codecs.Flac;
-using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Data;
-using Shamisen.Filters;
-using Shamisen.Optimization;
-using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks
 {
     [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
-    [DisassemblyDiagnoser(maxDepth: 256)]
+    [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FlacDecodingBenchmarks
     {
         private MemoryStream ms;
