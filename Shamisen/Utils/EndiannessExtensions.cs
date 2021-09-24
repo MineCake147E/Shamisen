@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Shamisen.Extensions
+namespace Shamisen.Utils
 {
     /// <summary>
     ///

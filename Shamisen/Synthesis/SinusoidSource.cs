@@ -158,13 +158,12 @@ namespace Shamisen.Synthesis
             var ymm10 = Vector256.Create(C2);
             var ymm9 = Vector256.Create(-C1);
             var ymm8 = Vector256.Create(C0);
-
+            //TODO: AdvSimd, Avx2FmaMM, and Sse42 variant
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
             var olen = length - 7;
             for (; i < olen; i += 8)
             {
-
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsUInt32();
                 var ymm4 = Avx2.Abs(ymm3.AsInt32()).AsSingle();
                 var ymm5 = Avx2.Subtract(ymm15.AsUInt32(), ymm4.AsUInt32()).AsSingle();

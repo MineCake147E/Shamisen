@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -218,7 +215,7 @@ namespace System.Numerics
         /// The summed vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator +(Vector8 left, Vector8 right) => new Vector8(left.Front + right.Front, left.Back + right.Back);
+        public static Vector8 operator +(Vector8 left, Vector8 right) => new(left.Front + right.Front, left.Back + right.Back);
 
         /// <summary>
         /// Subtracts the second vector from the first.
@@ -229,7 +226,7 @@ namespace System.Numerics
         /// The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator -(Vector8 left, Vector8 right) => new Vector8(left.Front - right.Front, left.Back - right.Back);
+        public static Vector8 operator -(Vector8 left, Vector8 right) => new(left.Front - right.Front, left.Back - right.Back);
 
         /// <summary>
         /// Returns a new vector whose values are the product of each pair of elements in two specified vectors.
@@ -240,7 +237,7 @@ namespace System.Numerics
         /// The element-wise product vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator *(Vector8 left, Vector8 right) => new Vector8(left.Front * right.Front, left.Back * right.Back);
+        public static Vector8 operator *(Vector8 left, Vector8 right) => new(left.Front * right.Front, left.Back * right.Back);
 
         /// <summary>
         /// Divides the first vector by the second.
@@ -251,7 +248,7 @@ namespace System.Numerics
         /// The vector that results from dividing left by right.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator /(Vector8 left, Vector8 right) => new Vector8(left.Front / right.Front, left.Back / right.Back);
+        public static Vector8 operator /(Vector8 left, Vector8 right) => new(left.Front / right.Front, left.Back / right.Back);
 
         /// <summary>
         /// Multiples the specified vector by the specified scalar value.
@@ -262,7 +259,7 @@ namespace System.Numerics
         /// The scaled vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator *(Vector8 left, float right) => new Vector8(left.Front * right, left.Back * right);
+        public static Vector8 operator *(Vector8 left, float right) => new(left.Front * right, left.Back * right);
 
         /// <summary>
         /// Multiples the specified vector by the specified scalar value.
@@ -273,7 +270,7 @@ namespace System.Numerics
         /// The scaled vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator *(float left, Vector8 right) => new Vector8(right.Front * left, right.Back * left);
+        public static Vector8 operator *(float left, Vector8 right) => new(right.Front * left, right.Back * left);
 
         /// <summary>
         /// Divides the specified vector by a specified scalar value.
@@ -284,7 +281,7 @@ namespace System.Numerics
         /// The result of the division.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector8 operator /(Vector8 left, float right) => new Vector8(left.Front / right, left.Back / right);
+        public static Vector8 operator /(Vector8 left, float right) => new(left.Front / right, left.Back / right);
 
         /// <summary>
         /// Returns a value that indicates whether each pair of elements in two specified vectors are equal.

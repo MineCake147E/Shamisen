@@ -1,5 +1,4 @@
-﻿using Shamisen.Extensions;
-
+﻿
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Text;
 using Shamisen.Optimization;
 using System.Runtime.CompilerServices;
 using System.Numerics;
+using Shamisen.Utils;
 
 #if NETCOREAPP3_1_OR_GREATER
 

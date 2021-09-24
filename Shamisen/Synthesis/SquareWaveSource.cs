@@ -156,6 +156,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
+            //TODO: AdvSimd and Sse42 variant
             var t = theta.Value;
             var o = omega.Value;
             var ymm12 = Vector256.Create(o * 8);
@@ -164,12 +165,12 @@ namespace Shamisen.Synthesis
             var ymm15 = Vector256.Create(0L, o * 1, o * 4, o * 5).AsSingle();
             ymm0 = Avx2.Add(ymm0, ymm15.AsInt64());
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
-            ymm15 = Vector256.Create(0x8000_0000u).AsSingle();
             var ymm14 = Vector256.Create(1.0f).AsInt32();
             var ymm13 = Vector256.Create(int.MinValue).AsInt32();
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
             var olen = length - 31;
+            //Everything is in integer, so Haswell will be fine even with 256-bit vectors.
             for (; i < olen; i += 32)
             {
                 var ymm2 = Avx2.Add(ymm0, ymm12);

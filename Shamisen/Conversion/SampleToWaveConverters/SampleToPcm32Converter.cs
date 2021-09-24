@@ -1,4 +1,4 @@
-﻿using Shamisen.Extensions;
+﻿using Shamisen.Utils;
 
 using System;
 using System.Buffers.Binary;

@@ -55,7 +55,7 @@ namespace Shamisen
 
         #endregion QuickFill
 
-        #region VectorFill
+        #region Standard VectorFill
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void VectorFill<T>(Span<T> dst, T value) where T : unmanaged
         {
@@ -145,6 +145,10 @@ namespace Shamisen
                 Unsafe.Add(ref rdi, i) = vv[0];
             }
         }
+        #endregion
+
+        #region FastFill for Int24 and UInt24
+        //TODO: FastFill for Int24 and UInt24 using Sse42, Avx2, and AdvSimd
         #endregion
 
         #region MoveByOffset

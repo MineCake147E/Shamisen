@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Shamisen.Synthesis
 {
@@ -55,7 +57,35 @@ namespace Shamisen.Synthesis
         public ReadResult Read(Span<TSample> buffer)
         {
             var offset = Offset;
-            buffer.QuickFill(offset);
+            unsafe
+            {
+                switch (sizeof(TSample))
+                {
+                    case 1:
+                        var boffset = Unsafe.As<TSample, byte>(ref offset);
+                        var bbuffer = MemoryMarshal.Cast<TSample, byte>(buffer);
+                        bbuffer.FastFill(boffset);
+                        break;
+                    case 2:
+                        var woffset = Unsafe.As<TSample, ushort>(ref offset);
+                        var wbuffer = MemoryMarshal.Cast<TSample, ushort>(buffer);
+                        wbuffer.FastFill(woffset);
+                        break;
+                    case 4:
+                        var doffset = Unsafe.As<TSample, float>(ref offset);
+                        var dbuffer = MemoryMarshal.Cast<TSample, float>(buffer);
+                        dbuffer.FastFill(doffset);
+                        break;
+                    case 8:
+                        var qoffset = Unsafe.As<TSample, double>(ref offset);
+                        var qbuffer = MemoryMarshal.Cast<TSample, double>(buffer);
+                        qbuffer.FastFill(qoffset);
+                        break;
+                    default:
+                        buffer.QuickFill(offset);
+                        break;
+                }
+            }
             return buffer.Length;
         }
 

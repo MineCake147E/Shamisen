@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Shamisen.Conversion.WaveToSampleConverters;
@@ -15,6 +13,7 @@ namespace Shamisen
     /// </summary>
     public static class AudioSourceUtils
     {
+        #region Source Conversion
         /// <summary>
         /// Ensures the blocks are aligned for the <paramref name="source"/>.
         /// </summary>
@@ -40,35 +39,11 @@ namespace Shamisen
         /// <returns></returns>
         public static IWaveSource ToWaveSource(this IReadableAudioSource<byte, IWaveFormat> source) => new ReadableWaveSource(source);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamBuffer{TSample, TFormat}"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="initialBlockSize">
-        /// The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-        /// The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-        /// </param>
-        /// <param name="internalBufferNumber">The number of internal buffer.</param>
-        /// <param name="allowWaitForRead">The value which indicates whether the <see cref="StreamBuffer{TSample, TFormat}"/> should wait for another sample block or not.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+        /// <inheritdoc cref="StreamBuffer{TSample, TFormat}.StreamBuffer(IReadableAudioSource{TSample, TFormat}, int, int, bool)"/>
         public static ISampleSource Preload(this ISampleSource source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
             => new StreamBuffer<float, SampleFormat>(source, initialBlockSize, internalBufferNumber, allowWaitForRead).EnsureBlocks().ToSampleSource();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamBuffer{TSample, TFormat}"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="initialBlockSize">
-        /// The size of initial buffer in Frames(independent on the number of channel and the type of sample).<br/>
-        /// The buffer is automatically extended if the internal buffer is smaller than the size of reading buffers.
-        /// </param>
-        /// <param name="internalBufferNumber">The number of internal buffer.</param>
-        /// <param name="allowWaitForRead">The value which indicates whether the <see cref="StreamBuffer{TSample, TFormat}"/> should wait for another sample block or not.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> should not be <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
+        /// <inheritdoc cref="StreamBuffer{TSample, TFormat}.StreamBuffer(IReadableAudioSource{TSample, TFormat}, int, int, bool)"/>
         public static IWaveSource Preload(this IWaveSource source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
             => new StreamBuffer<byte, IWaveFormat>(source, initialBlockSize, internalBufferNumber, allowWaitForRead).EnsureBlocks().ToWaveSource();
 
@@ -98,28 +73,72 @@ namespace Shamisen
             24 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm24ToSampleConverter(source),
             _ => null,
         };
+        #endregion
+
+        #region Source Utils
+        /// <summary>
+        /// Reads the audio to the specified buffer asynchronously if possible.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination">The buffer.</param>
+        /// <returns>The length of the data written.</returns>
+        public static async ValueTask<ReadResult> ReadAsAsync<TSample, TFormat>(this IReadableAudioSource<TSample, TFormat> source, Memory<TSample> destination)
+            where TSample : unmanaged
+            where TFormat : IAudioFormat<TSample>
+            => source is IAsyncReadableAudioSource<TSample, TFormat> asource
+                ? await asource.ReadAsync(destination)
+                : source.Read(destination.Span);
+        #endregion
     }
+    #region ISampleSource and IWaveSource Implementation
 
     internal sealed class ReadableSampleSource : ISampleSource
     {
         private readonly IReadableAudioSource<float, SampleFormat> source;
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadableSampleSource(IReadableAudioSource<float, SampleFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
 
-        public SampleFormat Format => source.Format;
+        public SampleFormat Format
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Format;
+        }
 
-        public ulong? Length => source.Length;
+        public ulong? Length
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Length;
+        }
 
-        public ulong? TotalLength => source.TotalLength;
+        public ulong? TotalLength
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.TotalLength;
+        }
 
-        public ulong? Position => source.Position;
+        public ulong? Position
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Position;
+        }
 
-        public ISkipSupport? SkipSupport => source.SkipSupport;
+        public ISkipSupport? SkipSupport
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.SkipSupport;
+        }
 
-        public ISeekSupport? SeekSupport => source.SeekSupport;
+        public ISeekSupport? SeekSupport
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.SeekSupport;
+        }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public void Dispose() => source.Dispose();
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadResult Read(Span<float> buffer) => source.Read(buffer);
     }
 
@@ -127,22 +146,50 @@ namespace Shamisen
     {
         private readonly IReadableAudioSource<byte, IWaveFormat> source;
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadableWaveSource(IReadableAudioSource<byte, IWaveFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
 
-        public IWaveFormat Format => source.Format;
+        public IWaveFormat Format
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Format;
+        }
 
-        public ulong? Length => source.Length;
+        public ulong? Length
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Length;
+        }
 
-        public ulong? TotalLength => source.TotalLength;
+        public ulong? TotalLength
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.TotalLength;
+        }
 
-        public ulong? Position => source.Position;
+        public ulong? Position
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.Position;
+        }
 
-        public ISkipSupport? SkipSupport => source.SkipSupport;
+        public ISkipSupport? SkipSupport
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.SkipSupport;
+        }
 
-        public ISeekSupport? SeekSupport => source.SeekSupport;
+        public ISeekSupport? SeekSupport
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get => source.SeekSupport;
+        }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public void Dispose() => source.Dispose();
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadResult Read(Span<byte> buffer) => source.Read(buffer);
     }
+    #endregion
 }
