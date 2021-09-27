@@ -102,6 +102,18 @@ namespace Shamisen
             int q = AndNot(y, val1);
             return r | q;
         }
+
+        /// <inheritdoc cref="Math.Min(uint, uint)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint Min(uint val1, uint val2)
+        {
+            bool g = val1 > val2;
+            uint y = Unsafe.As<bool, byte>(ref g);
+            y = (uint)-(int)y;
+            uint r = y & val2;
+            uint q = AndNot(y, val1);
+            return r | q;
+        }
         #endregion
 
         #region Fast Bit Operations

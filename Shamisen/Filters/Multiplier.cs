@@ -69,7 +69,7 @@ namespace Shamisen.Filters
             var rA = ItemA.Read(mA.Span);
             var mB = ItemB.Buffer.SliceWhile(buffer.Length);
             var rB = ItemB.Read(mB.Span);
-            //The region without data will be filled with 0.
+            //The region without data will be treated as 0.
             if (rA.IsEndOfStream)
             {
                 buffer.FastFill(0);

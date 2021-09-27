@@ -17,13 +17,13 @@ namespace Shamisen.Synthesis
     /// Generates a square wave with specified frequency.
     /// </summary>
     /// <seealso cref="ISampleSource" />
-    public sealed class SquareWaveSource : ISampleSource, IFrequencyGeneratorSource
+    public sealed class SawtoothWaveSource : ISampleSource, IFrequencyGeneratorSource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SquareWaveSource"/> class.
         /// </summary>
         /// <param name="format">The output format.</param>
-        public SquareWaveSource(SampleFormat format)
+        public SawtoothWaveSource(SampleFormat format)
         {
             SamplingFrequencyInverse = 1.0 / format.SampleRate;
             Format = format;
@@ -74,7 +74,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport => null;
+        public ISkipSupport? SkipSupport { get => null; }
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -82,7 +82,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport => null;
+        public ISeekSupport? SeekSupport { get => null; }
 
         ulong? IAudioSource<float, SampleFormat>.Length => null;
 
@@ -162,18 +162,16 @@ namespace Shamisen.Synthesis
             var ymm12 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm12.GetLower());
-            var ymm15 = xmm15.ToVector256Unsafe().WithUpper(xmm14).AsSingle();
+            var ymm15 = xmm15.ToVector256Unsafe().WithUpper(xmm14);
             ymm12 = Avx2.Add(ymm12, ymm12);
             var ymm0 = Vector256.Create(t);
             var ymm1 = Vector256.Create(t + o * 2);
             ymm0 = Avx2.Add(ymm0, ymm15.AsInt64());
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
-            var ymm14 = Vector256.Create(1.0f).AsInt32();
-            var ymm13 = Vector256.Create(int.MinValue).AsInt32();
+            var ymm14 = Vector256.Create((float)(-1.0 / int.MinValue));
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
             var olen = length - 31;
-            //Everything is in integer, so Haswell will be fine even with 256-bit vectors.
             for (; i < olen; i += 32)
             {
                 var ymm2 = Avx2.Add(ymm0, ymm12);
@@ -182,22 +180,22 @@ namespace Shamisen.Synthesis
                 var ymm4 = Avx2.Add(ymm2, ymm12);
                 var ymm6 = Avx2.Add(ymm4, ymm12);
                 var ymm7 = Avx2.Add(ymm5, ymm12);
-                var ymm8 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
-                var ymm9 = Avx.Shuffle(ymm2.AsSingle(), ymm3.AsSingle(), 0b11_01_11_01).AsInt32();
-                var ymm10 = Avx.Shuffle(ymm4.AsSingle(), ymm5.AsSingle(), 0b11_01_11_01).AsInt32();
-                var ymm11 = Avx.Shuffle(ymm6.AsSingle(), ymm7.AsSingle(), 0b11_01_11_01).AsInt32();
-                ymm8 = Avx2.And(ymm8, ymm13);
-                ymm9 = Avx2.And(ymm9, ymm13);
-                ymm10 = Avx2.And(ymm10, ymm13);
-                ymm11 = Avx2.And(ymm11, ymm13);
-                ymm8 = Avx2.Or(ymm8, ymm14);
-                ymm9 = Avx2.Or(ymm9, ymm14);
-                ymm10 = Avx2.Or(ymm10, ymm14);
-                ymm11 = Avx2.Or(ymm11, ymm14);
-                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm8;
-                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm9;
-                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm10;
-                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm11;
+                var ymm8 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01);
+                var ymm9 = Avx.Shuffle(ymm2.AsSingle(), ymm3.AsSingle(), 0b11_01_11_01);
+                var ymm10 = Avx.Shuffle(ymm4.AsSingle(), ymm5.AsSingle(), 0b11_01_11_01);
+                var ymm11 = Avx.Shuffle(ymm6.AsSingle(), ymm7.AsSingle(), 0b11_01_11_01);
+                ymm8 = Avx.ConvertToVector256Single(ymm8.AsInt32());
+                ymm9 = Avx.ConvertToVector256Single(ymm9.AsInt32());
+                ymm10 = Avx.ConvertToVector256Single(ymm10.AsInt32());
+                ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32());
+                ymm8 = Avx.Multiply(ymm8, ymm14);
+                ymm9 = Avx.Multiply(ymm9, ymm14);
+                ymm10 = Avx.Multiply(ymm10, ymm14);
+                ymm11 = Avx.Multiply(ymm11, ymm14);
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm8;
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm9;
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm10;
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm11;
                 ymm1 = Avx2.Add(ymm7, ymm12);
                 ymm0 = Avx2.Add(ymm6, ymm12);
             }
@@ -206,9 +204,9 @@ namespace Shamisen.Synthesis
             for (; i < olen; i += 8)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
-                var ymm4 = Avx2.And(ymm3, ymm13);
-                var ymm5 = Avx2.Or(ymm4, ymm14);
-                Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rdi, i)) = ymm5;
+                var ymm4 = Avx.ConvertToVector256Single(ymm3);
+                var ymm5 = Avx.Multiply(ymm4, ymm14);
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm5;
                 ymm0 = Avx2.Add(ymm0, ymm12);
                 ymm1 = Avx2.Add(ymm1, ymm12);
             }
@@ -216,8 +214,8 @@ namespace Shamisen.Synthesis
             if (i < length)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsInt32();
-                var ymm4 = Avx2.And(ymm3, ymm13);
-                var ymm5 = Avx2.Or(ymm4, ymm14).AsSingle();
+                var ymm4 = Avx.ConvertToVector256Single(ymm3);
+                var ymm5 = Avx.Multiply(ymm4, ymm14);
                 var xmm6 = ymm5.GetUpper();
                 var xmm5 = ymm5.GetLower();
                 if (i < length - 3)
@@ -225,19 +223,19 @@ namespace Shamisen.Synthesis
                     Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm5;
                     xmm5 = xmm6;
                     i += 4;
-                    t += 4 * o;
+                    t = ymm0.GetElement(2);
                 }
                 if (i < length - 1)
                 {
                     Unsafe.As<float, double>(ref Unsafe.Add(ref rdi, i)) = xmm5.AsDouble().GetElement(0);
                     xmm5 = Ssse3.AlignRight(xmm5.AsInt32(), xmm5.AsInt32(), 8).AsSingle();
                     i += 2;
-                    t += 2 * o;
+                    t = ymm1.GetElement(2);
                 }
                 if (i < length)
                 {
                     Unsafe.Add(ref rdi, i) = xmm5.GetElement(0);
-                    t += o;
+                    t = ymm1.GetElement(3);
                     i++;
                 }
             }
@@ -259,43 +257,42 @@ namespace Shamisen.Synthesis
         {
             var t = theta.Value;
             var o = omega.Value;
-            ref var rdi = ref Unsafe.As<float, int>(ref MemoryMarshal.GetReference(buffer));
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
             var olen = length - 7;
+            const float Multiplier = -1.0f / int.MinValue;
             for (; i < olen; i += 8)
             {
-                var y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                var y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 0) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 0) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 1) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 1) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 2) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 2) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 3) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 3) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 4) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 4) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 5) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 5) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 6) = y;
-                y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                Unsafe.Add(ref rdi, i + 6) = y * Multiplier;
+                y = (int)(t >> 32);
                 t += o;
-                Unsafe.Add(ref rdi, i + 7) = y;
+                Unsafe.Add(ref rdi, i + 7) = y * Multiplier;
             }
             for (; i < length; i++)
             {
                 var y = (int)(t >> 32);
                 t += o;
-                y &= int.MinValue;
-                y |= 0x3f80_0000;
-                Unsafe.Add(ref rdi, i) = y;
+                Unsafe.Add(ref rdi, i) = y * Multiplier;
             }
             return new Fixed64(t);
         }

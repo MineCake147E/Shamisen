@@ -12,17 +12,17 @@ using Shamisen.Synthesis;
 namespace Shamisen.Core.Tests.CoreFx.Synthesis
 {
     [TestFixture]
-    public class SinusoidSourceTest
+    public class SawtoothWaveSourceTest
     {
         private const double Freq = 523.2511306011972693556999870466094027289077206840796617283;
 
         [TestCase(1, 24000, 1024 + 7, 64)]
         [TestCase(2, 24000, 1024 + 7, 64)]
         [TestCase(1, 192000, 1024 + 7, 187)]
-        public void SinusoidManyFrameDump(int channels, int sourceSampleRate, int frameLen = 1024, int framesToWrite = 64)
+        public void SawtoothWaveManyFrameDump(int channels, int sourceSampleRate, int frameLen = 1024, int framesToWrite = 64)
         {
-            var src = new SinusoidSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
-            var path = new System.IO.FileInfo($"./dumps/SinusoidDump_{channels}ch_{sourceSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
+            var src = new SawtoothWaveSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
+            var path = new System.IO.FileInfo($"./dumps/SawtoothWaveDump_{channels}ch_{sourceSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
             using var dc = new AudioCache<float, SampleFormat>(src.Format);
             Console.WriteLine(path.FullName);
             float[] buffer = new float[(ulong)frameLen * (ulong)channels];

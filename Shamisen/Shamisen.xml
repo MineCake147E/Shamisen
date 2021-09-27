@@ -12834,7 +12834,7 @@
             Gets the value which indicates how the speakers are used.
             </summary>
         </member>
-        <member name="T:Shamisen.Formats.IConvertivleWaveFormat">
+        <member name="T:Shamisen.Formats.IConvertibleWaveFormat">
             <summary>
             Defines a base infrastructure of a <see cref="T:Shamisen.IAudioFormat`1"/> that can be represented in <see cref="T:Shamisen.Codecs.Waveform.Composing.IRf64Content"/>
             </summary>
@@ -17779,6 +17779,86 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
         </member>
+        <member name="T:Shamisen.Synthesis.SawtoothWaveSource">
+            <summary>
+            Generates a square wave with specified frequency.
+            </summary>
+            <seealso cref="T:Shamisen.ISampleSource" />
+        </member>
+        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.#ctor(Shamisen.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Synthesis.SquareWaveSource"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Frequency">
+            <summary>
+            Gets or sets the frequency.
+            </summary>
+            <value>
+            The frequency.
+            </value>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Position">
+            <summary>
+            Gets or sets where the <see cref="T:Shamisen.IAudioSource`2"/> is.
+            Some implementation could not support this property.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.AngularVelocity">
+            <summary>
+            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.SquareWaveSource"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.Read(System.Span{System.Single})">
+            <summary>
+            Reads the audio to the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.GenerateMonauralSample(Shamisen.Fixed64)">
+            <summary>
+            Generates the monaural sample.
+            </summary>
+            <param name="theta">The theta(from -pi to pi).</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
         <member name="T:Shamisen.Synthesis.SilenceSampleSource">
             <summary>
             Generates a silence or DC offset with <see cref="T:Shamisen.SampleFormat"/>.<br/>
@@ -17942,12 +18022,7 @@
             <param name="format">The output format.</param>
         </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.Frequency">
             <summary>
@@ -17963,27 +18038,13 @@
             </summary>
         </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SinusoidSource.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SinusoidSource.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SinusoidSource.GenerateMonauralSample(Shamisen.Fixed64)">
             <summary>
@@ -18082,6 +18143,61 @@
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
+        </member>
+        <member name="T:Shamisen.Synthesis.TriangleWaveSource">
+            <summary>
+            Generates a triangular wave with specified frequency.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Synthesis.TriangleWaveSource.#ctor(Shamisen.SampleFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Synthesis.TriangleWaveSource"/> class.
+            </summary>
+            <param name="format">The output format.</param>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Frequency">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.AngularVelocity">
+            <summary>
+            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.TriangleWaveSource"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Theta">
+            <summary>
+            Gets or sets the current phase of this <see cref="T:Shamisen.Synthesis.TriangleWaveSource"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Synthesis.TriangleWaveSource.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Synthesis.TriangleWaveSource.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Synthesis.TriangleWaveSource.GenerateMonauralSample(Shamisen.Fixed64)">
+            <summary>
+            Generates the monaural sample.
+            </summary>
+            <param name="theta">The theta(from -pi to pi).</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Synthesis.TriangleWaveSource.Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.AudioSourceUtils">
             <summary>
@@ -20522,6 +20638,9 @@
         </member>
         <member name="M:Shamisen.MathI.Min(System.Int32,System.Int32)">
             <inheritdoc cref="M:System.Math.Min(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Min(System.UInt32,System.UInt32)">
+            <inheritdoc cref="M:System.Math.Min(System.UInt32,System.UInt32)"/>
         </member>
         <member name="M:Shamisen.MathI.AndNot(System.Int32,System.Int32)">
             <summary>

@@ -9,7 +9,7 @@ using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Core.Tests.CoreFx
+namespace Shamisen.Core.Tests.CoreFx.Synthesis
 {
     [TestFixture]
     public class SquareWaveSourceTest
@@ -32,9 +32,7 @@ namespace Shamisen.Core.Tests.CoreFx
             {
                 var rr = src.Read(buffer);
                 if (rr.HasData)
-                {
                     dc.Write(buffer.AsSpan(0, rr.Length));
-                }
                 else
                 {
                     break;

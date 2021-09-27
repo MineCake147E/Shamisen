@@ -29,12 +29,7 @@ namespace Shamisen.Synthesis
             Format = format;
         }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
         /// <summary>
@@ -57,20 +52,10 @@ namespace Shamisen.Synthesis
         /// </summary>
         public Fixed64 AngularVelocity { get; set; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get => null; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get => null; }
 
         ulong? IAudioSource<float, SampleFormat>.Length => null;
@@ -79,11 +64,7 @@ namespace Shamisen.Synthesis
 
         ulong? IAudioSource<float, SampleFormat>.Position => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
             var channels = Format.Channels;
@@ -144,10 +125,13 @@ namespace Shamisen.Synthesis
         {
             var t = theta.Value;
             var o = omega.Value;
-            var ymm2 = Vector256.Create(o * 8);
+            var ymm2 = Vector256.Create(o * 4);
+            var xmm15 = Vector128.Create(0L, o);
+            var xmm14 = Sse2.Add(xmm15, ymm2.GetLower());
+            var ymm15 = xmm15.ToVector256Unsafe().WithUpper(xmm14).AsSingle();
+            ymm2 = Avx2.Add(ymm2, ymm2);
             var ymm0 = Vector256.Create(t);
             var ymm1 = Vector256.Create(t + o * 2);
-            var ymm15 = Vector256.Create(0L, o * 1, o * 4, o * 5).AsSingle();
             ymm0 = Avx2.Add(ymm0, ymm15.AsInt64());
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
             ymm15 = Vector256.Create(0x8000_0000u).AsSingle();

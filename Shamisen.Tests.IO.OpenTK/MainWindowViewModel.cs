@@ -10,6 +10,8 @@ using Reactive.Bindings;
 using ReactiveUI;
 
 using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Filters;
+using Shamisen.Filters.Mixing;
 using Shamisen.IO;
 using Shamisen.Synthesis;
 
@@ -69,7 +71,9 @@ namespace Shamisen.Tests.IO.OpenTK
             {
                 var t = item.Device.CreateSoundOut();
                 var source = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
-                t.Initialize(new SampleToPcm16Converter(source, false));
+                var source2 = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 880 };
+                var mult = new Multiplier(new SimpleSourceBufferPair(source), new SimpleSourceBufferPair(source2));
+                t.Initialize(new SampleToPcm16Converter(mult, false));
                 outputs.Add(t);
                 sinusoidSources.Add(source);
             }
