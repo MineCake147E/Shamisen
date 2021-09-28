@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
-using NUnit.Framework;
-
+using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
-using System.Diagnostics;
+using System.Text;
+
+using NUnit.Framework;
+
+using Shamisen.Conversion.Resampling.Sample;
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Filters;
 using Shamisen.Optimization;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -203,19 +205,19 @@ namespace Shamisen.Core.Tests.CoreFx
 
             filterNoIntrinsics.Read(bufferNoIntrinsics);
             filterIntrinsics.Read(bufferIntrinsics);
-            double sumdiff = 0;
+            NeumaierAccumulator sumdiff = default;
             for (int i = 0; i < bufferNoIntrinsics.Length; i++)
             {
                 var simple = bufferNoIntrinsics[i];
                 var optimized = bufferIntrinsics[i];
-                float diff = simple - optimized;
-                sumdiff += MathF.Abs(diff);
+                double diff = simple - optimized;
+                sumdiff += Math.Abs(diff);
                 Console.WriteLine($"{simple}, {optimized}, {diff}");
             }
-            Console.WriteLine($"Total difference: {sumdiff}");
-            double avgDiff = sumdiff / bufferNoIntrinsics.Length;
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            double avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.Less(avgDiff, -1f / short.MinValue);
         }
 
         [TestCase(1, (X86Intrinsics)X86IntrinsicsMask.Sse42)]

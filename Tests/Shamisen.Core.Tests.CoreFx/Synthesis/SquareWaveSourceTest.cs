@@ -17,10 +17,10 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         private const double A4 = 440.0;
         private const double C5 = 523.2511306011972693556999870466094027289077206840796617283;
 
-        [TestCase(1, 24000, 1024 + 15, 64, C5)]
-        [TestCase(2, 24000, 1024 + 15, 64, C5)]
-        [TestCase(1, 192000, 1024 + 15, 187, C5)]
-        [TestCase(1, 192000, 1024 + 15, 187, 96000.0)]
+        [TestCase(1, 24000, 1024 + 31, 64, C5)]
+        [TestCase(2, 24000, 1024 + 31, 64, C5)]
+        [TestCase(1, 192000, 1024 + 31, 187, C5)]
+        [TestCase(1, 192000, 1024 + 31, 187, 96000.0)]
         public void SquareWaveManyFrameDump(int channels, int sourceSampleRate, int frameLen = 1024, int framesToWrite = 64, double frequency = C5)
         {
             var src = new SquareWaveSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = frequency };

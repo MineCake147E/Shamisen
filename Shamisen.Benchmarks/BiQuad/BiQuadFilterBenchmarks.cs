@@ -26,28 +26,19 @@ namespace Shamisen.Benchmarks.BiQuad
         {
             public Config()
             {
-                _ = AddColumn(new PlaybackSpeedColumn(
-                    a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value,
-                    a => SampleRate));
+                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value));
             }
         }
-        [Params(2)]
+        [Params(1, 2, 3, 4)]
         public int Channels { get; set; }
-        [Params(1441)]
+        [Params(8191)]
         public int Frames { get; set; }
-
-        [Params(true)]
-        public bool EnableIntrinsics { get; set; }
-
-        [Params(
-            (X86Intrinsics)X86IntrinsicsMask.Sse2 | X86Intrinsics.X64)]
-        public X86Intrinsics EnabledX86Intrinsics { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
             source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
-            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1), EnableIntrinsics, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics);
+            filter = new BiQuadFilter(source, BiQuadParameter.CreateLPFParameter(SampleRate, 48000, 1));
             buffer = new float[Frames * Channels];
         }
 

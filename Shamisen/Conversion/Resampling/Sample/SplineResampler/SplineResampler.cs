@@ -34,11 +34,11 @@ namespace Shamisen.Conversion.Resampling.Sample
 
 
         /// <summary>
-        /// The pre calculated catmull-rom coefficents.<br/>
-        /// X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
-        /// Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
-        /// Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
-        /// W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
+        /// The pre calculated Catmull-Rom coefficients.<br/>
+        /// X: The coefficient for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
+        /// Y: The coefficient for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
+        /// Z: The coefficient for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
+        /// W: The coefficient for value4 ((xP3 - xP2) * 0.5f)<br/>
         /// </summary>
         private Vector4[] preCalculatedCatmullRomCoefficients;
 
@@ -85,7 +85,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 {
                     var coeffs = new Vector4[rateMul];
                     GenerateCoeffs(coeffs, rateMulInverse);
-                    //CachedDirect couldn't benefit from sequentialization at all.
+                    //CachedDirect couldn't benefit from sequentialization currently.
                     return (ResampleStrategy.CachedDirect, coeffs, 0, 1);
                 }
                 else if (rateMul <= CacheThreshold * 2)
@@ -110,8 +110,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         /// <summary>
-        /// [WIP] Rearranges coefficents for <see cref="ResampleStrategy.CachedWrappedOdd"/>.
-        /// 
+        /// [WIP] Rearranges coefficients for <see cref="ResampleStrategy.CachedWrappedOdd"/>.
+        ///
         /// </summary>
         /// <param name="coeffs"></param>
         /// <param name="rateMul"></param>
@@ -146,8 +146,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         /// <summary>
-        /// [WIP] Rearranges coefficents for <see cref="ResampleStrategy.CachedWrappedEven"/>.
-        /// 
+        /// [WIP] Rearranges coefficients for <see cref="ResampleStrategy.CachedWrappedEven"/>.
+        ///
         /// </summary>
         /// <param name="coeffs"></param>
         /// <param name="rateMul"></param>
@@ -720,14 +720,8 @@ namespace Shamisen.Conversion.Resampling.Sample
 #endif
             return ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
         }
-        private int ResampleCachedDirect3Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
-        {
-            return ResampleCachedDirect3ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
-        }
-        private int ResampleCachedDirect4Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
-        {
-            return ResampleCachedDirect4ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
-        }
+        private int ResampleCachedDirect3Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc) => ResampleCachedDirect3ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+        private int ResampleCachedDirect4Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc) => ResampleCachedDirect4ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
         #endregion
 
 

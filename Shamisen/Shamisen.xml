@@ -7975,11 +7975,11 @@
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.preCalculatedCatmullRomCoefficients">
             <summary>
-            The pre calculated catmull-rom coefficents.<br/>
-            X: The coefficent for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
-            Y: The coefficent for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
-            Z: The coefficent for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
-            W: The coefficent for value4 ((xP3 - xP2) * 0.5f)<br/>
+            The pre calculated Catmull-Rom coefficients.<br/>
+            X: The coefficient for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
+            Y: The coefficient for value2 (((3 * xP3) - (5 * xP2) + 2) * 0.5f)<br/>
+            Z: The coefficient for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
+            W: The coefficient for value4 ((xP3 - xP2) * 0.5f)<br/>
             </summary>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},System.Int32)">
@@ -7990,22 +7990,22 @@
             <param name="destinationSampleRate">The destination sample rate.</param>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedOdd(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
-            <summary>
-            [WIP] Rearranges coefficents for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd"/>.
+             <summary>
+             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd"/>.
             
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMul"></param>
-            <param name="acc"></param>
+             </summary>
+             <param name="coeffs"></param>
+             <param name="rateMul"></param>
+             <param name="acc"></param>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedEven(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
-            <summary>
-            [WIP] Rearranges coefficents for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedEven"/>.
+             <summary>
+             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedEven"/>.
             
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMul"></param>
-            <param name="acc"></param>
+             </summary>
+             <param name="coeffs"></param>
+             <param name="rateMul"></param>
+             <param name="acc"></param>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
             <summary>
@@ -11348,9 +11348,7 @@
             </summary>
         </member>
         <member name="M:Shamisen.Filters.BiQuadFilter.Dispose">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Filters.BiQuadParameter">
             <summary>
@@ -20364,7 +20362,7 @@
             Returns the dot product of 4 frames x 2 channels tensor at <paramref name="head"/> and specified <paramref name="coeffs"/>.
             </summary>
             <param name="head">The location of frames to read.</param>
-            <param name="coeffs">The coefficents to multiply.</param>
+            <param name="coeffs">The coefficients to multiply.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Utils.VectorUtils.FastDotMultiple3Channels(System.Numerics.Vector3@,System.Numerics.Vector4)">

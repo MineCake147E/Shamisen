@@ -201,7 +201,7 @@ namespace Shamisen.Utils
         /// Returns the dot product of 4 frames x 2 channels tensor at <paramref name="head"/> and specified <paramref name="coeffs"/>.
         /// </summary>
         /// <param name="head">The location of frames to read.</param>
-        /// <param name="coeffs">The coefficents to multiply.</param>
+        /// <param name="coeffs">The coefficients to multiply.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector2 FastDotMultiple2Channels(ref Vector2 head, Vector4 coeffs)

@@ -25,12 +25,10 @@ namespace Shamisen.Benchmarks.BiQuad
         {
             public Config()
             {
-                _ = AddColumn(new PlaybackSpeedColumn(
-                    a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value,
-                    a => SampleRate));
+                _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames", StringComparison.Ordinal)).Value));
             }
         }
-        [Params(2053)]
+        [Params(8191)]
         public int Frames { get; set; }
         private float[] buffer;
         private BiQuadParameter parameter;
@@ -42,17 +40,10 @@ namespace Shamisen.Benchmarks.BiQuad
             states = new Vector2[1];
             parameter = BiQuadParameter.CreateLPFParameter(SampleRate, 22050, 0.70710678118654752440084436210485);
         }
+        [Benchmark]
+        public void ProcessMonauralStandard() => BiQuadFilter.ProcessMonauralStandard(buffer, parameter, states);
 
-        [Benchmark]
-        public void ProcessMonauralSse() => BiQuadFilter.ProcessMonauralSse(buffer, parameter, states);
-        [Benchmark]
-        public void ProcessMonauralSseM1() => BiQuadFilter.ProcessMonauralSseM1(buffer, parameter, states);
-        [Benchmark]
-        public void ProcessMonauralSseM2() => BiQuadFilter.ProcessMonauralSseM2(buffer, parameter, states);
         [GlobalCleanup]
-        public void Cleanup()
-        {
-            buffer = null;
-        }
+        public void Cleanup() => buffer = null;
     }
 }

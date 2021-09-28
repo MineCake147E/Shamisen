@@ -201,7 +201,6 @@ namespace Shamisen.Synthesis
                 ymm1 = Avx2.Add(ymm7, ymm12);
                 ymm0 = Avx2.Add(ymm6, ymm12);
             }
-            t = ymm0.GetElement(0);
             olen = length - 7;
             for (; i < olen; i += 8)
             {

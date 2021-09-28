@@ -19,10 +19,12 @@ using System.Text;
 
 using Shamisen.Optimization;
 
+using System.Runtime.InteropServices;
+
 namespace Shamisen.Filters
 {
     /// <summary>
-    /// Provides a function of filtering with Digital BiQuad Filter.
+    /// Filters audio signal with single Digital BiQuad Filter.
     /// </summary>
     public sealed partial class BiQuadFilter : IAudioFilter<float, SampleFormat>
     {
@@ -30,7 +32,7 @@ namespace Shamisen.Filters
         private readonly bool enableIntrinsics;
         private readonly X86Intrinsics enabledX86Intrinsics;
         private readonly ArmIntrinsics enabledArmIntrinsics;
-        
+
         /// <summary>
         /// Gets the value which indicates whether the <see cref="BiQuadFilter"/> can alter results for speed, or not.
         /// </summary>
@@ -95,7 +97,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Length { get => Source.Length; }
+        public ulong? Length => Source.Length;
 
         /// <summary>
         /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -104,7 +106,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? TotalLength { get => Source.TotalLength; }
+        public ulong? TotalLength => Source.TotalLength;
 
         /// <summary>
         /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -113,7 +115,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Position { get => Source.Position; }
+        public ulong? Position => Source.Position;
 
         /// <summary>
         /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -121,7 +123,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => Source.SkipSupport; }
+        public ISkipSupport? SkipSupport => Source.SkipSupport;
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -129,7 +131,7 @@ namespace Shamisen.Filters
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => Source.SeekSupport; }
+        public ISeekSupport? SeekSupport => Source.SeekSupport;
 
         /// <summary>
         /// Reads the audio to the specified buffer.
@@ -142,7 +144,7 @@ namespace Shamisen.Filters
             buffer = buffer.SliceAlign(channels);
             var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
-            var len = rr.Length;
+            int len = rr.Length;
             buffer = buffer.Slice(0, len);
             switch (channels)
             {
@@ -153,10 +155,10 @@ namespace Shamisen.Filters
                     ProcessStereo(buffer);
                     break;
                 case 3:
-                    ProcessTriple(buffer);
+                    ProcessTriple(buffer, Parameter, internalStates);
                     break;
                 case 4:
-                    ProcessQuadruple(buffer);
+                    ProcessQuadruple(buffer, Parameter, internalStates);
                     break;
                 default:
                     ProcessMultiple(buffer);
@@ -165,190 +167,263 @@ namespace Shamisen.Filters
             return len;
         }
 
-        private void ProcessQuadruple(Span<float> buffer)
+        private static void ProcessQuadruple(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
+        {
+            var factorB = parameter.B;
+            var factorA = parameter.A;
+            var ist = states;
+            var iStateLFE = ist[3];
+            var iStateC = ist[2];
+            var iStateR = ist[1];
+            var iStateL = ist[0];
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            var fBX = new Vector4(factorB.X);
+            var fBY = new Vector4(factorB.Y);
+            var fBZ = new Vector4(factorB.Z);
+            var fAX = new Vector4(factorA.X);
+            var fAY = new Vector4(factorA.Y);
+            var iSX = new Vector4(iStateL.X, iStateR.X, iStateC.X, iStateLFE.X);
+            var iSY = new Vector4(iStateL.Y, iStateR.Y, iStateC.Y, iStateLFE.Y);
+            nint i = 0, length = buffer.Length;
+            nint olen = length - 7;
+            for (; i < olen; i += 8)
+            {
+                var input = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i));
+                var s0 = fBX * input;
+                s0 += iSX;
+                iSX = fBY * input;
+                iSY = iSX + iSY;
+                iSX = fBZ * input;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i)) = s0;
+                input = fAX * s0;
+                iSY += input;
+                s0 = fAY * s0;
+                s0 = iSX + s0;
+                iSX = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4));
+                input = fBX * iSX;
+                iSY = input + iSY;
+                input = fBY * iSX;
+                s0 = input + s0;
+                input = fBZ * iSX;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4)) = iSY;
+                iSX = fAX * iSY;
+                iSX = s0 + iSX;
+                s0 = fAY * iSY;
+                iSY = input + s0;
+            }
+            if (i < length)
+            {
+                var s0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i));
+                fBX *= s0;
+                fBX += iSX;
+                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i)) = fBX;
+                fBZ *= s0;
+                fAY *= fBX;
+                s0 = fBY * s0;
+                s0 += iSY;
+                iSY = fBZ + fAY;
+                fAX *= fBX;
+                iSX = s0 + fAX;
+            }
+            iStateL = new Vector2(iSX.X, iSY.X);
+            iStateR = new Vector2(iSX.Y, iSY.Y);
+            iStateC = new Vector2(iSX.Z, iSY.Z);
+            iStateLFE = new Vector2(iSX.W, iSY.W);
+            states[0] = iStateL;
+            states[1] = iStateR;
+            states[2] = iStateC;
+            states[2] = iStateLFE;
+        }
+
+        private static void ProcessTriple(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
+        {
+            var factorB = parameter.B;
+            var factorA = parameter.A;
+            var ist = states;
+            var iStateC = ist[2];
+            var iStateL = ist[0];
+            var iStateR = ist[1];
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            var fBX = new Vector3(factorB.X);
+            var fBY = new Vector3(factorB.Y);
+            var fBZ = new Vector3(factorB.Z);
+            var fAX = new Vector3(factorA.X);
+            var fAY = new Vector3(factorA.Y);
+            var iSX = new Vector3(iStateL.X, iStateR.X, iStateC.X);
+            var iSY = new Vector3(iStateL.Y, iStateR.Y, iStateC.Y);
+            nint i = 0, length = buffer.Length;
+            nint olen = length - 5;
+            for (; i < olen; i += 6)
+            {
+                var input = Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i));
+                var s0 = fBX * input;
+                s0 += iSX;
+                iSX = fBY * input;
+                iSY = iSX + iSY;
+                iSX = fBZ * input;
+                Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i)) = s0;
+                input = fAX * s0;
+                iSY += input;
+                s0 = fAY * s0;
+                s0 = iSX + s0;
+                iSX = Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i + 3));
+                input = fBX * iSX;
+                iSY = input + iSY;
+                input = fBY * iSX;
+                s0 = input + s0;
+                input = fBZ * iSX;
+                Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i + 3)) = iSY;
+                iSX = fAX * iSY;
+                iSX = s0 + iSX;
+                s0 = fAY * iSY;
+                iSY = input + s0;
+            }
+            if (i < length)
+            {
+                var s0 = Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i));
+                fBX *= s0;
+                fBX += iSX;
+                Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i)) = fBX;
+                fBZ *= s0;
+                fAY *= fBX;
+                s0 = fBY * s0;
+                s0 += iSY;
+                iSY = fBZ + fAY;
+                fAX *= fBX;
+                iSX = s0 + fAX;
+            }
+            iStateL = new Vector2(iSX.X, iSY.X);
+            iStateR = new Vector2(iSX.Y, iSY.Y);
+            iStateC = new Vector2(iSX.Z, iSY.Z);
+            states[0] = iStateL;
+            states[1] = iStateR;
+            states[2] = iStateC;
+        }
+
+        private void ProcessStereo(Span<float> buffer) => ProcessStereoStandard(buffer, Parameter, internalStates);
+
+        private static void ProcessStereoStandard(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
+        {
+            var factorB = parameter.B;
+            var factorA = parameter.A;
+            var ist = states;
+            var iStateR = ist[1];
+            var iStateL = ist[0];
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            var fBX = new Vector2(factorB.X);
+            var fBY = new Vector2(factorB.Y);
+            var fBZ = new Vector2(factorB.Z);
+            var fAX = new Vector2(factorA.X);
+            var fAY = new Vector2(factorA.Y);
+            var iSX = new Vector2(iStateL.X, iStateR.X);
+            var iSY = new Vector2(iStateL.Y, iStateR.Y);
+            nint i = 0, length = buffer.Length;
+            nint olen = length - 3;
+            for (; i < olen; i += 4)
+            {
+                var input = Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i));
+                var s0 = fBX * input;
+                s0 += iSX;
+                iSX = fBY * input;
+                iSY = iSX + iSY;
+                iSX = fBZ * input;
+                Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i)) = s0;
+                input = fAX * s0;
+                iSY += input;
+                s0 = fAY * s0;
+                s0 = iSX + s0;
+                iSX = Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i + 2));
+                input = fBX * iSX;
+                iSY = input + iSY;
+                input = fBY * iSX;
+                s0 = input + s0;
+                input = fBZ * iSX;
+                Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i + 2)) = iSY;
+                iSX = fAX * iSY;
+                iSX = s0 + iSX;
+                s0 = fAY * iSY;
+                iSY = input + s0;
+            }
+            if (i < length)
+            {
+                var s0 = Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i));
+                fBX *= s0;
+                fBX += iSX;
+                Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i)) = fBX;
+                fBZ *= s0;
+                fAY *= fBX;
+                s0 = fBY * s0;
+                s0 += iSY;
+                iSY = fBZ + fAY;
+                fAX *= fBX;
+                iSX = s0 + fAX;
+            }
+            iStateL = new Vector2(iSX.X, iSY.X);
+            iStateR = new Vector2(iSX.Y, iSY.Y);
+            states[0] = iStateL;
+            states[1] = iStateR;
+        }
+
+        private void ProcessMonaural(Span<float> buffer) => ProcessMonauralStandard(buffer, Parameter, internalStates);
+
+        internal static void ProcessMonauralStandard(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
         {
             unsafe
             {
-                //Factor localization greatly improved performance
-                var factorB = Parameter.B;
-                var factorA = Parameter.A;
-                var ist = internalStates;
-                var iStateL = ist[0];
-                var iStateR = ist[1];
-                var iStateC = ist[2];
-                var iStateLFE = ist[3];
-                for (int i = 0; i < buffer.Length - 3; i += 4)
+                var factorB = parameter.B;
+                var factorA = parameter.A;
+                var iState = states[0];
+                ref float rdi = ref MemoryMarshal.GetReference(buffer);
+                float fBX = factorB.X;
+                float fBY = factorB.Y;
+                float fBZ = factorB.Z;
+                float fAX = factorA.X;
+                float fAY = factorA.Y;
+                float iSX = iState.X;
+                float iSY = iState.Y;
+                //LLVM had me to do everything in scalar
+                nint i, length = buffer.Length;
+                for (i = 0; i < length - 1; i += 2)
                 {
-                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
-                    //Transformed for SIMD awareness.
-                    ref float vL = ref buffer[i];
-                    ref float vR = ref buffer[i + 1];
-                    ref float vC = ref buffer[i + 2];
-                    ref float vLFE = ref buffer[i + 3];
-                    var feedForwardL = vL * factorB; //Multiply in one go
-                    var feedForwardR = vR * factorB;
-                    var feedForwardC = vC * factorB;
-                    var feedForwardLFE = vLFE * factorB;
-                    var sumL = vL = feedForwardL.X + iStateL.X;
-                    var sumR = vR = feedForwardR.X + iStateR.X;
-                    var sumC = vC = feedForwardC.X + iStateC.X;
-                    var sumLFE = vLFE = feedForwardLFE.X + iStateLFE.X;
-                    var feedBackL = sumL * factorA;  //Multiply in one go
-                    var feedBackR = sumR * factorA;
-                    var feedBackC = sumC * factorA;
-                    var feedBackLFE = sumLFE * factorA;
-                    var aYL = iStateL.Y;   //Needed backup
-                    var aYR = iStateR.Y;
-                    var aYC = iStateC.Y;
-                    var aYLFE = iStateLFE.Y;
-                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
-                    iStateC = new Vector2(feedForwardC.Y + aYC + feedBackC.X, feedForwardC.Z + feedBackC.Y);
-                    iStateLFE = new Vector2(feedForwardLFE.Y + aYLFE + feedBackLFE.X, feedForwardLFE.Z + feedBackLFE.Y);
+                    float input = Unsafe.Add(ref rdi, i);
+                    float s0 = fBX * input;
+                    s0 += iSX;
+                    iSX = fBY * input;
+                    iSY = iSX + iSY;
+                    iSX = fBZ * input;
+                    Unsafe.Add(ref rdi, i) = s0;
+                    input = fAX * s0;
+                    iSY += input;
+                    s0 = fAY * s0;
+                    s0 = iSX + s0;
+                    iSX = Unsafe.Add(ref rdi, i + 1);
+                    input = fBX * iSX;
+                    iSY = input + iSY;
+                    input = fBY * iSX;
+                    s0 = input + s0;
+                    input = fBZ * iSX;
+                    Unsafe.Add(ref rdi, i + 1) = iSY;
+                    iSX = fAX * iSY;
+                    iSX = s0 + iSX;
+                    s0 = fAY * iSY;
+                    iSY = input + s0;
                 }
-                ist[0] = iStateL;
-                ist[1] = iStateR;
-                ist[2] = iStateC;
-                ist[3] = iStateLFE;
-            }
-        }
-
-        private void ProcessTriple(Span<float> buffer)
-        {
-            unsafe
-            {
-                //Factor localization greatly improved performance
-                var factorB = Parameter.B;
-                var factorA = Parameter.A;
-                var ist = internalStates;
-                var iStateL = ist[0];
-                var iStateR = ist[1];
-                var iStateC = ist[2];
-                for (int i = 0; i < buffer.Length - 2; i += 3)
+                if (i < length)
                 {
-                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
-                    //Transformed for SIMD awareness.
-                    ref float vL = ref buffer[i];
-                    ref float vR = ref buffer[i + 1];
-                    ref float vC = ref buffer[i + 2];
-                    var feedForwardL = vL * factorB; //Multiply in one go
-                    var feedForwardR = vR * factorB;
-                    var feedForwardC = vC * factorB;
-                    var sumL = vL = feedForwardL.X + iStateL.X;
-                    var sumR = vR = feedForwardR.X + iStateR.X;
-                    var sumC = vC = feedForwardC.X + iStateC.X;
-                    var feedBackL = sumL * factorA;  //Multiply in one go
-                    var feedBackR = sumR * factorA;
-                    var feedBackC = sumC * factorA;
-                    var aYL = iStateL.Y;   //Needed backup
-                    var aYR = iStateR.Y;
-                    var aYC = iStateC.Y;
-                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
-                    iStateC = new Vector2(feedForwardC.Y + aYC + feedBackC.X, feedForwardC.Z + feedBackC.Y);
+                    float s0 = Unsafe.Add(ref rdi, i);
+                    fBX *= s0;
+                    fBX += iSX;
+                    Unsafe.Add(ref rdi, i) = fBX;
+                    fBZ *= s0;
+                    fAY *= fBX;
+                    s0 = fBY * s0;
+                    s0 += iSY;
+                    iSY = fBZ + fAY;
+                    fAX *= fBX;
+                    iSX = s0 + fAX;
                 }
-                ist[0] = iStateL;
-                ist[1] = iStateR;
-                ist[2] = iStateC;
-            }
-        }
-
-        private void ProcessStereo(Span<float> buffer)
-        {
-#if NETCOREAPP3_1_OR_GREATER
-            if (enableIntrinsics)
-            {
-                //if (Sse2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse2))
-                //{
-                //    ProcessStereoSse2(buffer);
-                //    return;
-                //}
-                //else
-                if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
-                {
-                    ProcessStereoSse(buffer);
-                    return;
-                }
-            }
-#endif
-            ProcessStereoOrdinal(buffer);
-        }
-
-        private void ProcessStereoOrdinal(Span<float> buffer)
-        {
-            unsafe
-            {
-                //Factor localization greatly improved performance
-                var factorB = Parameter.B;
-                var factorA = Parameter.A;
-                var ist = internalStates;
-                var iStateL = ist[0];
-                var iStateR = ist[1];
-                for (int i = 0; i < buffer.Length - 1; i += 2)
-                {
-                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
-                    //Transformed for SIMD awareness.
-                    ref float vL = ref buffer[i];
-                    ref float vR = ref buffer[i + 1];
-                    var feedForwardL = vL * factorB; //Multiply in one go
-                    var feedForwardR = vR * factorB;
-                    var sumL = vL = feedForwardL.X + iStateL.X;
-                    var sumR = vR = feedForwardR.X + iStateR.X;
-                    var feedBackL = sumL * factorA;  //Multiply in one go
-                    var feedBackR = sumR * factorA;
-                    var aYL = iStateL.Y;   //Needed backup
-                    var aYR = iStateR.Y;
-                    iStateL = new Vector2(feedForwardL.Y + aYL + feedBackL.X, feedForwardL.Z + feedBackL.Y);
-                    iStateR = new Vector2(feedForwardR.Y + aYR + feedBackR.X, feedForwardR.Z + feedBackR.Y);
-                }
-                ist[0] = iStateL;
-                ist[1] = iStateR;
-            }
-        }
-
-        private void ProcessMonaural(Span<float> buffer)
-        {
-            unchecked
-            {
-#if NETCOREAPP3_1_OR_GREATER
-                if (enableIntrinsics)
-                {
-                    if (Fma.IsSupported && AllowFusedMultiplyAddForPerformance && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Fma))
-                    {
-                        ProcessMonauralFma(buffer);
-                        return;
-                    }
-                    else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
-                    {
-                        ProcessMonauralSse(buffer, Parameter, internalStates);
-                        return;
-                    }
-                }
-#endif
-                ProcessMonauralOrdinal(buffer);
-            }
-        }
-
-        private void ProcessMonauralOrdinal(Span<float> buffer)
-        {
-            unsafe
-            {
-                //Factor localization greatly improved performance
-                var factorB = Parameter.B;
-                var factorA = Parameter.A;
-                var iState = internalStates[0];
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
-                    //Transformed for SIMD awareness.
-                    ref float v = ref buffer[i];
-                    var feedForward = v * factorB; //Multiply in one go
-                    var sum1 = v = feedForward.X + iState.X;
-                    var feedBack = sum1 * factorA;  //Multiply in one go
-                    var aY = iState.Y;   //Needed backup
-                    iState = new Vector2(feedForward.Y + aY + feedBack.X, feedForward.Z + feedBack.Y);
-                }
-                internalStates[0] = iState;
+                iState = new Vector2(iSX, iSY);
+                states[0] = iState;
             }
         }
 
@@ -384,11 +459,11 @@ namespace Shamisen.Filters
                 var factorB = Parameter.B;
                 var factorA = Parameter.A;
                 Span<Vector2> iState = stackalloc Vector2[internalStates.Length];
-                var channels = iState.Length;
+                int channels = iState.Length;
                 internalStates.AsSpan().CopyTo(iState);
                 for (int i = 0; i < buffer.Length - channels + 1; i += channels)
                 {
-                    ref var pos = ref buffer[i];
+                    ref float pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);
                     for (int ch = 0; ch < iState.Length; ch++)
                     {
@@ -397,9 +472,9 @@ namespace Shamisen.Filters
                         ref var a = ref iState[ch]; //Persist reference in order to decrease number of times of range check.
                         ref float v = ref Unsafe.Add(ref pos, ch);
                         var feedForward = v * factorB; //Multiply in one go
-                        var sum1 = v = feedForward.X + a.X;
+                        float sum1 = v = feedForward.X + a.X;
                         var feedBack = sum1 * factorA;  //Multiply in one go
-                        var aY = a.Y;   //Needed backup
+                        float aY = a.Y;   //Needed backup
                         a = new Vector2(feedForward.Y + aY + feedBack.X, feedForward.Z + feedBack.Y);
                     }
                 }
@@ -430,9 +505,7 @@ namespace Shamisen.Filters
         /// </summary>
         ~BiQuadFilter() => Dispose(false);
 
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);

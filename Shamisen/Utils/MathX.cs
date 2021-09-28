@@ -144,15 +144,32 @@ namespace Shamisen
             return Math.Sign(u) * SinFInternal32((int)a);
         }
         const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
+
+        internal const float C0 = 0.0f;
+        internal const float C1 = 3.1415926535897932385f;
+        internal const float C2 = 0.0f;
+        internal const float C3 = -5.1677127800499700292f;
+        internal const float C4 = 0.0f;
+        internal const float C5 = 2.5496493437571871309f;
+        internal const float C6 = 0.0049683640241416525772f;
+        internal const float C7 = -0.61803287266375526383f;
+        internal const float C8 = 0.033708615781302465869f;
+        internal const float C9 = 0.056476450995301634261f;
         private static float SinFInternal32(int value)
         {
             unchecked
             {
-#if NETSTANDARD2_0
-                return (float)Math.Sin(value * PiOverTwoToThe31stPower);
-#else
-                return MathF.Sin(value * PiOverTwoToThe31stPower);
-#endif
+                const float OneOverTwoToThe31stPower = -1.0f / int.MinValue;
+                float x = OneOverTwoToThe31stPower * value;
+                float x2 = x * x;
+                float res = C9;
+                res = res * x + C8;
+                res = res * x + C7;
+                res = res * x + C6;
+                res = res * x + C5;
+                res = res * x2 + C3;
+                res = res * x2 + C1;
+                return res * x;
             }
         }
         private static float SinFInternal(Fixed64 value)

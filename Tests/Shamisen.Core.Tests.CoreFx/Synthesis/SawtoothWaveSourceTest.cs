@@ -16,9 +16,9 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
     {
         private const double Freq = 523.2511306011972693556999870466094027289077206840796617283;
 
-        [TestCase(1, 24000, 1024 + 7, 64)]
-        [TestCase(2, 24000, 1024 + 7, 64)]
-        [TestCase(1, 192000, 1024 + 7, 187)]
+        [TestCase(1, 24000, 1024 + 31, 64)]
+        [TestCase(2, 24000, 1024 + 31, 64)]
+        [TestCase(1, 192000, 1024 + 31, 187)]
         public void SawtoothWaveManyFrameDump(int channels, int sourceSampleRate, int frameLen = 1024, int framesToWrite = 64)
         {
             var src = new SawtoothWaveSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
@@ -30,7 +30,9 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             {
                 var rr = src.Read(buffer);
                 if (rr.HasData)
+                {
                     dc.Write(buffer.AsSpan(0, rr.Length));
+                }
                 else
                 {
                     break;
