@@ -345,4 +345,3 @@ healthchecksdb
 
 # The files in Songs doesn't get published to GitHun, so add your favorite songs to test!
 **/Songs/
-/Codecs/Shamisen.Codecs.Native.FLAC
