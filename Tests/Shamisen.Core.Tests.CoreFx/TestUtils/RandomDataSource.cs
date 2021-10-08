@@ -42,7 +42,7 @@ namespace Shamisen.Core.Tests.CoreFx
             state = seed;
             DebugID = debugID;
             DoDumpRead = doDumpRead;
-            increment = streamId | 1ul;
+            increment = (streamId * 1551207485500673479ul) | 1ul;
             byteBuffer = new byte[sizeof(uint)];
         }
 

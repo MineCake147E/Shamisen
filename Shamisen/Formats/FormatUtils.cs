@@ -29,5 +29,6 @@ namespace Shamisen
         /// <returns></returns>
         public static int GetBufferSizeRequired<TSample>(this IAudioFormat<TSample> format, TimeSpan length) where TSample : unmanaged
             => (int)Math.Ceiling(format.SampleRate * length.TotalSeconds) * format.Channels * ((format.BitDepth + 7) / 8);
+
     }
 }

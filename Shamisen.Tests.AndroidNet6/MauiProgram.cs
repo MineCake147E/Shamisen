@@ -12,10 +12,7 @@ namespace Shamisen.Tests.AndroidNet6
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
+                .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
             return builder.Build();
         }

@@ -2,6 +2,7 @@
 using System.Reflection;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Codecs.Flac;
@@ -12,13 +13,20 @@ namespace Shamisen.Benchmarks
     [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
+    [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FlacDecodingBenchmarks
     {
         private MemoryStream ms;
         private StreamDataSource src;
         private byte[] buf;
-
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                _ = AddColumn(new FrameThroughputColumn(a => 192000 * 1 * 60));
+            }
+        }
         [GlobalSetup]
         public void Setup()
         {

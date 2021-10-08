@@ -8038,7 +8038,7 @@
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateX86(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
             <summary>
-            For arbitral sampling frequency ratio larger than 1
+            For arbitrary sampling frequency ratio larger than 1
             </summary>
             <param name="buffer"></param>
             <param name="srcBuffer"></param>
@@ -11246,7 +11246,7 @@
         </member>
         <member name="T:Shamisen.Filters.BiQuadFilter">
             <summary>
-            Provides a function of filtering with Digital BiQuad Filter.
+            Filters audio signal with single Digital BiQuad Filter.
             </summary>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.AllowFusedMultiplyAddForPerformance">
@@ -11363,6 +11363,16 @@
             <param name="b1">The b1.</param>
             <param name="b2">The b2.</param>
             <param name="a0">The a0.</param>
+            <param name="a1">The a1.</param>
+            <param name="a2">The a2.</param>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuadParameter.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Filters.BiQuadParameter"/> struct.
+            </summary>
+            <param name="b0">The b0.</param>
+            <param name="b1">The b1.</param>
+            <param name="b2">The b2.</param>
             <param name="a1">The a1.</param>
             <param name="a2">The a2.</param>
         </member>
@@ -11507,6 +11517,150 @@
             <param name="slope">The slope in dB/Oct.</param>
             <param name="dBGain">The peak gain in dB.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuadParameter.Deconstruct(System.Single@,System.Single@,System.Single@,System.Single@,System.Single@)">
+            <summary>
+            Deconstructs an instance of <see cref="T:Shamisen.Filters.BiQuadParameter"/>.
+            </summary>
+            <param name="b0"></param>
+            <param name="b1"></param>
+            <param name="b2"></param>
+            <param name="a1"></param>
+            <param name="a2"></param>
+        </member>
+        <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter">
+            <summary>
+            Filters audio signal with multiple Digital BiQuad Filter.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},Shamisen.Filters.BiQuadParameter[])">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/>.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="parameters">The filters for all channels.</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/>.
+            </summary>
+            <param name="source"></param>
+            <param name="parameters"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Source">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
+            The orders more than 8 should be processed with serially cascaded function calls.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
+        </member>
+        <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
+            <summary>
+            Contains states of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.parameters">
+            <summary>
+            access: parameters[ch + <see cref="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.Channels"/> * (order + <see cref="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.Orders"/> * kind)]
+            kind id: {0 => b0, 1 => b1, 2 => b2, 3 => a1, 4 => a2}
+            </summary>
+        </member>
+        <member name="F:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.states">
+            <summary>
+            access: states[ch + <see cref="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.Channels"/> * (order + <see cref="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.Orders"/> * kind)]
+            kind id: {0 => z0, 1 => z1}
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.#ctor(System.Int32,System.Int32,System.Single[],System.Single[])">
+            <summary>
+            Initializes a new Instance of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates"/>.
+            </summary>
+            <param name="channels"></param>
+            <param name="orders"></param>
+            <param name="parameters"></param>
+            <param name="states"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates.Item(System.Int32,System.Int32)">
+            <summary>
+            This thing is supplied only for coefficients changes.
+            </summary>
+            <param name="channel"></param>
+            <param name="order"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters">
+            <summary>
+            Represents a set of parameters cascaded in single <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/> in array-of-structure form.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters.#ctor(Shamisen.Filters.BiQuadParameter[0:,0:])">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters"/>.
+            </summary>
+            <param name="parameters">The parameters arranged in [channels, order].</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters.Channels">
+            <summary>
+            Gets the number of channels associated with this <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters.Order">
+            <summary>
+            Gets the number of cascaded filters of this <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters.Length">
+            <summary>
+            Gets the number of <see cref="T:Shamisen.Filters.BiQuadParameter"/>s in this <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadParameters"/>.
+            </summary>
         </member>
         <member name="T:Shamisen.Filters.BpfGainKind">
             <summary>
@@ -11804,6 +11958,12 @@
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <typeparam name="TFormat">The format of the sample.</typeparam>
+            <seealso cref="T:Shamisen.Conversion.IAudioConverter`4" />
+        </member>
+        <member name="T:Shamisen.Filters.ISampleFilter">
+            <summary>
+            Defines a base infrastructure of an audio filter.
+            </summary>
             <seealso cref="T:Shamisen.Conversion.IAudioConverter`4" />
         </member>
         <member name="T:Shamisen.Filters.IMultipleInputAudioFilter`2">
@@ -17199,6 +17359,16 @@
         <member name="M:Shamisen.ReadResult.op_Multiply(Shamisen.ReadResult,System.Int32)">
             <summary>
             Multiplies specified <see cref="T:Shamisen.ReadResult"/> value and <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Division(Shamisen.ReadResult,System.Int32)">
+            <summary>
+            Divides specified <see cref="T:Shamisen.ReadResult"/> value with <see cref="T:System.Int32"/> value.
             </summary>
             <param name="left">The left.</param>
             <param name="right">The right.</param>

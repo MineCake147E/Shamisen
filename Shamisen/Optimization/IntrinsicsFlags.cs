@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Optimization
 {
+#if true
     /// <summary>
     /// Defines some X86 intrinsics.
     /// </summary>
@@ -159,4 +160,5 @@ namespace Shamisen.Optimization
         /// </summary>
         Rdm = 0x100,
     }
+#endif
 }

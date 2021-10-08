@@ -42,7 +42,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <param name="source">The source.</param>
         /// <param name="endianness">The endianness of <paramref name="source"/>.</param>
         public Pcm32ToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source, Endianness endianness = Endianness.Little)
-            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate)) => Endianness = endianness;
+            : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate))
+        {
+            Endianness = endianness;
+        }
 
         /// <summary>
         /// Gets the bytes consumed per sample.
@@ -110,7 +113,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 return rr;
             }
-            buffer = buffer.SliceWhile(rr.Length).SliceAlign(sizeof(int));
+            buffer = buffer.SliceWhile(rr.Length / 4);
             if (IsEndiannessConversionRequired)
             {
                 ProcessReversed(buffer);
@@ -134,7 +137,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 ProcessNormalAvx2ExtremeUnroll(buffer);
                 return;
             }
-            if (buffer.Length >= 128 && IntrinsicsUtils.AvoidAvxHeavyOperations && Avx2.IsSupported)
+            if (buffer.Length >= 128 && !IntrinsicsUtils.AvoidAvxHeavyOperations && Avx2.IsSupported)
             {
                 ProcessNormalAvx2(buffer);
                 return;
@@ -152,8 +155,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalStandard(Span<float> buffer)
         {
             Vector<float> mul = new(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref Unsafe.As<float, int>(ref rdi);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref int rsi = ref Unsafe.As<float, int>(ref rdi);
             nint i, length = buffer.Length;
             int size = Vector<float>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
@@ -193,8 +196,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalAvx2(Span<float> buffer)
         {
-            Vector256<float> mul = Vector256.Create(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var mul = Vector256.Create(Multiplier);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -242,7 +245,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalAvx2ExtremeUnroll(Span<float> buffer)
         {
             var mul = Vector256.Create(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Zen3 in 256-bit AVX2
             //Does Zen3 branch slowly?
@@ -370,10 +373,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalSse2(Span<float> buffer)
         {
-            Vector128<float> mul = Vector128.Create(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var mul = Vector128.Create(Multiplier);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
-            //Loop for Haswell in 128-bit AVX for better frequency behaviour
+            //Loop for Haswell in 128-bit AVX for better frequency behavior
             for (i = 0; i < length - 63; i += 64)
             {
                 var xmm0 = Sse2.ConvertToVector128Single(Unsafe.As<float, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0)));
@@ -454,9 +457,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #if NETCOREAPP3_1_OR_GREATER
         internal static void ProcessReversedSsse3(Span<float> buffer)
         {
-            Vector128<float> mul = Vector128.Create(Multiplier);
-            Vector128<byte> shuf = Vector128.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var mul = Vector128.Create(Multiplier);
+            var shuf = Vector128.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Haswell in 128-bit AVX for better frequency behaviour
             for (i = 0; i < length - 31; i += 32)
@@ -522,9 +525,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
         internal static void ProcessReversedAvx2(Span<float> buffer)
         {
-            Vector256<float> mul = Vector256.Create(Multiplier);
-            Vector256<byte> shuf = Vector256.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            var mul = Vector256.Create(Multiplier);
+            var shuf = Vector256.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -592,8 +595,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessReversedStandard(Span<float> buffer)
         {
             float mul = Multiplier;
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref Unsafe.As<float, int>(ref rdi);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref int rsi = ref Unsafe.As<float, int>(ref rdi);
             nint i, length = buffer.Length;
             for (i = 0; i < length - 3; i += 4)
             {

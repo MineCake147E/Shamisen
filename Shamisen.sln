@@ -69,9 +69,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.IO.Oboe", "Shamisen.IO.Oboe\Shamisen.IO.Oboe.csproj", "{66D7D7A4-647F-4847-8C6B-451CE5E12E15}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Codecs", "Codecs", "{39916B22-3F5F-4508-A4A0-AC6F360DB301}"
-	ProjectSection(SolutionItems) = preProject
-		Shamisen.Benchmarks\SampleToPcm16ConverterBenchmarks.cs = Shamisen.Benchmarks\SampleToPcm16ConverterBenchmarks.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{ED7D1360-F59F-4A1C-BB9A-B7A953DF4B84}"
 EndProject
@@ -84,6 +81,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Tests.AndroidNet6", "Shamisen.Tests.AndroidNet6\Shamisen.Tests.AndroidNet6.csproj", "{5D910AD8-7F50-429B-9AC9-24B70E478F20}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Android", "Android", "{BF394D5B-C850-424C-8F3C-984556A40D42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGeneration", "CodeGeneration", "{E8DA7A3F-784A-4D79-BF9A-96721EE8072C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

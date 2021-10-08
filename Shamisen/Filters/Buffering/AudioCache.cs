@@ -51,7 +51,7 @@ namespace Shamisen.Filters.Buffering
         /// <value>
         /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
         /// </value>
-        public ulong? TotalLength { get; }
+        public ulong? TotalLength => cache.TotalLength is { } tlen ? tlen / (ulong)Format.Channels : null;
 
         /// <summary>
         /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>

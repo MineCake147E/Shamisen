@@ -1,3 +1,6 @@
 [submodule "Codecs/Shamisen.Codecs.Native.FLAC/flac"]
 	path = Codecs/Shamisen.Codecs.Native.FLAC/flac
 	url = https://github.com/xiph/flac
+[submodule "Shamisen.IO.Oboe/Oboe"]
+	path = Shamisen.IO.Oboe/Oboe
+	url = https://github.com/google/oboe

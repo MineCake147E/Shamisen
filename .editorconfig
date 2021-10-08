@@ -317,3 +317,6 @@ dotnet_diagnostic.CS0628.severity = error
 
 # IDE1006: 命名スタイル
 dotnet_diagnostic.IDE1006.severity = error
+
+# CS0078: l' という接尾辞は、数字の '1' と混同されることがあります
+dotnet_diagnostic.CS0078.severity = error

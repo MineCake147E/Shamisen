@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
+
+using FastEnumUtility;
 
 using NUnit.Framework;
 
@@ -16,7 +19,9 @@ using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Data;
 using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
+using Shamisen.Optimization;
 using Shamisen.Synthesis;
+using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx
 {
@@ -24,6 +29,7 @@ namespace Shamisen.Core.Tests.CoreFx
     public class ResamplerTest
     {
         private const double Freq = 523;
+        #region DoesNotThrow
 
         [Test]
         public void UpSamplingDoesNotThrow()
@@ -33,7 +39,7 @@ namespace Shamisen.Core.Tests.CoreFx
             const int DestinationSampleRate = 48000;
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
-            var buffer = new float[Channels * 1024];
+            float[] buffer = new float[Channels * 1024];
             Assert.DoesNotThrow(() => resampler.Read(buffer));
             resampler.Dispose();
         }
@@ -46,10 +52,12 @@ namespace Shamisen.Core.Tests.CoreFx
             const int DestinationSampleRate = 44100;
             var src = new SinusoidSource(new SampleFormat(Channels, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
-            var buffer = new float[Channels * 1024];
+            float[] buffer = new float[Channels * 1024];
             Assert.DoesNotThrow(() => resampler.Read(buffer));
             resampler.Dispose();
         }
+        #endregion
+        #region UpSamplingCoeffsIntrinsicsConsistency
 
         [TestCase(2, 0.5f)]
         [TestCase(3, 1.0f / 3)]
@@ -88,7 +96,7 @@ namespace Shamisen.Core.Tests.CoreFx
         [TestCase(1027, 1.0f / 1027)]
         public void UpSamplingCoeffsFma128Consistency(int length, float rateMulInverse)
         {
-            if (Sse2.IsSupported)
+            if (Fma.IsSupported)
             {
                 using var std = new PooledArray<Vector4>(length);
                 using var cmp = new PooledArray<Vector4>(length);
@@ -107,9 +115,86 @@ namespace Shamisen.Core.Tests.CoreFx
             }
             else
             {
-                Assert.Warn("SSE2 is not supported!");
+                Assert.Warn("FMA is not supported!");
             }
         }
+        #endregion
+        #region UpSamplingIntrinsicsConsistency
+        private static IEnumerable<TestCaseData> UpSamplingIntrinsicsConsistencyTestCaseSource()
+        {
+            var ratios = GenerateConversionRatios();
+            var channelsWithIntrinsics = Enumerable.Range(1, 2);
+            var x86Intr = FastEnum.GetValues<X86IntrinsicsMask>().Where(a => a != X86IntrinsicsMask.None && IntrinsicsUtils.X86Intrinsics.HasAllFeatures(a)).Select(a => (X86Intrinsics)a);
+            var armIntr = FastEnum.GetValues<ArmIntrinsicsMask>().Where(a => a != ArmIntrinsicsMask.None && IntrinsicsUtils.ArmIntrinsics.HasAllFeatures(a)).Select(a => (ArmIntrinsics)a);
+            var chsr = channelsWithIntrinsics.SelectMany(chs => ratios.Select(r => (chs, r.before, r.after))).ToArray();
+            var x86Cases = x86Intr.SelectMany(intr => chsr.Select(c => new TestCaseData(c.chs, c.before, c.after, intr, ArmIntrinsics.None)));
+            var armCases = armIntr.SelectMany(intr => chsr.Select(c => new TestCaseData(c.chs, c.before, c.after, X86Intrinsics.None, intr)));
+            return x86Cases.Concat(armCases);
+        }
+
+        [TestCaseSource(nameof(UpSamplingIntrinsicsConsistencyTestCaseSource))]
+        public void UpSamplingIntrinsicsConsistency(int channels, int sourceSampleRate = 48000, int destinationSampleRate = 192000, X86Intrinsics x86Intrinsics = (X86Intrinsics)~0ul, ArmIntrinsics armIntrinsics = (ArmIntrinsics)~0ul)
+        {
+            if (x86Intrinsics == (X86Intrinsics)~0ul)
+            {
+                x86Intrinsics = IntrinsicsUtils.X86Intrinsics;
+            }
+            if (armIntrinsics == (ArmIntrinsics)~0ul)
+            {
+                armIntrinsics = IntrinsicsUtils.ArmIntrinsics;
+            }
+            CheckIntrinsicsConsistency(sourceSampleRate, channels, destinationSampleRate, x86Intrinsics, armIntrinsics);
+            Assert.Pass();
+        }
+
+        private static void CheckIntrinsicsConsistency(int sourceSampleRate, int channels, int destinationSampleRate, X86Intrinsics x86Intrinsics, ArmIntrinsics armIntrinsics)
+        {
+            Console.WriteLine($"Enabled x86-64 intrinsics: {x86Intrinsics}");
+            Console.WriteLine($"Enabled ARM intrinsics: {armIntrinsics}");
+            if (!IntrinsicsUtils.ArmIntrinsics.HasAllFeatures(armIntrinsics))
+            {
+                Assert.Warn($"The Arm intrinsics \"{(armIntrinsics & IntrinsicsUtils.ArmIntrinsics) ^ armIntrinsics}\" are not supported on this machine!");
+                return;
+            }
+            if (!IntrinsicsUtils.X86Intrinsics.HasAllFeatures(x86Intrinsics))
+            {
+                Assert.Warn($"The X86 intrinsics \"{(x86Intrinsics & IntrinsicsUtils.X86Intrinsics) ^ x86Intrinsics}\" are not supported on this machine!");
+                return;
+            }
+            const int Frequency = 2000;
+            var format = new SampleFormat(channels, sourceSampleRate);
+            using var srcNoIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
+            using var srcIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
+            using var filterNoIntrinsics = new SplineResampler(srcNoIntrinsics, destinationSampleRate, X86Intrinsics.None);
+            using var filterIntrinsics = new SplineResampler(srcIntrinsics, destinationSampleRate, x86Intrinsics);
+            float[] bufferNoIntrinsics = new float[16383 * channels];
+            float[] bufferIntrinsics = new float[bufferNoIntrinsics.Length];
+            _ = filterNoIntrinsics.Read(bufferNoIntrinsics);
+            _ = filterIntrinsics.Read(bufferIntrinsics);
+            NeumaierAccumulator sumdiff = default;
+            for (int i = 0; i < bufferNoIntrinsics.Length; i++)
+            {
+                double simple = bufferNoIntrinsics[i];
+                double optimized = bufferIntrinsics[i];
+                double diff = simple - optimized;
+                sumdiff += Math.Abs(diff);
+            }
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            double avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
+            Console.WriteLine($"Average difference: {avgDiff}");
+            if (avgDiff != 0.0)
+            {
+                float[] bufferStereo = new float[bufferNoIntrinsics.Length * 2];
+                //Even channels contain bufferNoIntrinsics, and odd channels contain bufferIntrinsics
+                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics), MemoryMarshal.Cast<float, int>(bufferIntrinsics));
+                using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
+                dc.Write(bufferStereo);
+                TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
+                Assert.AreEqual(0.0, avgDiff);
+            }
+        }
+        #endregion
+        #region Dump
 
         [Test]
         public void UpSamplingFrameDump()
@@ -118,10 +203,10 @@ namespace Shamisen.Core.Tests.CoreFx
             const int DestinationSampleRate = 192000;
             var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
-            var buffer = new float[256];
+            float[] buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
             resampler.Read(buffer);
-            foreach (var item in buffer)
+            foreach (float item in buffer)
             {
                 Console.WriteLine(item);
             }
@@ -137,15 +222,15 @@ namespace Shamisen.Core.Tests.CoreFx
         {
             var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, destinationSampleRate);
-            var buffer = new float[256];
+            float[] buffer = new float[256];
             resampler.Read(buffer); //Trash the data because the first one contains transient part.
             resampler.Read(buffer);
-            foreach (var item in buffer)
+            foreach (float item in buffer)
             {
                 Console.WriteLine(item);
             }
             resampler.Read(buffer);
-            foreach (var item in buffer)
+            foreach (float item in buffer)
             {
                 Console.WriteLine(item);
             }
@@ -155,7 +240,12 @@ namespace Shamisen.Core.Tests.CoreFx
 
         private static IEnumerable<TestCaseData> UpSamplingManyFrameDumpTestCaseSource()
         {
-            var ratios = new (int before, int after)[]
+            var ratios = GenerateConversionRatios();
+            int[] channels = Enumerable.Range(1, 8)/*.Concat(new int[] { })*/.ToArray();
+            return channels.SelectMany(chs => ratios.Select(r => new TestCaseData(chs, r.before, r.after, 1024, 64)));
+        }
+
+        private static (int before, int after)[] GenerateConversionRatios() => new (int before, int after)[]
             {
                 (8000, 192000),  	//Smoothness test
                 (24000, 154320),  	//CachedWrappedOdd
@@ -166,9 +256,6 @@ namespace Shamisen.Core.Tests.CoreFx
                 (96000, 192000),  	//CachedDirect DoubleRate
                 (64000, 192000),  	//CachedDirect IntegerRate
             };
-            var channels = Enumerable.Range(1, 8)/*.Concat(new int[] { })*/.ToArray();
-            return channels.SelectMany(chs => ratios.Select(r => new TestCaseData(chs, r.before, r.after, 1024, 64)));
-        }
 
         [TestCaseSource(nameof(UpSamplingManyFrameDumpTestCaseSource))]
         [TestCase(2, 24000, 192000, 1021)]      //Odd length of blocks
@@ -178,25 +265,12 @@ namespace Shamisen.Core.Tests.CoreFx
         {
             var src = new SinusoidSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, destinationSampleRate);
-            var path = new FileInfo($"./dumps/SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}.wav");
-            Console.WriteLine(path.FullName);
-            if (!Directory.Exists("./dumps")) _ = Directory.CreateDirectory("./dumps");
-            using var dc = new AudioCache<float, SampleFormat>(resampler.Format);
-            float[] buffer = new float[(ulong)frameLen * (ulong)channels];
-            for (int i = 0; i < framesToWrite; i++)
-            {
-                var q = resampler.Read(buffer);
-                dc.Write(buffer.AsSpan(0, q.Length));
-            }
-            var trunc = new LengthTruncationSource<float, SampleFormat>(dc, (ulong)framesToWrite * (ulong)frameLen);
-            using (var ssink = new StreamDataSink(path.OpenWrite(), true, true))
-            {
-                Assert.DoesNotThrow(() =>
-                SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
-            }
-            Assert.Pass();
+            string path = $"SplineResamplerDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}";
+            TestHelper.DumpSampleSource(frameLen, framesToWrite, resampler, path);
             resampler.Dispose();
+            Assert.Pass();
         }
 
+        #endregion
     }
 }

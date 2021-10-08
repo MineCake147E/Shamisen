@@ -18,9 +18,22 @@ namespace Shamisen.Filters
         /// <param name="a0">The a0.</param>
         /// <param name="a1">The a1.</param>
         /// <param name="a2">The a2.</param>
-        private BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2)
+        internal BiQuadParameter(float b0, float b1, float b2, float a0, float a1, float a2)
         {
             (B, A) = (new Vector3(b0, b1, b2) / a0, new Vector2(a1, a2) / -a0);  //Invert in advance
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BiQuadParameter"/> struct.
+        /// </summary>
+        /// <param name="b0">The b0.</param>
+        /// <param name="b1">The b1.</param>
+        /// <param name="b2">The b2.</param>
+        /// <param name="a1">The a1.</param>
+        /// <param name="a2">The a2.</param>
+        internal BiQuadParameter(float b0, float b1, float b2, float a1, float a2)
+        {
+            (B, A) = (new Vector3(b0, b1, b2), new Vector2(a1, a2));
         }
 
         /// <summary>
@@ -94,7 +107,7 @@ namespace Shamisen.Filters
         public static BiQuadParameter CreateBPFParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, BpfGainKind gainKind)
         {
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromQuality(quality, sinW0);
+            double alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateBPFCoefficients(gainKind, cosW0, sinW0, alpha);
         }
 
@@ -110,7 +123,7 @@ namespace Shamisen.Filters
         public static BiQuadParameter CreateBPFParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth, BpfGainKind gainKind)
         {
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreateBPFCoefficients(gainKind, cosW0, sinW0, alpha);
         }
 
@@ -124,7 +137,7 @@ namespace Shamisen.Filters
         public static BiQuadParameter CreateNotchFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality)
         {
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromQuality(quality, sinW0);
+            double alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateNotchFilterCoefficients(cosW0, alpha);
         }
 
@@ -138,7 +151,7 @@ namespace Shamisen.Filters
         public static BiQuadParameter CreateNotchFilterParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth)
         {
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreateNotchFilterCoefficients(cosW0, alpha);
         }
 
@@ -152,9 +165,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreatePeakingEqualizerParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromQuality(quality, sinW0);
+            double alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreatePeakingEqualizerCoefficients(cosW0, alpha, A);
         }
 
@@ -168,9 +181,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreatePeakingEqualizerParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreatePeakingEqualizerCoefficients(cosW0, alpha, A);
         }
 
@@ -184,9 +197,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateLowShelfFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromQuality(quality, sinW0);
+            double alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateLowShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -200,9 +213,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateLowShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromSlope(slope, A, sinW0);
+            double alpha = CalculateAlphaFromSlope(slope, A, sinW0);
             return CreateLowShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -216,9 +229,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateHighShelfFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromQuality(quality, sinW0);
+            double alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateHighShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -232,13 +245,32 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateHighShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
-            var A = CalculateA(dBGain);
+            double A = CalculateA(dBGain);
             CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
-            var alpha = CalculateAlphaFromSlope(slope, A, sinW0);
+            double alpha = CalculateAlphaFromSlope(slope, A, sinW0);
             return CreateHighShelfCoefficients(cosW0, A, alpha);
         }
 
         #endregion Public Constructor
+
+        #region Deconstruct
+        /// <summary>
+        /// Deconstructs an instance of <see cref="BiQuadParameter"/>.
+        /// </summary>
+        /// <param name="b0"></param>
+        /// <param name="b1"></param>
+        /// <param name="b2"></param>
+        /// <param name="a1"></param>
+        /// <param name="a2"></param>
+        public void Deconstruct(out float b0, out float b1, out float b2, out float a1, out float a2)
+        {
+            b0 = B.X;
+            b1 = B.Y;
+            b2 = B.Z;
+            a1 = A.X;
+            a2 = A.Y;
+        }
+        #endregion
 
         #region Construction Helper Functions
 
@@ -343,8 +375,8 @@ namespace Shamisen.Filters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreatePeakingEqualizerCoefficients(double cosW0, double alpha, double a)
         {
-            var alphamA = alpha * a;
-            var alphadA = alpha / a;
+            double alphamA = alpha * a;
+            double alphadA = alpha / a;
             float b1a1 = -2f * (float)cosW0;
             return new BiQuadParameter((float)(1 + alphamA), b1a1, (float)(1 - alphamA), (float)(1 + alphadA), b1a1, (float)(1 - alphadA));
         }
@@ -352,9 +384,9 @@ namespace Shamisen.Filters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateLowShelfCoefficients(double cosW0, double a, double alpha)
         {
-            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
-            var Ap1 = a + 1;
-            var As1 = a - 1;
+            double TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            double Ap1 = a + 1;
+            double As1 = a - 1;
             double As1CosW0 = As1 * cosW0;
             float b0 = (float)(a * (Ap1 - As1CosW0 + TwomSqrtAmAlpha));
             float b1 = (float)(2 * a * (As1 - Ap1 * cosW0));
@@ -368,9 +400,9 @@ namespace Shamisen.Filters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateHighShelfCoefficients(double cosW0, double a, double alpha)
         {
-            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
-            var Ap1 = a + 1;
-            var As1 = a - 1;
+            double TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            double Ap1 = a + 1;
+            double As1 = a - 1;
             double As1CosW0 = As1 * cosW0;
             double Ap1CosW0 = Ap1 * cosW0;
             float b0 = (float)(a * (Ap1 + As1CosW0 + TwomSqrtAmAlpha));

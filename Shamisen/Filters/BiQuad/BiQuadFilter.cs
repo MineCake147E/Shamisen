@@ -26,7 +26,7 @@ namespace Shamisen.Filters
     /// <summary>
     /// Filters audio signal with single Digital BiQuad Filter.
     /// </summary>
-    public sealed partial class BiQuadFilter : IAudioFilter<float, SampleFormat>
+    public sealed partial class BiQuadFilter : ISampleFilter
     {
         private bool disposedValue = false; //
         private readonly bool enableIntrinsics;
