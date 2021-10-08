@@ -22,5 +22,7 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
         include-prerelease: true
+    - name: Build
+      run: dotnet build ./Tests/Shamisen.Core.Tests.CoreFx/Shamisen.Core.Tests.CoreFx.csproj
     - name: Test
-      run: dotnet test --verbosity normal -f ${{ matrix.dotnet-version }} ./Tests/Shamisen.Core.Tests.CoreFx/Shamisen.Core.Tests.CoreFx.csproj
+      run: dotnet test --no-build --verbosity normal -f ${{ matrix.dotnet-version }} ./Tests/Shamisen.Core.Tests.CoreFx/Shamisen.Core.Tests.CoreFx.csproj
