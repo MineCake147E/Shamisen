@@ -20,21 +20,138 @@ namespace Shamisen.Conversion.Resampling.Sample
     public sealed partial class SplineResampler
     {
         #region Monaural
-        private int ResampleCachedDirectMonauralX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private int ResampleCachedDirectMonauralX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
             => (facc, acc, ram) switch
             {
                 (0, 1, 2) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
                 => ResampleCachedDirectMonauralDoubleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, 2) => ResampleCachedDirectMonauralDoubleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
                 (0, 1, 4) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
                 => ResampleCachedDirectMonauralQuadrupleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectMonauralIntegerMultipleRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram),
+                (0, 1, 4) => ResampleCachedDirectMonauralQuadrupleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
+                (0, 1, _) => ResampleCachedDirectMonauralIntegerMultipleRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram),
                 (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectMonauralUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
+                => ResampleCachedDirectMonauralUpAnyRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci),
                 (_, _, _) when Sse3.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse3)
-                => ResampleCachedDirectMonauralAnyRateSse3(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-                _ => ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+                => ResampleCachedDirectMonauralAnyRateSse3(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
+                _ => ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
             };
+        private static int ResampleCachedDirectMonauralUpAnyRateX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        {
+            if (ram - ram / 4 < acc && Sse2.IsSupported)
+            {
+                return ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci);
+            }
+            else
+            {
+                return ResampleCachedDirectMonauralUpAnyRateGenericSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static int ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        {
+            nint i = 0;
+            nint length = buffer.Length;
+            nint slen = srcBuffer.Length - 3;
+            nint isx = 0;
+            nint psx = x;
+            nint nram = ram;
+            nint nacc = acc;
+            nint nracc = nram - nacc;
+            nint nram16 = nram * 16;
+            nint nrci = rci * 16;
+            ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
+            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            Vector128<float> xmm7;
+            nint oram = nracc * 3;
+            nint olen = length - 3;
+            nint nracc4 = -nracc * 4;
+            while (true)
+            {
+                if (i >= olen) break;
+                if (psx > oram)
+                {
+                    xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx + 0));
+                    var xmm8 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx + 1));
+                    var xmm9 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx + 2));
+                    var xmm10 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx + 3));
+                    xmm7 = Sse.Multiply(xmm7, Unsafe.AddByteOffset(ref coeff, nrci + 0));
+                    xmm8 = Sse.Multiply(xmm8, Unsafe.AddByteOffset(ref coeff, nrci + 16));
+                    xmm9 = Sse.Multiply(xmm9, Unsafe.AddByteOffset(ref coeff, nrci + 32));
+                    xmm10 = Sse.Multiply(xmm10, Unsafe.AddByteOffset(ref coeff, nrci + 48));
+                    psx += nracc4;
+                    isx += 4;
+                    nrci += 64;
+                    bool j = nrci >= nram16;
+                    nint z = Unsafe.As<bool, byte>(ref j);
+                    nrci -= -z & nram16;
+                    var xmm2 = Sse2.UnpackHigh(xmm7.AsDouble(), xmm8.AsDouble()).AsSingle();
+                    var xmm0 = Sse2.UnpackLow(xmm7.AsDouble(), xmm8.AsDouble()).AsSingle();
+                    var xmm1 = Sse2.UnpackHigh(xmm9.AsDouble(), xmm10.AsDouble()).AsSingle();
+                    xmm0 = Sse.Add(xmm0, xmm2);
+                    xmm10 = Sse2.UnpackLow(xmm9.AsDouble(), xmm10.AsDouble()).AsSingle();
+                    xmm1 = Sse.Add(xmm1, xmm10);
+                    bool h = psx < 0;
+                    nint y = Unsafe.As<bool, byte>(ref h);
+                    xmm2 = Sse.Shuffle(xmm0, xmm1, 0b11_01_11_01);
+                    xmm7 = Sse.Shuffle(xmm0, xmm1, 0b10_00_10_00);
+                    y = -y;
+                    xmm0 = Sse.Add(xmm2, xmm7);
+                    psx += nram & y;
+                    isx += y;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i)) = xmm0;
+                    i += 4;
+                }
+                else
+                {
+                    xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
+                    var xmm0 = Unsafe.AddByteOffset(ref coeff, nrci);
+                    nrci += 16;
+                    xmm0 = Sse.Multiply(xmm0, xmm7);
+                    psx += nacc;
+                    bool j = nrci < nram16;
+                    nint z = Unsafe.As<bool, byte>(ref j);
+                    var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
+                    xmm0 = Sse.Add(xmm0, xmm6);
+                    nrci &= -z;
+                    xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
+                    xmm0 = Sse.AddScalar(xmm0, xmm6);
+                    bool h = psx >= nram;
+                    nint y = Unsafe.As<bool, byte>(ref h);
+                    isx += y;
+                    y = -y;
+                    Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
+                    i++;
+                    psx -= nram & y;
+                }
+            }
+            for (; i < length; i++)
+            {
+                xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
+                var xmm0 = Unsafe.AddByteOffset(ref coeff, nrci);
+                nrci += 16;
+                xmm0 = Sse.Multiply(xmm0, xmm7);
+                var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
+                xmm0 = Sse.Add(xmm0, xmm6);
+                psx += nacc;
+                bool j = nrci < nram16;
+                nint z = Unsafe.As<bool, byte>(ref j);
+                xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
+                nrci &= -z;
+                xmm0 = Sse.AddScalar(xmm0, xmm6);
+                bool h = psx >= nram;
+                nint y = Unsafe.As<bool, byte>(ref h);
+                isx += y;
+                y = -y;
+                Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
+                psx -= nram & y;
+            }
+            rci = (int)((nuint)nrci / 16);
+            x = (int)psx;
+            return (int)((nuint)isx);
+        }
 
         /// <summary>
         /// For arbitrary sampling frequency ratio larger than 1
@@ -45,10 +162,10 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// <param name="x"></param>
         /// <param name="ram"></param>
         /// <param name="acc"></param>
-
+        /// <param name="rci"></param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralUpAnyRateX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc)
+        private static int ResampleCachedDirectMonauralUpAnyRateGenericSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
         {
             nint i = 0;
             nint length = buffer.Length;
@@ -56,57 +173,22 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint isx = 0;
             nint psx = x;
             nint nram = ram;
+            nint nrci = rci;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref float src = ref MemoryMarshal.GetReference(srcBuffer);
             ref float dst = ref MemoryMarshal.GetReference(buffer);
             var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
             for (i = 0; i < length; i++)
             {
-                var cutmullCoeffs = Unsafe.Add(ref coeff, psx);
-                Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(xmm7, cutmullCoeffs);
-                psx += acc;
-                if (psx < nram) continue;
-                psx -= nram;
-                isx++;
-                if (isx >= slen) continue;
-                xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
-            }
-            x = (int)psx;
-            return (int)isx;
-        }
-
-        /// <summary>
-        /// For arbitral sampling frequency ratio larger than 1
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="srcBuffer"></param>
-        /// <param name="coeffPtr"></param>
-        /// <param name="x"></param>
-        /// <param name="ram"></param>
-        /// <param name="acc"></param>
-
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralUpAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc)
-        {
-            nint i = 0;
-            nint length = buffer.Length;
-            nint slen = srcBuffer.Length - 3;
-            nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
-            var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
-            for (i = 0; i < length; i++)
-            {
-                var xmm0 = Unsafe.Add(ref coeff, psx);
+                var xmm0 = Unsafe.Add(ref coeff, nrci);
                 xmm0 = Sse.Multiply(xmm0, xmm7);
                 var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
                 xmm0 = Sse.Add(xmm0, xmm6);
                 psx += acc;
+                bool j = ++nrci < nram;
+                nint z = Unsafe.As<bool, byte>(ref j);
                 xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
+                nrci &= -z;
                 xmm0 = Sse.AddScalar(xmm0, xmm6);
                 Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
                 if (psx < nram) continue;
@@ -115,6 +197,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 if (isx >= slen) continue;
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             }
+            rci = (int)nrci;
             x = (int)psx;
             return (int)isx;
         }
@@ -147,13 +230,14 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralAnyRateSse3(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirectMonauralAnyRateSse3(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
             nint psx = x;
             nint nram = ram;
+            nint nrci = rci;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref float src = ref MemoryMarshal.GetReference(srcBuffer);
             ref float dst = ref MemoryMarshal.GetReference(buffer);
@@ -161,20 +245,24 @@ namespace Shamisen.Conversion.Resampling.Sample
             for (i = 0; i < length; i++)
             {
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
-                var xmm0 = Unsafe.Add(ref coeff, psx);
+                var xmm0 = Unsafe.Add(ref coeff, nrci);
                 xmm0 = Sse.Multiply(xmm0, xmm7);
+                bool j = ++nrci < nram;
+                nint z = Unsafe.As<bool, byte>(ref j);
                 psx += acc;
                 xmm7 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                nrci &= -z;
                 isx += facc;
                 xmm0 = Sse.Add(xmm0, xmm7);
                 bool v = psx >= nram;
+                nint v1 = Unsafe.As<bool, byte>(ref v);
                 xmm7 = Sse3.MoveHighAndDuplicate(xmm0);
-                byte v1 = Unsafe.As<bool, byte>(ref v);
                 isx += v1;
                 psx -= nram & -v1;
                 xmm0 = Sse.AddScalar(xmm0, xmm7);
                 Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
             }
+            rci = (int)nrci;
             x = (int)psx;
             return (int)isx;
         }
@@ -265,11 +353,12 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref float src = ref MemoryMarshal.GetReference(srcBuffer);
             ref float dst = ref MemoryMarshal.GetReference(buffer);
-            var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
+            Vector128<float> xmm7;
             if (psx > 0)
             {
                 for (; i < length; i++)
                 {
+                    xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
                     var cutmullCoeffs = Unsafe.Add(ref coeff, psx);
                     Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(xmm7, cutmullCoeffs);
                     psx++;
@@ -277,7 +366,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                     {
                         psx = 0;
                         isx++;
-                        xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
                         break;
                     }
                 }
@@ -289,6 +377,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint olen = length - 3;
             for (; i < olen; i += 4)
             {
+                xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
                 var xmm0 = Sse.Multiply(xmm7, c0);
                 var xmm1 = Sse.Multiply(xmm7, c1);
                 var xmm2 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm1.AsDouble()).AsSingle();
@@ -304,7 +393,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm0 = Sse.Add(xmm2, xmm7);
                 Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i)) = xmm0;
                 isx++;
-                xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             }
             for (; i < length; i++)
             {
@@ -324,7 +412,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
         #region Stereo
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private int ResampleCachedDirect2ChannelsX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private int ResampleCachedDirect2ChannelsX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
             => (facc, acc, ram) switch
             {
                 (0, 1, 2) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
@@ -334,17 +422,19 @@ namespace Shamisen.Conversion.Resampling.Sample
                 (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
                 => ResampleCachedDirectStereoIntegerRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram),
                 (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc),
+                => ResampleCachedDirectStereoUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci),
                 (_, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
-                _ => ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc),
+                => ResampleCachedDirectStereoAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
+                _ => ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
             };
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoUpAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc)
+        private static int ResampleCachedDirectStereoUpAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
         {
             nint isx = 0;
             nint psx = x;
+            nint nrci = rci;
+            nint nram = ram;
             ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -354,13 +444,16 @@ namespace Shamisen.Conversion.Resampling.Sample
             var vz = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
             for (i = 0; i < length; i++)
             {
-                var c = Unsafe.Add(ref coeff, psx);
+                var c = Unsafe.Add(ref coeff, nrci++);
                 var vl = Sse.Shuffle(c, c, 0b01_01_00_00);
                 var vr = Sse.Shuffle(c, c, 0b11_11_10_10);
                 vl = Sse.Multiply(vx, vl);
                 vr = Sse.Multiply(vz, vr);
+                bool j = nrci < nram;
+                nint z = Unsafe.As<bool, byte>(ref j);
                 vl = Sse.Add(vl, vr);
                 vr = Sse.Shuffle(vl, vl, 0b00_00_11_10);
+                nrci &= -z;
                 vl = Sse.Add(vl, vr);
                 Unsafe.Add(ref vBuffer, i) = vl.AsDouble().GetElement(0);
                 psx += acc;
@@ -372,6 +465,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     vz = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
                 }
             }
+            rci = (int)nrci;
             x = (int)psx;
             return (int)isx;
         }
@@ -480,7 +574,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
         /// <summary>
         /// This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
-        /// It does not use 256bit floating-point arithmetic, making it suitable for the Haswell microarchitecture.<br/>
+        /// It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
         /// TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
         /// </summary>
         /// <param name="buffer"></param>
@@ -589,10 +683,12 @@ namespace Shamisen.Conversion.Resampling.Sample
             return (int)isx;
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirectStereoAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
             nint psx = x;
+            nint nrci = rci;
+            nint nram = ram;
             ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -602,22 +698,26 @@ namespace Shamisen.Conversion.Resampling.Sample
             {
                 var vx = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx));
                 var vz = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
-                var c = Unsafe.Add(ref coeff, psx);
+                var c = Unsafe.Add(ref coeff, nrci++);
                 var vl = Sse.Shuffle(c, c, 0b01_01_00_00);
-                psx += acc;
                 var vr = Sse.Shuffle(c, c, 0b11_11_10_10);
+                psx += acc;
                 isx += facc;
                 vl = Sse.Multiply(vx, vl);
-                bool a = psx >= ram;
                 vr = Sse.Multiply(vz, vr);
-                int b = Unsafe.As<bool, byte>(ref a);
+                bool j = nrci < nram;
+                nint z = Unsafe.As<bool, byte>(ref j);
                 vl = Sse.Add(vl, vr);
-                psx -= ram & (-b);
                 vr = Sse.Shuffle(vl, vl, 0b00_00_11_10);
                 vl = Sse.Add(vl, vr);
-                isx += b;
                 Unsafe.Add(ref vBuffer, i) = vl.AsDouble().GetElement(0);
+                nrci &= -z;
+                bool a = psx >= nram;
+                int b = Unsafe.As<bool, byte>(ref a);
+                isx += b;
+                psx -= nram & (-b);
             }
+            rci = (int)nrci;
             x = (int)psx;
             return (int)isx;
         }

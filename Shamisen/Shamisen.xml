@@ -7989,9 +7989,18 @@
             <param name="source">The source.</param>
             <param name="destinationSampleRate">The destination sample rate.</param>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedDirect(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
+             <summary>
+             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedDirect"/>.
+            
+             </summary>
+             <param name="coeffs"></param>
+             <param name="rateMul"></param>
+             <param name="acc"></param>
+        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedOdd(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
              <summary>
-             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd"/>.
+             Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedOdd"/>.
             
              </summary>
              <param name="coeffs"></param>
@@ -8000,7 +8009,7 @@
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedWrappedEven(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
              <summary>
-             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedEven"/>.
+             Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedWrappedEven"/>.
             
              </summary>
              <param name="coeffs"></param>
@@ -8036,7 +8045,7 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateX86(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
             <summary>
             For arbitrary sampling frequency ratio larger than 1
             </summary>
@@ -8046,24 +8055,13 @@
             <param name="x"></param>
             <param name="ram"></param>
             <param name="acc"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32)">
-            <summary>
-            For arbitral sampling frequency ratio larger than 1
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
+            <param name="rci"></param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
             <summary>
             This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
-            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell microarchitecture.<br/>
+            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
             TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
             </summary>
             <param name="buffer"></param>

@@ -29,11 +29,11 @@ namespace Shamisen.Conversion.Resampling.Sample
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
             ref var coeffPtr = ref GetReference(cspan);
             int outputSamplePosition = 0;
-            
             int inputSampleIndex = 0, x = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
             int facc = IndexIncrement;
+            int rci = rearrangedCoeffsIndex;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -57,12 +57,12 @@ namespace Shamisen.Conversion.Resampling.Sample
             } else {
                 switch (channels) {
                     case 1: //Monaural
-                        inputSampleIndex = ResampleCachedDirectMonaural(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirectMonaural(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
                         #region SIMD Optimized Multi-Channel Audio Resampling
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
                     case <#= ch#>:
-                        inputSampleIndex = ResampleCachedDirect<#=ch#>Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirect<#=ch#>Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
 <#}#>
 
@@ -82,7 +82,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            
                                             destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                         }
                                         x += acc;
@@ -102,13 +101,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                         break;
                 }
             }
+            rearrangedCoeffsIndex = rci;
             conversionGradient = x;
             return inputSampleIndex;
         }
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirect<#=ch#>ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirect<#=ch#>ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
             const nint Size = 4 * <#=ch#>;
@@ -116,6 +116,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = (nint)ram * 16;
             nint nacc = (nint)acc * 16;
             nint nfacc = (nint)facc * Size;
+            nint nrci = rci * 16;
             ref var vBuffer = ref GetReference(buffer);
             ref var vSrcBuffer = ref Unsafe.As<float, <#=type#>>(ref GetReference(srcBuffer));
             nint i;
@@ -125,15 +126,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - <#=ch - 1#>;
                 for (i = 0; i < olen; i += <#=ch#>)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, <#=type#>>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple<#=ch#>Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
+                    nrci &= z;
+                    psx -= y & nram;
                     isx += nfacc;
-                    isx += -y & Size;
+                    isx += y & Size;
                 }
             }
             else
@@ -141,19 +148,25 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - <#=ch - 1#>;
                 for (i = 0; i < olen; i += <#=ch#>)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, <#=type#>>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple<#=ch#>Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
-                    isx += -y & Size;
-                    
+                    nrci &= z;
+                    psx -= y & nram;
+                    isx += y & Size;
                 }
             }
+            rci = (int)((nuint)nrci / 16);
             x = (int)((nuint)psx / 16);
-            return (int)((nuint)isx / 16);
+            return (int)((nuint)isx / (nuint)Size);
         }
 
 <#}#>
@@ -450,7 +463,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
 
-                                            
+
                                                 destSample = value1 + value2 + value3 + value4;
                                             }
                                             x += acc;
@@ -505,7 +518,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             conversionGradient = x;
             return inputSampleIndex;
         }
-        
+
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEven<#=ch#>ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
@@ -611,7 +624,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value3 = values.Z;
                     var value4 = values.W;
 
-                    
+
                     vBuffer[i] = 0.5f * (
                         2.0f * value2 +
                         (-value1 + value3) * x +
@@ -708,7 +721,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            
+
                                             destSample = VectorUtils.FastDotProduct(values, y);
                                         }
                                         cG += acc;

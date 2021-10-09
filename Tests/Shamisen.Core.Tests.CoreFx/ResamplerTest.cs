@@ -179,9 +179,9 @@ namespace Shamisen.Core.Tests.CoreFx
                 double diff = simple - optimized;
                 sumdiff += Math.Abs(diff);
             }
-            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            Console.WriteLine($"Total difference for 1st block: {sumdiff.Sum}");
             double avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
-            Console.WriteLine($"Average difference: {avgDiff}");
+            Console.WriteLine($"Average difference for 1st block: {avgDiff}");
             if (avgDiff != 0.0)
             {
                 float[] bufferStereo = new float[bufferNoIntrinsics.Length * 2];
@@ -192,6 +192,30 @@ namespace Shamisen.Core.Tests.CoreFx
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
                 Assert.AreEqual(0.0, avgDiff);
             }
+            _ = filterNoIntrinsics.Read(bufferNoIntrinsics);
+            _ = filterIntrinsics.Read(bufferIntrinsics);
+            NeumaierAccumulator sumdiff2 = default;
+            for (int i = 0; i < bufferNoIntrinsics.Length; i++)
+            {
+                double simple = bufferNoIntrinsics[i];
+                double optimized = bufferIntrinsics[i];
+                double diff = simple - optimized;
+                sumdiff2 += Math.Abs(diff);
+            }
+            Console.WriteLine($"Total difference for 2nd block: {sumdiff2.Sum}");
+            double avgDiff2 = sumdiff2.Sum / bufferNoIntrinsics.Length;
+            Console.WriteLine($"Average difference for 2nd block: {avgDiff2}");
+            if (avgDiff2 != 0.0)
+            {
+                float[] bufferStereo = new float[bufferNoIntrinsics.Length * 2];
+                //Even channels contain bufferNoIntrinsics, and odd channels contain bufferIntrinsics
+                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics), MemoryMarshal.Cast<float, int>(bufferIntrinsics));
+                using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
+                dc.Write(bufferStereo);
+                TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
+                Assert.AreEqual(0.0, avgDiff2);
+            }
+
         }
         #endregion
         #region Dump

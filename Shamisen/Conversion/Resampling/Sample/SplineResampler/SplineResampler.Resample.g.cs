@@ -21,11 +21,11 @@ namespace Shamisen.Conversion.Resampling.Sample
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
             ref var coeffPtr = ref GetReference(cspan);
             int outputSamplePosition = 0;
-            
             int inputSampleIndex = 0, x = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
             int facc = IndexIncrement;
+            int rci = rearrangedCoeffsIndex;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
                 var vBuffer = Cast<float, Vector<float>> (buffer);
@@ -49,17 +49,17 @@ namespace Shamisen.Conversion.Resampling.Sample
             } else {
                 switch (channels) {
                     case 1: //Monaural
-                        inputSampleIndex = ResampleCachedDirectMonaural(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirectMonaural(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
                         #region SIMD Optimized Multi-Channel Audio Resampling
                     case 2:
-                        inputSampleIndex = ResampleCachedDirect2Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirect2Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
                     case 3:
-                        inputSampleIndex = ResampleCachedDirect3Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirect3Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
                     case 4:
-                        inputSampleIndex = ResampleCachedDirect4Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc);
+                        inputSampleIndex = ResampleCachedDirect4Channels(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
                         break;
 
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
@@ -78,7 +78,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            
                                             destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                         }
                                         x += acc;
@@ -98,12 +97,13 @@ namespace Shamisen.Conversion.Resampling.Sample
                         break;
                 }
             }
+            rearrangedCoeffsIndex = rci;
             conversionGradient = x;
             return inputSampleIndex;
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirect2ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirect2ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
             const nint Size = 4 * 2;
@@ -111,6 +111,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = (nint)ram * 16;
             nint nacc = (nint)acc * 16;
             nint nfacc = (nint)facc * Size;
+            nint nrci = rci * 16;
             ref var vBuffer = ref GetReference(buffer);
             ref var vSrcBuffer = ref Unsafe.As<float, Vector2>(ref GetReference(srcBuffer));
             nint i;
@@ -120,15 +121,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 1;
                 for (i = 0; i < olen; i += 2)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector2>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple2Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
+                    nrci &= z;
+                    psx -= y & nram;
                     isx += nfacc;
-                    isx += -y & Size;
+                    isx += y & Size;
                 }
             }
             else
@@ -136,23 +143,29 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 1;
                 for (i = 0; i < olen; i += 2)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector2>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple2Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
-                    isx += -y & Size;
-                    
+                    nrci &= z;
+                    psx -= y & nram;
+                    isx += y & Size;
                 }
             }
+            rci = (int)((nuint)nrci / 16);
             x = (int)((nuint)psx / 16);
-            return (int)((nuint)isx / 16);
+            return (int)((nuint)isx / (nuint)Size);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirect3ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirect3ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
             const nint Size = 4 * 3;
@@ -160,6 +173,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = (nint)ram * 16;
             nint nacc = (nint)acc * 16;
             nint nfacc = (nint)facc * Size;
+            nint nrci = rci * 16;
             ref var vBuffer = ref GetReference(buffer);
             ref var vSrcBuffer = ref Unsafe.As<float, Vector3>(ref GetReference(srcBuffer));
             nint i;
@@ -169,15 +183,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 2;
                 for (i = 0; i < olen; i += 3)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector3>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple3Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
+                    nrci &= z;
+                    psx -= y & nram;
                     isx += nfacc;
-                    isx += -y & Size;
+                    isx += y & Size;
                 }
             }
             else
@@ -185,23 +205,29 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 2;
                 for (i = 0; i < olen; i += 3)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector3>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple3Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
-                    isx += -y & Size;
-                    
+                    nrci &= z;
+                    psx -= y & nram;
+                    isx += y & Size;
                 }
             }
+            rci = (int)((nuint)nrci / 16);
             x = (int)((nuint)psx / 16);
-            return (int)((nuint)isx / 16);
+            return (int)((nuint)isx / (nuint)Size);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirect4ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc)
+        private static int ResampleCachedDirect4ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
             const nint Size = 4 * 4;
@@ -209,6 +235,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = (nint)ram * 16;
             nint nacc = (nint)acc * 16;
             nint nfacc = (nint)facc * Size;
+            nint nrci = rci * 16;
             ref var vBuffer = ref GetReference(buffer);
             ref var vSrcBuffer = ref Unsafe.As<float, Vector4>(ref GetReference(srcBuffer));
             nint i;
@@ -218,15 +245,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 3;
                 for (i = 0; i < olen; i += 4)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector4>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple4Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
+                    nrci &= z;
+                    psx -= y & nram;
                     isx += nfacc;
-                    isx += -y & Size;
+                    isx += y & Size;
                 }
             }
             else
@@ -234,19 +267,25 @@ namespace Shamisen.Conversion.Resampling.Sample
                 nint olen = length - 3;
                 for (i = 0; i < olen; i += 4)
                 {
-                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, psx);
+                    var cutmullCoeffs = Unsafe.AddByteOffset(ref coeffPtr, nrci);
+                    nrci += 16;
                     psx += nacc;
+                    bool j = nrci < nram;
+                    nint z = Unsafe.As<bool, byte>(ref j);
                     bool h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
-                    psx -= -y & nram;
+                    z = -z;
+                    y = -y;
                     Unsafe.As<float, Vector4>(ref Unsafe.Add(ref vBuffer, i)) = VectorUtils.FastDotMultiple4Channels
                                                                                     (ref Unsafe.AddByteOffset(ref vSrcBuffer, isx), cutmullCoeffs);
-                    isx += -y & Size;
-                    
+                    nrci &= z;
+                    psx -= y & nram;
+                    isx += y & Size;
                 }
             }
+            rci = (int)((nuint)nrci / 16);
             x = (int)((nuint)psx / 16);
-            return (int)((nuint)isx / 16);
+            return (int)((nuint)isx / (nuint)Size);
         }
 
         #endregion
@@ -698,7 +737,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
 
-                                            
+
                                                 destSample = value1 + value2 + value3 + value4;
                                             }
                                             x += acc;
@@ -753,7 +792,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             conversionGradient = x;
             return inputSampleIndex;
         }
-        
+
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEven2ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
@@ -1005,7 +1044,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value3 = values.Z;
                     var value4 = values.W;
 
-                    
+
                     vBuffer[i] = 0.5f * (
                         2.0f * value2 +
                         (-value1 + value3) * x +
@@ -1164,7 +1203,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            
+
                                             destSample = VectorUtils.FastDotProduct(values, y);
                                         }
                                         cG += acc;

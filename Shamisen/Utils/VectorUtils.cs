@@ -143,7 +143,12 @@ namespace Shamisen.Utils
             var v3 = AdvSimd.AddPairwise(v2.GetLower(), v2.GetUpper());
             return v3.GetElement(0);
         }
+
+
 #endif
+
+        #endregion
+        #region FastUnrolledDotProduct
 
         #endregion
         #region ReverseElements
@@ -194,7 +199,7 @@ namespace Shamisen.Utils
             return new(value.W, value.Z, value.Y, value.X);
         }
         #endregion
-        #region FastDotMultipleCoeffs
+        #region FastDotMultipleChannels
 
         #region Stereo
         /// <summary>
@@ -302,8 +307,8 @@ namespace Shamisen.Utils
             var v1_4s = Unsafe.As<Vector2, Vector4>(ref Unsafe.Add(ref head, 2));
             var v2_4s = new Vector4(v0_4s.X, v0_4s.Z, v1_4s.X, v1_4s.Z);    //Left
             var v3_4s = new Vector4(v0_4s.Y, v0_4s.W, v1_4s.Y, v1_4s.W);    //Right
-            var s0 = FastDotProduct(v2_4s, coeffs);
-            var s1 = FastDotProduct(v3_4s, coeffs);
+            float s0 = FastDotProduct(v2_4s, coeffs);
+            float s1 = FastDotProduct(v3_4s, coeffs);
             return new Vector2(s0, s1);
         }
         #endregion
