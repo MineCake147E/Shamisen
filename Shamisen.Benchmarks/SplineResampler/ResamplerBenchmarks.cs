@@ -29,10 +29,10 @@ namespace Shamisen.Benchmarks
             public Config()
             {
                 static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
-                //_ = AddColumn(new FrameThroughputColumn(FrameSelector));
-                _ = AddColumn(new PlaybackSpeedColumn(
-                    FrameSelector,
-                    a => ((ConversionRatioProps)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "ConversionRatio")).Value).After));
+                _ = AddColumn(new FrameThroughputColumn(FrameSelector));
+                //_ = AddColumn(new PlaybackSpeedColumn(
+                //    FrameSelector,
+                //    a => ((ConversionRatioProps)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "ConversionRatio")).Value).After));
 
             }
         }
@@ -44,16 +44,16 @@ namespace Shamisen.Benchmarks
         public ConversionRatioProps ConversionRatio { get; set; }
 
         public IEnumerable<ConversionRatioProps> ValuesForConversionRatio => new ConversionRatioProps[] {
-            //new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
+            new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
             new (176400, 192000, "CachedDirect"),       //UpAnyRateUnrolled, Often used(44100Hz to 48000Hz)
             new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
-            //new (44100, 192000, "CachedWrappedEven"),   //Example of CachedWrappedEven, Often used
-            //new (48000, 192000, "CachedDirect"),        //Quadruple Rate
-            //new (64000, 192000, "CachedDirect"),        //Integer Rate
-            //new (96000, 192000, "CachedDirect"),        //Double Rate
+            new (44100, 192000, "CachedWrappedEven"),   //Example of CachedWrappedEven, Often used
+            new (48000, 192000, "CachedDirect"),        //Quadruple Rate
+            new (64000, 192000, "CachedDirect"),        //Integer Rate
+            new (96000, 192000, "CachedDirect"),        //Double Rate
         };
 
-        [Params(/*1, 2, 3, 4, */5, /*6, 7, 8, 9, */10, Priority = -4)]
+        [Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Priority = -4)]
         public int Channels { get; set; }
         [Params(/*2047, */4095, Priority = -990)]
         public int Frames { get; set; }
