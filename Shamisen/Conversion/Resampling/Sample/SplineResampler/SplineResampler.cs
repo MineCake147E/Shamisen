@@ -47,6 +47,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         private bool isEndOfStream = false;
 
+
         private ResampleStrategy Strategy { get; }
         private X86Intrinsics X86Intrinsics { get; }
 
@@ -213,6 +214,10 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region GenerateCoeffs
 
+        private static Vector4 C0 => new(-0.5f, 1.5f, -1.5f, 0.5f);
+        private static Vector4 C1 => new(1.0f, -2.5f, 2.0f, -0.5f);
+        private static Vector4 C2 => new(-0.5f, 0.0f, 0.5f, 0.0f);
+        private static Vector4 C3 => new(0.0f, 1.0f, 0.0f, 0.0f);
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void GenerateCoeffs(Span<Vector4> coeffs, float rateMulInverse)
@@ -238,10 +243,10 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void GenerateCoeffsSse2(Span<Vector4> coeffs, float rateMulInverse)
         {
-            var xmm0 = Vector128.Create(-0.5f, 1.5f, -1.5f, 0.5f);
-            var xmm1 = Vector128.Create(1.0f, -2.5f, 2.0f, -0.5f);
-            var xmm2 = Vector128.Create(-0.5f, 0.0f, 0.5f, 0.0f);
-            var xmm3 = Vector128.Create(0.0f, 1.0f, 0.0f, 0.0f);
+            var xmm0 = C0.AsVector128();
+            var xmm1 = C1.AsVector128();
+            var xmm2 = C2.AsVector128();
+            var xmm3 = C3.AsVector128();
             var xmm4 = Vector128.Create(rateMulInverse);
             Vector128<int> xmm5;
             var xmm6 = Vector128.Create(0, 1, 2, 3);
@@ -318,10 +323,10 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void GenerateCoeffsFma128(Span<Vector4> coeffs, float rateMulInverse)
         {
-            var xmm0 = Vector128.Create(-0.5f, 1.5f, -1.5f, 0.5f);
-            var xmm1 = Vector128.Create(1.0f, -2.5f, 2.0f, -0.5f);
-            var xmm2 = Vector128.Create(-0.5f, 0.0f, 0.5f, 0.0f);
-            var xmm3 = Vector128.Create(0.0f, 1.0f, 0.0f, 0.0f);
+            var xmm0 = C0.AsVector128();
+            var xmm1 = C1.AsVector128();
+            var xmm2 = C2.AsVector128();
+            var xmm3 = C3.AsVector128();
             var xmm4 = Vector128.Create(rateMulInverse);
             Vector128<int> xmm5;
             var xmm6 = Vector128.Create(0, 1, 2, 3);
@@ -378,10 +383,10 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void GenerateCoeffsStandard(Span<Vector4> coeffs, float rateMulInverse)
         {
-            var c0 = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
-            var c1 = new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
-            var c2 = new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
-            var c3 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+            var c0 = C0;
+            var c1 = C1;
+            var c2 = C2;
+            var c3 = C3;
             ref var rdi = ref MemoryMarshal.GetReference(coeffs);
             nint i = 0, length = coeffs.Length;
             for (; i < length; i++)

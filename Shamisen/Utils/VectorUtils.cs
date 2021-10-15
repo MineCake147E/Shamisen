@@ -561,5 +561,17 @@ namespace Shamisen.Utils
 #endif
         }
         #endregion
+
+        #region AsVector128
+#if NETCOREAPP3_1
+        /// <summary>
+        /// Reinterprets a <see cref="Vector4"/> as a new <see cref="Vector128{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<float> AsVector128(this Vector4 value) => Unsafe.As<Vector4, Vector128<float>>(ref value);
+#endif
+        #endregion
     }
 }

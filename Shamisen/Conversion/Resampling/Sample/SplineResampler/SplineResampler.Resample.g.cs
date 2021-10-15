@@ -48,38 +48,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
 
                     default:
-
-                        #region Channels that is not SIMD optimized
-
-                        {
-                            unsafe {
-                                fixed (float * srcBufPtr = srcBuffer) {
-                                    for (int i = 0; i < buffer.Length - channels + 1; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex * channels;
-                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, rci);
-                                        for (int ch = 0; ch < channels; ch++) {
-                                            ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                            var values = new Vector4(
-                                                cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                        }
-                                        bool j = ++rci < ram;
-                                        int z = Unsafe.As<bool, byte>(ref j);
-                                        rci &= -z;
-                                        x += acc;
-                                        inputSampleIndex += facc;
-                                        bool h = x >= ram;
-                                        int y = Unsafe.As<bool, byte>(ref h);
-                                        inputSampleIndex += y;
-                                        x -= -y & ram;
-                                        outputSamplePosition++;
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion Channels that is not SIMD optimized
-
+                        inputSampleIndex = ResampleCachedDirectGeneric(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
                         break;
                 }
             }
@@ -329,12 +298,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -356,12 +323,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -381,12 +346,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -690,12 +653,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -717,12 +678,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -741,12 +700,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             var cache = srcBufPtr + inputSampleIndex * channels;
                                             var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec--);
                                             for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
-                                                var value1 = cache[ch] * cutmullCoeffs.X;
-                                                var value2 = cache[channels + ch] * cutmullCoeffs.Y;
-                                                var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
-                                                var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value3 + (value2 + value4);
+                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
+                                                var values = new Vector4(
+                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
+                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -1005,198 +962,225 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region Direct
         private int ResampleDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {
             int outputSamplePosition = 0;
-            var c0 = new Vector4(-0.5f, 1.5f, -1.5f, 0.5f);
-            var c1 = new Vector4(1.0f, -2.5f, 2.0f, -0.5f);
-            var c2 = new Vector4(-0.5f, 0.0f, 0.5f, 0.0f);
-            var c3 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
             int inputSampleIndex = 0, cG = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
             int facc = IndexIncrement;
+            float rmi = RateMulInverse;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
-                var vBuffer = Cast<float, Vector<float>> (buffer);
-                var vSrcBuffer = Cast<float, Vector<float>> (srcBuffer);
-                for (int i = 0; i < vBuffer.Length; i++) {
-                    float x = cG * RateMulInverse;
-                    var vx = new Vector4(x);
-                    var y = vx * c0;
-                    y += c1;
-                    y *= vx;
-                    y += c2;
-                    y *= vx;
-                    y += c3;
-                    ref var values = ref Unsafe.As < Vector<float>,
-                        (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W) > (ref vSrcBuffer[inputSampleIndex]);
-                    var value1 = values.X * y.X;
-                    var value2 = values.Y * y.Y;
-                    var value3 = values.Z * y.Z;
-                    var value4 = values.W * y.W;
-                    vBuffer[i] = (value1 + value3) + (value2 + value4);
-                    cG += acc;
-                    inputSampleIndex += facc;
-                    if (cG >= ram)
-                    {
-                        cG -= ram;
-                        inputSampleIndex++;
-                    }
-                }
+                inputSampleIndex = ResampleDirectVectorFitStandard(buffer, srcBuffer, ref cG, ram, acc, facc, rmi);
             } else {
                 switch (channels) {
                     case 1: //Monaural
-                        for (int i = 0; i < buffer.Length; i++) {
-                            float x = cG * RateMulInverse;
-                            var vx = new Vector4(x);
-                            var y = vx * c0;
-                            y += c1;
-                            y *= vx;
-                            y += c2;
-                            y *= vx;
-                            y += c3;
-                            var values = Unsafe.As<float, Vector4> (ref srcBuffer[inputSampleIndex]);
-                            buffer[i] = VectorUtils.FastDotProduct(values, y);
-                            cG += acc;
-                            inputSampleIndex += facc;
-                            if (cG >= ram)
-                            {
-                                cG -= ram;
-                                inputSampleIndex++;
-                            }
-                        }
+                        inputSampleIndex = ResampleDirectMonauralStandard(buffer, srcBuffer, ref cG, ram, acc, facc, rmi);
                         break;
 
                         #region SIMD Optimized Multi-Channel Audio Resampling
                             case 2 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector2> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector2> (srcBuffer);
-                                    ref var rsi = ref GetReference(vSrcBuffer);
-                                    ref var rdi = ref GetReference(vBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        float x = cG * RateMulInverse;
-                                        var vx = new Vector4(x);
-                                        var y = vx * c0;
-                                        y += c1;
-                                        y *= vx;
-                                        y += c2;
-                                        y *= vx;
-                                        y += c3;
-                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple2Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
-                                        cG += acc;
-                                        inputSampleIndex += facc;
-                                        if (cG >= ram)
-                                        {
-                                            cG -= ram;
-                                            inputSampleIndex++;
-                                        }
-                                    }
-                                }
+                                inputSampleIndex = ResampleDirect2ChannelsStandard(buffer, srcBuffer, ref cG, ram, acc, facc, rmi);
                                 break;
                             case 3 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector3> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector3> (srcBuffer);
-                                    ref var rsi = ref GetReference(vSrcBuffer);
-                                    ref var rdi = ref GetReference(vBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        float x = cG * RateMulInverse;
-                                        var vx = new Vector4(x);
-                                        var y = vx * c0;
-                                        y += c1;
-                                        y *= vx;
-                                        y += c2;
-                                        y *= vx;
-                                        y += c3;
-                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple3Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
-                                        cG += acc;
-                                        inputSampleIndex += facc;
-                                        if (cG >= ram)
-                                        {
-                                            cG -= ram;
-                                            inputSampleIndex++;
-                                        }
-                                    }
-                                }
+                                inputSampleIndex = ResampleDirect3ChannelsStandard(buffer, srcBuffer, ref cG, ram, acc, facc, rmi);
                                 break;
                             case 4 :
-                                {
-                                    var vBuffer = Cast < float,
-                                        Vector4> (buffer);
-                                    var vSrcBuffer = Cast < float,
-                                        Vector4> (srcBuffer);
-                                    ref var rsi = ref GetReference(vSrcBuffer);
-                                    ref var rdi = ref GetReference(vBuffer);
-                                    for (int i = 0; i < vBuffer.Length; i++) {
-                                        float x = cG * RateMulInverse;
-                                        var vx = new Vector4(x);
-                                        var y = vx * c0;
-                                        y += c1;
-                                        y *= vx;
-                                        y += c2;
-                                        y *= vx;
-                                        y += c3;
-                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple4Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
-                                        cG += acc;
-                                        inputSampleIndex += facc;
-                                        if (cG >= ram)
-                                        {
-                                            cG -= ram;
-                                            inputSampleIndex++;
-                                        }
-                                    }
-                                }
+                                inputSampleIndex = ResampleDirect4ChannelsStandard(buffer, srcBuffer, ref cG, ram, acc, facc, rmi);
                                 break;
 
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
 
                     default:
-
-                        #region Channels that is not SIMD optimized
-
-                        {
-                            unsafe {
-                                fixed (float * srcBufPtr = srcBuffer) {
-                                    for (int i = 0; i < buffer.Length; i += channels) {
-                                        var cache = srcBufPtr + inputSampleIndex * channels;
-                                        float x = cG * RateMulInverse;
-                                        var vx = new Vector4(x);
-                                        var y = vx * c0;
-                                        y += c1;
-                                        y *= vx;
-                                        y += c2;
-                                        y *= vx;
-                                        y += c3;
-                                        for (int ch = 0; ch < channels - channels + 1; ch++) {
-                                            ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                            var values = new Vector4(
-                                                cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                            destSample = VectorUtils.FastDotProduct(values, y);
-                                        }
-                                        cG += acc;
-                                        inputSampleIndex += facc;
-                                        if (cG >= ram)
-                                        {
-                                            cG -= ram;
-                                            inputSampleIndex++;
-                                        }
-                                        outputSamplePosition++;
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion Channels that is not SIMD optimized
-
+                        inputSampleIndex = ResampleDirectGeneric(buffer, srcBuffer, channels, ref cG, ram, acc, facc, rmi);
                         break;
                 }
             }
             conversionGradient = cG;
             return inputSampleIndex;
         }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static int ResampleDirect2ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref int x, int ram, int acc, int facc, float rmi)
+        {
+            nint isx = 0;
+            nint psx = x;
+            nint spsx = psx;
+            nint nram = ram;
+            nint nacc = acc;
+            var vBuffer = Cast<float, Vector2>(buffer);
+            var vSrcBuffer = Cast<float, Vector2>(srcBuffer);
+            nint i = 0, length=vBuffer.Length;
+            ref var rsi = ref GetReference(vSrcBuffer);
+            ref var rdi = ref GetReference(vBuffer);
+            Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
+            Vector4 x1 = default, x2 = default, x3 = default;
+            Vector4 y0 = default, y1 = default, y2 = default;
+            for (int j = 0; j < 4; j++)
+            {
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            for (; i < length; i++)
+            {
+                psx += acc;
+                bool h = psx >= nram;
+                nint g = Unsafe.As<bool, byte>(ref h);
+                Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple2Channels(ref Unsafe.Add(ref rsi, isx), y0);
+                isx += g;
+                isx += facc;
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                psx -= -g & nram;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            x = (int)psx;
+            return (int)isx;
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static int ResampleDirect3ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref int x, int ram, int acc, int facc, float rmi)
+        {
+            nint isx = 0;
+            nint psx = x;
+            nint spsx = psx;
+            nint nram = ram;
+            nint nacc = acc;
+            var vBuffer = Cast<float, Vector3>(buffer);
+            var vSrcBuffer = Cast<float, Vector3>(srcBuffer);
+            nint i = 0, length=vBuffer.Length;
+            ref var rsi = ref GetReference(vSrcBuffer);
+            ref var rdi = ref GetReference(vBuffer);
+            Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
+            Vector4 x1 = default, x2 = default, x3 = default;
+            Vector4 y0 = default, y1 = default, y2 = default;
+            for (int j = 0; j < 4; j++)
+            {
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            for (; i < length; i++)
+            {
+                psx += acc;
+                bool h = psx >= nram;
+                nint g = Unsafe.As<bool, byte>(ref h);
+                Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple3Channels(ref Unsafe.Add(ref rsi, isx), y0);
+                isx += g;
+                isx += facc;
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                psx -= -g & nram;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            x = (int)psx;
+            return (int)isx;
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static int ResampleDirect4ChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref int x, int ram, int acc, int facc, float rmi)
+        {
+            nint isx = 0;
+            nint psx = x;
+            nint spsx = psx;
+            nint nram = ram;
+            nint nacc = acc;
+            var vBuffer = Cast<float, Vector4>(buffer);
+            var vSrcBuffer = Cast<float, Vector4>(srcBuffer);
+            nint i = 0, length=vBuffer.Length;
+            ref var rsi = ref GetReference(vSrcBuffer);
+            ref var rdi = ref GetReference(vBuffer);
+            Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
+            Vector4 x1 = default, x2 = default, x3 = default;
+            Vector4 y0 = default, y1 = default, y2 = default;
+            for (int j = 0; j < 4; j++)
+            {
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            for (; i < length; i++)
+            {
+                psx += acc;
+                bool h = psx >= nram;
+                nint g = Unsafe.As<bool, byte>(ref h);
+                Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple4Channels(ref Unsafe.Add(ref rsi, isx), y0);
+                isx += g;
+                isx += facc;
+                var nx3 = new Vector4(spsx * rmi);
+                spsx += acc;
+                bool h2 = spsx >= nram;
+                nint g2 = Unsafe.As<bool, byte>(ref h2);
+                y0 = y1 * x1;
+                y0 += c3;
+                y1 = y2 * x2;
+                y1 += c2;
+                y2 = c0 * x3;
+                y2 += c1;
+                psx -= -g & nram;
+                spsx -= -g2 & nram;
+                x1 = x2;
+                x2 = x3;
+                x3 = nx3;
+            }
+            x = (int)psx;
+            return (int)isx;
+        }
+
         #endregion
     }
 }
