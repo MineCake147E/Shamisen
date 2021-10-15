@@ -15,10 +15,10 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             //partially odd
             96, 97,
             //tiny load test
-            1024, 1048576,
+            1024, 1048575, 1048576,
         };
 
-        internal static void AssertArray(int[] b)
+        internal static void AssertArrayForInterleave(int[] b)
         {
             var q = new List<(int expected, int actual)>();
             for (int i = 0; i < b.Length; i++)
@@ -28,7 +28,15 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             }
             Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
-
+        internal static void PrepareDuplicate(int size, int channels, out int[] a, out int[] b)
+        {
+            a = new int[size];
+            b = new int[a.Length * channels];
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = i;
+            }
+        }
         internal static void PrepareStereo(int size, out int[] a0, out int[] a1, out int[] b)
         {
             a0 = new int[size];
@@ -78,6 +86,23 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 a2[i] = i * 4 + 2;
                 a3[i] = i * 4 + 3;
             }
+        }
+
+        internal static void AssertArrayForDuplicate(int[] b, int channels)
+        {
+            var q = new List<(int expected, int actual)>();
+            int j = 0;
+            for (int i = 0; i < b.Length - channels + 1; i += channels, j++)
+            {
+                for (int ch = 0; ch < channels; ch++)
+                {
+                    if (b[i + ch] != j)
+                    {
+                        q.Add((i / channels, b[i]));
+                    }
+                }
+            }
+            Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
     }
 }

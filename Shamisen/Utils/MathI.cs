@@ -52,7 +52,7 @@ namespace Shamisen
 #endif
         public static (int newLength, int remainder) FloorStepRem(int value, int step)
         {
-            var m = value % step;
+            int m = value % step;
             return (value - m, m);
         }
         #endregion
@@ -69,7 +69,7 @@ namespace Shamisen
 #endif
         public static int Rectify(int value)
         {
-            var h = value >> 31;
+            int h = value >> 31;
             return value & ~h;
         }
         #endregion
@@ -78,13 +78,17 @@ namespace Shamisen
 
         /// <inheritdoc cref="Math.Min(long, long)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static nint Min(nint val1, nint val2)
         {
             bool g = val1 > val2;
             nint y = Unsafe.As<bool, byte>(ref g);
             y = -y;
             nint r = y & val2;
-            nint q = ~y & val1;
+            nint q = AndNot(y, val1);
             return r | q;
         }
 
@@ -93,6 +97,10 @@ namespace Shamisen
         #region Fast Math
         /// <inheritdoc cref="Math.Min(int, int)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static int Min(int val1, int val2)
         {
             bool g = val1 > val2;
@@ -105,6 +113,10 @@ namespace Shamisen
 
         /// <inheritdoc cref="Math.Min(uint, uint)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
         public static uint Min(uint val1, uint val2)
         {
             bool g = val1 > val2;
@@ -188,6 +200,48 @@ namespace Shamisen
 #endif
             return ~a & b;
         }
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="IntPtr"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nint AndNot(nint a, nint b) => (nint)AndNot((nuint)a, (nuint)b);
+
+        /// <summary>
+        /// Performs a bitwise <c>and</c> operation on two specified <see cref="UIntPtr"/> values after negating <paramref name="a"/>.
+        /// </summary>
+        /// <param name="a">The value to be negated.</param>
+        /// <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+        /// <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nuint AndNot(nuint a, nuint b)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            unsafe
+            {
+                if (Bmi1.X64.IsSupported && sizeof(nuint) == sizeof(ulong))
+                {
+                    return (nuint)Bmi1.X64.AndNot(a, b);
+                }
+                if (Bmi1.IsSupported && sizeof(nuint) == sizeof(uint))
+                {
+                    return Bmi1.AndNot((uint)a, (uint)b);
+                }
+            }
+#endif
+            return ~a & b;
+        }
         #endregion
         #endregion
 
@@ -235,7 +289,7 @@ namespace Shamisen
             unchecked
             {
 #if NET5_0_OR_GREATER
-                var high = Math.BigMul(x, y, out var low);
+                long high = Math.BigMul(x, y, out long low);
                 return ((ulong)low, high);
 #else
                 var (low, high) = BigMul((ulong)x, (ulong)y);
@@ -259,7 +313,7 @@ namespace Shamisen
             unchecked
             {
 #if NET5_0_OR_GREATER
-                var high = Math.BigMul(x, y, out var low);
+                ulong high = Math.BigMul(x, y, out ulong low);
                 return (low, high);
 #else
                 return (x * y, DSUtils.MultiplyHigh(x, y));
@@ -286,9 +340,9 @@ namespace Shamisen
             int nr = a;
             while (nr != 0)
             {
-                var q = r / nr;
-                var ot = t;
-                var or = r;
+                int q = r / nr;
+                int ot = t;
+                int or = r;
                 t = nt;
                 r = nr;
                 nt = ot - q * nt;
@@ -553,7 +607,7 @@ namespace Shamisen
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                return value == 0 ? 0 : (uint)(0x8000_0000_0000_0000ul >> BitOperations.LeadingZeroCount(value));
+                return value == 0 ? 0 : 0x8000_0000_0000_0000ul >> BitOperations.LeadingZeroCount(value);
 #else
                 return MathIFallbacks.ExtractHighestSetBit(value);
 #endif

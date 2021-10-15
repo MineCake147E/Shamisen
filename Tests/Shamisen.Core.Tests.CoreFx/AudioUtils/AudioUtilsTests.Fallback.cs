@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 using NUnit.Framework;
 
@@ -16,25 +17,55 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveStereoWorksCorrectly(int size)
             {
-                PrepareStereo(size, out var a0, out var a1, out var b);
+                PrepareStereo(size, out int[] a0, out int[] a1, out int[] b);
                 AudioUtils.Fallback.InterleaveStereoInt32(b, a0, a1);
-                AssertArray(b);
+                AssertArrayForInterleave(b);
             }
 
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveThreeWorksCorrectly(int size)
             {
-                PrepareThree(size, out var a0, out var a1, out var a2, out var b);
+                PrepareThree(size, out int[] a0, out int[] a1, out int[] a2, out int[] b);
                 AudioUtils.Fallback.InterleaveThreeInt32(b, a0, a1, a2);
-                AssertArray(b);
+                AssertArrayForInterleave(b);
             }
 
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveQuadWorksCorrectly(int size)
             {
-                PrepareQuad(size, out var a0, out var a1, out var a2, out var a3, out var b);
+                PrepareQuad(size, out int[] a0, out int[] a1, out int[] a2, out int[] a3, out int[] b);
                 AudioUtils.Fallback.InterleaveQuadInt32(b, a0, a1, a2, a3);
-                AssertArray(b);
+                AssertArrayForInterleave(b);
+            }
+
+            [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
+            public void DuplicateMonauralToStereoWorksCorrectly(int size)
+            {
+                PrepareDuplicate(size, 2, out int[] a, out int[] b);
+                var bf = MemoryMarshal.Cast<int, float>(b);
+                var af = MemoryMarshal.Cast<int, float>(a);
+                AudioUtils.Fallback.DuplicateMonauralToStereo(bf, af);
+                AssertArrayForDuplicate(b, 2);
+            }
+
+            [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
+            public void DuplicateMonauralTo3ChannelsWorksCorrectly(int size)
+            {
+                PrepareDuplicate(size, 3, out int[] a, out int[] b);
+                var bf = MemoryMarshal.Cast<int, float>(b);
+                var af = MemoryMarshal.Cast<int, float>(a);
+                AudioUtils.Fallback.DuplicateMonauralTo3Channels(bf, af);
+                AssertArrayForDuplicate(b, 3);
+            }
+
+            [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
+            public void DuplicateMonauralTo4ChannelsWorksCorrectly(int size)
+            {
+                PrepareDuplicate(size, 4, out int[] a, out int[] b);
+                var bf = MemoryMarshal.Cast<int, float>(b);
+                var af = MemoryMarshal.Cast<int, float>(a);
+                AudioUtils.Fallback.DuplicateMonauralTo4Channels(bf, af);
+                AssertArrayForDuplicate(b, 4);
             }
         }
     }

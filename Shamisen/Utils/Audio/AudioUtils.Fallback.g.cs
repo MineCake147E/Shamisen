@@ -21,19 +21,23 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 5;
-                    if (a1.Length < a0.Length) throw new ArgumentException("a1 must be as long as a0!", nameof(a1));
-					if (a2.Length < a0.Length) throw new ArgumentException("a2 must be as long as a0!", nameof(a2));
-					if (a3.Length < a0.Length) throw new ArgumentException("a3 must be as long as a0!", nameof(a3));
-					if (a4.Length < a0.Length) throw new ArgumentException("a4 must be as long as a0!", nameof(a4));
-
-                    //These pre-touches may avoid some range checks
+                    nint length0, length1, length2;
+                    length0 = a0.Length;
+                    length1 = a1.Length;
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a2.Length;
+                    length2 = a3.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a4.Length;
+                    length0 = MathI.Min(length1, length0);
                     ref var rA0 = ref MemoryMarshal.GetReference(a0);
 					ref var rA1 = ref MemoryMarshal.GetReference(a1);
 					ref var rA2 = ref MemoryMarshal.GetReference(a2);
 					ref var rA3 = ref MemoryMarshal.GetReference(a3);
 					ref var rA4 = ref MemoryMarshal.GetReference(a4);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = a0.Length;
+                    nint length = MathI.Min(length0, buffer.Length / Channels);
                     nint u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
@@ -85,13 +89,18 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 6;
-                    if (a1.Length < a0.Length) throw new ArgumentException("a1 must be as long as a0!", nameof(a1));
-					if (a2.Length < a0.Length) throw new ArgumentException("a2 must be as long as a0!", nameof(a2));
-					if (a3.Length < a0.Length) throw new ArgumentException("a3 must be as long as a0!", nameof(a3));
-					if (a4.Length < a0.Length) throw new ArgumentException("a4 must be as long as a0!", nameof(a4));
-					if (a5.Length < a0.Length) throw new ArgumentException("a5 must be as long as a0!", nameof(a5));
-
-                    //These pre-touches may avoid some range checks
+                    nint length0, length1, length2;
+                    length0 = a0.Length;
+                    length1 = a1.Length;
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a2.Length;
+                    length2 = a3.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a4.Length;
+                    length2 = a5.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length1, length0);
                     ref var rA0 = ref MemoryMarshal.GetReference(a0);
 					ref var rA1 = ref MemoryMarshal.GetReference(a1);
 					ref var rA2 = ref MemoryMarshal.GetReference(a2);
@@ -99,7 +108,7 @@ namespace Shamisen.Utils
 					ref var rA4 = ref MemoryMarshal.GetReference(a4);
 					ref var rA5 = ref MemoryMarshal.GetReference(a5);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = a0.Length;
+                    nint length = MathI.Min(length0, buffer.Length / Channels);
                     nint u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
@@ -157,14 +166,20 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 7;
-                    if (a1.Length < a0.Length) throw new ArgumentException("a1 must be as long as a0!", nameof(a1));
-					if (a2.Length < a0.Length) throw new ArgumentException("a2 must be as long as a0!", nameof(a2));
-					if (a3.Length < a0.Length) throw new ArgumentException("a3 must be as long as a0!", nameof(a3));
-					if (a4.Length < a0.Length) throw new ArgumentException("a4 must be as long as a0!", nameof(a4));
-					if (a5.Length < a0.Length) throw new ArgumentException("a5 must be as long as a0!", nameof(a5));
-					if (a6.Length < a0.Length) throw new ArgumentException("a6 must be as long as a0!", nameof(a6));
-
-                    //These pre-touches may avoid some range checks
+                    nint length0, length1, length2;
+                    length0 = a0.Length;
+                    length1 = a1.Length;
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a2.Length;
+                    length2 = a3.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a4.Length;
+                    length2 = a5.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length2 = a6.Length;
+                    length1 = MathI.Min(length2, length1);
+                    length0 = MathI.Min(length1, length0);
                     ref var rA0 = ref MemoryMarshal.GetReference(a0);
 					ref var rA1 = ref MemoryMarshal.GetReference(a1);
 					ref var rA2 = ref MemoryMarshal.GetReference(a2);
@@ -173,7 +188,7 @@ namespace Shamisen.Utils
 					ref var rA5 = ref MemoryMarshal.GetReference(a5);
 					ref var rA6 = ref MemoryMarshal.GetReference(a6);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = a0.Length;
+                    nint length = MathI.Min(length0, buffer.Length / Channels);
                     nint u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
@@ -237,15 +252,22 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 8;
-                    if (a1.Length < a0.Length) throw new ArgumentException("a1 must be as long as a0!", nameof(a1));
-					if (a2.Length < a0.Length) throw new ArgumentException("a2 must be as long as a0!", nameof(a2));
-					if (a3.Length < a0.Length) throw new ArgumentException("a3 must be as long as a0!", nameof(a3));
-					if (a4.Length < a0.Length) throw new ArgumentException("a4 must be as long as a0!", nameof(a4));
-					if (a5.Length < a0.Length) throw new ArgumentException("a5 must be as long as a0!", nameof(a5));
-					if (a6.Length < a0.Length) throw new ArgumentException("a6 must be as long as a0!", nameof(a6));
-					if (a7.Length < a0.Length) throw new ArgumentException("a7 must be as long as a0!", nameof(a7));
-
-                    //These pre-touches may avoid some range checks
+                    nint length0, length1, length2, length3;
+                    length0 = a0.Length;
+                    length1 = a1.Length;
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a2.Length;
+                    length2 = a3.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length0, length1);
+                    length1 = a4.Length;
+                    length2 = a5.Length;
+                    length1 = MathI.Min(length1, length2);
+                    length2 = a6.Length;
+                    length3 = a7.Length;
+                    length2 = MathI.Min(length2, length3);
+                    length1 = MathI.Min(length1, length2);
+                    length0 = MathI.Min(length0, length1);
                     ref var rA0 = ref MemoryMarshal.GetReference(a0);
 					ref var rA1 = ref MemoryMarshal.GetReference(a1);
 					ref var rA2 = ref MemoryMarshal.GetReference(a2);
@@ -255,7 +277,7 @@ namespace Shamisen.Utils
 					ref var rA6 = ref MemoryMarshal.GetReference(a6);
 					ref var rA7 = ref MemoryMarshal.GetReference(a7);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = a0.Length;
+                    nint length = MathI.Min(length0, buffer.Length / Channels);
                     nint u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;

@@ -55,10 +55,10 @@ namespace Shamisen.Utils
         internal static void FastAddAdvSimd(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             nint i, length = buffer.Length;
-            ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-            ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-            ref var rD = ref MemoryMarshal.GetReference(buffer);
-            var olen = length - 2 * 4 + 1;
+            ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+            ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+            ref float rD = ref MemoryMarshal.GetReference(buffer);
+            nint olen = length - 2 * 4 + 1;
             for (i = 0; i < olen; i += 2 * 4)
             {
                 var sA0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 0));
@@ -72,7 +72,7 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var sA = Unsafe.Add(ref rsA, i);
+                float sA = Unsafe.Add(ref rsA, i);
                 Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
             }
         }
@@ -80,12 +80,12 @@ namespace Shamisen.Utils
         internal static void FastAddAdvSimdArm64(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             nint i, length = buffer.Length;
-            ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-            ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-            ref var rD = ref MemoryMarshal.GetReference(buffer);
+            ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+            ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+            ref float rD = ref MemoryMarshal.GetReference(buffer);
             //This is a loop for Cortex-A75, probably not optimal in A64FX.
             //The `ldp` instruction isn't available at all, so we use simpler load.
-            var olen = length - 2 * 4 + 1;
+            nint olen = length - 2 * 4 + 1;
             for (i = 0; i < olen; i += 2 * 4)
             {
                 var sA0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsA, i + 0));
@@ -98,7 +98,7 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var sA = Unsafe.Add(ref rsA, i);
+                float sA = Unsafe.Add(ref rsA, i);
                 Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
             }
         }
@@ -109,11 +109,11 @@ namespace Shamisen.Utils
             unsafe
             {
                 nint i, length = buffer.Length;
-                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref float rD = ref MemoryMarshal.GetReference(buffer);
                 //This is a loop for Haswell, probably not optimal in Alder Lake.
-                var olen = length - 8 * 4 + 1;
+                nint olen = length - 8 * 4 + 1;
                 for (i = 0; i < olen; i += 8 * 4)
                 {
                     var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0 * 4));
@@ -159,7 +159,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    var sA = Unsafe.Add(ref rsA, i);
+                    float sA = Unsafe.Add(ref rsA, i);
                     Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
                 }
             }
@@ -170,11 +170,11 @@ namespace Shamisen.Utils
             unsafe
             {
                 nint i, length = buffer.Length;
-                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref float rD = ref MemoryMarshal.GetReference(buffer);
                 //This is a loop for Alder Lake, probably not optimal in Haswell.
-                var olen = length - 8 * Vector<float>.Count + 1;
+                nint olen = length - 8 * Vector<float>.Count + 1;
                 for (i = 0; i < olen; i += 8 * Vector<float>.Count)
                 {
                     var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
@@ -220,7 +220,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    var sA = Unsafe.Add(ref rsA, i);
+                    float sA = Unsafe.Add(ref rsA, i);
                     Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
                 }
             }
@@ -268,11 +268,11 @@ namespace Shamisen.Utils
         {
             if (Vector<float>.Count > span.Length)
             {
-                ref var rdi = ref MemoryMarshal.GetReference(span);
+                ref float rdi = ref MemoryMarshal.GetReference(span);
                 nint i, length = span.Length;
                 for (i = 0; i < length; i++)
                 {
-                    var v = Unsafe.Add(ref rdi, i) * scale;
+                    float v = Unsafe.Add(ref rdi, i) * scale;
                     Unsafe.Add(ref rdi, i) = v;
                 }
             }
@@ -317,7 +317,7 @@ namespace Shamisen.Utils
         internal static void FastScalarMultiplyStandardFixed(Span<float> span, float scale)
         {
             var scaleV = new Vector4(scale);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref float rdi = ref MemoryMarshal.GetReference(span);
             nint i, length = span.Length;
             for (i = 0; i < length - (4 * 8 - 1); i += 4 * 8)
             {
@@ -352,7 +352,7 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var v = Unsafe.Add(ref rdi, i) * scaleV.X;
+                float v = Unsafe.Add(ref rdi, i) * scaleV.X;
                 Unsafe.Add(ref rdi, i) = v;
             }
         }
@@ -368,7 +368,7 @@ namespace Shamisen.Utils
         internal static void FastScalarMultiplyStandardVariable(Span<float> span, float scale)
         {
             var scaleV = new Vector<float>(scale);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref float rdi = ref MemoryMarshal.GetReference(span);
             nint i, length = span.Length;
             nint width = Vector<float>.Count;
             for (i = 0; i < length - (width * 8 - 1); i += width * 8)
@@ -404,7 +404,7 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var v = Unsafe.Add(ref rdi, i) * scaleV[0];
+                float v = Unsafe.Add(ref rdi, i) * scaleV[0];
                 Unsafe.Add(ref rdi, i) = v;
             }
         }
@@ -422,7 +422,7 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMultiply(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
         {
-            var min = MathI.Rectify(MathI.Min(MathI.Min(sourceA.Length, sourceB.Length), destination.Length));
+            int min = MathI.Rectify(MathI.Min(MathI.Min(sourceA.Length, sourceB.Length), destination.Length));
             if (destination.Length > min)
             {
                 destination.Slice(min).FastFill(0);
@@ -441,10 +441,10 @@ namespace Shamisen.Utils
             unsafe
             {
                 nint i, length = destination.Length;
-                ref var rsA = ref MemoryMarshal.GetReference(sourceA);
-                ref var rsB = ref MemoryMarshal.GetReference(sourceB);
-                ref var rD = ref MemoryMarshal.GetReference(destination);
-                var olen = length - 8 * Vector<float>.Count + 1;
+                ref float rsA = ref MemoryMarshal.GetReference(sourceA);
+                ref float rsB = ref MemoryMarshal.GetReference(sourceB);
+                ref float rD = ref MemoryMarshal.GetReference(destination);
+                nint olen = length - 8 * Vector<float>.Count + 1;
                 for (i = 0; i < olen; i += 8 * Vector<float>.Count)
                 {
                     var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
@@ -490,7 +490,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    var sA = Unsafe.Add(ref rsA, i);
+                    float sA = Unsafe.Add(ref rsA, i);
                     Unsafe.Add(ref rD, i) = sA * Unsafe.Add(ref rsB, i);
                 }
             }
@@ -510,7 +510,7 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMix(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
-            var min = MathI.Min(samplesToMix.Length, buffer.Length);
+            int min = MathI.Min(samplesToMix.Length, buffer.Length);
             if (min < 1) return;
             samplesToMix = samplesToMix.SliceWhileIfLongerThan(min);
             buffer = buffer.SliceWhileIfLongerThan(min);
@@ -526,10 +526,10 @@ namespace Shamisen.Utils
         {
             nint i = 0;
             nint length = samplesToMix.Length;
-            ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref float rsi = ref MemoryMarshal.GetReference(samplesToMix);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             var v15_4s = new Vector4(scale);
-            var olen = length - 8 * 4 + 1;
+            nint olen = length - 8 * 4 + 1;
             for (i = 0; i < olen; i += 8 * 4)
             {
                 var v0_4s = v15_4s * Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsi, i));
@@ -567,8 +567,8 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var s0 = v15_4s.X * Unsafe.Add(ref rsi, i);
-                var s4 = Unsafe.Add(ref rdi, i);
+                float s0 = v15_4s.X * Unsafe.Add(ref rsi, i);
+                float s4 = Unsafe.Add(ref rdi, i);
                 s4 += s0;
                 Unsafe.Add(ref rdi, i) = s4;
             }
@@ -579,10 +579,10 @@ namespace Shamisen.Utils
         {
             nint i = 0;
             nint length = samplesToMix.Length;
-            ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref float rsi = ref MemoryMarshal.GetReference(samplesToMix);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             var v15_ns = new Vector<float>(scale);
-            var olen = length - 8 * Vector<float>.Count + 1;
+            nint olen = length - 8 * Vector<float>.Count + 1;
             for (i = 0; i < olen; i += 8 * Vector<float>.Count)
             {
                 var v0_ns = v15_ns * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<float>.Count));
@@ -620,8 +620,8 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var s0 = v15_ns[0] * Unsafe.Add(ref rsi, i);
-                var s4 = Unsafe.Add(ref rdi, i);
+                float s0 = v15_ns[0] * Unsafe.Add(ref rsi, i);
+                float s4 = Unsafe.Add(ref rdi, i);
                 s4 += s0;
                 Unsafe.Add(ref rdi, i) = s4;
             }
@@ -647,7 +647,7 @@ namespace Shamisen.Utils
         public static void FastMix(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             // Validation
-            var min = MathI.Rectify(MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length));
+            int min = MathI.Rectify(MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length));
             if (buffer.Length > min)
             {
                 buffer.Slice(min).FastFill(0);
@@ -677,7 +677,7 @@ namespace Shamisen.Utils
 #if NETCOREAPP3_1_OR_GREATER
         /// <summary>
         /// Only usable in Rocket Lake or later due to CPU clock limits
-        /// (but Clang suggests it and actually performs approximately 1.34 times better than 
+        /// (but Clang suggests it and actually performs approximately 1.34 times better than
         /// <see cref="FastMixSse(Span{float}, ReadOnlySpan{float}, float, ReadOnlySpan{float}, float)"/>, even in Haswell)
         /// </summary>
         /// <param name="buffer"></param>
@@ -693,9 +693,9 @@ namespace Shamisen.Utils
                 nint i, length = buffer.Length;
                 var ymm14 = Vector256.Create(volumeA);
                 var ymm15 = Vector256.Create(volumeB);
-                ref var r8 = ref MemoryMarshal.GetReference(buffer);
-                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
-                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
+                ref float r8 = ref MemoryMarshal.GetReference(buffer);
+                ref float r10 = ref MemoryMarshal.GetReference(samplesA);
+                ref float r11 = ref MemoryMarshal.GetReference(samplesB);
                 for (i = 0; i < length - 31; i += 32)
                 {
                     var ymm0 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i)));
@@ -734,9 +734,9 @@ namespace Shamisen.Utils
                 nint i, length = buffer.Length;
                 var xmm14 = Vector128.Create(volumeA);
                 var xmm15 = Vector128.Create(volumeB);
-                ref var r8 = ref MemoryMarshal.GetReference(buffer);
-                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
-                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
+                ref float r8 = ref MemoryMarshal.GetReference(buffer);
+                ref float r10 = ref MemoryMarshal.GetReference(samplesA);
+                ref float r11 = ref MemoryMarshal.GetReference(samplesB);
                 for (i = 0; i < length - 15; i += 16)
                 {
                     var xmm0 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i)));
@@ -774,10 +774,10 @@ namespace Shamisen.Utils
                 nint i, length = buffer.Length;
                 var scaleVA = new Vector<float>(volumeA);
                 var scaleVB = new Vector<float>(volumeB);
-                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-                ref var rD = ref MemoryMarshal.GetReference(buffer);
-                var olen = length - 4 * Vector<float>.Count + 1;
+                ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref float rD = ref MemoryMarshal.GetReference(buffer);
+                nint olen = length - 4 * Vector<float>.Count + 1;
                 for (i = 0; i < olen; i += 4 * Vector<float>.Count)
                 {
                     var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count)) * scaleVA;
@@ -807,8 +807,8 @@ namespace Shamisen.Utils
                 //}
                 for (; i < length; i++)
                 {
-                    var sA = scaleVA[0] * Unsafe.Add(ref rsA, i);
-                    var sB = scaleVB[0] * Unsafe.Add(ref rsB, i);
+                    float sA = scaleVA[0] * Unsafe.Add(ref rsA, i);
+                    float sB = scaleVB[0] * Unsafe.Add(ref rsB, i);
                     Unsafe.Add(ref rD, i) = sA + sB;
                 }
             }
@@ -821,9 +821,9 @@ namespace Shamisen.Utils
                 nint i, length = buffer.Length;
                 var scaleVA = new Vector4(volumeA);
                 var scaleVB = new Vector4(volumeB);
-                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-                ref var rD = ref MemoryMarshal.GetReference(buffer);
+                ref float rsA = ref MemoryMarshal.GetReference(samplesA);
+                ref float rsB = ref MemoryMarshal.GetReference(samplesB);
+                ref float rD = ref MemoryMarshal.GetReference(buffer);
                 for (i = 0; i < length - 15; i += 16)
                 {
                     var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0)) * scaleVA;
@@ -851,8 +851,8 @@ namespace Shamisen.Utils
                 //}
                 for (; i < length; i++)
                 {
-                    var sA = scaleVA.X * Unsafe.Add(ref rsA, i);
-                    var sB = scaleVB.X * Unsafe.Add(ref rsB, i);
+                    float sA = scaleVA.X * Unsafe.Add(ref rsA, i);
+                    float sB = scaleVB.X * Unsafe.Add(ref rsB, i);
                     Unsafe.Add(ref rD, i) = sA + sB;
                 }
             }
@@ -942,7 +942,7 @@ namespace Shamisen.Utils
         }
         #endregion
 
-        #region DuplicateMonauralToStereo
+        #region DuplicateMonauralToChannels
 
 
         /// <summary>
@@ -950,7 +950,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 2);
@@ -964,108 +964,134 @@ namespace Shamisen.Utils
 #endif
             Fallback.DuplicateMonauralToStereo(destination, source);
         }
-
-
-        #endregion
-
-        #region DuplicateMonauralToChannels
+        /// <summary>
+        /// Duplicates specified monaural signal <paramref name="source"/> to the specified <paramref name="destination"/> with 3 channels.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="source">The source.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void DuplicateMonauralToThree(Span<float> destination, ReadOnlySpan<float> source)
+        {
+            destination = destination.SliceWhileIfLongerThan(source.Length * 3);
+            source = source.SliceWhileIfLongerThan(destination.Length / 3);
+#if NETCOREAPP3_1_OR_GREATER
+            if (X86.IsSupported)
+            {
+                X86.DuplicateMonauralTo3Channels(destination, source);
+                return;
+            }
+#endif
+            Fallback.DuplicateMonauralTo3Channels(destination, source);
+        }
+        /// <summary>
+        /// Duplicates specified monaural signal <paramref name="source"/> to the specified <paramref name="destination"/> with 4 channels.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="source">The source.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void DuplicateMonauralToQuad(Span<float> destination, ReadOnlySpan<float> source)
+        {
+            destination = destination.SliceWhileIfLongerThan(source.Length * 4);
+            source = source.SliceWhileIfLongerThan(destination.Length / 4);
+#if NETCOREAPP3_1_OR_GREATER
+            if (X86.IsSupported)
+            {
+                X86.DuplicateMonauralTo4Channels(destination, source);
+                return;
+            }
+#endif
+            Fallback.DuplicateMonauralTo4Channels(destination, source);
+        }
 
         /// <summary>
-        /// Duplicates specified monaural samples <paramref name="source"/> to <paramref name="channels"/>, and writes to <paramref name="destination"/>.
+        /// Duplicates specified monaural samples <paramref name="source"/> to <paramref name="channels"/>, and writes to <paramref name="destination"/>.<br/>
+        /// This method assumes that either <paramref name="source"/> and <paramref name="destination"/> don't overlap at all,
+        ///  or <paramref name="source"/> is at the very end of the <paramref name="destination"/> if you allow <paramref name="source"/> to be overwritten.<br/>
+        /// Otherwise both the <paramref name="source"/> and <paramref name="destination"/> will be corrupted and results in complete chaos!
         /// </summary>
         /// <param name="destination">The multi-channel destination.</param>
         /// <param name="source">The monaural source.</param>
         /// <param name="channels">The number of channels.</param>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void DuplicateMonauralToChannels(Span<float> destination, ReadOnlySpan<float> source, int channels)
         {
             switch (channels)
             {
-                case < 1:
-                case 1:
+                case < 2:   //Less than or equals to Monaural
                     return;
                 case 2:
-                    {
-                        if (Vector<float>.Count == 2) goto default;
-                        DuplicateMonauralToStereo(destination, source);
-                        return;
-                    }
+                    DuplicateMonauralToStereo(destination, source);
+                    return;
                 case 3:
-                    {
-                        destination = destination.SliceWhileIfLongerThan(source.Length * 3);
-                        source = source.SliceWhileIfLongerThanWithLazyDivide(destination.Length, 3);
-                        var bispan = MemoryMarshal.Cast<float, int>(source);
-                        InterleaveThree(MemoryMarshal.Cast<float, int>(destination), bispan, bispan, bispan);
-                        return;
-                    }
+                    DuplicateMonauralToThree(destination, source);
+                    return;
                 case 4:
-                    {
-                        if (Vector<float>.Count == 4) goto default;
-                        DuplicateMonauralToQuad(destination, source);
-                        return;
-                    }
-                case 8:
-                    {
-                        if (Vector<float>.Count == 8) goto default;
-                        DuplicateMonauralToOctaple(destination, source);
-                        return;
-                    }
+                    DuplicateMonauralToQuad(destination, source);
+                    return;
+                case 8 when Vector<float>.Count != 8:
+                    DuplicateMonauralToOctaple(destination, source);
+                    return;
                 case 12:
-                    {
-                        DuplicateMonauralTo12Channels(destination, source);
-                        return;
-                    }
+                    //There were no system that has 384-bits-wide hardware vector system I ever heard.
+                    DuplicateMonauralTo12Channels(destination, source);
+                    return;
                 case 16:
-                    {
-                        if (Vector<float>.Count == channels) goto default;
-                        DuplicateMonauralTo16Channels(destination, source);
-                        return;
-                    }
-                case < 16:
-                    {
-                        if (Vector<float>.Count == channels) goto default;
-                        int h = 0;
-                        ref var dst = ref MemoryMarshal.GetReference(destination);
-                        for (int i = 0; i < source.Length; i++, h += channels)
-                        {
-                            var v4v = new Vector4(source[i]);
-                            int j = 0;
-                            var olen = channels - 3;
-                            for (; j < olen; j += 4)
-                            {
-                                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h + j)) = v4v;
-                            }
-                            for (; j < channels; j++)
-                            {
-                                Unsafe.Add(ref dst, h + j) = v4v.X;
-                            }
-                        }
-                        return;
-                    }
+                    //Neither AVX-512 nor SVE are supported in .NET 6.
+                    DuplicateMonauralTo16Channels(destination, source);
+                    return;
+                case < 16 when Vector<float>.Count != channels:
+                    DuplicateMonauralToLessThan16Channels(destination, source, channels);
+                    return;
+                case > 0 when Vector<float>.Count == channels:
+                    DuplicateMonauralToVectorAlignedChannels(destination, source);
+                    return;
                 default:
-                    {
-                        if (Vector<float>.Count == channels)
-                        {
-                            int h = 0;
-                            ref var dst = ref MemoryMarshal.GetReference(destination);
-                            for (int i = 0; i < source.Length; i++, h += channels)
-                            {
-                                var v4v = new Vector<float>(source[i]);
-                                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref dst, h)) = v4v;
-                            }
-                            return;
-                        }
-                        else
-                        {
-                            int h = 0;
-                            for (int i = 0; i < source.Length; i++, h += channels)
-                            {
-                                var value = source[i];
-                                destination.Slice(h, channels).FastFill(value);
-                            }
-                            return;
-                        }
-                    }
+                    DuplicateMonauralToChannelsOrdinal(destination, source, channels);
+                    return;
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static void DuplicateMonauralToChannelsOrdinal(Span<float> destination, ReadOnlySpan<float> source, int channels)
+        {
+            int h = 0;
+            for (int i = 0; i < source.Length; i++, h += channels)
+            {
+                float value = source[i];
+                destination.Slice(h, channels).FastFill(value);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static void DuplicateMonauralToVectorAlignedChannels(Span<float> destination, ReadOnlySpan<float> source)
+        {
+            int h = 0;
+            ref float dst = ref MemoryMarshal.GetReference(destination);
+            for (int i = 0; i < source.Length; i++, h += Vector<float>.Count)
+            {
+                var v4v = new Vector<float>(source[i]);
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref dst, h)) = v4v;
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static void DuplicateMonauralToLessThan16Channels(Span<float> destination, ReadOnlySpan<float> source, int channels)
+        {
+            int h = 0;
+            ref float dst = ref MemoryMarshal.GetReference(destination);
+            for (int i = 0; i < source.Length; i++, h += channels)
+            {
+                var v4v = new Vector4(source[i]);
+                int j = 0;
+                int olen = channels - 3;
+                for (; j < olen; j += 4)
+                {
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h + j)) = v4v;
+                }
+                for (; j < channels; j++)
+                {
+                    Unsafe.Add(ref dst, h + j) = v4v.X;
+                }
             }
         }
 
@@ -1075,7 +1101,7 @@ namespace Shamisen.Utils
             destination = destination.SliceWhileIfLongerThan(source.Length * 16);
             source = source.SliceWhileIfLongerThan(destination.Length / 16);
             int h = 0;
-            ref var dst = ref MemoryMarshal.GetReference(destination);
+            ref float dst = ref MemoryMarshal.GetReference(destination);
             for (int i = 0; i < source.Length; i++, h += 16)
             {
                 var v4v = new Vector4(source[i]);
@@ -1091,7 +1117,7 @@ namespace Shamisen.Utils
             destination = destination.SliceWhileIfLongerThan(source.Length * 12);
             source = source.SliceWhileIfLongerThanWithLazyDivide(destination.Length, 12);
             int h = 0;
-            ref var dst = ref MemoryMarshal.GetReference(destination);
+            ref float dst = ref MemoryMarshal.GetReference(destination);
             for (int i = 0; i < source.Length; i++, h += 12)
             {
                 var v4v = new Vector4(source[i]);
@@ -1107,7 +1133,7 @@ namespace Shamisen.Utils
             destination = destination.SliceWhileIfLongerThan(source.Length * 8);
             source = source.SliceWhileIfLongerThan(destination.Length / 8);
             int h = 0;
-            ref var dst = ref MemoryMarshal.GetReference(destination);
+            ref float dst = ref MemoryMarshal.GetReference(destination);
             for (int i = 0; i < source.Length; i++, h += 8)
             {
                 var v4v = new Vector4(source[i]);
@@ -1115,20 +1141,6 @@ namespace Shamisen.Utils
                 Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h + 4)) = v4v;
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static void DuplicateMonauralToQuad(Span<float> destination, ReadOnlySpan<float> source)
-        {
-            destination = destination.SliceWhileIfLongerThan(source.Length * 4);
-            source = source.SliceWhileIfLongerThan(destination.Length / 4);
-            int h = 0;
-            ref var dst = ref MemoryMarshal.GetReference(destination);
-            for (int i = 0; i < source.Length; i++, h += 4)
-            {
-                var v4v = new Vector4(source[i]);
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h)) = v4v;
-            }
-        }
-
         #endregion
     }
 }

@@ -75,7 +75,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             }
         }
 
-        internal static void AssertArray(int[] b) => AudioUtilsTests.AssertArray(b);
+        internal static void AssertArray(int[] b) => AudioUtilsTests.AssertArrayForInterleave(b);
 
         internal static void PrepareLeftSideStereo(int size, out int[] a0, out int[] a1, out int[] b)
         {
