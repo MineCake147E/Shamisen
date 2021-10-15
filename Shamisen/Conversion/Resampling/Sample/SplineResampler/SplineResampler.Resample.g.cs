@@ -28,24 +28,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             int rci = rearrangedCoeffsIndex;
             if (channels == Vector<float>.Count) //SIMD Optimized Multi-Channel Audio Resampling
             {
-                var vBuffer = Cast<float, Vector<float>> (buffer);
-                var vSrcBuffer = Cast<float, Vector<float>> (srcBuffer);
-                for (int i = 0; i < vBuffer.Length; i++) {
-                    ref var values = ref Unsafe.As < Vector<float>,
-                        (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W) > (ref vSrcBuffer[inputSampleIndex]);
-                    var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
-                    var value1 = values.X * cutmullCoeffs.X;
-                    var value2 = values.Y * cutmullCoeffs.Y;
-                    var value3 = values.Z * cutmullCoeffs.Z;
-                    var value4 = values.W * cutmullCoeffs.W;
-                    vBuffer[i] = value1 + value2 + value3 + value4;
-                    x += acc;
-                    inputSampleIndex += facc;
-                    bool h = x >= ram;
-                    int y = Unsafe.As<bool, byte>(ref h);
-                    inputSampleIndex += y;
-                    x -= -y & ram;
-                }
+                inputSampleIndex = ResampleCachedDirectVectorFitChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
             } else {
                 switch (channels) {
                     case 1: //Monaural
@@ -73,13 +56,16 @@ namespace Shamisen.Conversion.Resampling.Sample
                                 fixed (float * srcBufPtr = srcBuffer) {
                                     for (int i = 0; i < buffer.Length - channels + 1; i += channels) {
                                         var cache = srcBufPtr + inputSampleIndex * channels;
-                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, x);
+                                        var cutmullCoeffs = Unsafe.Add (ref coeffPtr, rci);
                                         for (int ch = 0; ch < channels; ch++) {
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to eliminate boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
                                             destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                                         }
+                                        bool j = ++rci < ram;
+                                        int z = Unsafe.As<bool, byte>(ref j);
+                                        rci &= -z;
                                         x += acc;
                                         inputSampleIndex += facc;
                                         bool h = x >= ram;
@@ -348,7 +334,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -375,7 +361,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -400,7 +386,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -709,7 +695,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -736,9 +722,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-
-
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -762,7 +746,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                                 var value2 = cache[channels + ch] * cutmullCoeffs.Y;
                                                 var value3 = cache[channels * 2 + ch] * cutmullCoeffs.Z;
                                                 var value4 = cache[channels * 3 + ch] * cutmullCoeffs.W;
-                                                destSample = value1 + value2 + value3 + value4;
+                                                destSample = value1 + value3 + (value2 + value4);
                                             }
                                             x += acc;
                                             inputSampleIndex += facc;
@@ -1035,21 +1019,20 @@ namespace Shamisen.Conversion.Resampling.Sample
                 var vSrcBuffer = Cast<float, Vector<float>> (srcBuffer);
                 for (int i = 0; i < vBuffer.Length; i++) {
                     float x = cG * RateMulInverse;
-                    float xP2 = x * x;
-                    float xP3 = xP2 * x;
+                    var vx = new Vector4(x);
+                    var y = vx * c0;
+                    y += c1;
+                    y *= vx;
+                    y += c2;
+                    y *= vx;
+                    y += c3;
                     ref var values = ref Unsafe.As < Vector<float>,
                         (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W) > (ref vSrcBuffer[inputSampleIndex]);
-                    var value1 = values.X;
-                    var value2 = values.Y;
-                    var value3 = values.Z;
-                    var value4 = values.W;
-
-
-                    vBuffer[i] = 0.5f * (
-                        2.0f * value2 +
-                        (-value1 + value3) * x +
-                        (2.0f * value1 - 5.0f * value2 + 4.0f * value3 - value4) * xP2 +
-                        (3.0f * value2 - value1 - 3.0f * value3 + value4) * xP3);
+                    var value1 = values.X * y.X;
+                    var value2 = values.Y * y.Y;
+                    var value3 = values.Z * y.Z;
+                    var value4 = values.W * y.W;
+                    vBuffer[i] = (value1 + value3) + (value2 + value4);
                     cG += acc;
                     inputSampleIndex += facc;
                     if (cG >= ram)
@@ -1089,6 +1072,8 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         Vector2> (buffer);
                                     var vSrcBuffer = Cast < float,
                                         Vector2> (srcBuffer);
+                                    ref var rsi = ref GetReference(vSrcBuffer);
+                                    ref var rdi = ref GetReference(vBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
                                         var vx = new Vector4(x);
@@ -1098,13 +1083,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         y += c2;
                                         y *= vx;
                                         y += c3;
-                                        ref var values = ref Unsafe.As <Vector2,
-                                            ( Vector2 X, Vector2 Y, Vector2 Z, Vector2 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X * y.X;
-                                        var value2 = values.Y * y.Y;
-                                        var value3 = values.Z * y.Z;
-                                        var value4 = values.W * y.W;
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple2Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
                                         cG += acc;
                                         inputSampleIndex += facc;
                                         if (cG >= ram)
@@ -1121,6 +1100,8 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         Vector3> (buffer);
                                     var vSrcBuffer = Cast < float,
                                         Vector3> (srcBuffer);
+                                    ref var rsi = ref GetReference(vSrcBuffer);
+                                    ref var rdi = ref GetReference(vBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
                                         var vx = new Vector4(x);
@@ -1130,13 +1111,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         y += c2;
                                         y *= vx;
                                         y += c3;
-                                        ref var values = ref Unsafe.As <Vector3,
-                                            ( Vector3 X, Vector3 Y, Vector3 Z, Vector3 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X * y.X;
-                                        var value2 = values.Y * y.Y;
-                                        var value3 = values.Z * y.Z;
-                                        var value4 = values.W * y.W;
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple3Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
                                         cG += acc;
                                         inputSampleIndex += facc;
                                         if (cG >= ram)
@@ -1153,6 +1128,8 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         Vector4> (buffer);
                                     var vSrcBuffer = Cast < float,
                                         Vector4> (srcBuffer);
+                                    ref var rsi = ref GetReference(vSrcBuffer);
+                                    ref var rdi = ref GetReference(vBuffer);
                                     for (int i = 0; i < vBuffer.Length; i++) {
                                         float x = cG * RateMulInverse;
                                         var vx = new Vector4(x);
@@ -1162,13 +1139,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                                         y += c2;
                                         y *= vx;
                                         y += c3;
-                                        ref var values = ref Unsafe.As <Vector4,
-                                            ( Vector4 X, Vector4 Y, Vector4 Z, Vector4 W) > (ref vSrcBuffer[inputSampleIndex]);
-                                        var value1 = values.X * y.X;
-                                        var value2 = values.Y * y.Y;
-                                        var value3 = values.Z * y.Z;
-                                        var value4 = values.W * y.W;
-                                        vBuffer[i] = value1 + value2 + value3 + value4;
+                                        Unsafe.Add(ref rdi, i) = VectorUtils.FastDotMultiple4Channels(ref Unsafe.Add(ref rsi, inputSampleIndex), y);
                                         cG += acc;
                                         inputSampleIndex += facc;
                                         if (cG >= ram)
@@ -1203,7 +1174,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                                             ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
                                             var values = new Vector4(
                                                 cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-
                                             destSample = VectorUtils.FastDotProduct(values, y);
                                         }
                                         cG += acc;

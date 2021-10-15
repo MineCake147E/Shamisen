@@ -218,6 +218,73 @@ namespace Shamisen.Core.Tests.CoreFx
 
         }
         #endregion
+        #region UpSamplingChannelsConsistency
+        private static IEnumerable<TestCaseData> UpSamplingChannelConsistencyTestCaseSource()
+        {
+            var ratios = GenerateConversionRatios();
+            var channelsWithIntrinsics = Enumerable.Range(2, 16);
+            var chsr = channelsWithIntrinsics.SelectMany(chs => ratios.Select(r => (chs, r.before, r.after))).ToArray();
+            return chsr.Select(c => new TestCaseData(c.chs, c.before, c.after));
+        }
+        private static void CheckChannelConsistency(int sourceSampleRate, int channels, int destinationSampleRate)
+        {
+            const int Frequency = 2000;
+            using var srcMono = new SawtoothWaveSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Frequency };
+            using var srcMulti = new SawtoothWaveSource(new SampleFormat(channels, sourceSampleRate)) { Frequency = Frequency };
+            using var filterMono = new SplineResampler(srcMono, destinationSampleRate);
+            using var filterMulti = new SplineResampler(srcMulti, destinationSampleRate);
+            float[] bufferMono = new float[255];
+            float[] bufferMulti = new float[bufferMono.Length * channels];
+            using var dcMono = new AudioCache<float, SampleFormat>(filterMono.Format);
+            using var dcMulti = new AudioCache<float, SampleFormat>(filterMulti.Format);
+            _ = filterMono.Read(bufferMono);
+            _ = filterMulti.Read(bufferMulti);
+            dcMono.Write(bufferMono);
+            dcMulti.Write(bufferMulti);
+            var sumdiff = CheckFrame(channels, bufferMono, bufferMulti);
+            Console.WriteLine($"1st frame:");
+            double avgDiff = WriteDifference(bufferMono, sumdiff);
+            _ = filterMono.Read(bufferMono);
+            _ = filterMulti.Read(bufferMulti);
+            dcMono.Write(bufferMono);
+            dcMulti.Write(bufferMulti);
+            var sumdiff2 = CheckFrame(channels, bufferMono, bufferMulti);
+            Console.WriteLine($"2nd frame:");
+            double avgDiff2 = WriteDifference(bufferMono, sumdiff);
+            if (avgDiff != 0 || avgDiff2 != 0)
+            {
+                TestHelper.DumpSamples(dcMono, $"CheckChannelConsistencyExpectedDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
+                TestHelper.DumpSamples(dcMulti, $"CheckChannelConsistencyActualDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
+            }
+            Assert.AreEqual(0f, avgDiff);
+            Assert.AreEqual(0f, avgDiff2);
+        }
+
+        private static double WriteDifference(float[] bufferMono, NeumaierAccumulator sumdiff)
+        {
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            double avgDiff = sumdiff.Sum / bufferMono.Length;
+            Console.WriteLine($"Average difference: {avgDiff}");
+            return avgDiff;
+        }
+
+        private static NeumaierAccumulator CheckFrame(int channels, float[] bufferMono, float[] bufferMulti)
+        {
+            NeumaierAccumulator sumdiff = default;
+            for (int i = 0; i < bufferMono.Length; i++)
+            {
+                float mono = bufferMono[i];
+                float multi = bufferMulti[i * channels];
+                float diff = mono - multi;
+                sumdiff += MathF.Abs(diff);
+                //Console.WriteLine($"{mono}, {multi}, {diff}");
+            }
+            return sumdiff;
+        }
+
+        [TestCaseSource(nameof(UpSamplingChannelConsistencyTestCaseSource))]
+        public void UpSamplingChannelConsistency(int channels, int sourceSampleRate = 176400, int destinationSampleRate = 192000) => CheckChannelConsistency(sourceSampleRate, channels, destinationSampleRate);
+        #endregion
         #region Dump
 
         [Test]
@@ -228,8 +295,8 @@ namespace Shamisen.Core.Tests.CoreFx
             var src = new SinusoidSource(new SampleFormat(1, SourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, DestinationSampleRate);
             float[] buffer = new float[256];
-            resampler.Read(buffer); //Trash the data because the first one contains transient part.
-            resampler.Read(buffer);
+            _ = resampler.Read(buffer); //Trash the data because the first one contains transient part.
+            _ = resampler.Read(buffer);
             foreach (float item in buffer)
             {
                 Console.WriteLine(item);
@@ -247,13 +314,13 @@ namespace Shamisen.Core.Tests.CoreFx
             var src = new SinusoidSource(new SampleFormat(1, sourceSampleRate)) { Frequency = Freq };
             var resampler = new SplineResampler(src, destinationSampleRate);
             float[] buffer = new float[256];
-            resampler.Read(buffer); //Trash the data because the first one contains transient part.
-            resampler.Read(buffer);
+            _ = resampler.Read(buffer); //Trash the data because the first one contains transient part.
+            _ = resampler.Read(buffer);
             foreach (float item in buffer)
             {
                 Console.WriteLine(item);
             }
-            resampler.Read(buffer);
+            _ = resampler.Read(buffer);
             foreach (float item in buffer)
             {
                 Console.WriteLine(item);
