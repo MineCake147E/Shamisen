@@ -8045,6 +8045,20 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleDirectGeneric(System.Span{System.Single},System.Span{System.Single},System.Int32,System.Int32@,System.Int32,System.Int32,System.Int32,System.Single)">
+            <summary>
+            Performs resampling no matter how many channels to process.
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="channels"></param>
+            <param name="x"></param>
+            <param name="ram"></param>
+            <param name="acc"></param>
+            <param name="facc"></param>
+            <param name="rmi"></param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
             <summary>
             For arbitrary sampling frequency ratio larger than 1

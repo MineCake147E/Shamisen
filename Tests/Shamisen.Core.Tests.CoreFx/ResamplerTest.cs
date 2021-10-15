@@ -243,14 +243,14 @@ namespace Shamisen.Core.Tests.CoreFx
             dcMulti.Write(bufferMulti);
             var sumdiff = CheckFrame(channels, bufferMono, bufferMulti);
             Console.WriteLine($"1st frame:");
-            double avgDiff = WriteDifference(bufferMono, sumdiff);
+            double avgDiff = WriteDifference(bufferMulti.Length, sumdiff);
             _ = filterMono.Read(bufferMono);
             _ = filterMulti.Read(bufferMulti);
             dcMono.Write(bufferMono);
             dcMulti.Write(bufferMulti);
             var sumdiff2 = CheckFrame(channels, bufferMono, bufferMulti);
             Console.WriteLine($"2nd frame:");
-            double avgDiff2 = WriteDifference(bufferMono, sumdiff);
+            double avgDiff2 = WriteDifference(bufferMulti.Length, sumdiff);
             if (avgDiff != 0 || avgDiff2 != 0)
             {
                 TestHelper.DumpSamples(dcMono, $"CheckChannelConsistencyExpectedDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
@@ -260,10 +260,10 @@ namespace Shamisen.Core.Tests.CoreFx
             Assert.AreEqual(0f, avgDiff2);
         }
 
-        private static double WriteDifference(float[] bufferMono, NeumaierAccumulator sumdiff)
+        private static double WriteDifference(int length, NeumaierAccumulator sumdiff)
         {
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
-            double avgDiff = sumdiff.Sum / bufferMono.Length;
+            double avgDiff = sumdiff.Sum / length;
             Console.WriteLine($"Average difference: {avgDiff}");
             return avgDiff;
         }
@@ -274,9 +274,12 @@ namespace Shamisen.Core.Tests.CoreFx
             for (int i = 0; i < bufferMono.Length; i++)
             {
                 float mono = bufferMono[i];
-                float multi = bufferMulti[i * channels];
-                float diff = mono - multi;
-                sumdiff += MathF.Abs(diff);
+                for (int ch = 0; ch < channels; ch++)
+                {
+                    float multi = bufferMulti[i * channels + ch];
+                    float diff = mono - multi;
+                    sumdiff += MathF.Abs(diff);
+                }
                 //Console.WriteLine($"{mono}, {multi}, {diff}");
             }
             return sumdiff;
