@@ -4,13 +4,13 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
 using Shamisen.Utils;
-
+using Shamisen.Utils.Numerics;
 #endif
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+
 #endif
 #if NET5_0_OR_GREATER
 using System.Runtime.Intrinsics.Arm;
@@ -20,87 +20,13 @@ namespace Shamisen.Conversion.Resampling.Sample
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct CachedResampleArgs
     {
-#if NETCOREAPP3_1_OR_GREATER
-        private readonly Vector128<int> values;
-        private int x
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.GetElement(0);
-            }
-        }
-
-        private int ram
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.GetElement(1);
-            }
-        }
-
-        private int acc
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.GetElement(2);
-            }
-        }
-
-        private int facc
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.GetElement(3);
-            }
-        }
-#else
-        private readonly (int conversionGradient, int rateMul, int gradientIncrement, int indexIncrement) values;
-        private int x
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.conversionGradient;
-            }
-        }
-
-        private int ram
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.rateMul;
-            }
-        }
-
-        private int acc
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.gradientIncrement;
-            }
-        }
-
-        private int facc
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                return values.indexIncrement;
-            }
-        }
-#endif
+        readonly Vector4Int32 values;
         public int ConversionGradient
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                return x;
+                return values.X;
             }
         }
 
@@ -109,7 +35,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                return ram;
+                return values.Y;
             }
         }
 
@@ -118,7 +44,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                return acc;
+                return values.Z;
             }
         }
 
@@ -127,17 +53,12 @@ namespace Shamisen.Conversion.Resampling.Sample
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                return facc;
+                return values.W;
             }
         }
-
         public CachedResampleArgs(int x, int ram, int acc, int facc)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            values = Vector128.Create(x, ram, acc, facc);
-#else
-            values = (x, ram, acc, facc);
-#endif
+            values = new(x, ram, acc, facc);
         }
     }
 }

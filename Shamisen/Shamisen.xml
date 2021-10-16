@@ -19052,23 +19052,78 @@
         </member>
         <member name="P:Shamisen.Utils.Numerics.Vector4Int32.X">
             <summary>
-            Gets the X value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            Gets the value of 1st component of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
             </summary>
         </member>
         <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Y">
             <summary>
-            Gets the Y value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            Gets the value of 2nd component of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
             </summary>
         </member>
         <member name="P:Shamisen.Utils.Numerics.Vector4Int32.Z">
             <summary>
-            Gets the Z value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            Gets the value of 3rd component of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
             </summary>
         </member>
         <member name="P:Shamisen.Utils.Numerics.Vector4Int32.W">
             <summary>
-            Gets the W value of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            Gets the value of 4th component of this <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
             </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/>.
+            </summary>
+            <param name="x">The 1st value of the vector.</param>
+            <param name="y">The 2nd value of the vector.</param>
+            <param name="z">The 3rd value of the vector.</param>
+            <param name="w">The 4th value of the vector.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.Equals(Shamisen.Utils.Numerics.Vector4Int32)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.op_Equality(Shamisen.Utils.Numerics.Vector4Int32,Shamisen.Utils.Numerics.Vector4Int32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.Numerics.Vector4Int32.op_Inequality(Shamisen.Utils.Numerics.Vector4Int32,Shamisen.Utils.Numerics.Vector4Int32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Utils.Numerics.Vector4Int32"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Shamisen.Utils.ReadOnceObjectContainer`1">
             <summary>

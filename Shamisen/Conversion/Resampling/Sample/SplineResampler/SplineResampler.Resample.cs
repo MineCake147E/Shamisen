@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 using Shamisen.Utils;
@@ -518,6 +519,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             int psx = x;
             int spsx = psx;
             int nram = ram;
+            nint nchannels = channels;
             nint length = buffer.Length - channels + 1;
             ref float src = ref MemoryMarshal.GetReference(srcBuffer);
             ref float dst = ref MemoryMarshal.GetReference(buffer);
@@ -541,35 +543,60 @@ namespace Shamisen.Conversion.Resampling.Sample
                 x2 = x3;
                 x3 = nx3;
             }
-            for (; i < length; i += channels)
+            unsafe
             {
-                psx += acc;
-                ref float head = ref Unsafe.Add(ref src, isx * channels);
-                for (int ch = 0; ch < channels; ch++)
+                fixed (float* rsi = srcBuffer)
+                fixed (float* rdi = buffer)
                 {
-                    var values = new Vector4(Unsafe.Add(ref head, ch), Unsafe.Add(ref head, channels + ch),
-                        Unsafe.Add(ref head, 2 * channels + ch), Unsafe.Add(ref head, 3 * channels + ch));
-                    Unsafe.Add(ref dst, i + ch) = VectorUtils.FastDotProduct(values, y0);
+                    for (; i < length; i += channels)
+                    {
+                        psx += acc;
+                        float* head = rsi + isx * nchannels;
+                        float* head2 = head + nchannels * 2;
+                        nint nch = 0;
+                        nint cholen = nchannels - 3;
+                        for (; nch < cholen; nch += 4)
+                        {
+                            var vy0 = y0;
+                            var v0 = new Vector4(vy0.X);
+                            var v2 = new Vector4(vy0.Z);
+                            var v1 = new Vector4(vy0.Y);
+                            var v3 = new Vector4(vy0.W);
+                            v0 *= *(Vector4*)(head + nch);
+                            v2 *= *(Vector4*)(head2 + nch);
+                            v0 += v2;
+                            v1 *= *(Vector4*)(head + nchannels + nch);
+                            v3 *= *(Vector4*)(head2 + nchannels + nch);
+                            v1 += v3;
+                            v0 += v1;
+                            *(Vector4*)(rdi + i + nch) = v0;
+                        }
+                        for (; nch < nchannels; nch++)
+                        {
+                            var values = new Vector4(*(head + nch), *(head + nchannels + nch), *(head2 + nch), *(head2 + nchannels + nch));
+                            *(rdi + i + nch) = VectorUtils.FastDotProduct(values, y0);
+                        }
+                        bool h = psx >= nram;
+                        int g = Unsafe.As<bool, byte>(ref h);
+                        isx += g;
+                        isx += facc;
+                        psx -= -g & nram;
+                        var nx3 = new Vector4(spsx * rmi);
+                        spsx += acc;
+                        bool h2 = spsx >= nram;
+                        int g2 = Unsafe.As<bool, byte>(ref h2);
+                        y0 = y1 * x1;
+                        y0 += c3;
+                        y1 = y2 * x2;
+                        y1 += c2;
+                        y2 = c0 * x3;
+                        y2 += c1;
+                        spsx -= -g2 & nram;
+                        x1 = x2;
+                        x2 = x3;
+                        x3 = nx3;
+                    }
                 }
-                bool h = psx >= nram;
-                int g = Unsafe.As<bool, byte>(ref h);
-                isx += g;
-                isx += facc;
-                psx -= -g & nram;
-                var nx3 = new Vector4(spsx * rmi);
-                spsx += acc;
-                bool h2 = spsx >= nram;
-                int g2 = Unsafe.As<bool, byte>(ref h2);
-                y0 = y1 * x1;
-                y0 += c3;
-                y1 = y2 * x2;
-                y1 += c2;
-                y2 = c0 * x3;
-                y2 += c1;
-                spsx -= -g2 & nram;
-                x1 = x2;
-                x2 = x3;
-                x3 = nx3;
             }
             x = psx;
             return (int)isx;

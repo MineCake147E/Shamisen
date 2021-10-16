@@ -222,14 +222,17 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void GenerateCoeffs(Span<Vector4> coeffs, float rateMulInverse)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            if (Sse2.IsSupported)
+            unchecked
             {
-                GenerateCoeffsSse2(coeffs, rateMulInverse);
-                return;
-            }
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    GenerateCoeffsSse2(coeffs, rateMulInverse);
+                    return;
+                }
 #endif
-            GenerateCoeffsStandard(coeffs, rateMulInverse);
+                GenerateCoeffsStandard(coeffs, rateMulInverse);
+            }
         }
 
 
@@ -407,6 +410,99 @@ namespace Shamisen.Conversion.Resampling.Sample
 
 
         #region Misc
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe void FastDotProductGeneric(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported)
+                {
+                    FastDotProductGenericAvx2(nchannels, i, rdi, cutmullCoeffs, head);
+                    return;
+                }
+#endif
+                FastDotProductGenericStandard(nchannels, i, rdi, cutmullCoeffs, head);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe void FastDotProductGenericStandard(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
+        {
+            float* head2 = head + nchannels * 2;
+            nint nch = 0;
+            nint cholen = nchannels - 3;
+            for (; nch < cholen; nch += 4)
+            {
+                var vy0 = cutmullCoeffs;
+                var v0 = new Vector4(vy0.X);
+                var v2 = new Vector4(vy0.Z);
+                var v1 = new Vector4(vy0.Y);
+                var v3 = new Vector4(vy0.W);
+                v0 *= *(Vector4*)(head + nch);
+                v2 *= *(Vector4*)(head2 + nch);
+                v0 += v2;
+                v1 *= *(Vector4*)(head + nchannels + nch);
+                v3 *= *(Vector4*)(head2 + nchannels + nch);
+                v1 += v3;
+                v0 += v1;
+                *(Vector4*)(rdi + i + nch) = v0;
+            }
+            for (; nch < nchannels; nch++)
+            {
+                var values = new Vector4(*(head + nch), *(head + nchannels + nch), *(head2 + nch), *(head2 + nchannels + nch));
+                *(rdi + i + nch) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+            }
+        }
+#if NETCOREAPP3_1_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe void FastDotProductGenericAvx2(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
+        {
+            float* head2 = head + nchannels * 2;
+            nint nch = 0;
+            nint cholen = nchannels - 7;
+            for (; nch < cholen; nch += 8)
+            {
+                var vy0 = cutmullCoeffs.AsVector128();
+                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                v0 = Avx.Add(v0, v2);
+                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                v1 = Avx.Add(v1, v3);
+                v0 = Avx.Add(v0, v1);
+                *(Vector256<float>*)(rdi + i + nch) = v0;
+            }
+            cholen = nchannels - 3;
+            for (; nch < cholen; nch += 4)
+            {
+                var vy0 = cutmullCoeffs.AsVector128();
+                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                v0 = Sse.Add(v0, v2);
+                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                v1 = Sse.Add(v1, v3);
+                v0 = Sse.Add(v0, v1);
+                *(Vector128<float>*)(rdi + i + nch) = v0;
+            }
+            for (; nch < nchannels; nch++)
+            {
+                var values = new Vector4(*(head + nch), *(head + nchannels + nch), *(head2 + nch), *(head2 + nchannels + nch));
+                *(rdi + i + nch) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
+            }
+        }
+#endif
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint Abs(int value)

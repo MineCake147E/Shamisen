@@ -826,6 +826,502 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
         #endregion
         #endregion
+
+        #region CachedWrappedEven
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericX86(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            if (Avx2.IsSupported)
+            {
+                return ResampleCachedWrappedEvenGenericAvx2(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+            }
+            return ResampleCachedWrappedEvenGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+        }
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericAvx2(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            nint isx = 0;
+            nint psx = x;
+            nint nchannels = channels;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
+            int rec = rearrangedCoeffsIndex;
+            int red = rearrangedCoeffsDirection;
+            int rew = cspan.Length;
+            nint rewc = rew * nchannels;
+            int rch = channels & 0x3;
+            var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
+            nint i = 0, length = buffer.Length - nchannels + 1;
+            unsafe
+            {
+                fixed (float* rsi = srcBuffer)
+                fixed (float* rdi = buffer)
+                {
+                    if (red < 0)
+                    {
+                        nint olen = MathI.Min(length, rec * nchannels + nchannels);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec <= 0)
+                        {
+                            red = 1;
+                            rec = 0;
+                        }
+                    }
+                    while (i < length)
+                    {
+                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = Unsafe.Add(ref coeffPtr, rec++);
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec >= rew)
+                        {
+                            red = -1;
+                            rec--;
+                        }
+                        olen = MathI.Min(length, i + rec * nchannels + nchannels);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec < 0)
+                        {
+                            red = 1;
+                            rec = 0;
+                        }
+                    }
+                }
+            }
+            return ((int)isx, (int)psx, rec, red);
+        }
+        #endregion
+
+        #region CachedWrappedOdd
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGenericX86(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            if (Avx2.IsSupported)
+            {
+                return ResampleCachedWrappedOddGenericAvx2(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+            }
+            return ResampleCachedWrappedOddGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+        }
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGenericAvx2(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            nint isx = 0;
+            nint psx = x;
+            nint nchannels = channels;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
+            int rec = rearrangedCoeffsIndex;
+            int red = rearrangedCoeffsDirection;
+            int rew = cspan.Length;
+            nint rewc = rew * nchannels;
+            int rch = channels & 0x3;
+            var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
+            nint i = 0, length = buffer.Length - nchannels + 1;
+            unsafe
+            {
+                fixed (float* rsi = srcBuffer)
+                fixed (float* rdi = buffer)
+                {
+                    if (red < 0)
+                    {
+                        nint olen = MathI.Min(length, rec * nchannels);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec <= 0)
+                        {
+                            red = 1;
+                            rec = 0;
+                        }
+                    }
+                    while (i < length)
+                    {
+                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = Unsafe.Add(ref coeffPtr, rec++);
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec >= rew)
+                        {
+                            red = -1;
+                            rec--;
+                        }
+                        olen = MathI.Min(length, i + rec * nchannels);
+                        for (; i < olen; i += nchannels)
+                        {
+                            var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            float* head = rsi + isx * nchannels;
+                            float* head2 = head + nchannels * 2;
+                            nint nch = 0;
+                            nint cholen = nchannels - 7;
+                            for (; nch < cholen; nch += 8)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
+                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                v0 = Avx.Add(v0, v2);
+                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
+                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                v1 = Avx.Add(v1, v3);
+                                v0 = Avx.Add(v0, v1);
+                                *(Vector256<float>*)(rdi + i + nch) = v0;
+                            }
+                            cholen = nchannels - 3;
+                            for (; nch < cholen; nch += 4)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
+                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
+                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
+                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
+                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
+                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
+                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                *(Vector128<float>*)(rdi + i + nch) = v0;
+                            }
+                            if (nch < nchannels)
+                            {
+                                var vy0 = y0.AsVector128();
+                                var v0 = Avx.MaskLoad(head + nch, mask);
+                                var v2 = Avx.MaskLoad(head2 + nch, mask);
+                                var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
+                                var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
+                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
+                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Add(v0, v2);
+                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
+                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Add(v1, v3);
+                                v0 = Sse.Add(v0, v1);
+                                Avx.MaskStore(rdi + i + nch, mask, v0);
+                            }
+                            psx += acc;
+                            isx += facc;
+                            bool h = psx >= ram;
+                            int y = Unsafe.As<bool, byte>(ref h);
+                            isx += y;
+                            psx -= -y & ram;
+                        }
+                        if (rec == 0)
+                        {
+                            red = 1;
+                        }
+                    }
+                }
+            }
+            return ((int)isx, (int)psx, rec, red);
+        }
+        #endregion
+
         #region Direct
         #region Generic
         private static int ResampleDirectGenericX86(Span<float> buffer, Span<float> srcBuffer, int channels, ref int x, int ram, int acc, int facc, float rmi)

@@ -161,100 +161,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
 
                     default:
-
-                        #region Channels that is not SIMD optimized
-
-                        {
-                            unsafe {
-                                fixed (float * srcBufPtr = srcBuffer) {
-                                    int i = 0;
-                                    var length = buffer.Length - channels + 1;
-                                    if(red < 0)
-                                    {
-                                        var olen = MathI.Min(length, rec * channels);
-                                        for (; i < olen; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec == 0)
-                                        {
-                                            red = 1;
-                                        }
-                                    }
-                                    while(i < buffer.Length - channels + 1)
-                                    {
-                                        var olen = MathI.Min(length, i + channels * (rew - rec));
-                                        for (; i < olen; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec >= rew)
-                                        {
-                                            red = -1;
-                                            rec--;
-                                        }
-                                        olen = MathI.Min(length, i + channels * rec);
-                                        for (; i < buffer.Length - channels + 1 && rec > 0; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec == 0)
-                                        {
-                                            red = 1;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion Channels that is not SIMD optimized
-
-                        break;
+                        (inputSampleIndex, conversionGradient, rearrangedCoeffsIndex, rearrangedCoeffsDirection) = ResampleCachedWrappedOddGeneric(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rec, red);
+                        return inputSampleIndex;
                 }
             }
-            rearrangedCoeffsIndex = rec;
-            rearrangedCoeffsDirection = red;
-            conversionGradient = x;
-            return inputSampleIndex;
         }
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
@@ -368,96 +278,10 @@ namespace Shamisen.Conversion.Resampling.Sample
 <#}#>
                         #endregion SIMD Optimized Multi-Channel Audio Resampling
                     default:
-                        #region Channels that is not SIMD optimized
-                        {
-                            unsafe {
-                                fixed (float * srcBufPtr = srcBuffer) {
-                                    int i = 0;
-                                    if(red < 0)
-                                    {
-                                        for (; i < buffer.Length - channels + 1 && rec >= 0; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec < 0)
-                                        {
-                                            red = 1;
-                                            rec = 0;
-                                        }
-                                    }
-                                    while(i < buffer.Length - channels + 1)
-                                    {
-                                        for (; i < buffer.Length - channels + 1 && rec < rew; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec >= rew)
-                                        {
-                                            red = -1;
-                                            rec--;
-                                        }
-                                        for (; i < buffer.Length - channels + 1 && rec >= 0; i += channels) {
-                                            var cache = srcBufPtr + inputSampleIndex * channels;
-                                            var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec--);
-                                            for (int ch = 0; ch < channels; ch++) {
-                                                ref var destSample = ref buffer[i + ch]; //Persist the reference in order to reduce boundary checks.
-                                                var values = new Vector4(
-                                                    cache[ch], cache[channels + ch], cache[channels * 2 + ch], cache[channels * 3 + ch]);
-                                                destSample = VectorUtils.FastDotProduct(values, cutmullCoeffs);
-                                            }
-                                            x += acc;
-                                            inputSampleIndex += facc;
-                                            bool h = x >= ram;
-                                            int y = Unsafe.As<bool, byte>(ref h);
-                                            inputSampleIndex += y;
-                                            x -= -y & ram;
-                                            outputSamplePosition++;
-                                        }
-                                        if (rec < 0)
-                                        {
-                                            red = 1;
-                                            rec = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion Channels that is not SIMD optimized
-
-                        break;
+                        (inputSampleIndex, conversionGradient, rearrangedCoeffsIndex, rearrangedCoeffsDirection) = ResampleCachedWrappedEvenGeneric(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rec, red);
+                        return inputSampleIndex;
                 }
             }
-            rearrangedCoeffsIndex = rec;
-            rearrangedCoeffsDirection = red;
-            conversionGradient = x;
-            return inputSampleIndex;
         }
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
