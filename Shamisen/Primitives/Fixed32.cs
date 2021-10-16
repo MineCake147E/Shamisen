@@ -23,7 +23,10 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="Fixed32"/> struct.
         /// </summary>
         /// <param name="internalValue">The internal value stored in memory.</param>
-        public Fixed32(int internalValue) => Value = internalValue;
+        public Fixed32(int internalValue)
+        {
+            Value = internalValue;
+        }
 
         /// <summary>
         /// Gets the value represented in <see cref="float"/>.

@@ -13,7 +13,10 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
         private ulong remainingBits;
         private bool hasFinalized = false;
 
-        public UnaryDataSource(ulong remainingBits) => this.remainingBits = remainingBits;
+        public UnaryDataSource(ulong remainingBits)
+        {
+            this.remainingBits = remainingBits;
+        }
 
         /// <summary>
         /// Gets the read support.

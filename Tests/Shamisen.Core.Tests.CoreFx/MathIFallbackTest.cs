@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
-using NUnit.Framework;
-
+using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
-using System.Diagnostics;
+using System.Text;
+
+using NUnit.Framework;
+
+using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Filters;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx
 {

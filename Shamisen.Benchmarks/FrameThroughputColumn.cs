@@ -33,15 +33,15 @@ namespace Shamisen.Benchmarks
         {
             try
             {
-                var nf = FrameSelector?.Invoke(benchmarkCase);
-                var frames = (double)nf * 1.0E9f;
+                int? nf = FrameSelector?.Invoke(benchmarkCase);
+                double frames = (double)nf * 1.0E9f;
                 double mean = summary[benchmarkCase].ResultStatistics.Mean;
-                var throughput = frames / mean;
+                double throughput = frames / mean;
                 return $"{throughput:#,#.00000000}";
             }
             catch (Exception ex)
             {
-                foreach (var item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
+                foreach (string item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
                 {
                     Console.WriteLine(item);
                 }

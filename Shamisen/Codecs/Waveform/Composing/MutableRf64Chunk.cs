@@ -37,7 +37,9 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <param name="size">The size value to overwrite.</param>
         /// <exception cref="ArgumentNullException">contents</exception>
         public MutableRf64Chunk(ChunkId chunkId, List<IRf64Content> contents, uint? size = null) : this(chunkId, size)
-            => this.contents = contents ?? throw new ArgumentNullException(nameof(contents));
+        {
+            this.contents = contents ?? throw new ArgumentNullException(nameof(contents));
+        }
 
         /// <summary>
         /// Gets the chunk identifier.

@@ -11,7 +11,7 @@ namespace Shamisen.SystemExtensions.Memory
     /// Represents a continuous region of memory.
     /// </summary>
     /// <typeparam name="T">The type of contents.</typeparam>
-    public unsafe readonly ref struct NativeSpan<T> where T : unmanaged
+    public readonly unsafe ref struct NativeSpan<T> where T : unmanaged
     {
         private readonly nint headPointer;
         private readonly nint length;

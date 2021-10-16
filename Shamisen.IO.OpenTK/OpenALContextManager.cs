@@ -66,9 +66,12 @@ namespace Shamisen.IO
         {
             private bool disposedValue;
 
-            public CurrentContextHandle(ALContext context) : this() => Context = context;
+            public CurrentContextHandle(ALContext context) : this()
+            {
+                Context = context;
+            }
 
-            ALContext Context { get; }
+            private ALContext Context { get; }
 
             private void Dispose(bool disposing)
             {

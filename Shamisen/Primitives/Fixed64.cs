@@ -27,7 +27,10 @@ namespace Shamisen
         /// </summary>
         /// <param name="internalValue">The internal value stored in memory.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public Fixed64(long internalValue) => Value = internalValue;
+        public Fixed64(long internalValue)
+        {
+            Value = internalValue;
+        }
 
         /// <summary>
         /// Gets the value represented in <see cref="float"/>.

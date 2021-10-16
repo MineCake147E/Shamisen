@@ -27,7 +27,7 @@ namespace Shamisen.Pipeline
         /// <summary>
         /// 
         /// </summary>
-        public IAudioPipelineProducer<TSample, TFormat> Producer {  get; }
+        public IAudioPipelineProducer<TSample, TFormat> Producer { get; }
         /// <summary>
         /// 
         /// </summary>

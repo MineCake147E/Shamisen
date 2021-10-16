@@ -47,7 +47,7 @@ namespace Shamisen.Codecs.Waveform.Chunks
         /// <param name="chunkSize">Size of the chunk.</param>
         public Rf64DataSizeChunkHeader(ulong riffSize, ulong dataSize, ulong frameCount, uint tableLength, ChunkId chunkId = ChunkId.Rf64DataSize, uint? chunkSize = null)
         {
-            this.riffChunkSize = riffSize;
+            riffChunkSize = riffSize;
             this.dataSize = dataSize;
             this.frameCount = frameCount;
             this.tableLength = tableLength;

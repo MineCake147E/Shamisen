@@ -51,7 +51,7 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
         /// <value>
         /// The length.
         /// </value>
-        public ulong ChunkLength { get => Source.TotalSize; }
+        public ulong ChunkLength => Source.TotalSize;
 
         /// <summary>
         /// Gets the source chunk reader.

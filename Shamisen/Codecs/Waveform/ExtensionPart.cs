@@ -75,9 +75,9 @@ namespace Shamisen.Codecs.Waveform
         /// <returns></returns>
         public ExtensionPart ReverseEndianness()
         {
-            var xS = BinaryPrimitives.ReverseEndianness(extensionSize);
-            var vBPS = BinaryPrimitives.ReverseEndianness(validBitsPerSample);
-            var cM = BinaryPrimitives.ReverseEndianness(channelMask);
+            ushort xS = BinaryPrimitives.ReverseEndianness(extensionSize);
+            ushort vBPS = BinaryPrimitives.ReverseEndianness(validBitsPerSample);
+            uint cM = BinaryPrimitives.ReverseEndianness(channelMask);
             var sF = BinaryExtensions.ReverseEndianness(subFormat);
             return new ExtensionPart(xS, vBPS, cM, sF);
         }

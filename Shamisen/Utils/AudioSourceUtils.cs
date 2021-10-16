@@ -97,7 +97,10 @@ namespace Shamisen
         private readonly IReadableAudioSource<float, SampleFormat> source;
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public ReadableSampleSource(IReadableAudioSource<float, SampleFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
+        public ReadableSampleSource(IReadableAudioSource<float, SampleFormat> source)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
         public SampleFormat Format
         {
@@ -147,7 +150,10 @@ namespace Shamisen
         private readonly IReadableAudioSource<byte, IWaveFormat> source;
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public ReadableWaveSource(IReadableAudioSource<byte, IWaveFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
+        public ReadableWaveSource(IReadableAudioSource<byte, IWaveFormat> source)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
         public IWaveFormat Format
         {

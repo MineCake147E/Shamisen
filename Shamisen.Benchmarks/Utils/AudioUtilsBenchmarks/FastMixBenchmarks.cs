@@ -50,20 +50,11 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         }
 
         [Benchmark]
-        public void Avx()
-        {
-            AudioUtils.FastMixAvx(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
-        }
+        public void Avx() => AudioUtils.FastMixAvx(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
         [Benchmark]
-        public void Sse()
-        {
-            AudioUtils.FastMixSse(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
-        }
+        public void Sse() => AudioUtils.FastMixSse(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
 
         [Benchmark]
-        public void Standard()
-        {
-            AudioUtils.FastMixStandardFixed(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
-        }
+        public void Standard() => AudioUtils.FastMixStandardFixed(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
     }
 }

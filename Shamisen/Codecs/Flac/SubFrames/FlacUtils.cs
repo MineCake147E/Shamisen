@@ -90,20 +90,20 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             #endregion License notice
 
-            var partitions = 1u << partitionOrder;
-            var partitionSamples = blockSize >> partitionOrder;
+            uint partitions = 1u << partitionOrder;
+            int partitionSamples = blockSize >> partitionOrder;
             byte encodingParameterLength = (byte)(isRice2 ? 5 : 4);
-            var parameterEscape = isRice2 ? 0b11111 : 0b1111;
+            int parameterEscape = isRice2 ? 0b11111 : 0b1111;
             Debug.Assert(partitionOrder > 0 ? partitionSamples >= predictorOrder : blockSize >= predictorOrder);
-            var sample = 0;
+            int sample = 0;
             var bH = buffer;
             for (int partition = 0; partition < partitions; partition++)
             {
-                if (!bitReader.ReadBitsUInt32(encodingParameterLength, out var t)) return false;
-                var riceParameter = (int)t;
+                if (!bitReader.ReadBitsUInt32(encodingParameterLength, out uint t)) return false;
+                int riceParameter = (int)t;
                 if (riceParameter < parameterEscape)
                 {
-                    var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
+                    int u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
                     if (!bitReader.ReadRiceCodes(bH.SliceWhile(u), riceParameter)) return false;
                     bH = bH.Slice(u);
                 }
@@ -111,7 +111,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 {
                     if (!bitReader.ReadBitsUInt32(5, out t)) return false;
                     byte bits = (byte)t;
-                    var u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
+                    int u = partition == 0 ? partitionSamples - predictorOrder : partitionSamples;
                     for (int i = 0; i < u; i++)
                     {
                         if (!bitReader.ReadBitsUInt32(bits, out t)) return false;
@@ -147,16 +147,16 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
             unsafe
             {
-                ref var head = ref MemoryMarshal.GetReference(span);
+                ref int head = ref MemoryMarshal.GetReference(span);
                 nint length = span.Length;
                 nint vlen = length - length % 4;
                 nint i;
                 for (i = 0; i < vlen; i += 4)
                 {
-                    var v0 = Unsafe.Add(ref head, i + 0);
-                    var v1 = Unsafe.Add(ref head, i + 1);
-                    var v2 = Unsafe.Add(ref head, i + 2);
-                    var v3 = Unsafe.Add(ref head, i + 3);
+                    int v0 = Unsafe.Add(ref head, i + 0);
+                    int v1 = Unsafe.Add(ref head, i + 1);
+                    int v2 = Unsafe.Add(ref head, i + 2);
+                    int v3 = Unsafe.Add(ref head, i + 3);
                     v0 <<= shift;
                     v1 <<= shift;
                     v2 <<= shift;
@@ -168,7 +168,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
                 for (; i < length; i++)
                 {
-                    var value = Unsafe.Add(ref head, i);
+                    int value = Unsafe.Add(ref head, i);
                     value <<= shift;
                     Unsafe.Add(ref head, i) = value;
                 }
@@ -193,7 +193,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             if (!AdvSimd.IsSupported) return false;
             unsafe
             {
-                ref var head = ref MemoryMarshal.GetReference(span);
+                ref int head = ref MemoryMarshal.GetReference(span);
                 nint length = span.Length;
                 nint vlen = length - length % Vector128<int>.Count;
                 nint avlen = (vlen - vlen % (8 * Vector128<int>.Count)) * sizeof(int);
@@ -243,7 +243,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
                 for (; i < length; i++)
                 {
-                    var w15 = Unsafe.Add(ref head, i);
+                    int w15 = Unsafe.Add(ref head, i);
                     w15 <<= shift;
                     Unsafe.Add(ref head, i) = w15;
                 }
@@ -275,7 +275,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
             unsafe
             {
-                ref var head = ref MemoryMarshal.GetReference(span);
+                ref int head = ref MemoryMarshal.GetReference(span);
                 nint length = span.Length;
                 nint vlen = length - length % Vector256<int>.Count;
                 nint avlen = (vlen - vlen % (8 * Vector256<int>.Count)) * sizeof(int);
@@ -325,7 +325,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
                 for (; i < length; i++)
                 {
-                    var r15d = Unsafe.Add(ref head, i);
+                    int r15d = Unsafe.Add(ref head, i);
                     r15d <<= shift;
                     Unsafe.Add(ref head, i) = r15d;
                 }
@@ -337,7 +337,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
             unsafe
             {
-                ref var head = ref MemoryMarshal.GetReference(span);
+                ref int head = ref MemoryMarshal.GetReference(span);
                 nint length = span.Length;
                 nint vlen = length - length % Vector128<int>.Count;
                 nint avlen = (vlen - vlen % (8 * Vector128<int>.Count)) * sizeof(int);
@@ -387,7 +387,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
                 for (; i < length; i++)
                 {
-                    var r15d = Unsafe.Add(ref head, i);
+                    int r15d = Unsafe.Add(ref head, i);
                     r15d <<= shift;
                     Unsafe.Add(ref head, i) = r15d;
                 }

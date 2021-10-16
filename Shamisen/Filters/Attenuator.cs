@@ -15,7 +15,10 @@ namespace Shamisen.Filters
         /// </summary>
         /// <param name="source">The source.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public Attenuator(IReadableAudioSource<float, SampleFormat> source) => Source = source ?? throw new ArgumentNullException(nameof(source));
+        public Attenuator(IReadableAudioSource<float, SampleFormat> source)
+        {
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
         /// <inheritdoc/>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
@@ -51,7 +54,7 @@ namespace Shamisen.Filters
         {
             var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
-            var r = rr.Length;
+            int r = rr.Length;
             buffer.Slice(0, r).FastScalarMultiply(Scale);
             return r;
         }

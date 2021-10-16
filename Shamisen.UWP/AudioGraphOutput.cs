@@ -33,7 +33,7 @@ namespace Shamisen.IO
         {
             PlaybackState = PlaybackState.NotInitialized;
             AudioGraph = audioGraph ?? throw new ArgumentNullException(nameof(audioGraph));
-            AudioEncodingProperties nodeEncodingProperties = audioGraph.EncodingProperties;
+            var nodeEncodingProperties = audioGraph.EncodingProperties;
             //nodeEncodingProperties.ChannelCount = Channels;
             frameInputNode = audioGraph.CreateFrameInputNode(nodeEncodingProperties);
             frameInputNode.AddOutgoingConnection(deviceOutputNode);

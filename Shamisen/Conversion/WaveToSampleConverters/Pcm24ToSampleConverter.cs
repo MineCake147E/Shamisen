@@ -1,9 +1,9 @@
-﻿using Shamisen.Utils;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using Shamisen.Utils;
 
 namespace Shamisen.Conversion.WaveToSampleConverters
 {
@@ -102,7 +102,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            Span<Int24> span = readBuffer.Span;
+            var span = readBuffer.Span;
             var cursor = buffer;
             while (cursor.Length > 0)
             {
@@ -117,8 +117,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
+                {
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
+                }
+
                 if (IsEndiannessConversionRequired)
                 {
                     for (int i = 0; i < wrote.Length && i < dest.Length; i++)

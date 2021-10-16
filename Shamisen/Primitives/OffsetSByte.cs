@@ -210,7 +210,7 @@ namespace Shamisen
         /// </returns>
         public static bool TryParse(string s, out OffsetSByte result)
         {
-            var g = sbyte.TryParse(s, out var b);
+            bool g = sbyte.TryParse(s, out sbyte b);
             result = new OffsetSByte(b);
             return g;
         }

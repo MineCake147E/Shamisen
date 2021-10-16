@@ -3,12 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shamisen.Filters
 {

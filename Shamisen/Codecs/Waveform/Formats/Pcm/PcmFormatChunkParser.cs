@@ -27,23 +27,23 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
             ChunkId = source.ChunkId;
             ChunkLength = source.TotalSize;
             //Data for formatTag is already consumed by IChunkParserFactory.
-            var nCh = source.ReadUInt16LittleEndian();
-            var nSampleRate = source.ReadUInt32LittleEndian();
-            var nByteRate = source.ReadUInt32LittleEndian();
-            var nBlockAlign = source.ReadUInt16LittleEndian();
-            var nBitDepth = source.ReadUInt16LittleEndian();
+            ushort nCh = source.ReadUInt16LittleEndian();
+            uint nSampleRate = source.ReadUInt32LittleEndian();
+            uint nByteRate = source.ReadUInt32LittleEndian();
+            ushort nBlockAlign = source.ReadUInt16LittleEndian();
+            ushort nBitDepth = source.ReadUInt16LittleEndian();
             var standardWaveFormat = new StandardWaveFormat(encoding, nCh, nSampleRate, nByteRate, nBlockAlign, nBitDepth);
             if (source.RemainingBytes >= 2)
             {
-                var cbSize = source.ReadUInt16LittleEndian();
+                ushort cbSize = source.ReadUInt16LittleEndian();
                 if (cbSize > 0)  //When the format is LPCM, the cbSize must be 0 or 22
                 {
-                    var validBitsPerSample = source.ReadUInt16LittleEndian();
+                    ushort validBitsPerSample = source.ReadUInt16LittleEndian();
                     var channelMask = (Speakers)source.ReadUInt32LittleEndian();
-                    Guid guid = source.ReadStruct<Guid>();
+                    var guid = source.ReadStruct<Guid>();
                     if (source.RemainingBytes > 0)
                     {
-                        var bytes = new byte[source.RemainingBytes];
+                        byte[]? bytes = new byte[source.RemainingBytes];
                         source.ReadAll(bytes.AsSpan());
                         Data = new ExtensibleWaveFormat(standardWaveFormat, cbSize, validBitsPerSample, channelMask, guid, bytes.AsMemory());
                         return;

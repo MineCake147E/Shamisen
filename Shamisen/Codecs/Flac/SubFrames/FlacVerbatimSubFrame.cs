@@ -46,7 +46,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             var vs = values.Span;
             for (int i = 0; i < vs.Length; i++)
             {
-                if (!bitReader.ReadBitsInt32(bitsPerSample, out var result)) throw new FlacException("Invalid FLAC Stream!", bitReader);
+                if (!bitReader.ReadBitsInt32(bitsPerSample, out int result)) throw new FlacException("Invalid FLAC Stream!", bitReader);
                 vs[i] = result << wastedBits;
             }
         }

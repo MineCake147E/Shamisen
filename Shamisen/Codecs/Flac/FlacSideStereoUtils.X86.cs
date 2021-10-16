@@ -29,7 +29,7 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                int min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                 buffer = buffer.SliceWhileIfLongerThan(min * 2);
                 left = left.SliceWhileIfLongerThan(min);
                 right = right.SliceWhileIfLongerThan(min);
@@ -49,11 +49,11 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                ref var rL = ref MemoryMarshal.GetReference(left);
-                ref var rR = ref MemoryMarshal.GetReference(right);
-                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                ref int rL = ref MemoryMarshal.GetReference(left);
+                ref int rR = ref MemoryMarshal.GetReference(right);
+                ref int rB = ref MemoryMarshal.GetReference(buffer);
                 nint i = 0, length = left.Length;
-                var olen = length - 31;
+                nint olen = length - 31;
                 for (; i < olen; i += 32)
                 {
                     var ymm0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i));
@@ -130,9 +130,9 @@ namespace Shamisen.Codecs.Flac
                 }
                 for (; i < length; i += 1)
                 {
-                    var a = Unsafe.Add(ref rL, i);
+                    int a = Unsafe.Add(ref rL, i);
                     Unsafe.Add(ref rB, i * 2) = a;
-                    var b = Unsafe.Add(ref rR, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
                 }
             }
@@ -141,11 +141,11 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                ref var rL = ref MemoryMarshal.GetReference(left);
-                ref var rR = ref MemoryMarshal.GetReference(right);
-                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                ref int rL = ref MemoryMarshal.GetReference(left);
+                ref int rR = ref MemoryMarshal.GetReference(right);
+                ref int rB = ref MemoryMarshal.GetReference(buffer);
                 nint i = 0, length = left.Length;
-                var olen = length - 7;
+                nint olen = length - 7;
                 for (; i < olen; i += 8)
                 {
                     var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
@@ -172,9 +172,9 @@ namespace Shamisen.Codecs.Flac
                 olen = length - 1;
                 for (; i < olen; i += 2)
                 {
-                    var a = Unsafe.Add(ref rL, i);
+                    int a = Unsafe.Add(ref rL, i);
                     Unsafe.Add(ref rB, i * 2) = a;
-                    var b = Unsafe.Add(ref rR, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
                     a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 2) = a;
@@ -183,9 +183,9 @@ namespace Shamisen.Codecs.Flac
                 }
                 for (; i < length; i += 1)
                 {
-                    var a = Unsafe.Add(ref rL, i);
+                    int a = Unsafe.Add(ref rL, i);
                     Unsafe.Add(ref rB, i * 2) = a;
-                    var b = Unsafe.Add(ref rR, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = a - b;
                 }
             }
@@ -196,7 +196,7 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                int min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                 buffer = buffer.SliceWhileIfLongerThan(min * 2);
                 left = left.SliceWhileIfLongerThan(min);
                 right = right.SliceWhileIfLongerThan(min);
@@ -216,11 +216,11 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                ref var rL = ref MemoryMarshal.GetReference(left);
-                ref var rR = ref MemoryMarshal.GetReference(right);
-                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                ref int rL = ref MemoryMarshal.GetReference(left);
+                ref int rR = ref MemoryMarshal.GetReference(right);
+                ref int rB = ref MemoryMarshal.GetReference(buffer);
                 nint i = 0, length = left.Length;
-                var olen = length - 31;
+                nint olen = length - 31;
                 for (; i < olen; i += 32)
                 {
                     var ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rR, i));
@@ -297,8 +297,8 @@ namespace Shamisen.Codecs.Flac
                 }
                 for (; i < length; i += 1)
                 {
-                    var a = Unsafe.Add(ref rL, i);
-                    var b = Unsafe.Add(ref rR, i);
+                    int a = Unsafe.Add(ref rL, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref rB, i * 2) = a + b;
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
                 }
@@ -307,11 +307,11 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveRightSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                ref var rL = ref MemoryMarshal.GetReference(left);
-                ref var rR = ref MemoryMarshal.GetReference(right);
-                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                ref int rL = ref MemoryMarshal.GetReference(left);
+                ref int rR = ref MemoryMarshal.GetReference(right);
+                ref int rB = ref MemoryMarshal.GetReference(buffer);
                 nint i = 0, length = left.Length;
-                var olen = length - 7;
+                nint olen = length - 7;
                 for (; i < olen; i += 8)
                 {
                     var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<int, ulong>(ref Unsafe.Add(ref rL, i))).AsInt32();
@@ -338,8 +338,8 @@ namespace Shamisen.Codecs.Flac
                 olen = length - 1;
                 for (; i < olen; i += 2)
                 {
-                    var a = Unsafe.Add(ref rL, i);
-                    var b = Unsafe.Add(ref rR, i);
+                    int a = Unsafe.Add(ref rL, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref rB, i * 2) = a + b;
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
                     a = Unsafe.Add(ref Unsafe.Add(ref rL, i), 1);
@@ -349,8 +349,8 @@ namespace Shamisen.Codecs.Flac
                 }
                 for (; i < length; i += 1)
                 {
-                    var a = Unsafe.Add(ref rL, i);
-                    var b = Unsafe.Add(ref rR, i);
+                    int a = Unsafe.Add(ref rL, i);
+                    int b = Unsafe.Add(ref rR, i);
                     Unsafe.Add(ref rB, i * 2) = a + b;
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 1) = b;
                 }
@@ -363,7 +363,7 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveMidSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                int min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                 buffer = buffer.SliceWhileIfLongerThan(min * 2);
                 left = left.SliceWhileIfLongerThan(min);
                 right = right.SliceWhileIfLongerThan(min);
@@ -378,12 +378,12 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveMidSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                ref var rL = ref MemoryMarshal.GetReference(left);
-                ref var rR = ref MemoryMarshal.GetReference(right);
-                ref var rB = ref MemoryMarshal.GetReference(buffer);
+                ref int rL = ref MemoryMarshal.GetReference(left);
+                ref int rR = ref MemoryMarshal.GetReference(right);
+                ref int rB = ref MemoryMarshal.GetReference(buffer);
                 var ymm0 = Vector256.Create(1);
                 nint i = 0, length = left.Length;
-                var olen = length - 15;
+                nint olen = length - 15;
                 for (; i < olen; i += 16)
                 {
                     var ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rL, i));
@@ -420,8 +420,8 @@ namespace Shamisen.Codecs.Flac
                 olen = length - 1;
                 for (; i < olen; i += 2)
                 {
-                    var a = Unsafe.Add(ref rL, i);
-                    var b = Unsafe.Add(ref rR, i);
+                    int a = Unsafe.Add(ref rL, i);
+                    int b = Unsafe.Add(ref rR, i);
                     a <<= 1;
                     a |= b & 1;
                     Unsafe.Add(ref Unsafe.Add(ref rB, i * 2), 0) = (a + b) >> 1;
@@ -435,8 +435,8 @@ namespace Shamisen.Codecs.Flac
                 }
                 for (; i < length; i += 1)
                 {
-                    var a = Unsafe.Add(ref rL, i);
-                    var b = Unsafe.Add(ref rR, i);
+                    int a = Unsafe.Add(ref rL, i);
+                    int b = Unsafe.Add(ref rR, i);
                     a <<= 1;
                     a |= b & 1;
                     Unsafe.Add(ref rB, i * 2) = (a + b) >> 1;

@@ -10,15 +10,18 @@ namespace Shamisen.Benchmarks
     {
         private bool disposedValue;
 
-        public DummySourceCSCore(CSCore.WaveFormat waveFormat) => WaveFormat = waveFormat ?? throw new ArgumentNullException(nameof(waveFormat));
+        public DummySourceCSCore(CSCore.WaveFormat waveFormat)
+        {
+            WaveFormat = waveFormat ?? throw new ArgumentNullException(nameof(waveFormat));
+        }
 
-        public bool CanSeek { get => false; }
+        public bool CanSeek => false;
 
         public CSCore.WaveFormat WaveFormat { get; }
 
         public long Position { get => 0; set => _ = value; }
 
-        public long Length { get => 0; }
+        public long Length => 0;
 
         public int Read(byte[] buffer, int offset, int count) => count;
 

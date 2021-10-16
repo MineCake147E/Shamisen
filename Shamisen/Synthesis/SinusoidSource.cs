@@ -53,10 +53,10 @@ namespace Shamisen.Synthesis
         public Fixed64 AngularVelocity { get; set; }
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport { get => null; }
+        public ISkipSupport? SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport { get => null; }
+        public ISeekSupport? SeekSupport => null;
 
         ulong? IAudioSource<float, SampleFormat>.Length => null;
 
@@ -67,7 +67,7 @@ namespace Shamisen.Synthesis
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
-            var channels = Format.Channels;
+            int channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var omega = AngularVelocity;
             var theta = Theta;
@@ -107,24 +107,24 @@ namespace Shamisen.Synthesis
             return theta;
         }
 #if NETCOREAPP3_1_OR_GREATER
-        const double PiSquared = Math.PI * Math.PI;
-        const double C0d = Math.PI;
-        const double C1d = C0d / 2 / 3 * PiSquared;
-        const double C2d = C1d / 4 / 5 * PiSquared;
-        const double C3d = C2d / 6 / 7 * PiSquared;
-        const double C4d = C3d / 8 / 9 * PiSquared;
-        const double C5d = C4d / 10 / 11 * PiSquared;
-        const float C0 = (float)C0d;
-        const float C1 = (float)C1d;
-        const float C2 = (float)C2d;
-        const float C3 = (float)C3d;
-        const float C4 = (float)C4d;
-        const float C5 = (float)C5d;
+        private const double PiSquared = Math.PI * Math.PI;
+        private const double C0d = Math.PI;
+        private const double C1d = C0d / 2 / 3 * PiSquared;
+        private const double C2d = C1d / 4 / 5 * PiSquared;
+        private const double C3d = C2d / 6 / 7 * PiSquared;
+        private const double C4d = C3d / 8 / 9 * PiSquared;
+        private const double C5d = C4d / 10 / 11 * PiSquared;
+        private const float C0 = (float)C0d;
+        private const float C1 = (float)C1d;
+        private const float C2 = (float)C2d;
+        private const float C3 = (float)C3d;
+        private const float C4 = (float)C4d;
+        private const float C5 = (float)C5d;
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2FmaMM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            var t = theta.Value;
-            var o = omega.Value;
+            long t = theta.Value;
+            long o = omega.Value;
             var ymm2 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm2.GetLower());
@@ -143,9 +143,9 @@ namespace Shamisen.Synthesis
             var ymm9 = Vector256.Create(-C1);
             var ymm8 = Vector256.Create(C0);
             //TODO: AdvSimd, Avx2FmaMM, and Sse42 variant
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            var olen = length - 7;
+            nint olen = length - 7;
             for (; i < olen; i += 8)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsUInt32();
@@ -216,8 +216,8 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            var t = theta.Value;
-            var o = omega.Value;
+            long t = theta.Value;
+            long o = omega.Value;
             var ymm2 = Vector256.Create(o * 8);
             var ymm0 = Vector256.Create(t);
             var ymm1 = Vector256.Create(t + o * 2);
@@ -233,9 +233,9 @@ namespace Shamisen.Synthesis
             var ymm9 = Vector256.Create(-C1);
             var ymm8 = Vector256.Create(C0);
 
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            var olen = length - 7;
+            nint olen = length - 7;
             for (; i < olen; i += 8)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsUInt32();

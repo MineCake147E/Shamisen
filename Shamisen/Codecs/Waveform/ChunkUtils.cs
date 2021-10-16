@@ -72,7 +72,7 @@ namespace Shamisen.Codecs.Waveform
         public static bool IsJunkChunk(this ChunkId chunkId)
         {
             //UPPER to lower conversion
-            var ckid = (uint)chunkId | 0x2020_2020u;
+            uint ckid = (uint)chunkId | 0x2020_2020u;
             return (ChunkId)ckid == ChunkId.JunkSmall;
         }
     }

@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
+using CSCore.DSP;
+
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Synthesis;
-using CSCore.DSP;
 
 namespace Shamisen.Benchmarks
 {

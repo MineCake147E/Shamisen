@@ -162,7 +162,7 @@ namespace Shamisen
         {
             unsafe
             {
-                ref var q = ref MemoryMarshal.GetReference(span);
+                ref int q = ref MemoryMarshal.GetReference(span);
                 for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
                 {
                     Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
@@ -330,7 +330,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessAdvSimd(Span<ulong> span)
         {
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref ulong rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 3; i += 4)
             {
@@ -349,7 +349,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessAdvSimdArm64(Span<ulong> span)
         {
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref ulong rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             unsafe
             {
@@ -408,7 +408,7 @@ namespace Shamisen
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
             var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
             var mask256 = Vector256.Create(mask, mask);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref ulong rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 31; i += 32)
             {
@@ -457,7 +457,7 @@ namespace Shamisen
         {
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
             var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref ulong rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 15; i += 16)
             {
@@ -506,12 +506,12 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessFallback(Span<ulong> span)
         {
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref ulong rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 7; i += 8)
             {
-                var x0 = Unsafe.Add(ref rdi, i + 0);
-                var x1 = Unsafe.Add(ref rdi, i + 1);
+                ulong x0 = Unsafe.Add(ref rdi, i + 0);
+                ulong x1 = Unsafe.Add(ref rdi, i + 1);
                 Unsafe.Add(ref rdi, i + 0) = BinaryPrimitives.ReverseEndianness(x0);
                 Unsafe.Add(ref rdi, i + 1) = BinaryPrimitives.ReverseEndianness(x1);
                 x0 = Unsafe.Add(ref rdi, i + 2);

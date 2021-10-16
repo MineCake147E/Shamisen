@@ -39,7 +39,7 @@ namespace Shamisen.Core.Tests.CoreFx
             //{
             //    buffer = buffer.SliceWhile((int)(memory.Length - memory.Position));
             //}
-            var h = memory.Read(buffer);
+            int h = memory.Read(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 
@@ -49,7 +49,7 @@ namespace Shamisen.Core.Tests.CoreFx
             //{
             //    buffer = buffer.Slice((int)(memory.Length - memory.Position));
             //}
-            var h = await memory.ReadAsync(buffer);
+            int h = await memory.ReadAsync(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 

@@ -93,7 +93,7 @@ namespace Shamisen.Core.Tests.CoreFx
             Format = format;
             theta = new double[format.Channels];
             SamplingFrequencyInverse = 1.0 / format.SampleRate;
-            var y = 0.0;
+            double y = 0.0;
             double q = Math.Tau / format.Channels;
             for (int i = 0; i < theta.Length; i++)
             {
@@ -109,10 +109,10 @@ namespace Shamisen.Core.Tests.CoreFx
         /// <returns></returns>
         public ReadResult Read(Span<float> buffer)
         {
-            var channels = Format.Channels;
+            int channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            var omega = Omega;
-            var t = theta;
+            double omega = Omega;
+            double[] t = theta;
             for (int i = 0; i < buffer.Length; i += channels)
             {
                 for (int ch = 0; ch < channels; ch++)

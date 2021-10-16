@@ -23,7 +23,10 @@ namespace Shamisen.Data
         /// </summary>
         /// <param name="source">The source.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public SampleDataSource(IReadableAudioSource<TSample, TFormat> source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
+        public SampleDataSource(IReadableAudioSource<TSample, TFormat> source)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
         /// <summary>
         /// Gets the remaining length of the <see cref="IDataSource{TSample}"/> in number of <typeparamref name="TSample"/>.<br/>

@@ -30,7 +30,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 byte al;
-                Span<byte> span = new Span<byte>(&al, sizeof(byte));
+                var span = new Span<byte>(&al, sizeof(byte));
                 dataReader.CheckRead(span);
                 return al;
             }
@@ -47,7 +47,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 sbyte al;
-                Span<byte> span = new Span<byte>(&al, sizeof(sbyte));
+                var span = new Span<byte>(&al, sizeof(sbyte));
                 dataReader.CheckRead(span);
                 return al;
             }
@@ -68,7 +68,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 ushort ax;
-                Span<byte> span = new Span<byte>(&ax, sizeof(ushort));
+                var span = new Span<byte>(&ax, sizeof(ushort));
                 dataReader.CheckRead(span);
                 return ax;
             }
@@ -85,7 +85,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 ushort rawUInt16;
-                Span<byte> span = new Span<byte>(&rawUInt16, sizeof(ushort));
+                var span = new Span<byte>(&rawUInt16, sizeof(ushort));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawUInt16);
             }
@@ -102,7 +102,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 short rawInt16;
-                Span<byte> span = new Span<byte>(&rawInt16, sizeof(short));
+                var span = new Span<byte>(&rawInt16, sizeof(short));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToLittleEndian(rawInt16);
             }
@@ -119,7 +119,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 short rawInt16;
-                Span<byte> span = new Span<byte>(&rawInt16, sizeof(short));
+                var span = new Span<byte>(&rawInt16, sizeof(short));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawInt16);
             }
@@ -140,7 +140,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 uint rawUInt32;
-                Span<byte> span = new Span<byte>(&rawUInt32, sizeof(uint));
+                var span = new Span<byte>(&rawUInt32, sizeof(uint));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToLittleEndian(rawUInt32);
             }
@@ -157,7 +157,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 uint rawUInt32;
-                Span<byte> span = new Span<byte>(&rawUInt32, sizeof(uint));
+                var span = new Span<byte>(&rawUInt32, sizeof(uint));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawUInt32);
             }
@@ -174,7 +174,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 int rawInt32;
-                Span<byte> span = new Span<byte>(&rawInt32, sizeof(int));
+                var span = new Span<byte>(&rawInt32, sizeof(int));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToLittleEndian(rawInt32);
             }
@@ -191,7 +191,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 int rawInt32;
-                Span<byte> span = new Span<byte>(&rawInt32, sizeof(int));
+                var span = new Span<byte>(&rawInt32, sizeof(int));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawInt32);
             }
@@ -212,7 +212,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 ulong rawUInt64;
-                Span<byte> span = new Span<byte>(&rawUInt64, sizeof(ulong));
+                var span = new Span<byte>(&rawUInt64, sizeof(ulong));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToLittleEndian(rawUInt64);
             }
@@ -229,7 +229,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 ulong rawUInt64;
-                Span<byte> span = new Span<byte>(&rawUInt64, sizeof(ulong));
+                var span = new Span<byte>(&rawUInt64, sizeof(ulong));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawUInt64);
             }
@@ -246,7 +246,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 long rawInt64;
-                Span<byte> span = new Span<byte>(&rawInt64, sizeof(long));
+                var span = new Span<byte>(&rawInt64, sizeof(long));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToLittleEndian(rawInt64);
             }
@@ -263,7 +263,7 @@ namespace Shamisen.Data.Binary
             unsafe
             {
                 long rawInt64;
-                Span<byte> span = new Span<byte>(&rawInt64, sizeof(long));
+                var span = new Span<byte>(&rawInt64, sizeof(long));
                 dataReader.CheckRead(span);
                 return BinaryExtensions.ConvertToBigEndian(rawInt64);
             }

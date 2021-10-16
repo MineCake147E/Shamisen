@@ -21,7 +21,10 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// Initializes a new instance of the <see cref="BinaryContent"/> struct.
         /// </summary>
         /// <param name="binaryObject">The binary object.</param>
-        public BinaryContent(Memory<byte> binaryObject) => BinaryObject = binaryObject;
+        public BinaryContent(Memory<byte> binaryObject)
+        {
+            BinaryObject = binaryObject;
+        }
 
         /// <summary>
         /// Gets the size.

@@ -62,7 +62,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var mds = new MemoryDataSource(ms))
                 using (var reader = new FlacBitReader(mds))
                 {
-                    var read = reader.ReadBitsUInt64(bits);
+                    ulong? read = reader.ReadBitsUInt64(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -82,7 +82,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt32(bitsFirst);
-                    var read = reader.ReadBitsUInt32(bitsSecond);
+                    uint? read = reader.ReadBitsUInt32(bitsSecond);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -103,7 +103,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt64(64);
-                    var read = reader.ReadBitsUInt32(bits);
+                    uint? read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -126,7 +126,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt64((byte)(64 - bhalf));
-                    var read = reader.ReadBitsUInt32(bits);
+                    uint? read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -151,7 +151,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                     _ = reader.ReadBitsUInt64((byte)(64 - bhalf));
                     Assert.AreEqual((64 - bhalf) % 64, reader.ConsumedBits, "ConsumedBits is different at first read!");
                     Assert.AreEqual((64 - bhalf) / 64, reader.ConsumedWords, "ConsumedWords is different at first read!");
-                    var read = reader.ReadBitsUInt32(bits);
+                    uint? read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(bits - bhalf, reader.ConsumedBits, "ConsumedBits is different at second read!");
                     Assert.AreEqual(1, reader.ConsumedWords, "ConsumedWords is different at second read!");
                     Assert.AreEqual(expected, read);
@@ -175,7 +175,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             uint expected = bits;
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            var flag = reader.ReadUnaryUnsigned(out var read);
+            bool flag = reader.ReadUnaryUnsigned(out uint read);
             Assert.IsTrue(flag);
             Assert.AreEqual(expected, read);
         }
@@ -236,8 +236,8 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            var m = new int[values.Length];
-            var rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            int[] m = new int[values.Length];
+            bool rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr);
             Assert.Multiple(() =>
             {
@@ -255,13 +255,13 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             Span<byte> w = stackalloc byte[sizeof(ulong)];
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
             dc.Write(w);
-            var rdata = BinaryPrimitives.ReverseEndianness(data);
+            ulong rdata = BinaryPrimitives.ReverseEndianness(data);
             rdata = ((rdata << 4) & 0xf0f0_f0f0_f0f0_f0f0ul) | ((rdata >> 4) & 0x0f0f_0f0f_0f0f_0f0ful);
             BinaryPrimitives.WriteUInt64BigEndian(w, rdata);
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            var m = new int[values.Length];
-            var rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            int[] m = new int[values.Length];
+            bool rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr);
             Assert.Multiple(() =>
             {
@@ -270,7 +270,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                     Assert.AreEqual(values[i], m[i], $"Decoding {i}th data from {data:X} with parameter {parameter}");
                 }
             });
-            var rr2 = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            bool rr2 = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr2);
             Assert.Multiple(() =>
             {
@@ -291,7 +291,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             var sr = new StreamReader(ms, Encoding.UTF8);
             while (true)
             {
-                var f = sr.ReadLine();
+                string f = sr.ReadLine();
                 if (f is not null)
                 {
                     yield return new TestCaseData(f);
@@ -304,7 +304,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         [TestCaseSource(nameof(Utf8TestCaseGenerator))]
         public void ReadUtf8UInt32ReadsCorrectly(string data)
         {
-            var t = Encoding.UTF8.GetBytes(data);
+            byte[] t = Encoding.UTF8.GetBytes(data);
             using var dc = new DataCache<byte>();
             dc.Write(t);
             using var reader = new FlacBitReader(dc);
@@ -312,7 +312,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             {
                 foreach (var item in data.EnumerateRunes())
                 {
-                    var read = reader.ReadUtf8UInt32(out uint value, default, out int br);
+                    bool read = reader.ReadUtf8UInt32(out uint value, default, out int br);
                     Assert.IsTrue(read);
                     Assert.AreEqual(item.Value, (int)value);
                 }
@@ -322,7 +322,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         [TestCaseSource(nameof(Utf8TestCaseGenerator))]
         public void ReadUtf8UInt64ReadsCorrectly(string data)
         {
-            var t = Encoding.UTF8.GetBytes(data);
+            byte[] t = Encoding.UTF8.GetBytes(data);
             using var dc = new DataCache<byte>();
             dc.Write(t);
             using var reader = new FlacBitReader(dc);
@@ -330,7 +330,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             {
                 foreach (var item in data.EnumerateRunes())
                 {
-                    var read = reader.ReadUtf8UInt64(out var value, default, out int br);
+                    bool read = reader.ReadUtf8UInt64(out ulong value, default, out int br);
                     Assert.IsTrue(read);
                     Assert.AreEqual(item.Value, (int)value);
                 }

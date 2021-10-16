@@ -12,8 +12,8 @@ namespace Shamisen.Pipeline
     /// Constructs a new instance of certain <see cref="IAudioPipelineProducer{TSample, TFormat}"/>.
     /// </summary>
     public interface IAudipPipelineProducerFactory<out TProducer, TSample, TFormat>
-        where TProducer: IAudioPipelineProducer<TSample, TFormat>
-        where TSample: unmanaged
+        where TProducer : IAudioPipelineProducer<TSample, TFormat>
+        where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
         /// <summary>

@@ -81,7 +81,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
             t.Stop();
-            var duration = (double)wav.TotalLength / wav.Format.SampleRate;
+            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
             Assert.AreEqual(size * sizeof(int), rr.Length);
             Assert.AreEqual(rw.Length / 3, rr.Length / sizeof(int));
@@ -89,7 +89,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             Assert.Multiple(() =>
             {
                 t.Restart();
-                var err = 0ul;
+                ulong err = 0ul;
                 var sw = dataW.Span;
                 var sf = dataF.Span;
                 for (int i = 0; i < sw.Length; i++)
@@ -134,7 +134,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
             var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
             t.Stop();
-            var duration = (double)wav.TotalLength / wav.Format.SampleRate;
+            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
             Assert.AreEqual(size * sizeof(int), rr.Length);
             t.Restart();
@@ -146,7 +146,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             Assert.Multiple(() =>
             {
                 t.Restart();
-                var err = 0ul;
+                ulong err = 0ul;
                 var sw = dataW.Span;
                 var sf = dataF.Span;
                 for (int i = 0; i < sw.Length; i++)

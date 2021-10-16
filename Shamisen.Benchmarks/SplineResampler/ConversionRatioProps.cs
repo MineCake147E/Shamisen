@@ -31,20 +31,11 @@ namespace Shamisen.Benchmarks
 
         public static implicit operator ConversionRatioProps((int before, int after, string strategy) value) => new ConversionRatioProps(value.before, value.after, value.strategy);
 
-        public static bool operator ==(ConversionRatioProps left, ConversionRatioProps right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(ConversionRatioProps left, ConversionRatioProps right) => left.Equals(right);
 
-        public static bool operator !=(ConversionRatioProps left, ConversionRatioProps right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(ConversionRatioProps left, ConversionRatioProps right) => !(left == right);
 
-        private string GetDebuggerDisplay()
-        {
-            return $"{Before} -> {After} ({Strategy})";
-        }
+        private string GetDebuggerDisplay() => $"{Before} -> {After} ({Strategy})";
 
         public override string ToString() => GetDebuggerDisplay();
     }

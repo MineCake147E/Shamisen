@@ -35,16 +35,16 @@ namespace Shamisen.Benchmarks
         {
             try
             {
-                var nf = FrameSelector?.Invoke(benchmarkCase);
-                var ndst = SampleRateSelector?.Invoke(benchmarkCase);
-                var playbackTime = (double)nf / ndst * 1.0E9f;
+                int? nf = FrameSelector?.Invoke(benchmarkCase);
+                int? ndst = SampleRateSelector?.Invoke(benchmarkCase);
+                double? playbackTime = (double)nf / ndst * 1.0E9f;
                 double mean = summary[benchmarkCase].ResultStatistics.Mean;
-                var speed = playbackTime / mean;
+                double? speed = playbackTime / mean;
                 return $"{speed}";
             }
             catch (Exception ex)
             {
-                foreach (var item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
+                foreach (string item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
                 {
                     Console.WriteLine(item);
                 }

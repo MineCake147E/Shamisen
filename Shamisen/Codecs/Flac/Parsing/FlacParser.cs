@@ -129,7 +129,7 @@ namespace Shamisen.Codecs.Flac
         public FlacParser(IReadableDataSource<byte> source, FlacParserOptions options = default)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            var fLaC = source.ReadUInt32LittleEndian();
+            uint fLaC = source.ReadUInt32LittleEndian();
             if (fLaC != BinaryExtensions.ConvertToBigEndian(0x664C_6143))
                 throw new ArgumentException("The FLAC Stream is invalid!", nameof(source));
             var streamInfoHeader = ReadMetadataHeader(source);
@@ -151,21 +151,21 @@ namespace Shamisen.Codecs.Flac
                     case FlacMetadataBlockType.Application when options.PreserveApplication:
                         {
                             var h = source.ReadStruct<VectorB4>();
-                            var u = new byte[currentHeader.Size - 4];
+                            byte[]? u = new byte[currentHeader.Size - 4];
                             source.ReadAll(u);
                             appl.Add(new FlacApplicationMetadata(h, u));
                         }
                         break;
                     case FlacMetadataBlockType.Picture when options.ParsePictures:
                         {
-                            var u = new byte[currentHeader.Size];
+                            byte[]? u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             pics.Add(FlacPicture.ReadFrom(u));
                         }
                         break;
                     case FlacMetadataBlockType.Padding when options.PreservePadding:
                         {
-                            var u = new byte[currentHeader.Size];
+                            byte[]? u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             unused.Add(new FlacUnusedMetadata(currentHeader.MetadataBlockType, u));
                         }
@@ -188,7 +188,7 @@ namespace Shamisen.Codecs.Flac
                     default:    //Reserved
                         if (options.PreserveUnusedMetadata && currentHeader.MetadataBlockType != FlacMetadataBlockType.Padding)
                         {
-                            var u = new byte[currentHeader.Size];
+                            byte[]? u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             unused.Add(new FlacUnusedMetadata(currentHeader.MetadataBlockType, u));
                         }

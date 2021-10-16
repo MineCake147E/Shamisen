@@ -19,7 +19,10 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Initializes a new instance of the <see cref="FlacCrc8"/> struct.
         /// </summary>
         /// <param name="state">The state.</param>
-        public FlacCrc8(byte state) => this.state = state;
+        public FlacCrc8(byte state)
+        {
+            this.state = state;
+        }
 
         /// <summary>
         /// Gets the state.

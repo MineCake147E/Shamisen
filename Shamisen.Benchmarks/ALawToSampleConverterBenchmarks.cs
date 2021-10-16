@@ -28,10 +28,7 @@ namespace Shamisen.Benchmarks
         public int Channels { get; set; }
 
         [GlobalSetup]
-        public void Setup()
-        {
-            buffer = new float[Frames * Channels];
-        }
+        public void Setup() => buffer = new float[Frames * Channels];
 
         [Benchmark]
         public void Avx2M2()
@@ -69,9 +66,6 @@ namespace Shamisen.Benchmarks
         }
 
         [GlobalCleanup]
-        public void Cleanup()
-        {
-            buffer = null;
-        }
+        public void Cleanup() => buffer = null;
     }
 }

@@ -164,8 +164,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalStandard(Span<float> buffer, ReadOnlySpan<short> source)
         {
             Vector<float> mul = new(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref short rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             int size = Vector<float>.Count;
             int sizeEpi16 = Vector<short>.Count;
@@ -210,9 +210,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalAvx2(Span<float> buffer, ReadOnlySpan<short> source)
         {
-            Vector256<float> mul = Vector256.Create(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref MemoryMarshal.GetReference(source);
+            var mul = Vector256.Create(Multiplier);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref short rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -270,9 +270,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalSse41(Span<float> buffer, ReadOnlySpan<short> source)
         {
-            Vector128<float> mul = Vector128.Create(Multiplier);
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref MemoryMarshal.GetReference(source);
+            var mul = Vector128.Create(Multiplier);
+            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref short rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             //Loop for Haswell in 128-bit AVX for better frequency behaviour
             for (i = 0; i < length - 31; i += 32)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Shamisen
@@ -44,7 +44,7 @@ namespace Shamisen
         /// <value>
         ///   <c>true</c> if this <see cref="Length"/> is infinity; otherwise, <c>false</c>.
         /// </value>
-        public bool IsInfinity { get => Length == ulong.MaxValue; }
+        public bool IsInfinity => Length == ulong.MaxValue;
 
         /// <summary>
         /// Casts the size value of this instance.

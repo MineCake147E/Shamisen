@@ -34,7 +34,7 @@ namespace Shamisen.Core.Tests.CoreFx
         public void QuickFillFillsCorrectlyInt24()
         {
             Span<Int24> span = new Int24[699049];
-            Int24 Value = new Int24(unchecked((int)0x8076_5432));
+            var Value = new Int24(unchecked((int)0x8076_5432));
             span.QuickFill(Value);
             for (int i = 0; i < span.Length; i++)
             {
@@ -50,7 +50,7 @@ namespace Shamisen.Core.Tests.CoreFx
         public void FastFillFillsCorrectlyByte()
         {
             Span<byte> span = new byte[2097151];
-            const byte Value = (byte)0x55;
+            const byte Value = 0x55;
             span.FastFill(Value);
             for (int i = 0; i < span.Length; i++)
             {
@@ -63,7 +63,7 @@ namespace Shamisen.Core.Tests.CoreFx
         public void FastFillFillsCorrectlyInt16()
         {
             Span<short> span = new short[1048575];
-            const short Value = (short)0x55aa;
+            const short Value = 0x55aa;
             span.FastFill(Value);
             for (int i = 0; i < span.Length; i++)
             {

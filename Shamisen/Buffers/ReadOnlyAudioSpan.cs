@@ -120,7 +120,7 @@ namespace Shamisen
         /// <value>
         /// An empty <see cref="ReadOnlyAudioSpan{TSample, TFormat}"/> object.
         /// </value>
-        public static ReadOnlyAudioSpan<TSample, TFormat> Empty { get => default; }
+        public static ReadOnlyAudioSpan<TSample, TFormat> Empty => default;
 
         #endregion Static fields
 

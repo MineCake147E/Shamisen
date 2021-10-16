@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace Shamisen.Data
 {
@@ -89,7 +89,7 @@ namespace Shamisen.Data
         /// <returns>The number of <see cref="byte"/>s read from this <see cref="IDataSource{TSample}"/>.</returns>
         public ReadResult Read(Span<byte> buffer)
         {
-            var rr = source.Read(buffer);
+            int rr = source.Read(buffer);
             return rr < 1 ? ReadResult.EndOfStream : rr;
         }
 

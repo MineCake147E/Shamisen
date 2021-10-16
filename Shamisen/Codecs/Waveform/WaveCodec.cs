@@ -41,10 +41,7 @@ namespace Shamisen.Codecs.Waveform
         /// success: The value which indicates whether the data is decodable, and the decoder is created.
         /// decoder: The decoding <see cref="IWaveSource" />.
         /// </returns>
-        public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource<byte> dataSource)
-        {
-            throw new NotImplementedException();
-            /*var v = await CheckHeadersAsync(dataSource);
+        public async ValueTask<(bool success, IWaveSource decoder)> TryCreateDecoderAsync(IDataSource<byte> dataSource) => throw new NotImplementedException();/*var v = await CheckHeadersAsync(dataSource);
             if (v.Item1)
             {
                 try
@@ -61,6 +58,5 @@ namespace Shamisen.Codecs.Waveform
                 return (false, null);
             }
             //TODO: Implementation*/
-        }
     }
 }

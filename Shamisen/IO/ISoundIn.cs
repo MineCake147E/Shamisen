@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
 using Shamisen.Formats;
 
 namespace Shamisen.IO

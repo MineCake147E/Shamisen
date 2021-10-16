@@ -15,10 +15,7 @@ namespace Shamisen.Benchmarks
         [Params(2881, Priority = -990)]
         public int Frames { get; set; }
         [GlobalSetup]
-        public void Setup()
-        {
-            buffer = new Vector4[Frames];
-        }
+        public void Setup() => buffer = new Vector4[Frames];
         [Benchmark]
         public void Standard() => SplineResampler.GenerateCoeffsStandard(buffer, 1.0f / Frames);
         [Benchmark]

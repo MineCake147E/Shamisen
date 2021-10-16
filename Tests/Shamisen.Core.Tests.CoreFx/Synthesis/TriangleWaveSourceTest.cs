@@ -30,7 +30,9 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             {
                 var rr = src.Read(buffer);
                 if (rr.HasData)
+                {
                     dc.Write(buffer.AsSpan(0, rr.Length));
+                }
                 else
                 {
                     break;

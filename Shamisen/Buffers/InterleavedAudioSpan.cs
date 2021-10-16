@@ -143,7 +143,7 @@ namespace Shamisen.Buffers
         /// <value>
         /// An empty <see cref="InterleavedAudioSpan{TSample, TFormat}"/> object.
         /// </value>
-        public static InterleavedAudioSpan<TSample, TFormat> Empty { get => default; }
+        public static InterleavedAudioSpan<TSample, TFormat> Empty => default;
 
         #endregion Static fields
 

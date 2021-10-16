@@ -31,8 +31,8 @@ namespace Shamisen.Utils
         /// Gets the contained value.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public T? Value 
-        { 
+        public T? Value
+        {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {

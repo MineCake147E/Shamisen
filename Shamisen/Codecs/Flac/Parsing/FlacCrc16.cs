@@ -21,7 +21,10 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="state">The state.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public FlacCrc16(ushort state) => this.state = state;
+        public FlacCrc16(ushort state)
+        {
+            this.state = state;
+        }
 
         /// <summary>
         /// Gets the state.
@@ -38,7 +41,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         #region Operator overloads
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="FlacCrc16"/> to <see cref="UInt16"/>.
+        /// Performs an implicit conversion from <see cref="FlacCrc16"/> to <see cref="ushort"/>.
         /// </summary>
         /// <param name="crc16">The CRC16.</param>
         /// <returns>
@@ -186,7 +189,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
             #endregion License notice
 
-            var t = left.state;
+            ushort t = left.state;
             t ^= (ushort)(value >> 48);
             t = (ushort)(
                 GetTable7At((byte)(t >> 8)) ^ GetTable6At((byte)t) ^

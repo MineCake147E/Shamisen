@@ -28,7 +28,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             Vendor = Encoding.UTF8.GetString(RawVendor.ToArray());
 
 #endif
-            var uc = new string[RawUserComments.Length];
+            string[]? uc = new string[RawUserComments.Length];
             var span = RawUserComments.Span;
             for (int i = 0; i < RawUserComments.Length; i++)
             {
@@ -89,9 +89,9 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
             }
-            var vendor = new byte[vendorLength];
+            byte[]? vendor = new byte[vendorLength];
             buffer.Slice(4, (int)vendorLength).CopyTo(vendor);
-            var uclength = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4 + (int)vendorLength));
+            uint uclength = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4 + (int)vendorLength));
             var br = buffer.Slice(8 + (int)vendorLength);
             var userComments = new ReadOnlyMemory<byte>[uclength];
             for (int i = 0; i < userComments.Length; i++)
@@ -100,8 +100,8 @@ namespace Shamisen.Codecs.Flac.Metadata
                 {
                     throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
                 }
-                var clen = (int)BinaryPrimitives.ReadUInt32LittleEndian(br);
-                var comment = new byte[clen];
+                int clen = (int)BinaryPrimitives.ReadUInt32LittleEndian(br);
+                byte[]? comment = new byte[clen];
                 br = br.Slice(4);
                 if (br.Length < clen)
                 {

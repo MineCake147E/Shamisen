@@ -46,7 +46,10 @@ namespace Shamisen.Synthesis
         /// Initializes a new instance of the <see cref="SilenceSource{TSample, TFormat}"/> class.
         /// </summary>
         /// <param name="format">The format.</param>
-        public DummySource(TFormat format) => Format = format;
+        public DummySource(TFormat format)
+        {
+            Format = format;
+        }
 
         /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />

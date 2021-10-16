@@ -31,7 +31,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = !remainingData.IsEmpty;
+            bool h = !remainingData.IsEmpty;
             if (h)
             {
                 read = MemoryMarshal.GetReference(remainingData.Span);
@@ -57,7 +57,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt16BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt16BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(short));
@@ -82,7 +82,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt16LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt16LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(short));
@@ -107,7 +107,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt32BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt32BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(int));
@@ -132,7 +132,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt32LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt32LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(int));
@@ -157,7 +157,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt64BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt64BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(long));
@@ -182,7 +182,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadInt64LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadInt64LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(long));
@@ -207,7 +207,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = !remainingData.IsEmpty;
+            bool h = !remainingData.IsEmpty;
             if (h)
             {
                 read = Unsafe.As<byte, sbyte>(ref MemoryMarshal.GetReference(remainingData.Span));
@@ -233,7 +233,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt16BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt16BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(ushort));
@@ -258,7 +258,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt16LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt16LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(ushort));
@@ -283,7 +283,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt32BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt32BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(uint));
@@ -308,7 +308,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt32LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt32LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(uint));
@@ -333,7 +333,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt64BigEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt64BigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(ulong));
@@ -358,7 +358,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryPrimitives.TryReadUInt64LittleEndian(remainingData.Span, out read);
+            bool h = BinaryPrimitives.TryReadUInt64LittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(ulong));
@@ -383,7 +383,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryExtensions.TryReadDoubleLittleEndian(remainingData.Span, out read);
+            bool h = BinaryExtensions.TryReadDoubleLittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(double));
@@ -408,7 +408,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryExtensions.TryReadDoubleBigEndian(remainingData.Span, out read);
+            bool h = BinaryExtensions.TryReadDoubleBigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(double));
@@ -433,7 +433,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryExtensions.TryReadSingleLittleEndian(remainingData.Span, out read);
+            bool h = BinaryExtensions.TryReadSingleLittleEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(float));
@@ -458,7 +458,7 @@ namespace Shamisen.Data.Parsing
                 read = default;
                 return ReadResult.EndOfStream;
             }
-            var h = BinaryExtensions.TryReadSingleBigEndian(remainingData.Span, out read);
+            bool h = BinaryExtensions.TryReadSingleBigEndian(remainingData.Span, out read);
             if (h)
             {
                 Advance(sizeof(float));

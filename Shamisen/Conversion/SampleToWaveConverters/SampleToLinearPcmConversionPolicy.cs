@@ -15,7 +15,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <summary>
         /// The normal conversion.
         /// </summary>
-        Normal=0,
+        Normal = 0,
         /// <summary>
         /// The conversion will be noise-shaped.
         /// </summary>

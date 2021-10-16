@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Buffers.Binary;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shamisen.Codecs.Flac
 {
@@ -54,8 +54,8 @@ namespace Shamisen.Codecs.Flac
             this.frameMinSize = frameMinSize;
             this.frameMaxSize = frameMaxSize;
             this.field4 = field4;
-            this.md5Head = md5head;
-            this.md5Tail = md5tail;
+            md5Head = md5head;
+            md5Tail = md5tail;
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                var h = new byte[16];
+                byte[]? h = new byte[16];
                 BinaryPrimitives.WriteUInt64BigEndian(h, md5Head);
                 BinaryPrimitives.WriteUInt64BigEndian(h.AsSpan(8), md5Head);
                 return h;

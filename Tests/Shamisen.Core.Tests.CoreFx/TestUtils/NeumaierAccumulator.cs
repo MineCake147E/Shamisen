@@ -16,9 +16,9 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
 
         public static NeumaierAccumulator operator +(NeumaierAccumulator left, double right)
         {
-            var sum = left.sum;
-            var c = left.c;
-            var t = sum + right;
+            double sum = left.sum;
+            double c = left.c;
+            double t = sum + right;
             if (Math.Abs(sum) >= Math.Abs(right))
             {
                 c += sum - t + right;

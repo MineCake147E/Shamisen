@@ -176,7 +176,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             RateDivDivisor = new UInt32Divisor((uint)RateDiv);
             RateDivDivisor64 = new UInt64Divisor((ulong)RateDiv);
             ChannelsDivisor = new UInt32Divisor((uint)Channels);
-            GradientIncrement = (int)RateMulDivisor.DivRem((uint)RateDiv, out var indexIncrement);
+            GradientIncrement = (int)RateMulDivisor.DivRem((uint)RateDiv, out uint indexIncrement);
             IndexIncrement = (int)indexIncrement;
             SkipSupport = source.SkipSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
             SeekSupport = source.SeekSupport?.WithFraction((ulong)RateDiv, (ulong)RateMul);
@@ -192,7 +192,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int GetCeiledInputPosition(int outputPosition)
         {
-            var m = (int)RateMulDivisor.DivRem((uint)(outputPosition * RateDiv), out uint aa);
+            int m = (int)RateMulDivisor.DivRem((uint)(outputPosition * RateDiv), out uint aa);
             int a = (int)aa;
             return m > 0 ? a + 1 : a;
         }
@@ -214,7 +214,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         protected (int position, float amount) GetConversionGradient(int outputPosition)
         {
             uint mul = (uint)(outputPosition * RateDiv);
-            var diff = RateMulDivisor.DivRem(mul, out mul);
+            uint diff = RateMulDivisor.DivRem(mul, out mul);
             return ((int)mul, diff * RateMulInverse);
         }
 
@@ -227,7 +227,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         protected (int position, int gradient) GetConversionPosition(int outputPosition)
         {
             uint mul = (uint)(outputPosition * RateDiv);
-            var diff = RateMulDivisor.DivRem(mul, out mul);
+            uint diff = RateMulDivisor.DivRem(mul, out mul);
             return ((int)mul, (int)diff);
         }
 

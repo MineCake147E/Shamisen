@@ -8,7 +8,10 @@ namespace Shamisen.Data
         private Stream source;
         private bool disposedValue;
 
-        public StreamSeekSupport(Stream source) => this.source = source ?? throw new ArgumentNullException(nameof(source));
+        public StreamSeekSupport(Stream source)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
         /// <summary>
         /// Seeks the <see cref="IAudioSource{TSample, TFormat}"/> with the specified offset in frames.

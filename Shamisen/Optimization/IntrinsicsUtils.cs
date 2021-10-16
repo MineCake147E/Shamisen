@@ -163,8 +163,9 @@ namespace Shamisen.Optimization
             return ArmIntrinsics.None;
 #endif
         }
-        static bool avoidAvxFloatingPoint = false;
-        static bool enableExtremeLoopUnrolling = false;
+
+        private static bool avoidAvxFloatingPoint = false;
+        private static bool enableExtremeLoopUnrolling = false;
         /// <summary>
         /// Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
         /// </summary>

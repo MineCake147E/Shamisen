@@ -86,20 +86,20 @@ namespace Shamisen.Codecs.Flac.SubFrames
             Span<int> warmup = stackalloc int[order];
             for (int i = 0; i < warmup.Length; i++)
             {
-                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out var v2) ? v2 : throw new FlacException("Invalid FLAC Stream!", bitReader);
+                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out int v2) ? v2 : throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             //Read Quantized linear predictor coefficients' precision in bits
-            byte quantizedPrecision = bitReader.ReadBitsUInt32(4, out var v) ? (byte)v : throw new FlacException("Invalid FLAC Stream!", bitReader);
+            byte quantizedPrecision = bitReader.ReadBitsUInt32(4, out uint v) ? (byte)v : throw new FlacException("Invalid FLAC Stream!", bitReader);
             if (quantizedPrecision == 0b1111) throw new FlacException("Invalid FLAC Stream!", bitReader);
             quantizedPrecision++;
-            if (!bitReader.ReadBitsInt32(5, out var shiftsNeeded))
+            if (!bitReader.ReadBitsInt32(5, out int shiftsNeeded))
             {
                 throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             Span<int> coeffs = stackalloc int[order];
             for (int i = 0; i < coeffs.Length; i++)
             {
-                if (!bitReader.ReadBitsInt32(quantizedPrecision, out var value)) throw new FlacException("Invalid FLAC Stream!", bitReader);
+                if (!bitReader.ReadBitsInt32(quantizedPrecision, out int value)) throw new FlacException("Invalid FLAC Stream!", bitReader);
                 coeffs[i] = value;
             }
             //Read residual

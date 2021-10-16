@@ -1,22 +1,23 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
-using NUnit.Framework;
-
+using System.Diagnostics;
+using System.IO;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
-using System.Diagnostics;
-using Shamisen.Filters;
-using System.Buffers.Binary;
-using Shamisen.Codecs.Waveform;
-using Shamisen.Codecs.Waveform.Riff;
-using System.IO;
-using Shamisen.Data.Binary;
-using Shamisen.Data;
 using System.Reflection;
+using System.Text;
+
+using NUnit.Framework;
+
+using Shamisen.Codecs.Waveform;
 using Shamisen.Codecs.Waveform.Parsing;
+using Shamisen.Codecs.Waveform.Riff;
+using Shamisen.Conversion.Resampling.Sample;
+using Shamisen.Data;
+using Shamisen.Data.Binary;
+using Shamisen.Filters;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
 {

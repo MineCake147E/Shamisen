@@ -28,10 +28,10 @@ namespace Shamisen.Synthesis
         public TSample Offset { get; set; }
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         /// <inheritdoc/>
         ulong? IAudioSource<TSample, TFormat>.Length => null;
@@ -62,22 +62,22 @@ namespace Shamisen.Synthesis
                 switch (sizeof(TSample))
                 {
                     case 1:
-                        var boffset = Unsafe.As<TSample, byte>(ref offset);
+                        byte boffset = Unsafe.As<TSample, byte>(ref offset);
                         var bbuffer = MemoryMarshal.Cast<TSample, byte>(buffer);
                         bbuffer.FastFill(boffset);
                         break;
                     case 2:
-                        var woffset = Unsafe.As<TSample, ushort>(ref offset);
+                        ushort woffset = Unsafe.As<TSample, ushort>(ref offset);
                         var wbuffer = MemoryMarshal.Cast<TSample, ushort>(buffer);
                         wbuffer.FastFill(woffset);
                         break;
                     case 4:
-                        var doffset = Unsafe.As<TSample, float>(ref offset);
+                        float doffset = Unsafe.As<TSample, float>(ref offset);
                         var dbuffer = MemoryMarshal.Cast<TSample, float>(buffer);
                         dbuffer.FastFill(doffset);
                         break;
                     case 8:
-                        var qoffset = Unsafe.As<TSample, double>(ref offset);
+                        double qoffset = Unsafe.As<TSample, double>(ref offset);
                         var qbuffer = MemoryMarshal.Cast<TSample, double>(buffer);
                         qbuffer.FastFill(qoffset);
                         break;

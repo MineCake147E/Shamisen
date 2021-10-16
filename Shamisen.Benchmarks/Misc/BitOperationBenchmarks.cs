@@ -16,10 +16,7 @@ namespace Shamisen.Benchmarks.Misc
     {
         [Benchmark]
         [Arguments(0xffffffff, 10, 10)]
-        public uint MathIExtract(uint value, byte start, byte length)
-        {
-            return MathI.ExtractBitField(value, start, length);
-        }
+        public uint MathIExtract(uint value, byte start, byte length) => MathI.ExtractBitField(value, start, length);
 
         [Benchmark]
         [Arguments(0xffffffff, 10, 10)]
@@ -31,16 +28,10 @@ namespace Shamisen.Benchmarks.Misc
 
         [Benchmark]
         [Arguments(0xffffffff, 10, 10)]
-        public uint BitFieldExtract(uint value, byte start, byte length)
-        {
-            return Bmi1.BitFieldExtract(value, start, length);
-        }
+        public uint BitFieldExtract(uint value, byte start, byte length) => Bmi1.BitFieldExtract(value, start, length);
 
         [Benchmark]
         [Arguments(0xffffffff, 10, 10)]
-        public uint FallbackExtract(uint value, byte start, byte length)
-        {
-            return MathIFallbacks.ExtractBitField(value, start, length);
-        }
+        public uint FallbackExtract(uint value, byte start, byte length) => MathIFallbacks.ExtractBitField(value, start, length);
     }
 }

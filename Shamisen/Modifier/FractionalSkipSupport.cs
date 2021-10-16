@@ -44,7 +44,7 @@ namespace Shamisen.Modifier
         public FractionalSkipSupport(ISkipSupport source, ulong divisor, ulong multiplier)
         {
             this.source = source ?? throw new ArgumentNullException(nameof(source));
-            (var m, var d) = MathHelper.MinimizeDivisor(multiplier, divisor);
+            (ulong m, ulong d) = MathHelper.MinimizeDivisor(multiplier, divisor);
             this.divisor = new UInt64Divisor(d);
             this.multiplier = m;
         }

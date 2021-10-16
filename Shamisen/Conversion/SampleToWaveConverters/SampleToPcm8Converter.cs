@@ -70,8 +70,11 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var wrote = reader.Span.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
+                {
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
+                }
+
                 if (AccuracyMode)
                 {
                     var dsmAcc = dsmAccumulator.Span;
@@ -79,7 +82,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     dsmChannelPointer %= dsmAcc.Length;
                     for (int i = 0; i < dest.Length; i++)
                     {
-                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / 128.0f - 1);
+                        float diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / 128.0f - 1);
                         dsmAcc[dsmChannelPointer] += diff;
                         dest[i] = dsmLastOut[dsmChannelPointer] = (byte)Math.Min(byte.MaxValue, Math.Max(dsmAcc[dsmChannelPointer] * 128 + 128, byte.MinValue));
                         dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;

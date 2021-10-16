@@ -39,7 +39,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -47,7 +47,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -56,7 +56,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Length { get => Source.Length; }
+        public ulong? Length => Source.Length;
 
         /// <summary>
         /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -65,7 +65,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? TotalLength { get => Source.TotalLength; }
+        public ulong? TotalLength => Source.TotalLength;
 
         /// <summary>
         /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
@@ -74,7 +74,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <value>
         /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
         /// </value>
-        public ulong? Position { get => Source.Position; }
+        public ulong? Position => Source.Position;
 
         /// <summary>
         /// Reads the audio to the specified buffer.

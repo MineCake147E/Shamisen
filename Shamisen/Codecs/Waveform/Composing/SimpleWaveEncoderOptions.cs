@@ -15,7 +15,10 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// Initializes a new instance of the <see cref="SimpleWaveEncoderOptions"/> struct.
         /// </summary>
         /// <param name="preferRiff">if set to <c>true</c> you prefer RIFF over RF64.</param>
-        public SimpleWaveEncoderOptions(bool preferRiff) => PreferRiff = preferRiff;
+        public SimpleWaveEncoderOptions(bool preferRiff)
+        {
+            PreferRiff = preferRiff;
+        }
 
         /// <summary>
         /// Gets a value indicating whether to prefer RIFF over RF64 or not.

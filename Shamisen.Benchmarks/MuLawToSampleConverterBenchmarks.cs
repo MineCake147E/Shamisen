@@ -29,10 +29,7 @@ namespace Shamisen.Benchmarks
         public int Channels { get; set; }
 
         [GlobalSetup]
-        public void Setup()
-        {
-            buffer = new float[Frames * Channels];
-        }
+        public void Setup() => buffer = new float[Frames * Channels];
 
         [Benchmark]
         public void Sse41()
@@ -59,9 +56,6 @@ namespace Shamisen.Benchmarks
             MuLawToSampleConverter.ProcessAvx2MM256(byteSpan, span);
         }
         [GlobalCleanup]
-        public void Cleanup()
-        {
-            buffer = null;
-        }
+        public void Cleanup() => buffer = null;
     }
 }

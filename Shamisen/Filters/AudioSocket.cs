@@ -82,7 +82,10 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="AudioSocket{TSample, TFormat}"/> class with the specified <paramref name="format"/>.
         /// </summary>
         /// <param name="format">The format.</param>
-        public AudioSocket(TFormat format) => Format = format;
+        public AudioSocket(TFormat format)
+        {
+            Format = format;
+        }
 
         /// <summary>
         /// Reads the audio to the specified buffer.

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shamisen
 {
@@ -27,7 +27,7 @@ namespace Shamisen
             where TTo : struct
         {
             var res = MemoryMarshal.Cast<TFrom, TTo>(span);
-            var resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
+            int resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
             residue = span.Slice(resLen);
             return res;
         }
@@ -46,7 +46,7 @@ namespace Shamisen
             where TTo : struct
         {
             var res = MemoryMarshal.Cast<TFrom, TTo>(span);
-            var resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
+            int resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
             residue = span.Slice(resLen);
             return res;
         }

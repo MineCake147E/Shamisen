@@ -1,9 +1,9 @@
 ﻿#if NET5_0_OR_GREATER
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -101,10 +101,7 @@ namespace Shamisen.Formats
         /// <returns>
         ///   <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator ==(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right) => left.Equals(right);
 
         /// <summary>
 		/// Indicates whether the values of two specified <see cref="HalfPrecisionSampleFormat"/> objects are different.
@@ -114,10 +111,7 @@ namespace Shamisen.Formats
 		/// <returns>
 		///   <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
 		/// </returns>
-        public static bool operator !=(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(HalfPrecisionSampleFormat left, HalfPrecisionSampleFormat right) => !(left == right);
     }
 }
 

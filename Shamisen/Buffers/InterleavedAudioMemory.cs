@@ -130,7 +130,7 @@ namespace Shamisen
         /// <value>
         /// An empty <see cref="InterleavedAudioMemory{TSample, TFormat}"/> object.
         /// </value>
-        public static InterleavedAudioMemory<TSample, TFormat> Empty { get => default; }
+        public static InterleavedAudioMemory<TSample, TFormat> Empty => default;
 
         #endregion Static fields
 

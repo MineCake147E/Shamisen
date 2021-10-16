@@ -55,7 +55,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -63,7 +63,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
@@ -99,10 +99,10 @@ namespace Shamisen.Synthesis
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<float> buffer)
         {
-            var channels = Format.Channels;
+            int channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            var freq = Frequency;
-            var omega = MathHelper.DoublePI * freq * SamplingFrequencyInverse;
+            double freq = Frequency;
+            double omega = MathHelper.DoublePI * freq * SamplingFrequencyInverse;
             switch (channels)   //Unrolling assignations
             {
                 case 1:

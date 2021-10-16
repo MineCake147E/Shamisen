@@ -45,7 +45,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -53,7 +53,7 @@ namespace Shamisen.Synthesis
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         ulong? IAudioSource<byte, IWaveFormat>.Length => null;
 

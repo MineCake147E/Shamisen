@@ -146,7 +146,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
                 ? new StackOnlyActionContainer<ulong>((size) =>
                 {
                     TotalSize = size;
-                    var read = RemainingBytes - uint.MaxValue;
+                    ulong read = RemainingBytes - uint.MaxValue;
                     RemainingBytes = read + TotalSize;
                 })
                 : new StackOnlyActionContainer<ulong>((size) => { });

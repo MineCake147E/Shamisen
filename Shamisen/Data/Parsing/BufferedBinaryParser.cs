@@ -142,7 +142,7 @@ namespace Shamisen.Data.Parsing
             }
             else
             {
-                ReadResult res = Source.Read(buffer);
+                var res = Source.Read(buffer);
                 CheckRefill();
                 return res;
             }

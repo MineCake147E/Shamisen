@@ -56,7 +56,7 @@ namespace Shamisen.IO
                         if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATE_ALL_EXT"))
                         {
                             flag |= true;
-                            foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier))
+                            foreach (string? item in ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier))
                             {
                                 yield return new OpenALDevice(item);
                             }
@@ -64,7 +64,7 @@ namespace Shamisen.IO
                         if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATION_EXT"))
                         {
                             flag |= true;
-                            foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier))
+                            foreach (string? item in ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier))
                             {
                                 yield return new OpenALDevice(item);
                             }

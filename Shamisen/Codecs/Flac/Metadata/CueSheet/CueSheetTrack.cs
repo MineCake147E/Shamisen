@@ -111,7 +111,7 @@ namespace Shamisen.Codecs.Flac.Metadata
                 }
                 unsafe
                 {
-                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, m);
                 }
@@ -120,7 +120,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 unsafe
                 {
-                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, ReadOnlyMemory<CueSheetTrackIndex>.Empty);
                 }
@@ -159,7 +159,7 @@ namespace Shamisen.Codecs.Flac.Metadata
                 }
                 unsafe
                 {
-                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     bytesConsumed = Unsafe.SizeOf<RawCueSheetTrack>() + g.Length;
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, m);
@@ -169,7 +169,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 unsafe
                 {
-                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     bytesConsumed = Unsafe.SizeOf<RawCueSheetTrack>();
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, ReadOnlyMemory<CueSheetTrackIndex>.Empty);

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Shamisen.Formats;
+
 using OpenTK;
 using OpenTK.Audio.OpenAL;
+
+using Shamisen.Formats;
 
 namespace Shamisen.IO
 {

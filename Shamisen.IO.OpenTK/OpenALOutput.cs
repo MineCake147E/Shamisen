@@ -192,7 +192,7 @@ namespace Shamisen.IO
 
                     inbuf = new byte[sf.GetBufferSizeRequired(Latency)];
                     format = GetALFormat(sf);
-                    foreach (var item in bufferPointers)
+                    foreach (int item in bufferPointers)
                     {
                         var cnt = Source.Read(inbuf.AsSpan());
                         AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
@@ -257,7 +257,7 @@ namespace Shamisen.IO
             if (Source is null || sourceFormat is null) throw new Exception("");
             while (bp > 0)
             {
-                var buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
+                int buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
                 AL.GetBuffer(buffer, ALGetBufferi.Size, out int size);
                 CheckErrors();
                 AL.GetBuffer(buffer, ALGetBufferi.Bits, out int bits);

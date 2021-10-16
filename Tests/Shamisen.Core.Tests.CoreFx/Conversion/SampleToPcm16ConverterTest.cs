@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Synthesis;
-using NUnit.Framework;
-
+using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+
+using NUnit.Framework;
+
+using Shamisen.Conversion.Resampling.Sample;
+using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Filters;
 using Shamisen.Optimization;
-using Shamisen.Conversion.SampleToWaveConverters;
-using System.Runtime.InteropServices;
+using Shamisen.Synthesis;
 
 namespace Shamisen.Core.Tests.CoreFx.Conversion
 {
@@ -28,16 +29,16 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
             using var srcIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
             using var filterNoIntrinsics = new SampleToPcm16Converter(srcNoIntrinsics, false, x86Intrinsics, armIntrinsics, accuracyNeeded, endianness);
             using var filterIntrinsics = new SampleToPcm16Converter(srcIntrinsics, true, x86Intrinsics, armIntrinsics, accuracyNeeded, endianness);
-            var bufferNoIntrinsics = new short[128 * channels];
-            var bufferIntrinsics = new short[bufferNoIntrinsics.Length];
+            short[] bufferNoIntrinsics = new short[128 * channels];
+            short[] bufferIntrinsics = new short[bufferNoIntrinsics.Length];
 
             filterNoIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferNoIntrinsics));
             filterIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferIntrinsics));
             double sumdiff = 0;
             for (int i = 0; i < bufferNoIntrinsics.Length; i++)
             {
-                var simple = bufferNoIntrinsics[i];
-                var optimized = bufferIntrinsics[i];
+                short simple = bufferNoIntrinsics[i];
+                short optimized = bufferIntrinsics[i];
                 float diff = simple - optimized;
                 sumdiff += MathF.Abs(diff);
                 Console.WriteLine($"{simple}, {optimized}, {diff}");

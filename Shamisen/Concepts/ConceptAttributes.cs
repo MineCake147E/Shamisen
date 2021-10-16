@@ -30,7 +30,10 @@ namespace Shamisen.Concepts
         /// Initializes a new instance of <see cref="ConceptAttribute"/>.
         /// </summary>
         /// <param name="kind">The kind of concept.</param>
-        public ConceptAttribute(ConceptKind kind) => Kind = kind;
+        public ConceptAttribute(ConceptKind kind)
+        {
+            Kind = kind;
+        }
 
         /// <summary>
         /// The kind of concept.

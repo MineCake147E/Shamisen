@@ -104,7 +104,7 @@ namespace Shamisen.Filters
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<TSample> buffer)
         {
-            var written = 0;
+            int written = 0;
             var rem = buffer;
             while (!rem.IsEmpty)
             {

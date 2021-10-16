@@ -98,7 +98,7 @@ namespace Shamisen.Data
         /// <value>
         /// The sink.
         /// </value>
-        IDataSink<TSample> Sink => sink ?? throw new ObjectDisposedException(nameof(OffsetSeekableDataSink<TSample>));
+        private IDataSink<TSample> Sink => sink ?? throw new ObjectDisposedException(nameof(OffsetSeekableDataSink<TSample>));
 
         /// <summary>
         /// Writes the specified data.

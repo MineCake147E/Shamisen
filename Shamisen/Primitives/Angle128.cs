@@ -123,7 +123,7 @@ namespace Shamisen.Primitives
         public static Angle128 operator +(Angle128 left, Angle128 right)
         {
             var h = left.high + right.high;
-            var l = left.low + right.low;
+            double l = left.low + right.low;
             return new Angle128(h, l);
         }
 
@@ -138,7 +138,7 @@ namespace Shamisen.Primitives
         public static Angle128 operator -(Angle128 left, Angle128 right)
         {
             var h = left.high - right.high;
-            var l = left.low - right.low;
+            double l = left.low - right.low;
             return new Angle128(h, l);
         }
 

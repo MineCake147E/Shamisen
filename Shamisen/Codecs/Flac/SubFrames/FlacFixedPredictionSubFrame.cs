@@ -93,7 +93,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             Span<int> warmup = stackalloc int[order];
             for (int i = 0; i < warmup.Length; i++)
             {
-                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out var value) ? value : throw new FlacException("Invalid FLAC Stream!", bitReader);
+                warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out int value) ? value : throw new FlacException("Invalid FLAC Stream!", bitReader);
             }
             order = subFrameType & 0x7;
             //Read residual
@@ -149,14 +149,14 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             #endregion License notice
 
-            if (!bitReader.ReadBitsUInt32(2, out var result)) throw new FlacException("Invalid FLAC Stream!", bitReader);
+            if (!bitReader.ReadBitsUInt32(2, out uint result)) throw new FlacException("Invalid FLAC Stream!", bitReader);
             result &= 0x3;
             switch ((FlacEntropyCodingMethod)result)
             {
                 case FlacEntropyCodingMethod.PartitionedRice:
                 case FlacEntropyCodingMethod.PartitionedRice2:
                     //Read partition order
-                    var g = bitReader.ReadBitsUInt32(4, out var cc) ? cc : throw new FlacException("Invalid FLAC Stream!", bitReader);
+                    uint g = bitReader.ReadBitsUInt32(4, out uint cc) ? cc : throw new FlacException("Invalid FLAC Stream!", bitReader);
                     if (blockSize >> (int)g < order) throw new FlacException("Invalid FLAC Stream!", bitReader);
                     partition = (int)g;
                     break;
@@ -258,11 +258,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 case 0:
                     if (output.Length < 1) goto default;
                     var data = output.Slice(1);
-                    var prev = output[0];
+                    int prev = output[0];
                     if (residual.Length < data.Length) goto default;
-                    ref var R = ref MemoryMarshal.GetReference(residual);
-                    ref var D = ref MemoryMarshal.GetReference(data);
-                    var F = ((IntPtr)data.Length).ToPointer();
+                    ref int R = ref MemoryMarshal.GetReference(residual);
+                    ref int D = ref MemoryMarshal.GetReference(data);
+                    void* F = ((IntPtr)data.Length).ToPointer();
                     for (var i = IntPtr.Zero; i.ToPointer() < F; i += 1)
                     {
                         Unsafe.Add(ref D, i) = prev = Unsafe.Add(ref R, i) + prev;
@@ -281,14 +281,14 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 case 0:
                     if (output.Length < 2) goto default;
                     var data = output.Slice(2);
-                    (var prev0, var prev1) = Unsafe.As<int, (int, int)>(ref output[0]);
+                    (int prev0, int prev1) = Unsafe.As<int, (int, int)>(ref output[0]);
                     if (residual.Length < data.Length) goto default;
-                    ref var R = ref MemoryMarshal.GetReference(residual);
-                    ref var D = ref MemoryMarshal.GetReference(data);
-                    var F = ((IntPtr)data.Length).ToPointer();
+                    ref int R = ref MemoryMarshal.GetReference(residual);
+                    ref int D = ref MemoryMarshal.GetReference(data);
+                    void* F = ((IntPtr)data.Length).ToPointer();
                     for (var i = IntPtr.Zero; i.ToPointer() < F; i += 1)
                     {
-                        var p = prev0;
+                        int p = prev0;
                         prev0 = prev1;
                         Unsafe.Add(ref D, i) = prev1 = Unsafe.Add(ref R, i) + 2 * prev1 - p;
                     }
@@ -306,15 +306,15 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 case 0:
                     if (output.Length < 3) goto default;
                     var data = output.Slice(3);
-                    (var prev0, var prev1, var prev2) = Unsafe.As<int, (int, int, int)>(ref output[0]);
+                    (int prev0, int prev1, int prev2) = Unsafe.As<int, (int, int, int)>(ref output[0]);
                     if (residual.Length < data.Length) goto default;
-                    ref var R = ref MemoryMarshal.GetReference(residual);
-                    ref var D = ref MemoryMarshal.GetReference(data);
-                    var F = ((IntPtr)data.Length).ToPointer();
+                    ref int R = ref MemoryMarshal.GetReference(residual);
+                    ref int D = ref MemoryMarshal.GetReference(data);
+                    void* F = ((IntPtr)data.Length).ToPointer();
                     for (var i = IntPtr.Zero; i.ToPointer() < F; i += 1)
                     {
-                        (var p0, var p1, var p2) = (prev0, prev1, prev2);
-                        var n = Unsafe.Add(ref R, i) + 3 * p2 - 3 * p1 + p0;
+                        (int p0, int p1, int p2) = (prev0, prev1, prev2);
+                        int n = Unsafe.Add(ref R, i) + 3 * p2 - 3 * p1 + p0;
                         (prev0, prev1, prev2) = (p1, p2, n);
                         Unsafe.Add(ref D, i) = n;
                     }
@@ -332,15 +332,15 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 case 0:
                     if (output.Length < 4) goto default;
                     var data = output.Slice(4);
-                    (var prev0, var prev1, var prev2, var prev3) = Unsafe.As<int, (int, int, int, int)>(ref output[0]);
+                    (int prev0, int prev1, int prev2, int prev3) = Unsafe.As<int, (int, int, int, int)>(ref output[0]);
                     if (residual.Length < data.Length) goto default;
-                    ref var R = ref MemoryMarshal.GetReference(residual);
-                    ref var D = ref MemoryMarshal.GetReference(data);
-                    var F = ((IntPtr)data.Length).ToPointer();
+                    ref int R = ref MemoryMarshal.GetReference(residual);
+                    ref int D = ref MemoryMarshal.GetReference(data);
+                    void* F = ((IntPtr)data.Length).ToPointer();
                     for (var i = IntPtr.Zero; i.ToPointer() < F; i += 1)
                     {
-                        (var p0, var p1, var p2, var p3) = (prev0, prev1, prev2, prev3);
-                        var n = Unsafe.Add(ref R, i) + 4 * p3 - 6 * p2 + 4 * p1 - p0;
+                        (int p0, int p1, int p2, int p3) = (prev0, prev1, prev2, prev3);
+                        int n = Unsafe.Add(ref R, i) + 4 * p3 - 6 * p2 + 4 * p1 - p0;
                         (prev0, prev1, prev2, prev3) = (p1, p2, p3, n);
                         Unsafe.Add(ref D, i) = n;
                     }

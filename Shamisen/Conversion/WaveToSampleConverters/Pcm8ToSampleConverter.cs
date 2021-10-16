@@ -88,7 +88,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override ReadResult Read(Span<float> buffer)
         {
-            Span<byte> span = readBuffer.Span;
+            var span = readBuffer.Span;
             var cursor = buffer;
             while (cursor.Length > 0)
             {

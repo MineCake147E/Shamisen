@@ -94,12 +94,12 @@ namespace Shamisen.IO
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<byte> buffer)
         {
-            var ibuf = internalBuffer.Array ?? throw new ObjectDisposedException(nameof(NAudioWaveStreamSource));
+            byte[]? ibuf = internalBuffer.Array ?? throw new ObjectDisposedException(nameof(NAudioWaveStreamSource));
             if (ibuf.Length < buffer.Length)
             {
                 ibuf = ResizeBuffer(buffer.Length);
             }
-            var i = Source.Read(ibuf, 0, ibuf.Length);
+            int i = Source.Read(ibuf, 0, ibuf.Length);
             if (i > 0)
             {
                 ibuf.AsSpan(0, buffer.Length).CopyTo(buffer);

@@ -86,7 +86,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
         /// <value>
         /// The metadata.
         /// </value>
-        public IEnumerable<object> Metadata { get => metadataList; }
+        public IEnumerable<object> Metadata => metadataList;
 
         private List<object> metadataList;
 
@@ -127,7 +127,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
         /// <value>
         /// The skip support.
         /// </value>
-        public ISkipSupport? SkipSupport { get => throw new NotImplementedException(); }
+        public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
@@ -135,7 +135,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport { get => throw new NotImplementedException(); }
+        public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleWaveParser" /> class.
@@ -162,7 +162,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
             if (dataSource is null) throw new ArgumentNullException(nameof(dataSource));
             Rf64ChunkReader mainReader;
             Rf64ChunkReader = mainReader = new Rf64ChunkReader(dataSource, this, out var setter);
-            var result = mainReader.TryReadUInt32LittleEndian(out var read);
+            var result = mainReader.TryReadUInt32LittleEndian(out uint read);
             result.ThrowWhenInsufficient(1, $"initializing {nameof(SimpleWaveParser)}");
             if ((RiffSubChunkId)read != RiffSubChunkId.Wave)
             {
@@ -296,9 +296,9 @@ namespace Shamisen.Codecs.Waveform.Parsing
 
         private static char[] ConvertChunkNameToChars(uint read)
         {
-            var buffer = new byte[sizeof(int)];
+            byte[]? buffer = new byte[sizeof(int)];
             BinaryPrimitives.WriteUInt32LittleEndian(buffer.AsSpan(), read);
-            var chars = Encoding.UTF8.GetChars(buffer);
+            char[]? chars = Encoding.UTF8.GetChars(buffer);
             return chars;
         }
 

@@ -54,6 +54,6 @@ namespace Shamisen
         /// <returns><c>null</c> if either or both of <paramref name="lengthA"/> and <paramref name="lengthB"/> are null, otherwise the maximum value of <paramref name="lengthA"/> and <paramref name="lengthB"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong? NullOrMax(ulong? lengthA, ulong? lengthB)
-            => lengthA is null || lengthB is null ? (ulong?)null : Math.Max(lengthA.Value, lengthB.Value);
+            => lengthA is null || lengthB is null ? null : Math.Max(lengthA.Value, lengthB.Value);
     }
 }

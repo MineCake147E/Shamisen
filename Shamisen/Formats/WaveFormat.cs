@@ -37,7 +37,10 @@ namespace Shamisen
         /// <param name="channels">The channels.</param>
         /// <param name="encoding">The encoding.</param>
         /// <param name="extraSize">Size of the extra.</param>
-        public WaveFormat(int sampleRate, int bitDepth, int channels, AudioEncoding encoding, int extraSize) : this(sampleRate, bitDepth, channels, encoding) => ExtraSize = extraSize;
+        public WaveFormat(int sampleRate, int bitDepth, int channels, AudioEncoding encoding, int extraSize) : this(sampleRate, bitDepth, channels, encoding)
+        {
+            ExtraSize = extraSize;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaveFormat"/> struct.
@@ -172,10 +175,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator ==(WaveFormat left, WaveFormat right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(WaveFormat left, WaveFormat right) => left.Equals(right);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="WaveFormat"/> objects are not equal.
@@ -185,10 +185,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        public static bool operator !=(WaveFormat left, WaveFormat right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(WaveFormat left, WaveFormat right) => !(left == right);
 
         private string GetDebuggerDisplay()
             => $"{SampleRate}Hz {Channels}ch {BitDepth}-bit {Encoding}";

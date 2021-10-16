@@ -235,7 +235,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override int GetHashCode()
         {
-            var hashCode = -428595538;
+            int hashCode = -428595538;
             hashCode = hashCode * -1521134295 + tail.GetHashCode();
             hashCode = hashCode * -1521134295 + middle.GetHashCode();
             hashCode = hashCode * -1521134295 + head.GetHashCode();

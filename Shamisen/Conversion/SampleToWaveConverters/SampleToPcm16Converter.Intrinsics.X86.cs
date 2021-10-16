@@ -56,7 +56,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             if (rWrote.Length > rDest.Length) return;
             for (int i = 0; i < rWrote.Length; i++)
             {
-                var v = Convert(rWrote[i]);
+                short v = Convert(rWrote[i]);
                 rDest[i] = v;
             }
         }
@@ -105,7 +105,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             if (rWrote.Length > rDest.Length) return;
             for (int i = 0; i < rWrote.Length; i++)
             {
-                var v = Convert(rWrote[i]);
+                short v = Convert(rWrote[i]);
                 rDest[i] = BinaryPrimitives.ReverseEndianness(v);
             }
         }
@@ -120,8 +120,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var mul = Vector128.Create(32768.0f);
             var acc = Vector128.CreateScalar(Unsafe.As<float, double>(ref MemoryMarshal.GetReference(dsmAccumulator))).AsSingle();
             var lov = Vector128.CreateScalar(Unsafe.As<short, float>(ref MemoryMarshal.GetReference(dsmLastOutput))).AsInt16();
-            ref var wh = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(wrote));
-            ref var dh = ref MemoryMarshal.GetReference(dest);
+            ref double wh = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(wrote));
+            ref short dh = ref MemoryMarshal.GetReference(dest);
             nint length = wrote.Length / 2;
             nint i;
             for (i = 0; i < length - 1; i += 2)
@@ -175,8 +175,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var acc = Vector128.CreateScalar(MemoryMarshal.GetReference(dsmAccumulator));
             var lov = Vector128.CreateScalar(MemoryMarshal.GetReference(dsmLastOutput));
             var lo = Sse2.ConvertToVector128Single(Sse41.ConvertToVector128Int32(lov));
-            ref var wh = ref MemoryMarshal.GetReference(wrote);
-            ref var dh = ref MemoryMarshal.GetReference(dest);
+            ref float wh = ref MemoryMarshal.GetReference(wrote);
+            ref short dh = ref MemoryMarshal.GetReference(dest);
             nint length = wrote.Length;
             nint i;
             for (i = 0; i < length - 1; i += 2)
@@ -187,7 +187,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 acc = Sse.AddScalar(acc, lo);
                 acc = Sse.MaxScalar(acc, min);
                 acc = Sse.MinScalar(acc, max);
-                var eax = Sse.ConvertToInt32WithTruncation(acc);
+                int eax = Sse.ConvertToInt32WithTruncation(acc);
                 Unsafe.Add(ref dh, 2 * i) = (short)eax;
                 lo = Sse41.RoundToZeroScalar(acc);
                 xmm5 = Vector128.CreateScalar(Unsafe.Add(ref wh, i + 1));
@@ -208,7 +208,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 acc = Sse.AddScalar(acc, lo);
                 acc = Sse.MaxScalar(acc, min);
                 acc = Sse.MinScalar(acc, max);
-                var eax = Sse.ConvertToInt32WithTruncation(acc);
+                int eax = Sse.ConvertToInt32WithTruncation(acc);
                 Unsafe.Add(ref dh, 2 * i) = (short)eax;
                 lo = Sse41.RoundToZeroScalar(acc);
             }
@@ -224,8 +224,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var mul = Vector128.Create(32768.0f);
             var acc = Vector128.CreateScalar(Unsafe.As<float, double>(ref MemoryMarshal.GetReference(dsmAccumulator))).AsSingle();
             var lov = Vector128.CreateScalar(Unsafe.As<short, float>(ref MemoryMarshal.GetReference(dsmLastOutput))).AsInt16();
-            ref var wh = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(wrote));
-            ref var dh = ref MemoryMarshal.GetReference(dest);
+            ref double wh = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(wrote));
+            ref short dh = ref MemoryMarshal.GetReference(dest);
             nint length = wrote.Length / 2;
             nint i;
             for (i = 0; i < length - 1; i += 2)
@@ -276,8 +276,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var acc = Vector128.CreateScalar(MemoryMarshal.GetReference(dsmAccumulator));
             var lov = Vector128.CreateScalar(MemoryMarshal.GetReference(dsmLastOutput));
             var lo = Sse2.ConvertToVector128Single(Sse41.ConvertToVector128Int32(lov));
-            ref var wh = ref MemoryMarshal.GetReference(wrote);
-            ref var dh = ref MemoryMarshal.GetReference(dest);
+            ref float wh = ref MemoryMarshal.GetReference(wrote);
+            ref short dh = ref MemoryMarshal.GetReference(dest);
             nint length = wrote.Length;
             nint i;
             for (i = 0; i < length - 1; i += 2)
@@ -287,7 +287,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 acc = Sse.AddScalar(acc, xmm5);
                 acc = Sse.MaxScalar(acc, min);
                 acc = Sse.MinScalar(acc, max);
-                var eax = Sse.ConvertToInt32WithTruncation(acc);
+                int eax = Sse.ConvertToInt32WithTruncation(acc);
                 Unsafe.Add(ref dh, 2 * i) = (short)eax;
                 lo = Sse41.RoundToZeroScalar(acc);
                 xmm5 = Vector128.CreateScalar(Unsafe.Add(ref wh, i + 1));
@@ -306,7 +306,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 acc = Sse.AddScalar(acc, xmm5);
                 acc = Sse.MaxScalar(acc, min);
                 acc = Sse.MinScalar(acc, max);
-                var eax = Sse.ConvertToInt32WithTruncation(acc);
+                int eax = Sse.ConvertToInt32WithTruncation(acc);
                 Unsafe.Add(ref dh, 2 * i) = (short)eax;
                 lo = Sse41.RoundToZeroScalar(acc);
             }

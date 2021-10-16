@@ -93,11 +93,11 @@ namespace Shamisen
                 return PowerRootsOfUnity.Span[1];
             }
             var result = Complex.One;
-            var g = (DSUtils.Abs(value.Value) << 1) & mask;
+            ulong g = (DSUtils.Abs(value.Value) << 1) & mask;
             ref var prouHead = ref MemoryMarshal.GetReference(PowerRootsOfUnity.Span);
             while (g > 0)
             {
-                var index = MathI.LeadingZeroCount(g);
+                int index = MathI.LeadingZeroCount(g);
                 g ^= 0x8000_0000_0000_0000u >> index;
                 result *= Unsafe.Add(ref prouHead, index);
             }
@@ -143,7 +143,8 @@ namespace Shamisen
             a = Math.Min(a, 0x8000_0000u - a);
             return Math.Sign(u) * SinFInternal32((int)a);
         }
-        const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
+
+        private const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
 
         internal const float C0 = 0.0f;
         internal const float C1 = 3.1415926535897932385f;

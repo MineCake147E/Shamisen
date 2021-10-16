@@ -51,16 +51,16 @@ namespace Shamisen.Core.Tests.CoreFx
             Memory<byte> gb = new byte[gn.Length];
             Memory<byte> pn = new byte[gn.Length];
             Memory<byte> pb = new byte[gn.Length];
-            Span<TVector> vgn = MemoryMarshal.Cast<byte, TVector>(gn.Span);
-            Span<TVector> vgb = MemoryMarshal.Cast<byte, TVector>(gb.Span);
-            Span<TVector> vpn = MemoryMarshal.Cast<byte, TVector>(pn.Span);
-            Span<TVector> vpb = MemoryMarshal.Cast<byte, TVector>(pb.Span);
+            var vgn = MemoryMarshal.Cast<byte, TVector>(gn.Span);
+            var vgb = MemoryMarshal.Cast<byte, TVector>(gb.Span);
+            var vpn = MemoryMarshal.Cast<byte, TVector>(pn.Span);
+            var vpb = MemoryMarshal.Cast<byte, TVector>(pb.Span);
             try
             {
                 for (int i = 0; i < 1 << 17; i++)
                 {
-                    var u = ls.ReadByte();
-                    var len = gb.Length - u;
+                    byte u = ls.ReadByte();
+                    int len = gb.Length - u;
                     TestHelper.DoesNotTakeSoLong(() => ps.ReadAll(gb.Span.SliceWhile(len)), timeout);
                     ns.ReadAll(gn.Span.SliceWhile(len));
                     for (int j = 0; j < vgn.Length; j++)
@@ -102,7 +102,7 @@ namespace Shamisen.Core.Tests.CoreFx
         {
             var sb = new StringBuilder();
             sb.Append('<');
-            var elements = new TVectorInside[TVector.Count];
+            ulong[] elements = new TVectorInside[TVector.Count];
             for (int i = 0; i < TVector.Count; i++)
             {
                 elements[i] = vector.GetElement(i);
