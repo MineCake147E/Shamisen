@@ -112,8 +112,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         protected int IndexIncrement { get; }
 
-
-
         /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
         /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.

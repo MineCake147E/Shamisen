@@ -40,6 +40,6 @@ namespace Shamisen
         /// <value>
         ///   <c>true</c> if this instance has error; otherwise, <c>false</c>.
         /// </value>
-        public bool HasError => !(Exception is null);
+        public bool HasError => Exception is not null;
     }
 }

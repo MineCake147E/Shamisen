@@ -88,7 +88,7 @@ namespace Shamisen
         /// <param name="length">The desired length in frame for the slice.</param>
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public ReadOnlyInterleavedAudioMemory<TSample, TFormat> Slice(int start, int length) => new ReadOnlyInterleavedAudioMemory<TSample, TFormat>(Format, Memory.Slice(Format.BlockSize * start, Format.BlockSize * length));
+        public ReadOnlyInterleavedAudioMemory<TSample, TFormat> Slice(int start, int length) => new(Format, Memory.Slice(Format.BlockSize * start, Format.BlockSize * length));
 
         /// <summary>
         /// Forms a slice out of the current memory that begins at a specified index.
@@ -97,7 +97,7 @@ namespace Shamisen
         /// <returns>
         /// A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
         /// </returns>
-        public ReadOnlyInterleavedAudioMemory<TSample, TFormat> Slice(int start) => new ReadOnlyInterleavedAudioMemory<TSample, TFormat>(Format, Memory.Slice(Format.BlockSize * start));
+        public ReadOnlyInterleavedAudioMemory<TSample, TFormat> Slice(int start) => new(Format, Memory.Slice(Format.BlockSize * start));
 
         /// <summary>
         /// Copies the contents of this <see cref="ReadOnlyInterleavedAudioMemory{TSample, TFormat}"/> into a destination <see cref="InterleavedAudioMemory{TSample, TFormat}"/>.
@@ -137,7 +137,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator ReadOnlyInterleavedAudioMemory<TSample, TFormat>(ReadOnlyAudioMemory<TSample, TFormat> memory) => new ReadOnlyInterleavedAudioMemory<TSample, TFormat>(memory.Format, memory.Memory);
+        public static implicit operator ReadOnlyInterleavedAudioMemory<TSample, TFormat>(ReadOnlyAudioMemory<TSample, TFormat> memory) => new(memory.Format, memory.Memory);
 
         #region Equality
 

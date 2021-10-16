@@ -82,7 +82,7 @@ namespace Shamisen
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        public bool Equals(IAudioFormat<float>? other) => !(other is null) && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
+        public bool Equals(IAudioFormat<float>? other) => other is not null && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>

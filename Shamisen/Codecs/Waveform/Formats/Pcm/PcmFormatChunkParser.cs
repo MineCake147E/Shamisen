@@ -106,20 +106,12 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
         /// <param name="rf64ChunkSizeContainer">The container of informations about the size of certain chunks.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public IWaveformChunkParser GetWaveformChunkParser(IChunkReader chunkReader, IRf64ChunkSizeContainer rf64ChunkSizeContainer)
+        public IWaveformChunkParser GetWaveformChunkParser(IChunkReader chunkReader, IRf64ChunkSizeContainer rf64ChunkSizeContainer) => Data.BitDepth switch
         {
-            switch (Data.BitDepth)
-            {
-                case 8:     //OffsetSByte
-                case 16:    //short and half
-                case 24:    //Int24
-                case 32:    //int or float
-                case 64:    //long or double
-                    return new ByteAlignedPcmWaveformChunkParser(chunkReader, Data);
-                default:
-                    throw new NotSupportedException($"{Data.BitDepth}-bit Linear PCM is not (currently) supported!");
-            }
-        }
+            //OffsetSByte
+            8 or 16 or 24 or 32 or 64 => new ByteAlignedPcmWaveformChunkParser(chunkReader, Data),
+            _ => throw new NotSupportedException($"{Data.BitDepth}-bit Linear PCM is not (currently) supported!"),
+        };
 
         /// <summary>
         /// Parses the fact chunk.

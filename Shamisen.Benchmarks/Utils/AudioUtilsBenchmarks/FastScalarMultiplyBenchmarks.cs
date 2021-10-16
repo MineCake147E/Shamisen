@@ -23,7 +23,6 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
                 _ = AddColumn(new PlaybackSpeedColumn(frameSelector, a => SampleRate));
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
-
         }
         [Params(1024, 1441)]
         public int Frames { get; set; }

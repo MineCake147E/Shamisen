@@ -268,7 +268,6 @@ namespace Shamisen.Conversion.Resampling.Sample
             return ((int)isx, (int)psx, rec, red);
         }
 
-
         #endregion
 
         #region WrappedEven
@@ -443,7 +442,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                 return ResampleCachedWrappedEvenGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
             }
         }
-
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)

@@ -44,7 +44,6 @@ namespace Shamisen.Filters
         /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
-
         /// <summary>
         /// Gets the item A.
         /// </summary>
@@ -107,7 +106,6 @@ namespace Shamisen.Filters
                 disposedValue = true;
             }
         }
-
 
         /// <inheritdoc/>
         public void Dispose()

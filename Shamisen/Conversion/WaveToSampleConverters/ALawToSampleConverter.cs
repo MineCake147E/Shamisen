@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
@@ -798,8 +797,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 return (short)((man ^ (uint)-(int)ss) + ss);
             }
         }
-
-
 
         private void ExpandBuffer(int internalBufferLengthRequired) => bufferWrapper.Resize(internalBufferLengthRequired);
 

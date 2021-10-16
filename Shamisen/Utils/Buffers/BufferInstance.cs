@@ -45,7 +45,7 @@ namespace Shamisen.Utils
                 {
                     //
                 }
-                if (!(array is null)) ArrayPool<TSample>.Shared.Return(array);
+                if (array is not null) ArrayPool<TSample>.Shared.Return(array);
                 ActualBuffer = Memory<TSample>.Empty;
                 disposedValue = true;
             }

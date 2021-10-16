@@ -137,7 +137,6 @@ namespace Shamisen.Codecs.Flac
                 }
             }
 
-
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {

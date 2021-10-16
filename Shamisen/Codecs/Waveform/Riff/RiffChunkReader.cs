@@ -104,7 +104,7 @@ namespace Shamisen.Codecs.Waveform
 
         private IReadableDataSource<byte> DataSource { get; set; }
 
-        private bool HasParent => !(Parent is null);
+        private bool HasParent => Parent is not null;
 
         private RiffChunkReader? Parent { get; }
 
@@ -175,10 +175,10 @@ namespace Shamisen.Codecs.Waveform
         }
 
         private ReadResult ReadFromSource(Span<byte> destination)
-            => !(Parent is null) ? Parent.ReadInternal(destination) : DataSource.Read(destination);
+            => Parent is not null ? Parent.ReadInternal(destination) : DataSource.Read(destination);
 
         private async ValueTask<ReadResult> ReadFromSourceAsync(Memory<byte> destination)
-            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
+            => Parent is not null ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
 
         private ReadResult ReadInternal(Span<byte> destination)
         {
@@ -258,7 +258,7 @@ namespace Shamisen.Codecs.Waveform
         /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         public void Skip(ulong numberOfElementsToSkip)
         {
-            if (!(Parent is null))
+            if (Parent is not null)
             {
                 Parent.Skip(numberOfElementsToSkip);
             }

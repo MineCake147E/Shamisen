@@ -96,7 +96,7 @@ namespace System.Numerics
         /// The negated vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator -(Vector6 value) => new Vector6(-value.front, -value.back);
+        public static Vector6 operator -(Vector6 value) => new(-value.front, -value.back);
 
         /// <summary>
         /// Adds two vectors together.
@@ -107,7 +107,7 @@ namespace System.Numerics
         /// The summed vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator +(Vector6 left, Vector6 right) => new Vector6(left.front + right.front, left.back + right.back);
+        public static Vector6 operator +(Vector6 left, Vector6 right) => new(left.front + right.front, left.back + right.back);
 
         /// <summary>
         /// Subtracts the second vector from the first.
@@ -118,7 +118,7 @@ namespace System.Numerics
         /// The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator -(Vector6 left, Vector6 right) => new Vector6(left.front - right.front, left.back - right.back);
+        public static Vector6 operator -(Vector6 left, Vector6 right) => new(left.front - right.front, left.back - right.back);
 
         /// <summary>
         /// Returns a new vector whose values are the product of each pair of elements in two specified vectors.
@@ -129,7 +129,7 @@ namespace System.Numerics
         /// The element-wise product vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator *(Vector6 left, Vector6 right) => new Vector6(left.front * right.front, left.back * right.back);
+        public static Vector6 operator *(Vector6 left, Vector6 right) => new(left.front * right.front, left.back * right.back);
 
         /// <summary>
         /// Divides the first vector by the second.
@@ -140,7 +140,7 @@ namespace System.Numerics
         /// The vector that results from dividing left by right.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator /(Vector6 left, Vector6 right) => new Vector6(left.front / right.front, left.back / right.back);
+        public static Vector6 operator /(Vector6 left, Vector6 right) => new(left.front / right.front, left.back / right.back);
 
         /// <summary>
         /// Multiples the specified vector by the specified scalar value.
@@ -151,7 +151,7 @@ namespace System.Numerics
         /// The scaled vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator *(Vector6 left, float right) => new Vector6(left.front * right, left.back * right);
+        public static Vector6 operator *(Vector6 left, float right) => new(left.front * right, left.back * right);
 
         /// <summary>
         /// Multiples the specified vector by the specified scalar value.
@@ -162,7 +162,7 @@ namespace System.Numerics
         /// The scaled vector.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator *(float left, Vector6 right) => new Vector6(right.front * left, right.back * left);
+        public static Vector6 operator *(float left, Vector6 right) => new(right.front * left, right.back * left);
 
         /// <summary>
         /// Divides the specified vector by a specified scalar value.
@@ -173,7 +173,7 @@ namespace System.Numerics
         /// The result of the division.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector6 operator /(Vector6 left, float right) => new Vector6(left.front / right, left.back / right);
+        public static Vector6 operator /(Vector6 left, float right) => new(left.front / right, left.back / right);
 
         /// <summary>
         /// Returns a value that indicates whether each pair of elements in two specified vectors are equal.

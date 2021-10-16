@@ -30,7 +30,6 @@ namespace Shamisen.Synthesis
             ChannelsDivisor = new(format.Channels);
         }
 
-
         /// <summary>
         /// Gets the format of the audio data.
         /// </summary>
@@ -298,8 +297,6 @@ namespace Shamisen.Synthesis
             }
             return new Fixed64(t);
         }
-
-
 
         #region IDisposable Support
 

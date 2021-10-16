@@ -148,7 +148,6 @@ namespace Shamisen.Core.Tests.CoreFx
             Assert.Pass();
         }
 
-
         #region ReverseEndiannessWorksCorrectly
         [Test]
         public void ReverseEndiannessFallbackWorksCorrectly()

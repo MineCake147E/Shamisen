@@ -11,7 +11,6 @@ using Shamisen.Codecs.Waveform.Rf64;
 using Shamisen.Codecs.Waveform.Riff;
 using Shamisen.Data.Binary;
 
-
 namespace Shamisen.Codecs.Waveform.Parsing
 {
     /// <summary>
@@ -319,7 +318,7 @@ namespace Shamisen.Codecs.Waveform.Parsing
                 case ChunkId.Data:
                     return DataSize ?? throw new InvalidOperationException($"The parser is not parsing RF64 data!");
                 default:
-                    if (!(ChunkSizeTable is null)) return ChunkSizeTable.First(a => a.Id == id).ChunkSize;
+                    if (ChunkSizeTable is not null) return ChunkSizeTable.First(a => a.Id == id).ChunkSize;
                     throw new InvalidOperationException($"Cannot find data size for {ConvertChunkNameToChars((uint)id)} chunk!");
             }
         }

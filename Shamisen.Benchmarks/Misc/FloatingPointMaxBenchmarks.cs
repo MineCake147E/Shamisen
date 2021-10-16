@@ -46,7 +46,6 @@ namespace Shamisen.Benchmarks.Misc
             }
             return (xmm0, xmm3);
         }
-
     }
 }
 

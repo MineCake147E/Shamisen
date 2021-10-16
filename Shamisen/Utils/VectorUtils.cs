@@ -9,7 +9,6 @@ using System;
 using System.Runtime.Intrinsics.Arm;
 #endif
 
-
 namespace Shamisen.Utils
 {
     /// <summary>
@@ -143,7 +142,6 @@ namespace Shamisen.Utils
             var v3 = AdvSimd.AddPairwise(v2.GetLower(), v2.GetUpper());
             return v3.GetElement(0);
         }
-
 
 #endif
 

@@ -32,7 +32,5 @@ namespace Shamisen.Pipeline
         /// 
         /// </summary>
         public IAudioPipelineConsumer<TSample, TFormat> Consumer { get; }
-
-
     }
 }

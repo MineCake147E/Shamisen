@@ -23,27 +23,27 @@ namespace Shamisen
         /// <summary>
         /// Represents the largest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly OffsetSByte MaxValue = new OffsetSByte(byte.MaxValue);
+        public static readonly OffsetSByte MaxValue = new(byte.MaxValue);
 
         /// <summary>
         /// Represents the smallest possible value of <see cref="OffsetSByte"/>. This field is constant and read-only.
         /// </summary>
-        public static readonly OffsetSByte MinValue = new OffsetSByte(byte.MinValue);
+        public static readonly OffsetSByte MinValue = new(byte.MinValue);
 
         /// <summary>
         /// Represents the number zero (0).
         /// </summary>
-        public static readonly OffsetSByte Zero = new OffsetSByte(128);
+        public static readonly OffsetSByte Zero = new(128);
 
         /// <summary>
         /// Represents the number one (1).
         /// </summary>
-        public static readonly OffsetSByte One = new OffsetSByte(129);
+        public static readonly OffsetSByte One = new(129);
 
         /// <summary>
         /// Represents the number negative one (-1).
         /// </summary>
-        public static readonly OffsetSByte MinusOne = new OffsetSByte(127);
+        public static readonly OffsetSByte MinusOne = new(127);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OffsetSByte"/> struct.
@@ -171,7 +171,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator OffsetSByte(sbyte value) => new OffsetSByte(value);
+        public static explicit operator OffsetSByte(sbyte value) => new(value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="int"/> to <see cref="OffsetSByte"/>.
@@ -195,7 +195,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="s">The string representation of the number to convert.</param>
         /// <returns>The equivalent to the number contained in <paramref name="s"/>.</returns>
-        public static OffsetSByte Parse(string s) => new OffsetSByte(sbyte.Parse(s));
+        public static OffsetSByte Parse(string s) => new(sbyte.Parse(s));
 
         /// <summary>
         /// Converts the string representation of a number to its <see cref="OffsetSByte"/> equivalent.<br/>

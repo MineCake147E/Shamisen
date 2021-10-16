@@ -39,7 +39,6 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             }
         }
 
-
         public void Dispose()
         {
             Dispose(disposing: true);

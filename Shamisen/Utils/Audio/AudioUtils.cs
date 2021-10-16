@@ -12,7 +12,6 @@ using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
-
 using Shamisen.Utils.Intrinsics;
 using Shamisen.Optimization;
 
@@ -433,7 +432,6 @@ namespace Shamisen.Utils
             sourceB = sourceB.SliceWhileIfLongerThan(min);
             FastMultiplyStandardVariable(destination, sourceA, sourceB);
         }
-
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void FastMultiplyStandardVariable(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
@@ -943,7 +941,6 @@ namespace Shamisen.Utils
         #endregion
 
         #region DuplicateMonauralToChannels
-
 
         /// <summary>
         /// Duplicates specified monaural signal <paramref name="source"/> to the specified stereo <paramref name="destination"/>.

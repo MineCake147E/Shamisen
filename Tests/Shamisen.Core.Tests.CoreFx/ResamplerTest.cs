@@ -215,7 +215,6 @@ namespace Shamisen.Core.Tests.CoreFx
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
                 Assert.AreEqual(0.0, avgDiff2);
             }
-
         }
         #endregion
         #region UpSamplingChannelsConsistency

@@ -93,7 +93,7 @@ namespace Shamisen.Buffers
         /// <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadOnlyInterleavedAudioSpan<TSample, TFormat> Slice(int start, int length)
-            => new ReadOnlyInterleavedAudioSpan<TSample, TFormat>(Format, Span.Slice(Format.BlockSize * start, Format.BlockSize * length));
+            => new(Format, Span.Slice(Format.BlockSize * start, Format.BlockSize * length));
 
         /// <summary>
         /// Forms a slice out of the current span that begins at a specified index.
@@ -103,7 +103,7 @@ namespace Shamisen.Buffers
         /// A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
         /// </returns>
         public ReadOnlyInterleavedAudioSpan<TSample, TFormat> Slice(int start)
-            => new ReadOnlyInterleavedAudioSpan<TSample, TFormat>(Format, Span.Slice(Format.BlockSize * start));
+            => new(Format, Span.Slice(Format.BlockSize * start));
 
         /// <summary>
         /// Copies the contents of this <see cref="ReadOnlyInterleavedAudioSpan{TSample, TFormat}"/> into a destination <see cref="InterleavedAudioSpan{TSample, TFormat}"/>.
@@ -143,7 +143,7 @@ namespace Shamisen.Buffers
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator ReadOnlyInterleavedAudioSpan<TSample, TFormat>(ReadOnlyAudioSpan<TSample, TFormat> span) => new ReadOnlyInterleavedAudioSpan<TSample, TFormat>(span.Format, span.Span);
+        public static implicit operator ReadOnlyInterleavedAudioSpan<TSample, TFormat>(ReadOnlyAudioSpan<TSample, TFormat> span) => new(span.Format, span.Span);
 
         #region Equality
 

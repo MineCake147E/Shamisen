@@ -32,7 +32,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         private int rearrangedCoeffsIndex = 0;
         private int rearrangedCoeffsDirection = 0;
 
-
         /// <summary>
         /// The pre calculated Catmull-Rom coefficients.<br/>
         /// X: The coefficient for value1 ((-xP3 + 2 * xP2 - x) * 0.5f)<br/>
@@ -47,7 +46,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         private bool isEndOfStream = false;
 
-
         private ResampleStrategy Strategy { get; }
         private X86Intrinsics X86Intrinsics { get; }
 
@@ -56,8 +54,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="destinationSampleRate">The destination sample rate.</param>
-        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate) :
-            this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
+        public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate)
+            : this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
         {
 
         }
@@ -235,7 +233,6 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-
 #if NETCOREAPP3_1_OR_GREATER
         /// <summary>
         /// SSE2 vectorized path
@@ -408,7 +405,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
         #endregion
 
-
         #region Misc
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -502,7 +498,6 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 #endif
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint Abs(int value)
@@ -678,7 +673,6 @@ namespace Shamisen.Conversion.Resampling.Sample
             return buffer.Length;
         }
 
-
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
@@ -692,6 +686,5 @@ namespace Shamisen.Conversion.Resampling.Sample
             bufferWrapper.Dispose();
             //sampleCache = null;
         }
-
     }
 }

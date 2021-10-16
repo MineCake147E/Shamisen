@@ -91,7 +91,7 @@ namespace Shamisen
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public InterleavedAudioMemory<TSample, TFormat> Slice(int start, int length)
-            => new InterleavedAudioMemory<TSample, TFormat>(Format, Memory.Slice(Format.BlockSize * start, Format.BlockSize * length));
+            => new(Format, Memory.Slice(Format.BlockSize * start, Format.BlockSize * length));
 
         /// <summary>
         /// Forms a slice out of the current memory that begins at a specified index.
@@ -101,7 +101,7 @@ namespace Shamisen
         /// A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
         /// </returns>
         public InterleavedAudioMemory<TSample, TFormat> Slice(int start)
-            => new InterleavedAudioMemory<TSample, TFormat>(Format, Memory.Slice(Format.BlockSize * start));
+            => new(Format, Memory.Slice(Format.BlockSize * start));
 
         /// <summary>
         /// Copies the contents of this <see cref="InterleavedAudioMemory{TSample, TFormat}"/> into a destination <see cref="InterleavedAudioMemory{TSample, TFormat}"/>.
@@ -141,7 +141,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator ReadOnlyInterleavedAudioMemory<TSample, TFormat>(InterleavedAudioMemory<TSample, TFormat> memory) => new ReadOnlyInterleavedAudioMemory<TSample, TFormat>(memory.Format, memory.Memory);
+        public static implicit operator ReadOnlyInterleavedAudioMemory<TSample, TFormat>(InterleavedAudioMemory<TSample, TFormat> memory) => new(memory.Format, memory.Memory);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="AudioMemory{TSample, TFormat}"/> to <see cref="InterleavedAudioMemory{TSample, TFormat}"/>.
@@ -150,7 +150,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator InterleavedAudioMemory<TSample, TFormat>(AudioMemory<TSample, TFormat> memory) => new InterleavedAudioMemory<TSample, TFormat>(memory.Format, memory.Memory);
+        public static implicit operator InterleavedAudioMemory<TSample, TFormat>(AudioMemory<TSample, TFormat> memory) => new(memory.Format, memory.Memory);
 
         #region Equality
 

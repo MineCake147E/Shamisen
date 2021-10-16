@@ -631,7 +631,6 @@ namespace Shamisen.Utils
 
             #endregion Quad
 
-
             #endregion
 
             #region DuplicateMonauralToChannels

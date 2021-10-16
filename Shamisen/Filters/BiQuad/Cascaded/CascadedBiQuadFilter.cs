@@ -39,7 +39,6 @@ namespace Shamisen.Filters.BiQuad.Cascaded
             Source = source;
         }
 
-
         /// <inheritdoc/>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
         /// <inheritdoc/>

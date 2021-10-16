@@ -23,7 +23,7 @@ namespace Shamisen
         public static ReadResult EndOfStream
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => new ReadResult(int.MinValue);
+            get => new(int.MinValue);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Shamisen
         public static ReadResult WaitingForSource
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => new ReadResult(0);
+            get => new(0);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Shamisen
         /// The result of the conversion.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static implicit operator ReadResult(int value) => new ReadResult(value);
+        public static implicit operator ReadResult(int value) => new(value);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -233,7 +233,7 @@ namespace Shamisen
         /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static ReadResult operator +(ReadResult left, int right) => new ReadResult(left.Length + right);
+        public static ReadResult operator +(ReadResult left, int right) => new(left.Length + right);
 
         /// <summary>
         /// Multiplies specified <see cref="ReadResult"/> value and <see cref="int"/> value.

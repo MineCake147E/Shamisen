@@ -38,7 +38,6 @@ namespace Shamisen.Benchmarks
         }
         #endregion
 
-
         [ParamsSource(nameof(ValuesForConversionRatio), Priority = 0)]
 
         public ConversionRatioProps ConversionRatio { get; set; }

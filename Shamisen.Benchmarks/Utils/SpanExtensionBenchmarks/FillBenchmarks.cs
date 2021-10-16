@@ -19,7 +19,6 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionBenchmarks
                 static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
-
         }
 
         [Params(65535, 65536)]

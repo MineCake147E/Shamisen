@@ -139,8 +139,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             return buffer.Length;
         }
 
-
-
         #region ProcessNormal
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessNormal(Span<float> buffer, ReadOnlySpan<short> source)

@@ -38,7 +38,6 @@ namespace Shamisen.Synthesis
         /// </summary>
         public float Offset { get; set; }
 
-
         /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
         /// <inheritdoc/>

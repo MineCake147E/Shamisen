@@ -87,7 +87,7 @@ namespace Shamisen.Formats
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
         public bool Equals(IAudioFormat<Half>? other)
-            => !(other is null) && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
+            => other is not null && other.BitDepth == BitDepth && other.Channels == Channels && other.SampleRate == SampleRate;
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>

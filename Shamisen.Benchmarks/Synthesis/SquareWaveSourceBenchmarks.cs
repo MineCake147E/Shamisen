@@ -38,7 +38,6 @@ namespace Shamisen.Benchmarks
                 yield return freq;
                 freq /= 2;
             }
-
         }
 
         //[ParamsSource(nameof(FrequencyParams))]

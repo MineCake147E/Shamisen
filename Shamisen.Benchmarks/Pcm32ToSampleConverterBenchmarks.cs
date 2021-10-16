@@ -24,7 +24,6 @@ namespace Shamisen.Benchmarks
                 static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
-
         }
         [Params(4096, 4229)]
         public int Frames { get; set; }
@@ -56,7 +55,6 @@ namespace Shamisen.Benchmarks
 
         [Benchmark]
         public void ReversedAvx2() => Pcm32ToSampleConverter.ProcessReversedAvx2(bufferDst);
-
 
     }
 }

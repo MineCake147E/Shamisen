@@ -52,6 +52,5 @@ namespace Shamisen.Benchmarks
                 return "N/A";
             }
         }
-
     }
 }

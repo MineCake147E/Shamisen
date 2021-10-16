@@ -602,7 +602,6 @@ namespace Shamisen.Conversion.Resampling.Sample
             return (int)isx;
         }
 
-
         #endregion
         #endregion
 

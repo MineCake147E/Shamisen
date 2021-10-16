@@ -205,7 +205,6 @@ namespace Shamisen
         #region Slice
         #region SliceWhileIfLongerThan
 
-
         /// <summary>
         /// Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
         /// </summary>

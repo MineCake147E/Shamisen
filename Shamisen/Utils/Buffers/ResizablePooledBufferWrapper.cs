@@ -32,7 +32,7 @@ namespace Shamisen.Utils
         /// <value>
         /// The buffer.
         /// </value>
-        protected override Span<byte> ActualBuffer => new Span<byte>(array);
+        protected override Span<byte> ActualBuffer => new(array);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

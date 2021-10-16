@@ -27,8 +27,6 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="buffer">The output buffer.</param>
         <#=            string.Join("\r\n\t\t", Enumerable.Range(0, channels).Select(a=>$"/// <param name=\"a{a}\">The input buffer for channel No.{a}.</param>"))#>
-        /// <param name="left">The input buffer for left channel.</param>
-        /// <param name="right">The input buffer for right channel.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void Interleave<#=            channels #>Channels(Span<int> buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
         {

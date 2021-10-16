@@ -25,7 +25,6 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
                     frameSelector,
                     a => SampleRate));
             }
-
         }
         [Params(1441)]
         public int Frames { get; set; }

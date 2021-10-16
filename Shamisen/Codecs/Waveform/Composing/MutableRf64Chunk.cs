@@ -12,7 +12,7 @@ namespace Shamisen.Codecs.Waveform.Composing
     /// <summary>
     /// Represents a mutable RF64 chunk.
     /// </summary>
-    public sealed class MutableRf64Chunk : IRf64Chunk, IList<IRf64Content>
+    public sealed class MutableRf64Chunk : IRf64Chunk, IList<IRf64Content>, IDisposable
     {
         private bool disposedValue;
         private readonly uint? size;

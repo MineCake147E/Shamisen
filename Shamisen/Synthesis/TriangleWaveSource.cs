@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
-
 #endif
 using Shamisen.Utils;
 
@@ -69,7 +68,6 @@ namespace Shamisen.Synthesis
             AudioUtils.DuplicateMonauralToChannels(buffer, bspan, channels);
             return buffer.Length;
         }
-
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta)
@@ -204,7 +202,6 @@ namespace Shamisen.Synthesis
         }
 #endif
 
-
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, ref Fixed64 theta)
         {
@@ -219,7 +216,6 @@ namespace Shamisen.Synthesis
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 AppendTheta(Fixed64 theta, Fixed64 omega) => theta + omega;
-
 
         /// <summary>
         /// Generates the monaural sample.
@@ -252,7 +248,6 @@ namespace Shamisen.Synthesis
                 disposedValue = true;
             }
         }
-
 
         /// <inheritdoc/>
         public void Dispose()

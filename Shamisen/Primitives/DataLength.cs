@@ -27,7 +27,7 @@ namespace Shamisen
         public static DataLength Infinity
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new DataLength(ulong.MaxValue);
+            get => new(ulong.MaxValue);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator DataLength(ulong value) => new DataLength(value);
+        public static implicit operator DataLength(ulong value) => new(value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="DataLength"/> to <see cref="ulong"/>.

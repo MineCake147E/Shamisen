@@ -72,7 +72,7 @@ namespace Shamisen
         /// <value>
         /// The span.
         /// </value>
-        public ReadOnlyAudioSpan<TSample, TFormat> Span => new ReadOnlyAudioSpan<TSample, TFormat>(Format, Memory.Span);
+        public ReadOnlyAudioSpan<TSample, TFormat> Span => new(Format, Memory.Span);
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
@@ -89,7 +89,7 @@ namespace Shamisen
         /// <param name="length">The desired length in samples for the slice.</param>
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public ReadOnlyAudioMemory<TSample, TFormat> Slice(int start, int length) => new ReadOnlyAudioMemory<TSample, TFormat>(Format, Memory.Slice(start, length));
+        public ReadOnlyAudioMemory<TSample, TFormat> Slice(int start, int length) => new(Format, Memory.Slice(start, length));
 
         /// <summary>
         /// Forms a slice out of the current memory that begins at a specified index.
@@ -98,7 +98,7 @@ namespace Shamisen
         /// <returns>
         /// A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
         /// </returns>
-        public ReadOnlyAudioMemory<TSample, TFormat> Slice(int start) => new ReadOnlyAudioMemory<TSample, TFormat>(Format, Memory.Slice(start));
+        public ReadOnlyAudioMemory<TSample, TFormat> Slice(int start) => new(Format, Memory.Slice(start));
 
         /// <summary>
         /// Copies the contents of this <see cref="ReadOnlyAudioMemory{TSample, TFormat}"/> into a destination <see cref="AudioMemory{TSample, TFormat}"/>.

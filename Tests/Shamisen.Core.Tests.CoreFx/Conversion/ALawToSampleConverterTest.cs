@@ -113,8 +113,6 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
             }
         }
 
-
-
         private static void PrepareBlock(out float[] buffer, out byte[] bb)
         {
             buffer = new float[8192 + 31];

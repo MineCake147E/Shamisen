@@ -66,7 +66,7 @@ namespace Shamisen
         /// <value>
         /// The span.
         /// </value>
-        public AudioSpan<TSample, TFormat> Span => new AudioSpan<TSample, TFormat>(Format, Memory.Span);
+        public AudioSpan<TSample, TFormat> Span => new(Format, Memory.Span);
 
         /// <summary>
         /// Forms a slice out of the current memory starting at a specified index for a specified <paramref name="length"/>.
@@ -75,7 +75,7 @@ namespace Shamisen
         /// <param name="length">The desired length in samples for the slice.</param>
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public AudioMemory<TSample, TFormat> Slice(int start, int length) => new AudioMemory<TSample, TFormat>(Format, Memory.Slice(start, length));
+        public AudioMemory<TSample, TFormat> Slice(int start, int length) => new(Format, Memory.Slice(start, length));
 
         /// <summary>
         /// Forms a slice out of the current memory that begins at a specified index.
@@ -84,7 +84,7 @@ namespace Shamisen
         /// <returns>
         /// A memory that consists of all elements of the current memory from <paramref name="start"/> to the end of the memory.
         /// </returns>
-        public AudioMemory<TSample, TFormat> Slice(int start) => new AudioMemory<TSample, TFormat>(Format, Memory.Slice(start));
+        public AudioMemory<TSample, TFormat> Slice(int start) => new(Format, Memory.Slice(start));
 
         /// <summary>
         /// Copies the contents of this <see cref="AudioMemory{TSample, TFormat}"/> into a destination <see cref="AudioMemory{TSample, TFormat}"/>.
@@ -125,7 +125,7 @@ namespace Shamisen
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ReadOnlyAudioMemory<TSample, TFormat>(AudioMemory<TSample, TFormat> memory)
-            => new ReadOnlyAudioMemory<TSample, TFormat>(memory.Format, memory.Memory);
+            => new(memory.Format, memory.Memory);
 
         #region Equality
 

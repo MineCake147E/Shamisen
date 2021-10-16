@@ -11,7 +11,6 @@ namespace Shamisen.Utils
         {
             #region Interleave
 
-
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {

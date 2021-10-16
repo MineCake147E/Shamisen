@@ -60,7 +60,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// </value>
         public IRf64Parser Parser { get; }
 
-        private bool HasParent => !(Parent is null);
+        private bool HasParent => Parent is not null;
 
         private Rf64ChunkReader? Parent { get; set; }
 
@@ -217,10 +217,10 @@ namespace Shamisen.Codecs.Waveform.Rf64
         }
 
         private ReadResult ReadFromSource(Span<byte> destination)
-            => !(Parent is null) ? Parent.ReadInternal(destination) : DataSource.Read(destination);
+            => Parent is not null ? Parent.ReadInternal(destination) : DataSource.Read(destination);
 
         private async ValueTask<ReadResult> ReadFromSourceAsync(Memory<byte> destination)
-            => !(Parent is null) ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
+            => Parent is not null ? await Parent.ReadInternalAsync(destination) : DataSource.AsyncReadSupport is { } s ? await s.ReadAsync(destination) : DataSource.Read(destination.Span);
 
         private ReadResult ReadInternal(Span<byte> destination)
         {
@@ -300,7 +300,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
         public void Skip(ulong numberOfElementsToSkip)
         {
-            if (!(Parent is null))
+            if (Parent is not null)
             {
                 Parent.Skip(numberOfElementsToSkip);
             }
@@ -329,7 +329,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
                 if (disposing)
                 {
 #pragma warning disable S1066 // Collapsible "if" statements should be merged
-                    if (RemainingBytes > 0 && !(Parent is null))
+                    if (RemainingBytes > 0 && Parent is not null)
 #pragma warning restore S1066 // Collapsible "if" statements should be merged
                     {
                         Parent.Skip(RemainingBytes);

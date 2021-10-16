@@ -82,7 +82,7 @@ namespace Shamisen
         /// <param name="length">The desired length in samples for the slice.</param>
         /// <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public ReadOnlyAudioSpan<TSample, TFormat> Slice(int start, int length) => new ReadOnlyAudioSpan<TSample, TFormat>(Format, Span.Slice(start, length));
+        public ReadOnlyAudioSpan<TSample, TFormat> Slice(int start, int length) => new(Format, Span.Slice(start, length));
 
         /// <summary>
         /// Forms a slice out of the current span that begins at a specified index.
@@ -91,7 +91,7 @@ namespace Shamisen
         /// <returns>
         /// A span that consists of all elements of the current span from <paramref name="start"/> to the end of the span.
         /// </returns>
-        public ReadOnlyAudioSpan<TSample, TFormat> Slice(int start) => new ReadOnlyAudioSpan<TSample, TFormat>(Format, Span.Slice(start));
+        public ReadOnlyAudioSpan<TSample, TFormat> Slice(int start) => new(Format, Span.Slice(start));
 
         /// <summary>
         /// Copies the contents of this <see cref="ReadOnlyAudioSpan{TSample, TFormat}"/> into a destination <see cref="AudioSpan{TSample, TFormat}"/>.
