@@ -52,14 +52,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         public SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool doDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
             : this(source, true, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, doDeltaSigmaModulation, endianness)
         {
-            if (doDeltaSigmaModulation)
-            {
-                dsmAccumulator = new float[source.Format.Channels];
-                dsmLastOutput = new short[source.Format.Channels];
-            }
-            DoDeltaSigmaModulation = doDeltaSigmaModulation;
-            Endianness = endianness;
-            readBuffer = new float[ActualBufferMax];
+
         }
 
         /// <summary>
@@ -69,11 +62,19 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// <param name="enableIntrinsics"></param>
         /// <param name="enabledX86Intrinsics"></param>
         /// <param name="enabledArmIntrinsics"></param>
-        /// <param name="soDeltaSigmaModulation">Turns on <see cref="DoDeltaSigmaModulation"/> when <c>true</c>.</param>
+        /// <param name="doDeltaSigmaModulation">Turns on <see cref="DoDeltaSigmaModulation"/> when <c>true</c>.</param>
         /// <param name="endianness">The destination endianness.</param>
-        internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool soDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
+        internal SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool doDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
              : base(source, new WaveFormat(source.Format.SampleRate, 16, source.Format.Channels, AudioEncoding.LinearPcm))
         {
+            if (doDeltaSigmaModulation)
+            {
+                dsmAccumulator = new float[source.Format.Channels];
+                dsmLastOutput = new short[source.Format.Channels];
+            }
+            DoDeltaSigmaModulation = doDeltaSigmaModulation;
+            Endianness = endianness;
+            readBuffer = new float[ActualBufferMax];
             this.enableIntrinsics = enableIntrinsics;
             this.enabledX86Intrinsics = enabledX86Intrinsics;
             this.enabledArmIntrinsics = enabledArmIntrinsics;
@@ -244,9 +245,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 #if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
-                    if (Avx2.IsSupported)
+                    if (Avx2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx2))
                     {
-                        //
+                        ProcessReversedAvx2(wrote, dest);
+                        return;
                     }
                     if (Ssse3.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Ssse3))
                     {
@@ -262,9 +264,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 #if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
-                    if (Avx2.IsSupported)
+                    if (Avx2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx2))
                     {
-                        //
+                        ProcessNormalAvx2(wrote, dest);
+                        return;
                     }
                     if (Sse2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse2))
                     {
@@ -277,21 +280,57 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessReversedOrdinal(Span<float> wrote, Span<short> dest)
         {
+            ProcessNormalOrdinal(wrote, dest);
             for (int i = 0; i < dest.Length; i++)
             {
-                short v = Convert(wrote[i]);
+                short v = dest[i];
                 dest[i] = BinaryPrimitives.ReverseEndianness(v);
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessNormalOrdinal(Span<float> wrote, Span<short> dest)
         {
-            for (int i = 0; i < dest.Length; i++)
+            var max = new Vector<float>(32767.0f);
+            var min = new Vector<float>(-32768.0f);
+            var mul = new Vector<float>(32768.0f);
+            ref short dst = ref MemoryMarshal.GetReference(dest);
+            ref float src = ref MemoryMarshal.GetReference(wrote);
+            nint i = 0, length = MathI.Min(wrote.Length, dest.Length);
+            nint olen = length - Vector<float>.Count * 4 + 1;
+            for (; i < olen; i += Vector<float>.Count * 4)
             {
-                short v = (short)Math.Min(short.MaxValue, Math.Max(wrote[i] * Multiplier, short.MinValue));
-                dest[i] = v;
+                var v0_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 0));
+                var v1_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 1));
+                var v2_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 2));
+                var v3_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 3));
+                v0_ns = Vector.Min(v0_ns, max);
+                v1_ns = Vector.Min(v1_ns, max);
+                v2_ns = Vector.Min(v2_ns, max);
+                v3_ns = Vector.Min(v3_ns, max);
+                v0_ns = Vector.Max(v0_ns, min);
+                v1_ns = Vector.Max(v1_ns, min);
+                v2_ns = Vector.Max(v2_ns, min);
+                v3_ns = Vector.Max(v3_ns, min);
+                var v0_ns2 = Vector.ConvertToInt32(v0_ns);
+                var v1_ns2 = Vector.ConvertToInt32(v1_ns);
+                var v2_ns2 = Vector.ConvertToInt32(v2_ns);
+                var v3_ns2 = Vector.ConvertToInt32(v3_ns);
+                var v4_nh = Vector.Narrow(v0_ns2, v1_ns2);
+                var v5_nh = Vector.Narrow(v2_ns2, v3_ns2);
+                Unsafe.As<short, Vector<short>>(ref Unsafe.Add(ref dst, i + Vector<short>.Count * 0)) = v4_nh;
+                Unsafe.As<short, Vector<short>>(ref Unsafe.Add(ref dst, i + Vector<short>.Count * 1)) = v5_nh;
+            }
+            for (; i < length; i++)
+            {
+                float s0 = mul[0] * Unsafe.Add(ref src, i);
+                s0 = FastMath.Min(s0, max[0]);
+                s0 = FastMath.Max(s0, min[0]);
+                int x0 = (int)s0;
+                Unsafe.Add(ref dst, i) = (short)x0;
             }
         }
 

@@ -103,16 +103,8 @@ namespace Shamisen.Conversion.ChannelConverters
             var rr = Source.Read(readBuffer);
             if (rr.HasData)
             {
-                unchecked
-                {
-                    var rb = readBuffer.SliceWhile(rr.Length);
-                    var wb = MemoryMarshal.Cast<float, Vector2>(buffer).SliceWhile(rb.Length);
-                    for (int i = 0; i < rb.Length; i++)
-                    {
-                        wb[i] = new Vector2(rb[i]);
-                    }
-                    return wb.Length * 2;
-                }
+                AudioUtils.DuplicateMonauralToStereo(buffer, readBuffer);
+                return rr;
             }
             else
             {

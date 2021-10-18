@@ -8182,7 +8182,7 @@
             <param name="enableIntrinsics"></param>
             <param name="enabledX86Intrinsics"></param>
             <param name="enabledArmIntrinsics"></param>
-            <param name="soDeltaSigmaModulation">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation"/> when <c>true</c>.</param>
+            <param name="doDeltaSigmaModulation">Turns on <see cref="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation"/> when <c>true</c>.</param>
             <param name="endianness">The destination endianness.</param>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.DoDeltaSigmaModulation">
@@ -18591,8 +18591,6 @@
             <param name="a2">The input buffer for channel No.2.</param>
             <param name="a3">The input buffer for channel No.3.</param>
             <param name="a4">The input buffer for channel No.4.</param>
-            <param name="left">The input buffer for left channel.</param>
-            <param name="right">The input buffer for right channel.</param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.Interleave6Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -18605,8 +18603,6 @@
             <param name="a3">The input buffer for channel No.3.</param>
             <param name="a4">The input buffer for channel No.4.</param>
             <param name="a5">The input buffer for channel No.5.</param>
-            <param name="left">The input buffer for left channel.</param>
-            <param name="right">The input buffer for right channel.</param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.Interleave7Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -18620,8 +18616,6 @@
             <param name="a4">The input buffer for channel No.4.</param>
             <param name="a5">The input buffer for channel No.5.</param>
             <param name="a6">The input buffer for channel No.6.</param>
-            <param name="left">The input buffer for left channel.</param>
-            <param name="right">The input buffer for right channel.</param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.Interleave8Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -18636,8 +18630,6 @@
             <param name="a5">The input buffer for channel No.5.</param>
             <param name="a6">The input buffer for channel No.6.</param>
             <param name="a7">The input buffer for channel No.7.</param>
-            <param name="left">The input buffer for left channel.</param>
-            <param name="right">The input buffer for right channel.</param>
         </member>
         <member name="T:Shamisen.Utils.BufferInstance`1">
             <summary>
@@ -18821,6 +18813,27 @@
             <value>
             The environment endianness.
             </value>
+        </member>
+        <member name="T:Shamisen.Utils.FastMath">
+            <summary>
+            Contains some mathematical functions for Floating-Point numbers.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Max(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Max(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Min(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
             <summary>
