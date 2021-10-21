@@ -6,6 +6,8 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
+using Shamisen.Benchmarks.SplineResamplerBenchmarks;
+
 namespace Shamisen.Benchmarks.Running
 {
     internal class Program

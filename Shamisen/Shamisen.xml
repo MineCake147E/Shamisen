@@ -8324,6 +8324,22 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.Convert(System.Single)">
+            <summary>
+            Clamps the specified <paramref name="srcval"/> between -1 and 1, and then converts to <see cref="T:System.Int32"/>.<br/>
+            Note that the value >= 1.0f will be converted to <see cref="F:System.Int32.MaxValue"/> instead of 0 or 2147483520 in order to avoid overflows and quantization noises.
+            </summary>
+            <param name="srcval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertScaled(System.Single)">
+            <summary>
+            Clamps the specified <paramref name="srcval"/> between -2147483648.0f and 2147483648.0f, and then converts to <see cref="T:System.Int32"/>.<br/>
+            Note that the value >= 1.0f will be converted to <see cref="F:System.Int32.MaxValue"/> instead of 0 or 2147483520 in order to avoid overflows and quantization noises.
+            </summary>
+            <param name="srcval"></param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -18835,6 +18851,16 @@
             </returns>
             <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
         </member>
+        <member name="M:Shamisen.Utils.FastMath.Round(System.Single)">
+            <summary>
+            Rounds a single-precision floating-point value to the nearest integral value,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="x">A single-precision floating-point number to be rounded.</param>
+            <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
         <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
             <summary>
             Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
@@ -20661,6 +20687,47 @@
             <param name="coeffs">The coefficents to multiply.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Blend(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.Single},System.Numerics.Vector{System.Single})">
+            <summary>
+             Creates a new single-precision vector with elements selected between two specified single-precision source vectors based on an integral mask vector.
+            </summary>
+            <param name="condition"></param>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Blend(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.Int32})">
+            <summary>
+             Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
+            </summary>
+            <param name="condition"></param>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Round(System.Numerics.Vector{System.Single})">
+            <summary>
+            Rounds a vector of single-precision floating-point value to the nearest integral values,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+            <returns>The integer <see cref="T:System.Numerics.Vector`1"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a floating-point <see cref="T:System.Numerics.Vector`1"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.RoundInLoop(System.Numerics.Vector{System.Single},System.Numerics.Vector{System.Single},System.Numerics.Vector{System.Single})">
+            <summary>
+            Rounds a vector of single-precision floating-point value to the nearest integral values,
+            and rounds midpoint values to the nearest even number.<br/>
+            This one is suitable for processing inside loops.
+            </summary>
+            <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+            <param name="sign">A broadcast vector with only sign bits set. If you pass wrong value, this function won't work as intended.</param>
+            <param name="reciprocalEpsilon">A broadcast vector represents 16777216f. If you pass wrong value, this function won't work as intended.</param>
+            <returns>The integer <see cref="T:System.Numerics.Vector`1"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a floating-point <see cref="T:System.Numerics.Vector`1"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.
@@ -21547,6 +21614,12 @@
             <returns></returns>
         </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int32})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>

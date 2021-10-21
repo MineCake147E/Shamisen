@@ -305,8 +305,8 @@ namespace Shamisen.Utils
             var v1_4s = Unsafe.As<Vector2, Vector4>(ref Unsafe.Add(ref head, 2));
             var v2_4s = new Vector4(v0_4s.X, v0_4s.Z, v1_4s.X, v1_4s.Z);    //Left
             var v3_4s = new Vector4(v0_4s.Y, v0_4s.W, v1_4s.Y, v1_4s.W);    //Right
-            float s0 = FastDotProduct(v2_4s, coeffs);
-            float s1 = FastDotProduct(v3_4s, coeffs);
+            var s0 = FastDotProduct(v2_4s, coeffs);
+            var s1 = FastDotProduct(v3_4s, coeffs);
             return new Vector2(s0, s1);
         }
         #endregion
@@ -515,7 +515,202 @@ namespace Shamisen.Utils
         #endregion
 
         #endregion
+        #region Blend
+        /// <summary>
+        ///  Creates a new single-precision vector with elements selected between two specified single-precision source vectors based on an integral mask vector.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<float> Blend(Vector<int> condition, Vector<float> left, Vector<float> right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (Vector<int>.Count == 4 && Sse41.IsSupported)
+                {
+                    return Sse41.BlendVariable(left.AsVector128(), right.AsVector128(), condition.AsVector128().AsSingle()).AsVector();
+                }
+                if (Vector<int>.Count == 8 && Avx.IsSupported)
+                {
+                    return Avx.BlendVariable(left.AsVector256(), right.AsVector256(), condition.AsVector256().AsSingle()).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER && !NET5_0_OR_GREATER
+                if (Vector<int>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref left);
+                    var xmm1 = Unsafe.As<Vector<float>, Vector128<float>>(ref right);
+                    var xmm2 = Unsafe.As<Vector<int>, Vector128<int>>(ref condition);
+                    var xmm3 = Sse41.BlendVariable(xmm0.AsSingle(), xmm1.AsSingle(), xmm2.AsSingle());
+                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm3);
+                }
+                if (Vector<int>.Count == 8 && Avx.IsSupported)
+                {
+                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref left);
+                    var ymm1 = Unsafe.As<Vector<float>, Vector256<float>>(ref right);
+                    var ymm2 = Unsafe.As<Vector<int>, Vector256<int>>(ref condition);
+                    var ymm3 = Avx.BlendVariable(ymm0.AsSingle(), ymm1.AsSingle(), ymm2.AsSingle());
+                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm3);
+                }
+#endif
+                return Vector.ConditionalSelect(condition, left, right);
+            }
+        }
+        /// <summary>
+        ///  Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> Blend(Vector<int> condition, Vector<int> left, Vector<int> right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (Vector<int>.Count == 4 && Sse41.IsSupported)
+                {
+                    return Sse41.BlendVariable(left.AsVector128().AsSingle(), right.AsVector128().AsSingle(), condition.AsVector128().AsSingle()).AsInt32().AsVector();
+                }
+                if (Vector<int>.Count == 8 && Avx.IsSupported)
+                {
+                    return Avx.BlendVariable(left.AsVector256().AsSingle(), right.AsVector256().AsSingle(), condition.AsVector256().AsSingle()).AsInt32().AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER && !NET5_0_OR_GREATER
+                if (Vector<int>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector<int>, Vector128<int>>(ref left);
+                    var xmm1 = Unsafe.As<Vector<int>, Vector128<int>>(ref right);
+                    var xmm2 = Unsafe.As<Vector<int>, Vector128<int>>(ref condition);
+                    var xmm3 = Sse41.BlendVariable(xmm0.AsSingle(), xmm1.AsSingle(), xmm2.AsSingle()).AsInt32();
+                    return Unsafe.As<Vector128<int>, Vector<int>>(ref xmm3);
+                }
+                if (Vector<int>.Count == 8 && Avx.IsSupported)
+                {
+                    var ymm0 = Unsafe.As<Vector<int>, Vector256<int>>(ref left);
+                    var ymm1 = Unsafe.As<Vector<int>, Vector256<int>>(ref right);
+                    var ymm2 = Unsafe.As<Vector<int>, Vector256<int>>(ref condition);
+                    var ymm3 = Avx.BlendVariable(ymm0.AsSingle(), ymm1.AsSingle(), ymm2.AsSingle()).AsInt32();
+                    return Unsafe.As<Vector256<int>, Vector<int>>(ref ymm3);
+                }
+#endif
+                return Vector.ConditionalSelect(condition, left, right);
+            }
+        }
+        #endregion
+        #region Round
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<float> Round(Vector<float> values)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (Vector<float>.Count == 4 && AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
+                }
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    return Avx.RoundToNearestInteger(values.AsVector256()).AsVector();
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
+                    ymm0 = Avx.RoundToNearestInteger(ymm0);
+                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
+                }
+#endif
+                var v = values;
+                var sign = Vector.AsVectorSingle(new Vector<int>(int.MinValue));
+                var reciprocalEpsilon = new Vector<float>(16777216f);
+                //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
+                var s = Vector.BitwiseAnd(sign, v);
+                var a = Vector.BitwiseOr(reciprocalEpsilon, s);
+                v += a;
+                v -= a;
+                return Vector.BitwiseOr(v, s);
+            }
+        }
 
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.<br/>
+        /// This one is suitable for processing inside loops.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <param name="sign">A broadcast vector with only sign bits set. If you pass wrong value, this function won't work as intended.</param>
+        /// <param name="reciprocalEpsilon">A broadcast vector represents 16777216f. If you pass wrong value, this function won't work as intended.</param>
+        /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<float> RoundInLoop(Vector<float> values, Vector<float> sign, Vector<float> reciprocalEpsilon)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (Vector<float>.Count == 4 && AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
+                }
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    return Avx.RoundToNearestInteger(values.AsVector256()).AsVector();
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
+                    ymm0 = Avx.RoundToNearestInteger(ymm0);
+                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
+                }
+#endif
+                var v = values;
+                //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
+                var s = Vector.BitwiseAnd(sign, v);
+                var a = Vector.BitwiseOr(reciprocalEpsilon, s);
+                v += a;
+                v -= a;
+                return Vector.BitwiseOr(v, s);
+            }
+        }
+        #endregion
         #region AddAsInt32
         /// <summary>
         /// Adds two <see cref="Vector4"/> values as if values are <see cref="int"/>.

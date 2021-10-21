@@ -5,7 +5,7 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.Resampling.Sample;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
     [SimpleJob(RuntimeMoniker.Net50)]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]

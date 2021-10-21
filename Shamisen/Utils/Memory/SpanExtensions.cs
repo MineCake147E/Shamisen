@@ -162,7 +162,7 @@ namespace Shamisen
         {
             unsafe
             {
-                ref int q = ref MemoryMarshal.GetReference(span);
+                ref var q = ref MemoryMarshal.GetReference(span);
                 for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
                 {
                     Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
@@ -288,6 +288,7 @@ namespace Shamisen
         public static Span<T> SliceFromEnd<T>(this Span<T> span, int length) => span.Slice(span.Length - length);
         #endregion
         #region ReverseEndianness
+        #region UInt64
 
         /// <summary>
         /// Reverses the endianness of each elements in specified <paramref name="span"/>.
@@ -329,7 +330,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessAdvSimd(Span<ulong> span)
         {
-            ref ulong rdi = ref MemoryMarshal.GetReference(span);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 3; i += 4)
             {
@@ -348,7 +349,7 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessAdvSimdArm64(Span<ulong> span)
         {
-            ref ulong rdi = ref MemoryMarshal.GetReference(span);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             unsafe
             {
@@ -407,9 +408,10 @@ namespace Shamisen
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
             var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
             var mask256 = Vector256.Create(mask, mask);
-            ref ulong rdi = ref MemoryMarshal.GetReference(span);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
-            for (; i < length - 31; i += 32)
+            var olen = length - 31;
+            for (; i < olen; i += 32)
             {
                 var ymm0 = Unsafe.As<ulong, Vector256<ulong>>(ref Unsafe.Add(ref rdi, i + 0));
                 var ymm1 = Unsafe.As<ulong, Vector256<ulong>>(ref Unsafe.Add(ref rdi, i + 4));
@@ -456,7 +458,7 @@ namespace Shamisen
         {
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
             var mask = Vector128.Create(0x0001020304050607ul, 0x08090a0b0c0d0e0ful).AsByte();
-            ref ulong rdi = ref MemoryMarshal.GetReference(span);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 15; i += 16)
             {
@@ -505,12 +507,12 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessFallback(Span<ulong> span)
         {
-            ref ulong rdi = ref MemoryMarshal.GetReference(span);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 7; i += 8)
             {
-                ulong x0 = Unsafe.Add(ref rdi, i + 0);
-                ulong x1 = Unsafe.Add(ref rdi, i + 1);
+                var x0 = Unsafe.Add(ref rdi, i + 0);
+                var x1 = Unsafe.Add(ref rdi, i + 1);
                 Unsafe.Add(ref rdi, i + 0) = BinaryPrimitives.ReverseEndianness(x0);
                 Unsafe.Add(ref rdi, i + 1) = BinaryPrimitives.ReverseEndianness(x1);
                 x0 = Unsafe.Add(ref rdi, i + 2);
@@ -535,12 +537,179 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessSimple(Span<ulong> span)
         {
-            for (int i = 0; i < span.Length; i++)
+            for (var i = 0; i < span.Length; i++)
             {
                 span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
             }
         }
 
+        #endregion
+        #region Int32
+
+        /// <summary>
+        /// Reverses the endianness of each elements in specified <paramref name="span"/>.
+        /// </summary>
+        /// <param name="span">The span.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ReverseEndianness(this Span<int> span)
+        {
+            /*
+#if NET5_0_OR_GREATER
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                ReverseEndiannessAdvSimdArm64(span);
+                return;
+            }
+            if (AdvSimd.IsSupported)
+            {
+                ReverseEndiannessAdvSimd(span);
+                return;
+            }
+#endif
+            */
+#if NETCOREAPP3_1_OR_GREATER
+            if (Avx2.IsSupported)
+            {
+                ReverseEndiannessAvx2(span);
+                return;
+            }
+            if (Ssse3.IsSupported)
+            {
+                ReverseEndiannessSsse3(span);
+                return;
+            }
+#endif
+            ReverseEndiannessFallback(span);
+        }
+#if NETCOREAPP3_1_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessAvx2(Span<int> span)
+        {
+            var mask256 = Vector256.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i = 0, length = span.Length;
+            var olen = length - 31;
+            for (; i < olen; i += 32)
+            {
+                var ymm0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 0));
+                var ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 4));
+                var ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 8));
+                var ymm3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 12));
+                ymm0 = Avx2.Shuffle(ymm0.AsByte(), mask256).AsInt32();
+                ymm1 = Avx2.Shuffle(ymm1.AsByte(), mask256).AsInt32();
+                ymm2 = Avx2.Shuffle(ymm2.AsByte(), mask256).AsInt32();
+                ymm3 = Avx2.Shuffle(ymm3.AsByte(), mask256).AsInt32();
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm0;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 4)) = ymm1;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm2;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 12)) = ymm3;
+                ymm0 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 16));
+                ymm1 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 20));
+                ymm2 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 24));
+                ymm3 = Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 28));
+                ymm0 = Avx2.Shuffle(ymm0.AsByte(), mask256).AsInt32();
+                ymm1 = Avx2.Shuffle(ymm1.AsByte(), mask256).AsInt32();
+                ymm2 = Avx2.Shuffle(ymm2.AsByte(), mask256).AsInt32();
+                ymm3 = Avx2.Shuffle(ymm3.AsByte(), mask256).AsInt32();
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm0;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 20)) = ymm1;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm2;
+                Unsafe.As<int, Vector256<int>>(ref Unsafe.Add(ref rdi, i + 28)) = ymm3;
+            }
+            for (; i < length - 3; i += 4)
+            {
+                var xmm0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0));
+                var xmm1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2));
+                xmm0 = Ssse3.Shuffle(xmm0.AsByte(), mask256.GetLower()).AsInt32();
+                xmm1 = Ssse3.Shuffle(xmm1.AsByte(), mask256.GetLower()).AsInt32();
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm0;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2)) = xmm1;
+            }
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessSsse3(Span<int> span)
+        {
+            //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
+            var mask = Vector128.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i = 0, length = span.Length;
+            for (; i < length - 15; i += 16)
+            {
+                var xmm0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0));
+                var xmm1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2));
+                var xmm2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 4));
+                var xmm3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 6));
+                xmm0 = Ssse3.Shuffle(xmm0.AsByte(), mask).AsInt32();
+                xmm1 = Ssse3.Shuffle(xmm1.AsByte(), mask).AsInt32();
+                xmm2 = Ssse3.Shuffle(xmm2.AsByte(), mask).AsInt32();
+                xmm3 = Ssse3.Shuffle(xmm3.AsByte(), mask).AsInt32();
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm0;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2)) = xmm1;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm2;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 6)) = xmm3;
+                xmm0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 8));
+                xmm1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 10));
+                xmm2 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 12));
+                xmm3 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 14));
+                xmm0 = Ssse3.Shuffle(xmm0.AsByte(), mask).AsInt32();
+                xmm1 = Ssse3.Shuffle(xmm1.AsByte(), mask).AsInt32();
+                xmm2 = Ssse3.Shuffle(xmm2.AsByte(), mask).AsInt32();
+                xmm3 = Ssse3.Shuffle(xmm3.AsByte(), mask).AsInt32();
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 8)) = xmm0;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 10)) = xmm1;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 12)) = xmm2;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 14)) = xmm3;
+            }
+            for (; i < length - 3; i += 4)
+            {
+                var xmm0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0));
+                var xmm1 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2));
+                xmm0 = Ssse3.Shuffle(xmm0.AsByte(), mask).AsInt32();
+                xmm1 = Ssse3.Shuffle(xmm1.AsByte(), mask).AsInt32();
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm0;
+                Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rdi, i + 2)) = xmm1;
+            }
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
+            }
+        }
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessFallback(Span<int> span)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i = 0, length = span.Length;
+            for (; i < length - 7; i += 8)
+            {
+                var x0 = Unsafe.Add(ref rdi, i + 0);
+                var x1 = Unsafe.Add(ref rdi, i + 1);
+                Unsafe.Add(ref rdi, i + 0) = BinaryPrimitives.ReverseEndianness(x0);
+                Unsafe.Add(ref rdi, i + 1) = BinaryPrimitives.ReverseEndianness(x1);
+                x0 = Unsafe.Add(ref rdi, i + 2);
+                Unsafe.Add(ref rdi, i + 2) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 3);
+                Unsafe.Add(ref rdi, i + 3) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 4);
+                Unsafe.Add(ref rdi, i + 4) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 5);
+                Unsafe.Add(ref rdi, i + 5) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 6);
+                Unsafe.Add(ref rdi, i + 6) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 7);
+                Unsafe.Add(ref rdi, i + 7) = BinaryPrimitives.ReverseEndianness(x0);
+            }
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
+            }
+        }
+        #endregion
         #endregion ReverseEndianness
     }
 }

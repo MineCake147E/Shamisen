@@ -13,7 +13,7 @@ using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.Conversion
 {
     [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]

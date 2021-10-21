@@ -6,11 +6,13 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
+using Shamisen;
+
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
     //[DryJob(RuntimeMoniker.Net50)]
     [SimpleJob(RuntimeMoniker.Net50)]

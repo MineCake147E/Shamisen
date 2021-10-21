@@ -85,5 +85,26 @@ namespace Shamisen.Utils
                 return Math.Min(x, y);
             }
         }
+
+        /// <summary>
+        /// Rounds a single-precision floating-point value to the nearest integral value,
+        /// and rounds midpoint values to the nearest even number.
+        /// </summary>
+        /// <param name="x">A single-precision floating-point number to be rounded.</param>
+        /// <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a <see cref="float"/> instead of an integral type.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Round(float x)
+        {
+            unchecked
+            {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                return MathF.Round(x);
+#else
+                return (float)Math.Round(x);
+#endif
+            }
+        }
     }
 }

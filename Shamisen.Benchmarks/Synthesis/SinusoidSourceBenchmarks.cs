@@ -5,7 +5,7 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.Synthesis
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]

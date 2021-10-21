@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public struct ConversionRatioProps

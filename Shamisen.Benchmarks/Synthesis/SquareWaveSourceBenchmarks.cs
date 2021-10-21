@@ -7,7 +7,7 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.Synthesis
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
@@ -31,9 +31,9 @@ namespace Shamisen.Benchmarks
 
         public static IEnumerable<double> FrequencyParams()
         {
-            double nyquist = SampleRate / 2.0;
-            double freq = nyquist;
-            for (int i = 0; i < 1; i++)
+            var nyquist = SampleRate / 2.0;
+            var freq = nyquist;
+            for (var i = 0; i < 1; i++)
             {
                 yield return freq;
                 freq /= 2;

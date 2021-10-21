@@ -9,7 +9,7 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.WaveToSampleConverters;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.Conversion
 {
     [SimpleJob(RuntimeMoniker.Net50)]
     [Config(typeof(Config))]
@@ -31,7 +31,7 @@ namespace Shamisen.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            int samples = Frames * 1;
+            var samples = Frames * 1;
             bufferDst = new float[samples];
             RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(bufferDst.AsSpan()));
         }

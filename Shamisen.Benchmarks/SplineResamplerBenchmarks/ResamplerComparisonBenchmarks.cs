@@ -9,10 +9,12 @@ using BenchmarkDotNet.Jobs;
 
 using CSCore.DSP;
 
+using Shamisen;
+
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks
+namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
     [SimpleJob(RuntimeMoniker.Net50)]
     public class ResamplerComparisonBenchmarks
