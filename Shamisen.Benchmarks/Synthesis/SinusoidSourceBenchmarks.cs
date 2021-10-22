@@ -7,7 +7,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.Synthesis
 {
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class SinusoidSourceBenchmarks

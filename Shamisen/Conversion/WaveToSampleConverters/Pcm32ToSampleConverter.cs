@@ -153,10 +153,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalStandard(Span<float> buffer)
         {
             Vector<float> mul = new(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
-            ref int rsi = ref Unsafe.As<float, int>(ref rdi);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref Unsafe.As<float, int>(ref rdi);
             nint i, length = buffer.Length;
-            int size = Vector<float>.Count;
+            var size = Vector<float>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
             {
                 var v0_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 0)));
@@ -195,7 +195,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalAvx2(Span<float> buffer)
         {
             var mul = Vector256.Create(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -243,7 +243,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalAvx2ExtremeUnroll(Span<float> buffer)
         {
             var mul = Vector256.Create(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Zen3 in 256-bit AVX2
             //Does Zen3 branch slowly?
@@ -372,7 +372,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalSse2(Span<float> buffer)
         {
             var mul = Vector128.Create(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Haswell in 128-bit AVX for better frequency behavior
             for (i = 0; i < length - 63; i += 64)
@@ -457,7 +457,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             var mul = Vector128.Create(Multiplier);
             var shuf = Vector128.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Haswell in 128-bit AVX for better frequency behaviour
             for (i = 0; i < length - 31; i += 32)
@@ -525,7 +525,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             var mul = Vector256.Create(Multiplier);
             var shuf = Vector256.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -592,22 +592,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #endif
         internal static void ProcessReversedStandard(Span<float> buffer)
         {
-            float mul = Multiplier;
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
-            ref int rsi = ref Unsafe.As<float, int>(ref rdi);
-            nint i, length = buffer.Length;
-            for (i = 0; i < length - 3; i += 4)
-            {
-                //ReverseEndianness can't be done in vectorized way in .NET Standard.
-                Unsafe.Add(ref rdi, i + 0) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rsi, i + 0)) * mul;
-                Unsafe.Add(ref rdi, i + 1) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rsi, i + 1)) * mul;
-                Unsafe.Add(ref rdi, i + 2) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rsi, i + 2)) * mul;
-                Unsafe.Add(ref rdi, i + 3) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rsi, i + 3)) * mul;
-            }
-            for (; i < length; i++)
-            {
-                Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rsi, i)) * mul;
-            }
+            ProcessNormalStandard(buffer);
+            var v = MemoryMarshal.Cast<float, int>(buffer);
+            v.ReverseEndianness();
         }
         #endregion
         /// <summary>

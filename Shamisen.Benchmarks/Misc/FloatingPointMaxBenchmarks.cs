@@ -12,7 +12,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace Shamisen.Benchmarks.Misc
 {
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     [DisassemblyDiagnoser(maxDepth: 16)]
     public class FloatingPointMaxBenchmarks
     {

@@ -243,6 +243,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the operator.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ReadResult operator *(ReadResult left, int right) => left.HasData ? left.Length * right : left;
 
         /// <summary>
@@ -253,8 +254,10 @@ namespace Shamisen
         /// <returns>
         /// The result of the operator.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ReadResult operator /(ReadResult left, int right) => left.HasData ? left.Length / right : left;
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private string GetDebuggerDisplay() => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
 
         /// <summary>
@@ -263,6 +266,7 @@ namespace Shamisen
         /// <returns>
         /// The fully qualified type name.
         /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override string? ToString() => GetDebuggerDisplay();
     }
 }

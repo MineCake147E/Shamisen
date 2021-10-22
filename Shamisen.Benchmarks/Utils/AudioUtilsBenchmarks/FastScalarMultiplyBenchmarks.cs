@@ -9,7 +9,7 @@ using Shamisen.Utils;
 
 namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 {
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FastScalarMultiplyBenchmarks
@@ -20,24 +20,25 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
             public Config()
             {
                 static int frameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
-                _ = AddColumn(new PlaybackSpeedColumn(frameSelector, a => SampleRate));
+                //_ = AddColumn(new PlaybackSpeedColumn(frameSelector, a => SampleRate));
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
-        [Params(1024, 1441)]
+        [Params(4095)]
         public int Frames { get; set; }
         [Params(1)]
         public int Channels { get; set; }
 
-        [Params(MathF.PI)]
+        [Params(32.0f, MathF.PI, 6.64613997E+35f)]
         public float Scale { get; set; }
         private float[] bufferDst;
         [GlobalSetup]
         public void Setup()
         {
-            int samples = Frames * Channels;
+            var samples = Frames * Channels;
             bufferDst = new float[samples];
         }
+        /*
         [Benchmark]
 #pragma warning disable CS0618
         public void FastScalarMultiplyStandardVariableOld() => AudioUtils.FastScalarMultiplyStandardVariableOld(bufferDst.AsSpan(), Scale);
@@ -45,6 +46,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 
         [Benchmark]
         public void FastScalarMultiplyStandardFixed() => AudioUtils.FastScalarMultiplyStandardFixed(bufferDst.AsSpan(), Scale);
+        */
         [Benchmark]
         public void FastScalarMultiplyStandardVariable() => AudioUtils.FastScalarMultiplyStandardVariable(bufferDst.AsSpan(), Scale);
     }

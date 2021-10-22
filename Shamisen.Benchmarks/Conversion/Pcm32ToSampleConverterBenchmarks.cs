@@ -11,7 +11,7 @@ using Shamisen.Conversion.WaveToSampleConverters;
 
 namespace Shamisen.Benchmarks.Conversion
 {
-    [SimpleJob(RuntimeMoniker.Net50)]
+    [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class Pcm32ToSampleConverterBenchmarks
@@ -25,7 +25,7 @@ namespace Shamisen.Benchmarks.Conversion
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
-        [Params(4096, 4229)]
+        [Params(4095)]
         public int Frames { get; set; }
         private float[] bufferDst;
         [GlobalSetup]

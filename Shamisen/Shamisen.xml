@@ -8671,7 +8671,7 @@
         </member>
         <member name="T:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter">
             <summary>
-            Converts 8-bit A-Law PCM to Sample.
+            Converts 8-bit μ-Law PCM to Sample.
             </summary>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Byte,Shamisen.IWaveFormat})">
@@ -21447,7 +21447,7 @@
             </summary>
             <typeparam name="T">The type of contents.</typeparam>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(System.IntPtr,System.IntPtr)">
+        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(`0*,System.IntPtr)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> struct.
             </summary>
@@ -21613,13 +21613,73 @@
             <param name="length">The length to slice back.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed64})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int64})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Double})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed32})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt32})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Single})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int32})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed16})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt16})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Half})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int16})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>

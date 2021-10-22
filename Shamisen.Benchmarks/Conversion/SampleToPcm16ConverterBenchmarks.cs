@@ -15,7 +15,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.Conversion
 {
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
     [Config(typeof(Config))]

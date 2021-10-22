@@ -10,7 +10,7 @@ using Shamisen.Data;
 
 namespace Shamisen.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [SimpleJob(RuntimeMoniker.Mono)]*/
     [Config(typeof(Config))]

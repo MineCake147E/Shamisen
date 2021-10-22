@@ -7,7 +7,7 @@ using Shamisen.Conversion.Resampling.Sample;
 
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
-    [SimpleJob(RuntimeMoniker.Net50)]
+    [SimpleJob(RuntimeMoniker.HostProcess)]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class GenerateCoeffsBenchmarks
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using BenchmarkDotNet.Attributes;
@@ -9,24 +10,27 @@ using Shamisen.Conversion.WaveToSampleConverters;
 
 namespace Shamisen.Benchmarks.Conversion
 {
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
-    [DisassemblyDiagnoser(maxDepth: 256)]
+    [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class MuLawToSampleConverterBenchmarks
     {
-        private const int Frames = 1441;
 
         private class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new FrameThroughputColumn(a => Frames));
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                _ = AddColumn(new FrameThroughputColumn(FrameSelector));
             }
         }
         private float[] buffer;
         private const int SampleRate = 192000;
         [Params(1)]
         public int Channels { get; set; }
+
+        [Params(/*2047, */4095, Priority = -990)]
+        public int Frames { get; set; }
 
         [GlobalSetup]
         public void Setup() => buffer = new float[Frames * Channels];

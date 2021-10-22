@@ -11,7 +11,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace Shamisen.Benchmarks.Misc
 {
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     [DisassemblyDiagnoser(maxDepth: 16)]
     public class FloatingPointMultiplyByPowerOfTwoBenchmarks
     {
@@ -23,7 +23,7 @@ namespace Shamisen.Benchmarks.Misc
             var ymm0 = Vector256.Create(0f);
             var ymm1 = Vector256.Create(32768.0f);
             var ymm2 = Vector256.Create(value);
-            for (int i = 0; i < 1024; i++)
+            for (var i = 0; i < 1024; i++)
             {
                 ymm0 = Avx.Multiply(ymm1, ymm2); //Floating-point mul in 256-bit vector results in frequency degradation
             }
@@ -38,7 +38,7 @@ namespace Shamisen.Benchmarks.Misc
             var xmm3 = Vector128.Create(0f);
             var xmm1 = Vector128.Create(32768.0f);
             var xmm2 = Vector128.Create(value);
-            for (int i = 0; i < 1024; i++)
+            for (var i = 0; i < 1024; i++)
             {
                 xmm0 = Sse.Multiply(xmm1, xmm2);
                 xmm3 = Sse.Multiply(xmm2, xmm1);
@@ -53,7 +53,7 @@ namespace Shamisen.Benchmarks.Misc
             var ymm0 = Vector256.Create(0f);
             var ymm1 = Vector256.Create(0x0780_0000);
             var ymm2 = Vector256.Create(value);
-            for (int i = 0; i < 1024; i++)
+            for (var i = 0; i < 1024; i++)
             {
                 //For 256-bits vectors, the integer-addition method is significantly faster, but invalid for denormalized numbers
                 ymm0 = Avx2.Add(ymm1, ymm2.AsInt32()).AsSingle();
@@ -69,7 +69,7 @@ namespace Shamisen.Benchmarks.Misc
             var xmm3 = Vector128.Create(0f);
             var xmm1 = Vector128.Create(0x0780_0000);
             var xmm2 = Vector128.Create(value);
-            for (int i = 0; i < 1024; i++)
+            for (var i = 0; i < 1024; i++)
             {
                 xmm0 = Sse2.Add(xmm1, xmm2.AsInt32()).AsSingle();
                 xmm3 = Sse2.Add(xmm2.AsInt32(), xmm1).AsSingle();

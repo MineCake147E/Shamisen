@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Shamisen.SystemExtensions.Memory
     /// <typeparam name="T">The type of contents.</typeparam>
     public readonly unsafe ref struct NativeSpan<T> where T : unmanaged
     {
-        private readonly nint headPointer;
+        private readonly T* headPointer;
         private readonly nint length;
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Shamisen.SystemExtensions.Memory
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        public NativeSpan(nint headPointer, nint length)
+        public NativeSpan(T* headPointer, nint length)
         {
             this.headPointer = headPointer;
             this.length = length;
@@ -30,7 +31,7 @@ namespace Shamisen.SystemExtensions.Memory
         private ref T Head
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => ref Unsafe.AsRef<T>(((IntPtr)headPointer).ToPointer());
+            get => ref Unsafe.AsRef<T>(headPointer);
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Shamisen.SystemExtensions.Memory
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        public override int GetHashCode() => HashCode.Combine(headPointer, length);
+        public override int GetHashCode() => HashCode.Combine((nint)headPointer, length);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="NativeSpan{T}"/> objects are equal.

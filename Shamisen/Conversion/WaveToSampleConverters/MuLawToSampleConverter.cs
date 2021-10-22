@@ -19,7 +19,7 @@ using Shamisen.Utils;
 namespace Shamisen.Conversion.WaveToSampleConverters
 {
     /// <summary>
-    /// Converts 8-bit A-Law PCM to Sample.
+    /// Converts 8-bit μ-Law PCM to Sample.
     /// </summary>
     public sealed class MuLawToSampleConverter : WaveToSampleConverterBase
     {
@@ -96,7 +96,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            int internalBufferLengthRequired = CheckBuffer(buffer.Length);
+            var internalBufferLengthRequired = CheckBuffer(buffer.Length);
             var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
             //Resampling start
             var srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired, internalBufferLengthRequired);
@@ -161,9 +161,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                for (int i = 0; i < rb.Length; i++)
+                for (var i = 0; i < rb.Length; i++)
                 {
-                    byte v = rb[i];
+                    var v = rb[i];
                     wb[i] = ConvertMuLawToSingle(v);
                 }
             }
@@ -181,10 +181,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var v3_4s = Vector128.Create(0x83f8_0000u);
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 //This loop is almost directly translated from ProcessSse41, and might be suboptimal on physical ARM chips.
-                nint olen = length - 7;
+                var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
                 {
                     var v4_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
@@ -212,7 +212,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
                 }
             }
@@ -228,10 +228,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var v3_4s = Vector128.Create(0x83f8_0000u);
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 //This loop is almost directly translated from ProcessSse41, and might be suboptimal on physical Armv8 chips.
-                nint olen = length - 7;
+                var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
                 {
                     var v4_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
@@ -258,7 +258,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
                 }
             }
@@ -279,9 +279,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var xmm3 = Vector128.Create(0x83f8_0000u);
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
-                nint olen = length - 15;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var olen = length - 15;
                 for (i = 0; i < olen; i += 16)
                 {
                     var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
@@ -327,7 +327,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
                 }
             }
@@ -343,9 +343,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var ymm3 = Vector256.Create(0x83f8_0000u);
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
-                nint olen = length - 31;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var olen = length - 31;
                 for (i = 0; i < olen; i += 32)
                 {
                     var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
@@ -405,7 +405,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
                 }
             }
@@ -421,9 +421,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var xmm3 = Vector128.Create(0x83f8_0000u);
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
-                nint olen = length - 7;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
                 {
                     var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
@@ -449,7 +449,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
                 }
             }
@@ -463,9 +463,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             unchecked
             {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                uint v = (uint)(sbyte)~value;
-                uint y = (v & 0x8000_0000u) + 0x3b84_0000u;
-                float f = BitConverter.Int32BitsToSingle((int)y);
+                var v = (uint)(sbyte)~value;
+                var y = (v & 0x8000_0000u) + 0x3b84_0000u;
+                var f = BitConverter.Int32BitsToSingle((int)y);
                 v <<= 19;
                 v &= 0x83f8_0000;
                 v += 0x3b84_0000;

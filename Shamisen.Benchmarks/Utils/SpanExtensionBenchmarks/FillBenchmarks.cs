@@ -7,7 +7,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace Shamisen.Benchmarks.Utils.SpanExtensionBenchmarks
 {
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FillBenchmarks
@@ -33,7 +33,7 @@ namespace Shamisen.Benchmarks.Utils.SpanExtensionBenchmarks
         [GlobalSetup]
         public void Setup()
         {
-            int samples = Frames * Channels;
+            var samples = Frames * Channels;
             bufferDst = new float[samples];
         }
         [Benchmark]

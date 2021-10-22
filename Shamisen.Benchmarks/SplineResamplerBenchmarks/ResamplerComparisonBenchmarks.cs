@@ -16,7 +16,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
-    [SimpleJob(RuntimeMoniker.Net50)]
+    [SimpleJob(RuntimeMoniker.HostProcess)]
     public class ResamplerComparisonBenchmarks
     {
         private DummySource<float, SampleFormat> sourceMA;

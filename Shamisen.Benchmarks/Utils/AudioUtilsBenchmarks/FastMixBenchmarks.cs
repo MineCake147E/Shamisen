@@ -9,7 +9,7 @@ using Shamisen.Utils;
 
 namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 {
-    [SimpleJob(runtimeMoniker: RuntimeMoniker.Net50)]
+    [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class FastMixBenchmarks

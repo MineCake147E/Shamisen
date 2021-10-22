@@ -115,7 +115,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </returns>
         public override ReadResult Read(Span<byte> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             var outBuffer = MemoryMarshal.Cast<byte, short>(buffer).SliceAlign(channels);
             var cursor = outBuffer;
             while (cursor.Length > 0)
@@ -124,7 +124,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var rr = Source.Read(reader.Span);
                 if (rr.IsEndOfStream && outBuffer.Length == cursor.Length) return rr;
                 if (rr.HasNoData) return (outBuffer.Length - cursor.Length) * sizeof(ushort);
-                int u = rr.Length;
+                var u = rr.Length;
                 var wrote = reader.Span.Slice(0, u).SliceAlign(channels);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -156,7 +156,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
         private void ProcessAccurateStandard(Span<float> wrote, Span<short> dest)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             if (dsmAccumulator.Length < channels || dsmLastOutput.Length < channels)
                 throw new InvalidOperationException("Channels must be smaller than or equals to dsmAccumulator's length!");
             switch (channels)
@@ -176,17 +176,17 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest)
         {
             var accSpan = dsmAccumulator.Span;
-            float dsmAcc = MemoryMarshal.GetReference(accSpan);
+            var dsmAcc = MemoryMarshal.GetReference(accSpan);
             var loSpan = dsmLastOutput.Span;
-            short dsmPrev = MemoryMarshal.GetReference(loSpan);
-            ref float rWrote = ref MemoryMarshal.GetReference(wrote);
-            ref short rDest = ref MemoryMarshal.GetReference(dest);
+            var dsmPrev = MemoryMarshal.GetReference(loSpan);
+            ref var rWrote = ref MemoryMarshal.GetReference(wrote);
+            ref var rDest = ref MemoryMarshal.GetReference(dest);
             nint nLength = dest.Length;
             for (nint i = 0; i < nLength; i++)
             {
-                float diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
+                var diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
                 dsmAcc += diff;
-                short v = dsmPrev = Convert(dsmAcc);
+                var v = dsmPrev = Convert(dsmAcc);
                 Unsafe.Add(ref rDest, i) = v;
             }
             MemoryMarshal.GetReference(accSpan) = dsmAcc;
@@ -200,7 +200,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var dsmPrev = new Vector2(dsmLastOut.x, dsmLastOut.y);
             ref var rWrote = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(wrote));
             ref var rDest = ref Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dest));
-            nint nLength = (nint)dest.Length / 2;
+            var nLength = (nint)dest.Length / 2;
             var min = new Vector2(-1.0f);
             var max = new Vector2(0.999969482421875f);
             var mul = new Vector2(32768.0f);
@@ -210,8 +210,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 dsmAcc += diff;
                 var v = Vector2.Clamp(dsmAcc, min, max);
                 v *= mul;
-                short x = (short)v.X;
-                short y = (short)v.Y;
+                var x = (short)v.X;
+                var y = (short)v.Y;
                 dsmPrev = new Vector2(x, y);
                 Unsafe.Add(ref rDest, i) = (x, y);
             }
@@ -224,11 +224,11 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var dsmAcc = dsmAccumulator.Span;
             var dsmLastOut = dsmLastOutput.Span;
             dsmChannelPointer %= dsmAcc.Length;
-            for (int i = 0; i < dest.Length; i++)
+            for (var i = 0; i < dest.Length; i++)
             {
-                float diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
+                var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
                 dsmAcc[dsmChannelPointer] += diff;
-                short v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
+                var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
                 dest[i] = IsEndiannessConversionRequired ? BinaryPrimitives.ReverseEndianness(v) : v;
                 dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
             }
@@ -284,11 +284,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private static void ProcessReversedOrdinal(Span<float> wrote, Span<short> dest)
         {
             ProcessNormalOrdinal(wrote, dest);
-            for (int i = 0; i < dest.Length; i++)
-            {
-                short v = dest[i];
-                dest[i] = BinaryPrimitives.ReverseEndianness(v);
-            }
+            dest.ReverseEndianness();
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -297,10 +293,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var max = new Vector<float>(32767.0f);
             var min = new Vector<float>(-32768.0f);
             var mul = new Vector<float>(32768.0f);
-            ref short dst = ref MemoryMarshal.GetReference(dest);
-            ref float src = ref MemoryMarshal.GetReference(wrote);
+            ref var dst = ref MemoryMarshal.GetReference(dest);
+            ref var src = ref MemoryMarshal.GetReference(wrote);
             nint i = 0, length = MathI.Min(wrote.Length, dest.Length);
-            nint olen = length - Vector<float>.Count * 4 + 1;
+            var olen = length - Vector<float>.Count * 4 + 1;
             for (; i < olen; i += Vector<float>.Count * 4)
             {
                 var v0_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 0));
@@ -326,10 +322,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             for (; i < length; i++)
             {
-                float s0 = mul[0] * Unsafe.Add(ref src, i);
+                var s0 = mul[0] * Unsafe.Add(ref src, i);
                 s0 = FastMath.Min(s0, max[0]);
                 s0 = FastMath.Max(s0, min[0]);
-                int x0 = (int)s0;
+                var x0 = (int)s0;
                 Unsafe.Add(ref dst, i) = (short)x0;
             }
         }

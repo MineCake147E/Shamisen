@@ -14,8 +14,8 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
-    //[DryJob(RuntimeMoniker.Net50)]
-    [SimpleJob(RuntimeMoniker.Net50)]
+    //[DryJob(RuntimeMoniker.HostProcess)]
+    [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     //[SimpleJob(RuntimeMoniker.Mono, baseline: true)]

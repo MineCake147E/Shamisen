@@ -93,7 +93,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            int internalBufferLengthRequired = buffer.Length;
+            var internalBufferLengthRequired = buffer.Length;
             var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
             var srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired, internalBufferLengthRequired);
             var readBuffer = srcBuffer.SliceAlign(Format.Channels);
@@ -127,9 +127,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             unchecked
             {
                 if (rb.Length > wb.Length) return;
-                for (int i = 0; i < rb.Length; i++)
+                for (var i = 0; i < rb.Length; i++)
                 {
-                    byte v = rb[i];
+                    var v = rb[i];
                     wb[i] = ConvertALawToSingle(v);
                 }
             }
@@ -144,8 +144,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
                 var ymm1 = Vector256.Create(1u);
                 var xmm2 = Vector128.Create(0x7070_7070u);
@@ -231,7 +231,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
                 }
             }
@@ -244,8 +244,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
                 var ymm1 = Vector256.Create(1u);
                 var xmm2 = Vector128.Create(0x7070_7070u);
@@ -326,7 +326,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
                 }
             }
@@ -338,11 +338,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 var xmm0 = Vector128.CreateScalarUnsafe(0xd5_d5_d5_d5_d5_d5_d5_d5).AsUInt32();
-                var ymm1 = Vector256.Create(0x83F80000u).AsSingle();
-                var ymm2 = Vector256.Create(262144).AsSingle();
+                var ymm1 = Vector256.Create(0x83F80000u).AsInt32();
+                var ymm2 = Vector256.Create(262144);
                 var ymm3 = Vector256.Create(6.64613997E+35f);
                 for (i = 0; i < length - 31; i += 32)
                 {
@@ -350,10 +350,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     var xmm5 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
                     var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 16))).AsUInt32();
                     var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 24))).AsUInt32();
-                    xmm4 = Sse2.Xor(xmm4, xmm0);
-                    xmm5 = Sse2.Xor(xmm5, xmm0);
-                    xmm6 = Sse2.Xor(xmm6, xmm0);
-                    xmm7 = Sse2.Xor(xmm7, xmm0);
+                    xmm4 = Sse2.Xor(xmm0, xmm4);
+                    xmm5 = Sse2.Xor(xmm0, xmm5);
+                    xmm6 = Sse2.Xor(xmm0, xmm6);
+                    xmm7 = Sse2.Xor(xmm0, xmm7);
                     var ymm4 = Avx2.ConvertToVector256Int32(xmm4.AsSByte()).AsSingle();
                     var ymm5 = Avx2.ConvertToVector256Int32(xmm5.AsSByte()).AsSingle();
                     var ymm6 = Avx2.ConvertToVector256Int32(xmm6.AsSByte()).AsSingle();
@@ -362,26 +362,37 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     ymm5 = Avx2.ShiftLeftLogical(ymm5.AsInt32(), 19).AsSingle();
                     ymm6 = Avx2.ShiftLeftLogical(ymm6.AsInt32(), 19).AsSingle();
                     ymm7 = Avx2.ShiftLeftLogical(ymm7.AsInt32(), 19).AsSingle();
-                    ymm4 = Avx.And(ymm4, ymm1);
-                    ymm5 = Avx.And(ymm5, ymm1);
-                    ymm6 = Avx.And(ymm6, ymm1);
-                    ymm7 = Avx.And(ymm7, ymm1);
-                    ymm4 = Avx.Or(ymm4, ymm2);
-                    ymm5 = Avx.Or(ymm5, ymm2);
-                    ymm6 = Avx.Or(ymm6, ymm2);
-                    ymm7 = Avx.Or(ymm7, ymm2);
-                    ymm4 = Avx.Multiply(ymm4, ymm3);
-                    ymm5 = Avx.Multiply(ymm5, ymm3);
-                    ymm6 = Avx.Multiply(ymm6, ymm3);
-                    ymm7 = Avx.Multiply(ymm7, ymm3);
+                    ymm4 = Avx2.And(ymm1, ymm4.AsInt32()).AsSingle();
+                    ymm5 = Avx2.And(ymm1, ymm5.AsInt32()).AsSingle();
+                    ymm6 = Avx2.And(ymm1, ymm6.AsInt32()).AsSingle();
+                    ymm7 = Avx2.And(ymm1, ymm7.AsInt32()).AsSingle();
+                    ymm4 = Avx2.Or(ymm2, ymm4.AsInt32()).AsSingle();
+                    ymm4 = Avx.Multiply(ymm3, ymm4);
+                    ymm5 = Avx2.Or(ymm2, ymm5.AsInt32()).AsSingle();
+                    ymm5 = Avx.Multiply(ymm3, ymm5);
+                    ymm6 = Avx2.Or(ymm2, ymm6.AsInt32()).AsSingle();
+                    ymm6 = Avx.Multiply(ymm3, ymm6);
+                    ymm7 = Avx2.Or(ymm2, ymm7.AsInt32()).AsSingle();
+                    ymm7 = Avx.Multiply(ymm3, ymm7);
                     Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm4;
                     Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm5;
                     Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm6;
                     Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm7;
                 }
+                for (; i < length - 7; i += 8)
+                {
+                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
+                    xmm4 = Sse2.Xor(xmm4, xmm0);
+                    var ymm4 = Avx2.ConvertToVector256Int32(xmm4.AsSByte()).AsSingle();
+                    ymm4 = Avx2.ShiftLeftLogical(ymm4.AsInt32(), 19).AsSingle();
+                    ymm4 = Avx2.And(ymm1, ymm4.AsInt32()).AsSingle();
+                    ymm4 = Avx2.Or(ymm2, ymm4.AsInt32()).AsSingle();
+                    ymm4 = Avx.Multiply(ymm3, ymm4);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm4;
+                }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
                 }
             }
@@ -394,8 +405,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 var xmm0 = Vector128.Create((byte)0xd5).AsUInt32();
                 var ymm1 = Vector256.Create(1u);
                 var xmm2 = Vector128.Create(0x7070_7070u);
@@ -518,7 +529,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
                 }
             }
@@ -530,8 +541,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte rsi = ref MemoryMarshal.GetReference(rb);
-                ref float rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
                 var xmm0 = Vector128.Create((byte)0xd5).AsUInt32();
                 var xmm1 = Vector128.Create(1u);
                 var xmm2 = Vector128.Create(0x0000_0070u);
@@ -638,7 +649,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref rsi, i);
+                    var g = Unsafe.Add(ref rsi, i);
                     Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
                 }
             }
@@ -651,8 +662,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 nint length = rb.Length;
                 nint i;
-                ref byte x11 = ref MemoryMarshal.GetReference(rb);
-                ref float x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x11 = ref MemoryMarshal.GetReference(rb);
+                ref var x10 = ref MemoryMarshal.GetReference(wb);
                 var v0_4h = Vector64.Create((ushort)0xd5);
                 var v1_4s = Vector128.Create(0x70u);
                 var v2_4s = Vector128.Create(~0u >> 5);
@@ -705,7 +716,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    byte g = Unsafe.Add(ref x11, i);
+                    var g = Unsafe.Add(ref x11, i);
                     Unsafe.Add(ref x10, i) = ConvertALawToSingle(g);
                 }
             }
@@ -723,11 +734,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             unchecked
             {
                 value ^= 0b1101_0101;
-                uint v = ((uint)(sbyte)value << 1) | 1;
-                uint m = 0x3b80_0000u;
+                var v = ((uint)(sbyte)value << 1) | 1;
+                var m = 0x3b80_0000u;
                 if ((value & 0x70) == 0)
                 {
-                    uint zs = (uint)MathI.LeadingZeroCount(v << 26);
+                    var zs = (uint)MathI.LeadingZeroCount(v << 26);
                     v <<= (int)zs;
                     m -= zs << 23;
                 }
@@ -744,7 +755,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal ReadResult ReadOld(Span<float> buffer)
         {
             buffer = buffer.SliceAlign(2);
-            int internalBufferLengthRequired = buffer.Length;
+            var internalBufferLengthRequired = buffer.Length;
             var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
             var srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired);
             var readBuffer = srcBuffer.SliceAlign(Format.Channels);
@@ -755,10 +766,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 {
                     var rb = readBuffer.SliceWhile(rr.Length);
                     var wb = buffer.SliceWhile(rb.Length);
-                    for (int i = 0; i < rb.Length; i++)
+                    for (var i = 0; i < rb.Length; i++)
                     {
-                        byte v = rb[i];
-                        short h = ConvertALawToInt16(v);
+                        var v = rb[i];
+                        var h = ConvertALawToInt16(v);
                         wb[i] = h * Multiplier;
                     }
                     return wb.Length;
@@ -782,15 +793,15 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                byte v = value;
-                bool s = v <= 127;
+                var v = value;
+                var s = v <= 127;
                 uint ss = Unsafe.As<bool, byte>(ref s);
                 v ^= (byte)0b01010101u;
-                uint x = (uint)v & 0x7f;
-                bool j = x > 0xf;
+                var x = (uint)v & 0x7f;
+                var j = x > 0xf;
                 uint a = Unsafe.As<bool, byte>(ref j);
-                int exp = (int)(x >> 4);
-                uint man = x & 0b1111;
+                var exp = (int)(x >> 4);
+                var man = x & 0b1111;
                 man += a << 4;
                 man = (man << 4) + 8;
                 man <<= exp - (int)a;

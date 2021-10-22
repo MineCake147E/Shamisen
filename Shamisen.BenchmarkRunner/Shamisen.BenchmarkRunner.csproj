@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net5.0</TargetFrameworks>
+        <TargetFrameworks>net6.0</TargetFrameworks>
         <AssemblyName>Shamisen.Benchmarks.Running</AssemblyName>
         <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

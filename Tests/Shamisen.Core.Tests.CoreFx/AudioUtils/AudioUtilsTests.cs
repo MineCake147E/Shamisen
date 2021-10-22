@@ -1,12 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
 
+using Shamisen.Utils;
+
 namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
 {
+    [TestFixture]
     public partial class AudioUtilsTests
     {
+
+        [Test]
+        public void FastAddAddsCorrectly()
+        {
+            Span<float> source = new float[32];
+            Span<float> destination = new float[48];
+            const int Value = 1;
+            source.FastFill(Value);
+            destination.FastFill(-1);
+
+            AudioUtils.FastAdd(source, destination);
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (destination[i] != 0) Assert.Fail("The FastAdd doesn't add correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
+        public void FastScalarMultiplyScalesCorrectly()
+        {
+            Span<float> span = new float[32];
+            span.FastFill(1);
+            const float Value = MathF.PI;
+            span.FastScalarMultiply(Value);
+            for (var i = 0; i < span.Length; i++)
+            {
+                if (span[i] != Value) Assert.Fail("The FastScalarMultiply doesn't scale correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
+        public void FastMixMixesCorrectly()
+        {
+            Span<float> source = stackalloc float[32];
+            Span<float> destination = stackalloc float[48];
+            const int Value = 1;
+            source.FastFill(Value);
+            destination.FastFill(-1);
+
+            AudioUtils.FastMix(source, destination, 2);
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (destination[i] != 1) Assert.Fail("The FastMix doesn't mix correctly!");
+            }
+            Assert.Pass();
+        }
+
+        #region ChannelsUtils
+
         internal static IEnumerable<int> SizeTestCaseGenerator() => new[] {
             //Small sizes
             1, 2, 3, 4, 5, 6, 7, 8,
@@ -21,7 +76,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         internal static void AssertArrayForInterleave(int[] b)
         {
             var q = new List<(int expected, int actual)>();
-            for (int i = 0; i < b.Length; i++)
+            for (var i = 0; i < b.Length; i++)
             {
                 if (b[i] != i)
                     q.Add((i, b[i]));
@@ -32,7 +87,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         {
             a = new int[size];
             b = new int[a.Length * channels];
-            for (int i = 0; i < a.Length; i++)
+            for (var i = 0; i < a.Length; i++)
             {
                 a[i] = i;
             }
@@ -42,11 +97,11 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             a0 = new int[size];
             a1 = new int[a0.Length];
             b = new int[a0.Length * 2];
-            for (int i = 0; i < a0.Length; i++)
+            for (var i = 0; i < a0.Length; i++)
             {
                 a0[i] = i * 2;
             }
-            for (int i = 0; i < a1.Length; i++)
+            for (var i = 0; i < a1.Length; i++)
             {
                 a1[i] = i * 2 + 1;
             }
@@ -58,15 +113,15 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             a1 = new int[a0.Length];
             a2 = new int[a0.Length];
             b = new int[a0.Length * 3];
-            for (int i = 0; i < a0.Length; i++)
+            for (var i = 0; i < a0.Length; i++)
             {
                 a0[i] = i * 3;
             }
-            for (int i = 0; i < a1.Length; i++)
+            for (var i = 0; i < a1.Length; i++)
             {
                 a1[i] = i * 3 + 1;
             }
-            for (int i = 0; i < a2.Length; i++)
+            for (var i = 0; i < a2.Length; i++)
             {
                 a2[i] = i * 3 + 2;
             }
@@ -79,7 +134,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             a2 = new int[a0.Length];
             a3 = new int[a0.Length];
             b = new int[a0.Length * 4];
-            for (int i = 0; i < a0.Length; i++)
+            for (var i = 0; i < a0.Length; i++)
             {
                 a0[i] = i * 4;
                 a1[i] = i * 4 + 1;
@@ -91,10 +146,10 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         internal static void AssertArrayForDuplicate(int[] b, int channels)
         {
             var q = new List<(int expected, int actual)>();
-            int j = 0;
-            for (int i = 0; i < b.Length - channels + 1; i += channels, j++)
+            var j = 0;
+            for (var i = 0; i < b.Length - channels + 1; i += channels, j++)
             {
-                for (int ch = 0; ch < channels; ch++)
+                for (var ch = 0; ch < channels; ch++)
                 {
                     if (b[i + ch] != j)
                     {
@@ -104,5 +159,6 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             }
             Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
+        #endregion
     }
 }

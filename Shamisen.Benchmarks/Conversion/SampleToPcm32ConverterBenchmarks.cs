@@ -14,7 +14,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.Conversion
 {
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class SampleToPcm32ConverterBenchmarks

@@ -81,7 +81,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            var g = Source.Read(MemoryMarshal.Cast<float, byte>(buffer));
+            var g = Source.Read(MemoryMarshal.AsBytes(buffer));
             return g.HasData ? g.Length / 4 : g;
         }
 
