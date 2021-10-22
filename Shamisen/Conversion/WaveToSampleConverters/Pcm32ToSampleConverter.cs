@@ -592,9 +592,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #endif
         internal static void ProcessReversedStandard(Span<float> buffer)
         {
-            ProcessNormalStandard(buffer);
             var v = MemoryMarshal.Cast<float, int>(buffer);
             v.ReverseEndianness();
+            ProcessNormalStandard(buffer);
         }
         #endregion
         /// <summary>
