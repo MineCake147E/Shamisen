@@ -29,9 +29,9 @@ namespace Shamisen.Benchmarks.BiQuad
                 _ = AddColumn(new FrameThroughputColumn(a => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value));
             }
         }
-        [Params(1, 2, 3, 4)]
+        [Params(1, 4, 8, 17)]
         public int Channels { get; set; }
-        [Params(8191)]
+        [Params(4095)]
         public int Frames { get; set; }
 
         [GlobalSetup]

@@ -18469,6 +18469,15 @@
             <param name="buffer">The buffer.</param>
             <exception cref="T:System.ArgumentException">samplesToAdd</exception>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastAdd(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Adds the <paramref name="samplesA"/> and <paramref name="samplesB"/>, and stores to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesA">The samples to add.</param>
+            <param name="samplesB">The samples to add.</param>
+            <param name="buffer">The destination.</param>
+            <exception cref="T:System.ArgumentException">samplesToAdd</exception>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Single},System.Single)">
             <summary>
             Multiplies the specified samples faster, with the given <paramref name="scale"/>.
@@ -18479,7 +18488,7 @@
         <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardFixed(System.Span{System.Single},System.Single)">
             <summary>
             Vectorized path using <see cref="T:System.Numerics.Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
-            Impractical in Rocket Lake or later due to absense of Haswell's severe CPU clock limits.<br/>
+            Impractical in Rocket Lake or later due to absence of Haswell's severe CPU clock limits.<br/>
             </summary>
             <param name="span"></param>
             <param name="scale"></param>
@@ -18487,8 +18496,8 @@
         <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.Single)">
             <summary>
             Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
-            Only practical in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
-            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX512 or ARMv8.2-A SVE.
+            Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
             </summary>
             <param name="span"></param>
             <param name="scale"></param>
@@ -18537,6 +18546,14 @@
             <param name="volumeA"></param>
             <param name="samplesB"></param>
             <param name="volumeB"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Interleaves and stores Stereo samples to <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The output buffer.</param>
+            <param name="left">The input buffer for left channel.</param>
+            <param name="right">The input buffer for right channel.</param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>

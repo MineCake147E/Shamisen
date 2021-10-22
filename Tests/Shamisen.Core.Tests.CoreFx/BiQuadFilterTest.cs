@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 //using CSCodec.Filters.Transformation;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -28,7 +29,7 @@ namespace Shamisen.Core.Tests.CoreFx
             var rng = new RandomWaveSource(new WaveFormat(sampleRate, 32, 1, AudioEncoding.LinearPcm), new RandomDataSource(0, 85, 0));
             var src = new Pcm32ToSampleConverter(rng);
             var filter = new BiQuadFilter(src, parameter);
-            string path = $"{caller}_{1}ch_{filter.Format.SampleRate}Hz_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}";
+            var path = $"{caller}_{1}ch_{filter.Format.SampleRate}Hz_{frameLen}fpb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}";
             TestHelper.DumpSampleSource(frameLen, framesToWrite, filter, path);
             filter.Dispose();
         }
@@ -143,6 +144,12 @@ namespace Shamisen.Core.Tests.CoreFx
 
         #region Multi-channel Consistency
 
+        private static IEnumerable<TestCaseData> BiQuadLPFChannelConsistencyTestCaseSource()
+        {
+            var channels = Enumerable.Range(2, 16);
+            return channels.Select(c => new TestCaseData(c));
+        }
+
         private static void CheckChannelConsistency(int sampleRate, int channels, BiQuadParameter parameter)
         {
             const int Frequency = 2000;
@@ -150,31 +157,30 @@ namespace Shamisen.Core.Tests.CoreFx
             using var srcMulti = new SquareWaveSource(new SampleFormat(channels, sampleRate)) { Frequency = Frequency };
             using var filterMono = new BiQuadFilter(srcMono, parameter);
             using var filterMulti = new BiQuadFilter(srcMulti, parameter);
-            float[] bufferMono = new float[128];
-            float[] bufferMulti = new float[bufferMono.Length * channels];
+            var bufferMono = new float[255];
+            var bufferMulti = new float[bufferMono.Length * channels];
 
             filterMono.Read(bufferMono);
             filterMulti.Read(bufferMulti);
             double sumdiff = 0;
 
-            for (int i = 0; i < bufferMono.Length; i++)
+            for (var i = 0; i < bufferMono.Length; i++)
             {
-                float mono = bufferMono[i];
-                float multi = bufferMulti[i * channels];
-                float diff = mono - multi;
-                sumdiff += MathF.Abs(diff);
-                Console.WriteLine($"{mono}, {multi}, {diff}");
+                var mono = bufferMono[i];
+                for (var ch = 0; ch < channels; ch++)
+                {
+                    var multi = bufferMulti[i * channels + ch];
+                    var diff = mono - multi;
+                    sumdiff += MathF.Abs(diff);
+                }
             }
             Console.WriteLine($"Total difference: {sumdiff}");
-            double avgDiff = sumdiff / bufferMono.Length;
+            var avgDiff = sumdiff / bufferMono.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
             Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
         }
 
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
+        [TestCaseSource(nameof(BiQuadLPFChannelConsistencyTestCaseSource))]
         public void BiQuadLPFChannelConsistency(int channels)
         {
             const int SampleRate = 48000;
@@ -205,22 +211,22 @@ namespace Shamisen.Core.Tests.CoreFx
             using var srcIntrinsics = new FilterTestSignalSource(format) { Frequency = Frequency };
             using var filterNoIntrinsics = new BiQuadFilter(srcNoIntrinsics, parameter, false);
             using var filterIntrinsics = new BiQuadFilter(srcIntrinsics, parameter, true, x86Intrinsics, armIntrinsics);
-            float[] bufferNoIntrinsics = new float[128];
-            float[] bufferIntrinsics = new float[bufferNoIntrinsics.Length];
+            var bufferNoIntrinsics = new float[128];
+            var bufferIntrinsics = new float[bufferNoIntrinsics.Length];
 
             _ = filterNoIntrinsics.Read(bufferNoIntrinsics);
             _ = filterIntrinsics.Read(bufferIntrinsics);
             NeumaierAccumulator sumdiff = default;
-            for (int i = 0; i < bufferNoIntrinsics.Length; i++)
+            for (var i = 0; i < bufferNoIntrinsics.Length; i++)
             {
                 double simple = bufferNoIntrinsics[i];
                 double optimized = bufferIntrinsics[i];
-                double diff = simple - optimized;
+                var diff = simple - optimized;
                 sumdiff += Math.Abs(diff);
                 Console.WriteLine($"{simple}, {optimized}, {diff}");
             }
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
-            double avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
+            var avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
             Assert.Less(avgDiff, -1f / short.MinValue);
         }

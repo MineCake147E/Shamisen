@@ -863,6 +863,16 @@ namespace Shamisen.Utils
         /// <param name="left">The input buffer for left channel.</param>
         /// <param name="right">The input buffer for right channel.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void InterleaveStereo(Span<float> buffer, ReadOnlySpan<float> left, ReadOnlySpan<float> right)
+            => InterleaveStereo(MemoryMarshal.Cast<float, int>(buffer), MemoryMarshal.Cast<float, int>(left), MemoryMarshal.Cast<float, int>(right));
+
+        /// <summary>
+        /// Interleaves and stores Stereo samples to <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="buffer">The output buffer.</param>
+        /// <param name="left">The input buffer for left channel.</param>
+        /// <param name="right">The input buffer for right channel.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void InterleaveStereo(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
         {
             unchecked

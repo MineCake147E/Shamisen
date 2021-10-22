@@ -33,7 +33,7 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                if (Avx.IsSupported)
+                if (Avx.IsSupported && MathI.Min(buffer.Length / 2, MathI.Min(left.Length, right.Length)) >= 128)
                 {
                     InterleaveStereoInt32Avx(buffer, left, right);
                     return;
@@ -54,11 +54,11 @@ namespace Shamisen.Utils
                     Fallback.InterleaveStereoInt32(buffer, left, right);
                     return;
                 }
-                ref int rdi = ref MemoryMarshal.GetReference(buffer);
-                ref int r8 = ref MemoryMarshal.GetReference(left);
-                ref int r9 = ref MemoryMarshal.GetReference(right);
+                ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                ref var r8 = ref MemoryMarshal.GetReference(left);
+                ref var r9 = ref MemoryMarshal.GetReference(right);
                 nint i = 0, j = 0, length = MathI.Min(buffer.Length / 2, MathI.Min(left.Length, right.Length));
-                nint olen = length - 31;
+                var olen = length - 31;
                 for (; i < olen; i += 32, j += 64)
                 {
                     var xmm0 = Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref r8, i));
@@ -122,7 +122,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i += 1, j += 2)
                 {
-                    int a = Unsafe.Add(ref r8, i);
+                    var a = Unsafe.Add(ref r8, i);
                     Unsafe.Add(ref rdi, j) = a;
                     a = Unsafe.Add(ref r9, i);
                     Unsafe.Add(ref Unsafe.Add(ref rdi, j), 1) = a;
@@ -137,11 +137,11 @@ namespace Shamisen.Utils
                     Fallback.InterleaveStereoInt32(buffer, left, right);
                     return;
                 }
-                ref int rdi = ref MemoryMarshal.GetReference(buffer);
-                ref int r8 = ref MemoryMarshal.GetReference(left);
-                ref int r9 = ref MemoryMarshal.GetReference(right);
+                ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                ref var r8 = ref MemoryMarshal.GetReference(left);
+                ref var r9 = ref MemoryMarshal.GetReference(right);
                 nint i = 0, j = 0, length = MathI.Min(buffer.Length / 2, MathI.Min(left.Length, right.Length));
-                nint olen = length - 7;
+                var olen = length - 7;
                 for (; i < olen; i += 8, j += 16)
                 {
                     var xmm0 = Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref r8, i));
@@ -159,7 +159,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i += 1, j += 2)
                 {
-                    int a = Unsafe.Add(ref r8, i);
+                    var a = Unsafe.Add(ref r8, i);
                     Unsafe.Add(ref rdi, j) = a;
                     a = Unsafe.Add(ref r9, i);
                     Unsafe.Add(ref Unsafe.Add(ref rdi, j), 1) = a;
@@ -197,14 +197,14 @@ namespace Shamisen.Utils
                         Fallback.InterleaveThreeInt32(buffer, left, right, center);
                         return;
                     }
-                    ref int rL = ref MemoryMarshal.GetReference(left);
-                    ref int rR = ref MemoryMarshal.GetReference(right);
-                    ref int rC = ref MemoryMarshal.GetReference(center);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rC = ref MemoryMarshal.GetReference(center);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     var ymm13 = Vector256.Create(0, 0, 0, 1, 1, 1, 2, 2);
                     var ymm14 = Vector256.Create(2, 3, 3, 3, 4, 4, 4, 5);
                     var ymm15 = Vector256.Create(5, 5, 6, 6, 6, 7, 7, 7);
-                    nint olen = length - 31;
+                    var olen = length - 31;
                     for (; i < olen; i += 32, j += 96)
                     {
                         var ymm2 = Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rL, i));
@@ -319,7 +319,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1, j += 3)
                     {
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -339,11 +339,11 @@ namespace Shamisen.Utils
                         Fallback.InterleaveThreeInt32(buffer, left, right, center);
                         return;
                     }
-                    ref int rL = ref MemoryMarshal.GetReference(left);
-                    ref int rR = ref MemoryMarshal.GetReference(right);
-                    ref int rC = ref MemoryMarshal.GetReference(center);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
-                    nint olen = length - 7;
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rC = ref MemoryMarshal.GetReference(center);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
+                    var olen = length - 7;
                     for (; i < olen; i += 8, j += 24)
                     {
                         var xmm0 = Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rL, i));
@@ -410,7 +410,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1, j += 3)
                     {
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -440,14 +440,14 @@ namespace Shamisen.Utils
             {
                 unsafe
                 {
-                    ref int r8 = ref MemoryMarshal.GetReference(frontLeft);
-                    ref int r9 = ref MemoryMarshal.GetReference(frontRight);
-                    ref int r10 = ref MemoryMarshal.GetReference(rearLeft);
-                    ref int r15 = ref MemoryMarshal.GetReference(rearRight);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var r8 = ref MemoryMarshal.GetReference(frontLeft);
+                    ref var r9 = ref MemoryMarshal.GetReference(frontRight);
+                    ref var r10 = ref MemoryMarshal.GetReference(rearLeft);
+                    ref var r15 = ref MemoryMarshal.GetReference(rearRight);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     nint length = MathI.Min(buffer.Length / 4, MathI.Min(MathI.Min(frontLeft.Length, frontRight.Length), MathI.Min(rearLeft.Length, rearRight.Length))); ;
                     nint i = 0, j = 0;
-                    nint olen = length - 31;
+                    var olen = length - 31;
                     for (; i < olen; i += 32, j += 128)
                     {
                         var ymm8 = Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref r8, i));
@@ -617,7 +617,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1, j += 4)
                     {
-                        int a = Unsafe.Add(ref r8, i);
+                        var a = Unsafe.Add(ref r8, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref r9, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -658,10 +658,10 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
-                nint olen = length - 31;
+                var olen = length - 31;
                 var ymm0 = Vector256.Create(0, 0, 1, 1, 2, 2, 3, 3);
                 var ymm1 = Vector256.Create(4, 4, 5, 5, 6, 6, 7, 7);
                 for (; i < olen; i += 32)
@@ -689,7 +689,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 2 + 0) = h;
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
@@ -697,10 +697,10 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoAvx(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
-                nint olen = length - 7;
+                var olen = length - 7;
                 for (; i < olen; i += 8)
                 {
                     var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, i + 0));
@@ -716,7 +716,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 2 + 0) = h;
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
@@ -724,10 +724,10 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoSse(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
-                nint olen = length - 7;
+                var olen = length - 7;
                 for (; i < olen; i += 8)
                 {
                     var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, i + 0));
@@ -744,7 +744,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 2 + 0) = h;
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
@@ -770,16 +770,16 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3ChannelsAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = MathI.Min(source.Length, destination.Length / 3);
-                nint olen = length - 63;
+                var olen = length - 63;
                 var ymm15 = Vector256.Create(0, 0, 0, 1, 1, 1, 2, 2);
                 var ymm14 = Vector256.Create(2, 3, 3, 3, 4, 4, 4, 5);
                 var ymm13 = Vector256.Create(5, 5, 6, 6, 6, 7, 7, 7);
                 for (; i < olen; i += 64)
                 {
-                    nint v = 2 * i + i;
+                    var v = 2 * i + i;
                     var ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 0));
                     var ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 8));
                     var ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 16));
@@ -841,7 +841,7 @@ namespace Shamisen.Utils
                 olen = length - 7;
                 for (; i < olen; i += 8)
                 {
-                    nint v = 3 * i;
+                    var v = 3 * i;
                     var ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 0));
                     var ymm4 = Avx2.PermuteVar8x32(ymm0, ymm15);
                     var ymm5 = Avx.PermuteVar(ymm0, ymm14);
@@ -852,7 +852,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 3 + 0) = h;
                     Unsafe.Add(ref dst, i * 3 + 1) = h;
                     Unsafe.Add(ref dst, i * 3 + 2) = h;
@@ -861,13 +861,13 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3ChannelsSse2(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = MathI.Min(source.Length, destination.Length / 3);
-                nint olen = length - 15;
+                var olen = length - 15;
                 for (; i < olen; i += 16)
                 {
-                    nint v = 2 * i + i;
+                    var v = 2 * i + i;
                     var xmm0 = Unsafe.As<float, Vector128<int>>(ref Unsafe.Add(ref src, i + 0));
                     var xmm1 = Unsafe.As<float, Vector128<int>>(ref Unsafe.Add(ref src, i + 4));
                     var xmm4 = Sse2.Shuffle(xmm0, 64);
@@ -901,7 +901,7 @@ namespace Shamisen.Utils
                 olen = length - 3;
                 for (; i < olen; i += 4)
                 {
-                    nint v = 2 * i + i;
+                    var v = 2 * i + i;
                     var xmm0 = Unsafe.As<float, Vector128<int>>(ref Unsafe.Add(ref src, i + 0));
                     var xmm4 = Sse2.Shuffle(xmm0, 64);
                     var xmm5 = Sse2.Shuffle(xmm0, 165);
@@ -912,7 +912,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 3 + 0) = h;
                     Unsafe.Add(ref dst, i * 3 + 1) = h;
                     Unsafe.Add(ref dst, i * 3 + 2) = h;
@@ -942,10 +942,10 @@ namespace Shamisen.Utils
             {
                 unsafe
                 {
-                    ref float rsi = ref MemoryMarshal.GetReference(source);
-                    ref float rdi = ref MemoryMarshal.GetReference(destination);
+                    ref var rsi = ref MemoryMarshal.GetReference(source);
+                    ref var rdi = ref MemoryMarshal.GetReference(destination);
                     nint i = 0, length = MathI.Min(source.Length * 4, destination.Length);
-                    nint olen = length - 3 * 8;
+                    var olen = length - 3 * 8;
                     var ymm0 = Vector256.Create(0, 0, 0, 0, 1, 1, 1, 1);
                     var ymm1 = Vector256.Create(2, 2, 2, 2, 3, 3, 3, 3);
                     var ymm2 = Vector256.Create(4, 4, 4, 4, 5, 5, 5, 5);
@@ -974,10 +974,10 @@ namespace Shamisen.Utils
             {
                 unsafe
                 {
-                    ref float rsi = ref MemoryMarshal.GetReference(source);
-                    ref float rdi = ref MemoryMarshal.GetReference(destination);
+                    ref var rsi = ref MemoryMarshal.GetReference(source);
+                    ref var rdi = ref MemoryMarshal.GetReference(destination);
                     nint i = 0, length = MathI.Min(source.Length * 4, destination.Length);
-                    nint olen = length - 3 * 4;
+                    var olen = length - 3 * 4;
                     for (; i < olen; i += 16)
                     {
                         var xmm3 = Unsafe.As<float, Vector128<int>>(ref Unsafe.AddByteOffset(ref rsi, i));

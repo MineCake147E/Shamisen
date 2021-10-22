@@ -140,11 +140,11 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
-            int len = rr.Length;
+            var len = rr.Length;
             buffer = buffer.Slice(0, len);
             switch (channels)
             {
@@ -176,7 +176,7 @@ namespace Shamisen.Filters
             var iStateC = ist[2];
             var iStateR = ist[1];
             var iStateL = ist[0];
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             var fBX = new Vector4(factorB.X);
             var fBY = new Vector4(factorB.Y);
             var fBZ = new Vector4(factorB.Z);
@@ -185,7 +185,7 @@ namespace Shamisen.Filters
             var iSX = new Vector4(iStateL.X, iStateR.X, iStateC.X, iStateLFE.X);
             var iSY = new Vector4(iStateL.Y, iStateR.Y, iStateC.Y, iStateLFE.Y);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 7;
+            var olen = length - 7;
             for (; i < olen; i += 8)
             {
                 var input = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i));
@@ -243,7 +243,7 @@ namespace Shamisen.Filters
             var iStateC = ist[2];
             var iStateL = ist[0];
             var iStateR = ist[1];
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             var fBX = new Vector3(factorB.X);
             var fBY = new Vector3(factorB.Y);
             var fBZ = new Vector3(factorB.Z);
@@ -252,7 +252,7 @@ namespace Shamisen.Filters
             var iSX = new Vector3(iStateL.X, iStateR.X, iStateC.X);
             var iSY = new Vector3(iStateL.Y, iStateR.Y, iStateC.Y);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 5;
+            var olen = length - 5;
             for (; i < olen; i += 6)
             {
                 var input = Unsafe.As<float, Vector3>(ref Unsafe.Add(ref rdi, i));
@@ -309,7 +309,7 @@ namespace Shamisen.Filters
             var ist = states;
             var iStateR = ist[1];
             var iStateL = ist[0];
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             var fBX = new Vector2(factorB.X);
             var fBY = new Vector2(factorB.Y);
             var fBZ = new Vector2(factorB.Z);
@@ -318,7 +318,7 @@ namespace Shamisen.Filters
             var iSX = new Vector2(iStateL.X, iStateR.X);
             var iSY = new Vector2(iStateL.Y, iStateR.Y);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 3;
+            var olen = length - 3;
             for (; i < olen; i += 4)
             {
                 var input = Unsafe.As<float, Vector2>(ref Unsafe.Add(ref rdi, i));
@@ -373,20 +373,20 @@ namespace Shamisen.Filters
                 var factorB = parameter.B;
                 var factorA = parameter.A;
                 var iState = states[0];
-                ref float rdi = ref MemoryMarshal.GetReference(buffer);
-                float fBX = factorB.X;
-                float fBY = factorB.Y;
-                float fBZ = factorB.Z;
-                float fAX = factorA.X;
-                float fAY = factorA.Y;
-                float iSX = iState.X;
-                float iSY = iState.Y;
+                ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                var fBX = factorB.X;
+                var fBY = factorB.Y;
+                var fBZ = factorB.Z;
+                var fAX = factorA.X;
+                var fAY = factorA.Y;
+                var iSX = iState.X;
+                var iSY = iState.Y;
                 //LLVM had me to do everything in scalar
                 nint i, length = buffer.Length;
                 for (i = 0; i < length - 1; i += 2)
                 {
-                    float input = Unsafe.Add(ref rdi, i);
-                    float s0 = fBX * input;
+                    var input = Unsafe.Add(ref rdi, i);
+                    var s0 = fBX * input;
                     s0 += iSX;
                     iSX = fBY * input;
                     iSY = iSX + iSY;
@@ -410,7 +410,7 @@ namespace Shamisen.Filters
                 }
                 if (i < length)
                 {
-                    float s0 = Unsafe.Add(ref rdi, i);
+                    var s0 = Unsafe.Add(ref rdi, i);
                     fBX *= s0;
                     fBX += iSX;
                     Unsafe.Add(ref rdi, i) = fBX;
@@ -434,12 +434,12 @@ namespace Shamisen.Filters
 #if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
-                    /*if (Avx.IsSupported)
+                    if (Avx.IsSupported)
                     {
-                        ProcessMonauralAvx(buffer);
+                        ProcessMultipleAvx(buffer, Parameter, internalStates);
                         return;
                     }
-                    else */
+                    else
                     if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                     {
                         ProcessMultipleSse(buffer);
@@ -459,22 +459,22 @@ namespace Shamisen.Filters
                 var factorB = Parameter.B;
                 var factorA = Parameter.A;
                 Span<Vector2> iState = stackalloc Vector2[internalStates.Length];
-                int channels = iState.Length;
+                var channels = iState.Length;
                 internalStates.AsSpan().CopyTo(iState);
-                for (int i = 0; i < buffer.Length - channels + 1; i += channels)
+                for (var i = 0; i < buffer.Length - channels + 1; i += channels)
                 {
-                    ref float pos = ref buffer[i];
+                    ref var pos = ref buffer[i];
                     //var span = buffer.Slice(i, internalStates.Length);
-                    for (int ch = 0; ch < iState.Length; ch++)
+                    for (var ch = 0; ch < iState.Length; ch++)
                     {
                         //Reference: https://en.wikipedia.org/wiki/Digital_biquad_filter#Transposed_Direct_form_2
                         //Transformed for SIMD awareness.
                         ref var a = ref iState[ch]; //Persist reference in order to decrease number of times of range check.
-                        ref float v = ref Unsafe.Add(ref pos, ch);
+                        ref var v = ref Unsafe.Add(ref pos, ch);
                         var feedForward = v * factorB; //Multiply in one go
-                        float sum1 = v = feedForward.X + a.X;
+                        var sum1 = v = feedForward.X + a.X;
                         var feedBack = sum1 * factorA;  //Multiply in one go
-                        float aY = a.Y;   //Needed backup
+                        var aY = a.Y;   //Needed backup
                         a = new Vector2(feedForward.Y + aY + feedBack.X, feedForward.Z + feedBack.Y);
                     }
                 }
