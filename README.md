@@ -43,6 +43,26 @@ A Cross-Platform Audio Library for:
 
 [Benchmarks on .Net 5, Intel Core i7 4790](Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md)
 
+#### Fast conversion between PCM sample formats
+
+| To\From | IEEE754 Binary32(float) | 32bit LPCM(Q0.31) | 24bit LPCM(Q0.23) | 16bit LPCM(Q0.15) | 8bit LPCM(Excess-128) | G.711 μ−Law | G.711 A-Law |
+|--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| IEEE754 Binary32(float) |✖️|✅|✔️|✅|✔️|✅|✅|
+| 32bit LPCM(Q0.31) |✅|✖️|☑️|☑️|☑️|☑️|☑️|
+| 24bit LPCM(Q0.23) |✔️|☑️|✖️|☑️|⭕|☑️|☑️|
+| 16bit LPCM(Q0.15) |✅|☑️|☑️|✖️|☑️|☑️|☑️|
+| 8bit LPCM(Excess-128) |✔️|☑️|⭕|☑️|✖️|☑️|☑️|
+| G.711 μ−Law |❎|❎|❎|❎|❎|✖️|❎|
+| G.711 A-Law |❎|❎|❎|❎|❎|❎|✖️|
+
+Legends:  
+✅: Shamisen has optimized implementation of direct conversion.  
+☑️: Shamisen can handle conversion by 2 or more converter. Can be partially optimized.  
+✔: Shamisen has simple implementation of direct conversion.  
+⭕: Shamisen can handle conversion by 2 or more converter. Both converter is implemented in simple way.  
+❎: Shamisen has no support for conversion.  
+✖️: No conversion needed(same format).  
+
 #### Optimized BiQuad Filters that supports some filtering
 
 - Uses `Vector2` and `Vector3` for filter calculations in each channels.

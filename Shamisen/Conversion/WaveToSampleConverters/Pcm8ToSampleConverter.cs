@@ -129,7 +129,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-
+                if (Avx2.IsSupported)
+                {
+                    ProcessAvx2A(wrote, dest);
+                    return;
+                }
 #endif
                 ProcessStandard(wrote, dest);
             }
