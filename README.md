@@ -47,9 +47,9 @@ A Cross-Platform Audio Library for:
 
 | To\From | IEEE754 Binary32(float) | 32bit LPCM(Q0.31) | 24bit LPCM(Q0.23) | 16bit LPCM(Q0.15) | 8bit LPCM(Excess-128) | G.711 μ−Law | G.711 A-Law |
 |--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| IEEE754 Binary32(float) |✖️|✅|✔️|✅|✔️|✅|✅|
+| IEEE754 Binary32(float) |✖️|✅|✔️|✅|✅|✅|✅|
 | 32bit LPCM(Q0.31) |✅|✖️|☑️|☑️|☑️|☑️|☑️|
-| 24bit LPCM(Q0.23) |✔️|☑️|✖️|☑️|⭕|☑️|☑️|
+| 24bit LPCM(Q0.23) |✔️|☑️|✖️|☑️|☑️|☑️|☑️|
 | 16bit LPCM(Q0.15) |✅|☑️|☑️|✖️|☑️|☑️|☑️|
 | 8bit LPCM(Excess-128) |✔️|☑️|⭕|☑️|✖️|☑️|☑️|
 | G.711 μ−Law |❎|❎|❎|❎|❎|✖️|❎|
