@@ -276,23 +276,25 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     }
                 }
 #endif
-                ProcessNormalOrdinal(wrote, dest);
+                ProcessNormalStandard(wrote, dest);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessReversedOrdinal(Span<float> wrote, Span<short> dest)
         {
-            ProcessNormalOrdinal(wrote, dest);
+            ProcessNormalStandard(wrote, dest);
             dest.ReverseEndianness();
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormalOrdinal(Span<float> wrote, Span<short> dest)
+        internal static void ProcessNormalStandard(Span<float> wrote, Span<short> dest)
         {
             var max = new Vector<float>(32767.0f);
             var min = new Vector<float>(-32768.0f);
             var mul = new Vector<float>(32768.0f);
+            var sign = Vector.AsVectorSingle(new Vector<int>(int.MinValue));
+            var reciprocalEpsilon = new Vector<float>(16777216f);
             ref var dst = ref MemoryMarshal.GetReference(dest);
             ref var src = ref MemoryMarshal.GetReference(wrote);
             nint i = 0, length = MathI.Min(wrote.Length, dest.Length);
@@ -311,6 +313,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 v1_ns = Vector.Max(v1_ns, min);
                 v2_ns = Vector.Max(v2_ns, min);
                 v3_ns = Vector.Max(v3_ns, min);
+                v0_ns = VectorUtils.RoundInLoop(v0_ns, sign, reciprocalEpsilon);
+                v1_ns = VectorUtils.RoundInLoop(v1_ns, sign, reciprocalEpsilon);
+                v2_ns = VectorUtils.RoundInLoop(v2_ns, sign, reciprocalEpsilon);
+                v3_ns = VectorUtils.RoundInLoop(v3_ns, sign, reciprocalEpsilon);
                 var v0_ns2 = Vector.ConvertToInt32(v0_ns);
                 var v1_ns2 = Vector.ConvertToInt32(v1_ns);
                 var v2_ns2 = Vector.ConvertToInt32(v2_ns);
@@ -325,6 +331,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var s0 = mul[0] * Unsafe.Add(ref src, i);
                 s0 = FastMath.Min(s0, max[0]);
                 s0 = FastMath.Max(s0, min[0]);
+                s0 = FastMath.Round(s0);
                 var x0 = (int)s0;
                 Unsafe.Add(ref dst, i) = (short)x0;
             }

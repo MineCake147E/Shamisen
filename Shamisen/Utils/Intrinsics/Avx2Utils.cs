@@ -20,19 +20,6 @@ namespace Shamisen.Utils.Intrinsics
         /// </summary>
         public static bool IsSupported => Avx2.IsSupported;
 
-        /// <inheritdoc cref="Avx2.ConvertToVector256Int32(byte*)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector256<int> ConvertToVector256Int32(ref byte address)
-        {
-            unsafe
-            {
-#if DEBUG
-                return Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref address)).AsByte());
-#else
-                return Avx2.ConvertToVector256Int32((byte*)Unsafe.AsPointer(ref address));
-#endif
-            }
-        }
     }
 }
 #endif

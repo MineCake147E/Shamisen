@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,42 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
             Pcm8ToSampleConverter.ProcessAvx2A(bb, buffer);
             AssertBlock(buffer);
         }
-
+        [Test]
+        public void BlockConvertsCorrectlySse41()
+        {
+            if (!Sse41.IsSupported)
+            {
+                Assert.Warn("Sse41 is not supported!");
+                return;
+            }
+            PrepareBlock(out var buffer, out var bb);
+            Pcm8ToSampleConverter.ProcessSse41(bb, buffer);
+            AssertBlock(buffer);
+        }
+        [Test]
+        public void BlockConvertsCorrectlyAdvSimd()
+        {
+            if (!AdvSimd.IsSupported)
+            {
+                Assert.Warn("AdvSimd is not supported!");
+                return;
+            }
+            PrepareBlock(out var buffer, out var bb);
+            Pcm8ToSampleConverter.ProcessAdvSimd(bb, buffer);
+            AssertBlock(buffer);
+        }
+        [Test]
+        public void BlockConvertsCorrectlyAdvSimdArm64()
+        {
+            if (!AdvSimd.Arm64.IsSupported)
+            {
+                Assert.Warn("AdvSimd.Arm64 is not supported!");
+                return;
+            }
+            PrepareBlock(out var buffer, out var bb);
+            Pcm8ToSampleConverter.ProcessAdvSimdArm64(bb, buffer);
+            AssertBlock(buffer);
+        }
         private static void AssertBlock(float[] buffer)
         {
             unchecked

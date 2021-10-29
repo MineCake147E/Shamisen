@@ -59,6 +59,14 @@ namespace Shamisen.Benchmarks.Conversion
             Pcm8ToSampleConverter.ProcessAvx2A(byteSpan, span);
         }
         [Benchmark]
+        public void Sse41()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            Pcm8ToSampleConverter.ProcessSse41(byteSpan, span);
+        }
+        [Benchmark]
         public void Standard()
         {
             var span = buffer.AsSpan();

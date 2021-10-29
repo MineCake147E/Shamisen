@@ -9,6 +9,12 @@ using System.Text;
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+
+using Shamisen.Utils.Intrinsics;
+
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
 #endif
 
 namespace Shamisen.Conversion.WaveToSampleConverters
@@ -134,6 +140,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     ProcessAvx2A(wrote, dest);
                     return;
                 }
+                if (Sse41.IsSupported)
+                {
+                    ProcessSse41(wrote, dest);
+                    return;
+                }
 #endif
                 ProcessStandard(wrote, dest);
             }
@@ -141,6 +152,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
         #region X86
 #if NETCOREAPP3_1_OR_GREATER
+
+        /// <summary>
+        /// Straightforward convert-and-multiply approach.
+        /// </summary>
+        /// <param name="wrote"></param>
+        /// <param name="dest"></param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAvx2M(Span<byte> wrote, Span<float> dest)
         {
@@ -213,6 +230,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
+        /// <summary>
+        /// Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+        /// This one is slightly faster than simple approach.
+        /// </summary>
+        /// <param name="wrote"></param>
+        /// <param name="dest"></param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAvx2A(Span<byte> wrote, Span<float> dest)
         {
@@ -241,12 +264,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 ymm4 = Avx.Add(ymm4.AsSingle(), ymm1).AsInt32();
                 ymm5 = Avx.Add(ymm5.AsSingle(), ymm1).AsInt32();
                 Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0 * 8)) = ymm2.AsSingle();
-                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 1 * 8)) = ymm3.AsSingle();
-                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 2 * 8)) = ymm4.AsSingle();
-                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 3 * 8)) = ymm5.AsSingle();
                 ymm2 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 4 * 8))).AsByte());
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 1 * 8)) = ymm3.AsSingle();
                 ymm3 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 5 * 8))).AsByte());
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 2 * 8)) = ymm4.AsSingle();
                 ymm4 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 6 * 8))).AsByte());
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 3 * 8)) = ymm5.AsSingle();
                 ymm5 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 7 * 8))).AsByte());
                 ymm2 = Avx2.ShiftLeftLogical(ymm2, 15);
                 ymm3 = Avx2.ShiftLeftLogical(ymm3, 15);
@@ -285,6 +308,139 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 v |= 0x4000_0000;
                 var h = Vector128.CreateScalarUnsafe(v).AsSingle();
                 Unsafe.Add(ref rdi, i) = Sse.AddScalar(h, ymm1.GetLower()).GetElement(0);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessSse41(Span<byte> wrote, Span<float> dest)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(dest);
+            ref var rsi = ref MemoryMarshal.GetReference(wrote);
+            nint i = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var xmm0 = Vector128.Create(0x4000_0000);
+            var xmm1 = Vector128.Create(-3.0f);
+            var olen = length - 15;
+            for (; i < olen; i += 16)
+            {
+                var xmm2 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 0 * 4))).AsByte());
+                var xmm3 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 1 * 4))).AsByte());
+                xmm2 = Sse2.ShiftLeftLogical(xmm2, 15);
+                xmm3 = Sse2.ShiftLeftLogical(xmm3, 15);
+                xmm2 = Sse2.Or(xmm2, xmm0);
+                xmm3 = Sse2.Or(xmm3, xmm0);
+                xmm2 = Sse.Add(xmm2.AsSingle(), xmm1).AsInt32();
+                xmm3 = Sse.Add(xmm3.AsSingle(), xmm1).AsInt32();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 0 * 4)) = xmm2.AsSingle();
+                xmm2 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 2 * 4))).AsByte());
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 1 * 4)) = xmm3.AsSingle();
+                xmm3 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 3 * 4))).AsByte());
+                xmm2 = Sse2.ShiftLeftLogical(xmm2, 15);
+                xmm3 = Sse2.ShiftLeftLogical(xmm3, 15);
+                xmm2 = Sse2.Or(xmm2, xmm0);
+                xmm3 = Sse2.Or(xmm3, xmm0);
+                xmm2 = Sse.Add(xmm2.AsSingle(), xmm1).AsInt32();
+                xmm3 = Sse.Add(xmm3.AsSingle(), xmm1).AsInt32();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 2 * 4)) = xmm2.AsSingle();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 3 * 4)) = xmm3.AsSingle();
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rsi, i) << 15;
+                v |= 0x4000_0000;
+                var h = Vector128.CreateScalarUnsafe(v).AsSingle();
+                Unsafe.Add(ref rdi, i) = Sse.AddScalar(h, xmm1).GetElement(0);
+            }
+        }
+#endif
+        #endregion
+        #region Armv8 Intrinsics
+#if NET5_0_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessAdvSimd(Span<byte> wrote, Span<float> dest)
+        {
+            ref var x10 = ref MemoryMarshal.GetReference(dest);
+            ref var x9 = ref MemoryMarshal.GetReference(wrote);
+            nint i = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var v0_4s = Vector128.Create(0x4000_0000u);
+            var v1_4s = Vector128.Create(-3.0f);
+            var olen = length - 15;
+            for (; i < olen; i += 16)
+            {
+                var v2_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 0 * 4))).AsByte();
+                var v3_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 1 * 4))).AsByte();
+                var v2_8h = AdvSimd.ShiftLeftLogicalWideningLower(v2_8b, 0);
+                var v3_8h = AdvSimd.ShiftLeftLogicalWideningLower(v3_8b, 0);
+                var v2_4s = AdvSimd.ShiftLeftLogicalWideningLower(v2_8h.GetLower(), 15);
+                var v3_4s = AdvSimd.ShiftLeftLogicalWideningLower(v3_8h.GetLower(), 15);
+                v2_4s = AdvSimd.Or(v2_4s, v0_4s);
+                v2_4s = AdvSimd.Add(v2_4s.AsSingle(), v1_4s).AsUInt32();
+                v3_4s = AdvSimd.Or(v3_4s, v0_4s);
+                v3_4s = AdvSimd.Add(v3_4s.AsSingle(), v1_4s).AsUInt32();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref x10, i + 0 * 4)) = v2_4s.AsSingle();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref x10, i + 1 * 4)) = v3_4s.AsSingle();
+                v2_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 2 * 4))).AsByte();
+                v3_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 3 * 4))).AsByte();
+                v2_8h = AdvSimd.ShiftLeftLogicalWideningLower(v2_8b, 0);
+                v3_8h = AdvSimd.ShiftLeftLogicalWideningLower(v3_8b, 0);
+                v2_4s = AdvSimd.ShiftLeftLogicalWideningLower(v2_8h.GetLower(), 15);
+                v3_4s = AdvSimd.ShiftLeftLogicalWideningLower(v3_8h.GetLower(), 15);
+                v2_4s = AdvSimd.Or(v2_4s, v0_4s);
+                v2_4s = AdvSimd.Add(v2_4s.AsSingle(), v1_4s).AsUInt32();
+                v3_4s = AdvSimd.Or(v3_4s, v0_4s);
+                v3_4s = AdvSimd.Add(v3_4s.AsSingle(), v1_4s).AsUInt32();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref x10, i + 2 * 4)) = v2_4s.AsSingle();
+                Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref x10, i + 3 * 4)) = v3_4s.AsSingle();
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref x9, i) << 15;
+                v |= 0x4000_0000;
+                var h = Vector64.CreateScalarUnsafe(v).AsSingle();
+                Unsafe.Add(ref x10, i) = AdvSimd.AddScalar(h, v1_4s.GetLower()).GetElement(0);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessAdvSimdArm64(Span<byte> wrote, Span<float> dest)
+        {
+            ref var x10 = ref MemoryMarshal.GetReference(dest);
+            ref var x9 = ref MemoryMarshal.GetReference(wrote);
+            nint i = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var v0_4s = Vector128.Create(0x4000_0000u);
+            var v1_4s = Vector128.Create(-3.0f);
+            var olen = length - 15;
+            for (; i < olen; i += 16)
+            {
+                var v2_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 0 * 4))).AsByte();
+                var v3_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 1 * 4))).AsByte();
+                var v2_8h = AdvSimd.ShiftLeftLogicalWideningLower(v2_8b, 0);
+                var v3_8h = AdvSimd.ShiftLeftLogicalWideningLower(v3_8b, 0);
+                var v2_4s = AdvSimd.ShiftLeftLogicalWideningLower(v2_8h.GetLower(), 15);
+                var v3_4s = AdvSimd.ShiftLeftLogicalWideningLower(v3_8h.GetLower(), 15);
+                v2_4s = AdvSimd.Or(v2_4s, v0_4s);
+                v2_4s = AdvSimd.Add(v2_4s.AsSingle(), v1_4s).AsUInt32();
+                v3_4s = AdvSimd.Or(v3_4s, v0_4s);
+                v3_4s = AdvSimd.Add(v3_4s.AsSingle(), v1_4s).AsUInt32();
+                AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref x10, i + 0 * 4), v2_4s.AsSingle(), v3_4s.AsSingle());
+                v2_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 2 * 4))).AsByte();
+                v3_8b = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x9, i + 3 * 4))).AsByte();
+                v2_8h = AdvSimd.ShiftLeftLogicalWideningLower(v2_8b, 0);
+                v3_8h = AdvSimd.ShiftLeftLogicalWideningLower(v3_8b, 0);
+                v2_4s = AdvSimd.ShiftLeftLogicalWideningLower(v2_8h.GetLower(), 15);
+                v3_4s = AdvSimd.ShiftLeftLogicalWideningLower(v3_8h.GetLower(), 15);
+                v2_4s = AdvSimd.Or(v2_4s, v0_4s);
+                v2_4s = AdvSimd.Add(v2_4s.AsSingle(), v1_4s).AsUInt32();
+                v3_4s = AdvSimd.Or(v3_4s, v0_4s);
+                v3_4s = AdvSimd.Add(v3_4s.AsSingle(), v1_4s).AsUInt32();
+                AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref x10, i + 2 * 4), v2_4s.AsSingle(), v3_4s.AsSingle());
+
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref x9, i) << 15;
+                v |= 0x4000_0000;
+                var h = Vector64.CreateScalarUnsafe(v).AsSingle();
+                Unsafe.Add(ref x10, i) = AdvSimd.AddScalar(h, v1_4s.GetLower()).GetElement(0);
             }
         }
 #endif
