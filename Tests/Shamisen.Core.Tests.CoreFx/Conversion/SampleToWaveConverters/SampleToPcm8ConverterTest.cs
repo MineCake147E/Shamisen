@@ -24,23 +24,11 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
     {
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessNormalStandardConvertsCorrectly(int length)
         {
             PrepareArrays(length, out var src, out var exp, out var dst);
             SampleToPcm8Converter.ProcessNormalStandard(src, dst);
-            AssertArray(src, exp, dst);
-        }
-        [TestCase(4095)]
-        [TestCase(4096)]
-        public void ProcessNormalAvx2MConvertsCorrectly(int length)
-        {
-            if (!Avx2.IsSupported)
-            {
-                Assert.Warn("Avx2 is not supported!");
-                return;
-            }
-            PrepareArrays(length, out var src, out var exp, out var dst);
-            SampleToPcm8Converter.ProcessNormalAvx2M(src, dst);
             AssertArray(src, exp, dst);
         }
         [TestCase(4095)]

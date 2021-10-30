@@ -66,6 +66,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
 
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessNormalStandardConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
@@ -75,6 +76,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
 
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessNormalAvx2ConvertsCorrectly(int length)
         {
             if (!Avx2.IsSupported)
@@ -89,6 +91,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
 
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessNormalSse2ConvertsCorrectly(int length)
         {
             if (!Sse2.IsSupported)
@@ -103,6 +106,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
 
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessReversedAvx2ConvertsCorrectly(int length)
         {
             if (!Avx2.IsSupported)
@@ -117,6 +121,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
 
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessReversedSsse3ConvertsCorrectly(int length)
         {
             if (!Ssse3.IsSupported)

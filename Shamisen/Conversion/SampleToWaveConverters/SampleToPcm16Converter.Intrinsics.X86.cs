@@ -58,27 +58,27 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalAvx2(Span<float> wrote, Span<short> dest)
         {
-            var max = Vector256.Create(32767.0f);
-            var min = Vector256.Create(-32768.0f);
-            var mul = Vector256.Create(32768.0f);
+            var max = Vector256.Create(32767.0f / 32768.0f);
+            var min = Vector256.Create(-1.0f);
+            var offset = Vector256.Create(0x0780_0000u);
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref MemoryMarshal.GetReference(wrote);
             nint i = 0, length = MathI.Min(wrote.Length, dest.Length);
             var olen = length - 31;
             for (; i < olen; i += 32)
             {
-                var ymm0 = Avx.Multiply(mul, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0)));
-                var ymm1 = Avx.Multiply(mul, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 8)));
-                var ymm2 = Avx.Multiply(mul, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 16)));
-                var ymm3 = Avx.Multiply(mul, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 24)));
-                ymm0 = Avx.Max(ymm0, min);
-                ymm1 = Avx.Max(ymm1, min);
-                ymm2 = Avx.Max(ymm2, min);
-                ymm3 = Avx.Max(ymm3, min);
+                var ymm0 = Avx.Max(min, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0)));
+                var ymm1 = Avx.Max(min, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 8)));
+                var ymm2 = Avx.Max(min, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 16)));
+                var ymm3 = Avx.Max(min, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 24)));
                 ymm0 = Avx.Min(ymm0, max);
                 ymm1 = Avx.Min(ymm1, max);
                 ymm2 = Avx.Min(ymm2, max);
                 ymm3 = Avx.Min(ymm3, max);
+                ymm0 = Avx2.Add(offset, ymm0.AsUInt32()).AsSingle();
+                ymm1 = Avx2.Add(offset, ymm1.AsUInt32()).AsSingle();
+                ymm2 = Avx2.Add(offset, ymm2.AsUInt32()).AsSingle();
+                ymm3 = Avx2.Add(offset, ymm3.AsUInt32()).AsSingle();
                 ymm0 = Avx.ConvertToVector256Int32(ymm0).AsSingle();
                 var xmm0 = Sse2.PackSignedSaturate(ymm0.AsInt32().GetLower(), ymm0.AsInt32().GetUpper());
                 ymm1 = Avx.ConvertToVector256Int32(ymm1).AsSingle();
@@ -95,12 +95,12 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             olen = length - 7;
             for (; i < olen; i += 8)
             {
-                var xmm0 = Sse.Multiply(mul.GetLower(), Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i)));
-                var xmm1 = Sse.Multiply(mul.GetLower(), Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 4)));
+                var xmm0 = Sse.Max(min.GetLower(), Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i)));
+                var xmm1 = Sse.Max(min.GetLower(), Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 4)));
                 xmm0 = Sse.Min(xmm0, max.GetLower());
                 xmm1 = Sse.Min(xmm1, max.GetLower());
-                xmm0 = Sse.Max(xmm0, min.GetLower());
-                xmm1 = Sse.Max(xmm1, min.GetLower());
+                xmm0 = Sse2.Add(offset.GetLower(), xmm0.AsUInt32()).AsSingle();
+                xmm1 = Sse2.Add(offset.GetLower(), xmm1.AsUInt32()).AsSingle();
                 xmm0 = Sse2.ConvertToVector128Int32(xmm0).AsSingle();
                 xmm1 = Sse2.ConvertToVector128Int32(xmm1).AsSingle();
                 Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i)) = Sse2.PackSignedSaturate(xmm0.AsInt32(), xmm1.AsInt32());
@@ -108,9 +108,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             for (; i < length; i++)
             {
                 var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i));
-                xmm0 = Sse.MultiplyScalar(xmm0, mul.GetLower());
-                xmm0 = Sse.MinScalar(xmm0, max.GetLower());
                 xmm0 = Sse.MaxScalar(xmm0, min.GetLower());
+                xmm0 = Sse.MinScalar(xmm0, max.GetLower());
+                xmm0 = Sse2.Add(offset.GetLower(), xmm0.AsUInt32()).AsSingle();
                 var r8 = Sse.ConvertToInt32(xmm0);
                 Unsafe.Add(ref rdi, i) = (short)r8;
             }
