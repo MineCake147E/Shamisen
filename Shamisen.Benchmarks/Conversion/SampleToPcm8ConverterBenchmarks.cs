@@ -46,8 +46,8 @@ namespace Shamisen.Benchmarks.Conversion
             RandomNumberGenerator.Fill(g);
         }
 
-        [Benchmark]
-        public void ProcessNormalAvx2M() => SampleToPcm8Converter.ProcessNormalAvx2M(bufferSrc, bufferDst);
+        /*[Benchmark]
+        public void ProcessNormalAvx2M() => SampleToPcm8Converter.ProcessNormalAvx2M(bufferSrc, bufferDst);*/
         [Benchmark]
         public void ProcessNormalAvx2A() => SampleToPcm8Converter.ProcessNormalAvx2A(bufferSrc, bufferDst);
         [Benchmark]

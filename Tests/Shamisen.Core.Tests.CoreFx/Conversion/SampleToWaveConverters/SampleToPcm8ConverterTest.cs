@@ -45,6 +45,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion
         }
         [TestCase(4095)]
         [TestCase(4096)]
+        [TestCase(4097)]
         public void ProcessNormalAvx2AConvertsCorrectly(int length)
         {
             if (!Avx2.IsSupported)

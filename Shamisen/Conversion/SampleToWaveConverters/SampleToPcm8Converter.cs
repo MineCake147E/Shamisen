@@ -289,9 +289,8 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalAvx2A(Span<float> wrote, Span<byte> dest)
         {
-            var add = Vector256.Create(3.0f);
-            var offset = Vector256.Create(16384u);
-            var mask = Vector256.Create(0x007f_ffffu);
+            var sign = Vector256.Create((byte)128).AsUInt32();
+            var expOffset = Vector256.Create(0x0380_0000u);
             var min = Vector256.Create(-1.0f);
             var max = Vector256.Create(127.0f / 128.0f);
             var perm = Vector256.Create(0, 4, 1, 5, 2, 6, 3, 7);
@@ -309,27 +308,20 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 ymm1 = Avx.Max(min, ymm1.AsSingle()).AsUInt32();
                 ymm2 = Avx.Max(min, ymm2.AsSingle()).AsUInt32();
                 ymm3 = Avx.Max(min, ymm3.AsSingle()).AsUInt32();
-                ymm0 = Avx.Add(add, ymm0.AsSingle()).AsUInt32();
-                ymm1 = Avx.Add(add, ymm1.AsSingle()).AsUInt32();
-                ymm2 = Avx.Add(add, ymm2.AsSingle()).AsUInt32();
-                ymm3 = Avx.Add(add, ymm3.AsSingle()).AsUInt32();
-                ymm0 = Avx2.And(mask, ymm0);
-                ymm1 = Avx2.And(mask, ymm1);
-                ymm2 = Avx2.And(mask, ymm2);
-                ymm3 = Avx2.And(mask, ymm3);
-                ymm0 = Avx2.Add(offset, ymm0);
-                ymm1 = Avx2.Add(offset, ymm1);
-                ymm2 = Avx2.Add(offset, ymm2);
-                ymm3 = Avx2.Add(offset, ymm3);
-                ymm0 = Avx2.ShiftRightLogical(ymm0, 15);
-                ymm1 = Avx2.ShiftRightLogical(ymm1, 15);
-                ymm2 = Avx2.ShiftRightLogical(ymm2, 15);
-                ymm3 = Avx2.ShiftRightLogical(ymm3, 15);
-                var ymm4 = Avx2.PackUnsignedSaturate(ymm0.AsInt32(), ymm1.AsInt32());
-                var ymm5 = Avx2.PackUnsignedSaturate(ymm2.AsInt32(), ymm3.AsInt32());
-                var ymm6 = Avx2.PackUnsignedSaturate(ymm4.AsInt16(), ymm5.AsInt16());
-                ymm6 = Avx2.PermuteVar8x32(ymm6.AsInt32(), perm).AsByte();
-                Unsafe.As<byte, Vector256<byte>>(ref Unsafe.Add(ref dst, i + 0 * Vector256<byte>.Count)) = ymm6;
+                ymm0 = Avx2.Add(expOffset, ymm0).AsUInt32();
+                ymm1 = Avx2.Add(expOffset, ymm1).AsUInt32();
+                ymm2 = Avx2.Add(expOffset, ymm2).AsUInt32();
+                ymm3 = Avx2.Add(expOffset, ymm3).AsUInt32();
+                ymm0 = Avx.ConvertToVector256Int32(ymm0.AsSingle()).AsUInt32();
+                ymm1 = Avx.ConvertToVector256Int32(ymm1.AsSingle()).AsUInt32();
+                ymm2 = Avx.ConvertToVector256Int32(ymm2.AsSingle()).AsUInt32();
+                ymm3 = Avx.ConvertToVector256Int32(ymm3.AsSingle()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt32(), ymm1.AsInt32()).AsUInt32();
+                ymm2 = Avx2.PackSignedSaturate(ymm2.AsInt32(), ymm3.AsInt32()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt16(), ymm2.AsInt16()).AsUInt32();
+                ymm0 = Avx2.PermuteVar8x32(ymm0.AsInt32(), perm).AsUInt32();
+                ymm0 = Avx2.Xor(sign, ymm0);
+                Unsafe.As<byte, Vector256<byte>>(ref Unsafe.Add(ref dst, i + 0 * Vector256<byte>.Count)) = ymm0.AsByte();
                 ymm0 = Avx.Min(max, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 4 * 8))).AsUInt32();
                 ymm1 = Avx.Min(max, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 5 * 8))).AsUInt32();
                 ymm2 = Avx.Min(max, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 6 * 8))).AsUInt32();
@@ -338,51 +330,43 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 ymm1 = Avx.Max(min, ymm1.AsSingle()).AsUInt32();
                 ymm2 = Avx.Max(min, ymm2.AsSingle()).AsUInt32();
                 ymm3 = Avx.Max(min, ymm3.AsSingle()).AsUInt32();
-                ymm0 = Avx.Add(add, ymm0.AsSingle()).AsUInt32();
-                ymm1 = Avx.Add(add, ymm1.AsSingle()).AsUInt32();
-                ymm2 = Avx.Add(add, ymm2.AsSingle()).AsUInt32();
-                ymm3 = Avx.Add(add, ymm3.AsSingle()).AsUInt32();
-                ymm0 = Avx2.And(mask, ymm0);
-                ymm1 = Avx2.And(mask, ymm1);
-                ymm2 = Avx2.And(mask, ymm2);
-                ymm3 = Avx2.And(mask, ymm3);
-                ymm0 = Avx2.Add(offset, ymm0);
-                ymm1 = Avx2.Add(offset, ymm1);
-                ymm2 = Avx2.Add(offset, ymm2);
-                ymm3 = Avx2.Add(offset, ymm3);
-                ymm0 = Avx2.ShiftRightLogical(ymm0, 15);
-                ymm1 = Avx2.ShiftRightLogical(ymm1, 15);
-                ymm2 = Avx2.ShiftRightLogical(ymm2, 15);
-                ymm3 = Avx2.ShiftRightLogical(ymm3, 15);
-                ymm4 = Avx2.PackUnsignedSaturate(ymm0.AsInt32(), ymm1.AsInt32());
-                ymm5 = Avx2.PackUnsignedSaturate(ymm2.AsInt32(), ymm3.AsInt32());
-                ymm6 = Avx2.PackUnsignedSaturate(ymm4.AsInt16(), ymm5.AsInt16());
-                ymm6 = Avx2.PermuteVar8x32(ymm6.AsInt32(), perm).AsByte();
-                Unsafe.As<byte, Vector256<byte>>(ref Unsafe.Add(ref dst, i + 1 * Vector256<byte>.Count)) = ymm6.AsByte();
+                ymm0 = Avx2.Add(expOffset, ymm0).AsUInt32();
+                ymm1 = Avx2.Add(expOffset, ymm1).AsUInt32();
+                ymm2 = Avx2.Add(expOffset, ymm2).AsUInt32();
+                ymm3 = Avx2.Add(expOffset, ymm3).AsUInt32();
+                ymm0 = Avx.ConvertToVector256Int32(ymm0.AsSingle()).AsUInt32();
+                ymm1 = Avx.ConvertToVector256Int32(ymm1.AsSingle()).AsUInt32();
+                ymm2 = Avx.ConvertToVector256Int32(ymm2.AsSingle()).AsUInt32();
+                ymm3 = Avx.ConvertToVector256Int32(ymm3.AsSingle()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt32(), ymm1.AsInt32()).AsUInt32();
+                ymm2 = Avx2.PackSignedSaturate(ymm2.AsInt32(), ymm3.AsInt32()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt16(), ymm2.AsInt16()).AsUInt32();
+                ymm0 = Avx2.PermuteVar8x32(ymm0.AsInt32(), perm).AsUInt32();
+                ymm0 = Avx2.Xor(sign, ymm0);
+                Unsafe.As<byte, Vector256<byte>>(ref Unsafe.Add(ref dst, i + 1 * Vector256<byte>.Count)) = ymm0.AsByte();
             }
             olen = length - 8 + 1;
             for (; i < olen; i += 8)
             {
                 var ymm0 = Avx.Min(max, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref src, i + 0 * 8))).AsUInt32();
                 ymm0 = Avx.Max(min, ymm0.AsSingle()).AsUInt32();
-                ymm0 = Avx.Add(add, ymm0.AsSingle()).AsUInt32();
-                ymm0 = Avx2.And(mask, ymm0);
-                ymm0 = Avx2.Add(offset, ymm0);
-                ymm0 = Avx2.ShiftRightLogical(ymm0, 15);
-                ymm0 = Avx2.PackUnsignedSaturate(ymm0.AsInt32(), ymm0.AsInt32()).AsUInt32();
-                ymm0 = Avx2.PackUnsignedSaturate(ymm0.AsInt16(), ymm0.AsInt16()).AsUInt32();
+                ymm0 = Avx2.Add(expOffset, ymm0);
+                ymm0 = Avx.ConvertToVector256Int32(ymm0.AsSingle()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt32(), ymm0.AsInt32()).AsUInt32();
+                ymm0 = Avx2.PackSignedSaturate(ymm0.AsInt16(), ymm0.AsInt16()).AsUInt32();
                 ymm0 = Avx2.PermuteVar8x32(ymm0.AsInt32(), perm).AsUInt32();
+                ymm0 = Avx2.Xor(sign, ymm0);
                 Unsafe.As<byte, long>(ref Unsafe.Add(ref dst, i)) = ymm0.AsInt64().GetElement(0);
             }
             for (; i < length; i++)
             {
                 var xmm0 = Sse.MinScalar(max.GetLower(), Vector128.CreateScalarUnsafe(Unsafe.Add(ref src, i))).AsUInt32();
                 xmm0 = Sse.MaxScalar(min.GetLower(), xmm0.AsSingle()).AsUInt32();
-                xmm0 = Sse.AddScalar(add.GetLower(), xmm0.AsSingle()).AsUInt32();
-                xmm0 = Sse2.And(mask.GetLower(), xmm0);
-                xmm0 = Sse2.Add(offset.GetLower(), xmm0);
-                xmm0 = Sse2.ShiftRightLogical(xmm0, 15);
-                xmm0 = Sse2.PackUnsignedSaturate(xmm0.AsInt16(), xmm0.AsInt16()).AsUInt32();
+                xmm0 = Sse2.Add(expOffset.GetLower(), xmm0);
+                xmm0 = Sse2.ConvertToVector128Int32(xmm0.AsSingle()).AsUInt32();
+                xmm0 = Sse2.PackSignedSaturate(xmm0.AsInt32(), xmm0.AsInt32()).AsUInt32();
+                xmm0 = Sse2.PackSignedSaturate(xmm0.AsInt16(), xmm0.AsInt16()).AsUInt32();
+                xmm0 = Sse2.Xor(sign.GetLower(), xmm0);
                 Unsafe.Add(ref dst, i) = xmm0.AsByte().GetElement(0);
             }
         }

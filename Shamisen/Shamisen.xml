@@ -8016,6 +8016,22 @@
              <param name="rateMul"></param>
              <param name="acc"></param>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            SSE2 vectorized path
+            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            FMA vectorized path
+            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -8041,6 +8057,31 @@
             <param name="acc"></param>
             <param name="facc"></param>
             <param name="rmi"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            For arbitrary sampling frequency ratio larger than 1
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
+            <param name="ram"></param>
+            <param name="acc"></param>
+            <param name="rci"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
+            <summary>
+            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
+            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
+            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
             <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
@@ -9037,6 +9078,21 @@
             <returns>
             The length of the data written.
             </returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2M(System.Span{System.Byte},System.Span{System.Single})">
+            <summary>
+            Straightforward convert-and-multiply approach.
+            </summary>
+            <param name="wrote"></param>
+            <param name="dest"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2A(System.Span{System.Byte},System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            This one is slightly faster than simple approach.
+            </summary>
+            <param name="wrote"></param>
+            <param name="dest"></param>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.Dispose(System.Boolean)">
             <summary>
@@ -10841,15 +10897,15 @@
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.Dispose">
             <summary>
@@ -11562,6 +11618,28 @@
         </member>
         <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
             <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
+            The orders more than 8 should be processed with serially cascaded function calls.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
         </member>
         <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
             <summary>
@@ -15130,12 +15208,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="T:Shamisen.Pipeline.AudioPipe">
@@ -18374,6 +18452,18 @@
             samplesA must be as long as samplesB! - samplesA
             </exception>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMixAvx(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Only usable in Rocket Lake or later due to CPU clock limits
+            (but Clang suggests it and actually performs approximately 1.34 times better than
+            <see cref="M:Shamisen.Utils.AudioUtils.FastMixSse(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)"/>, even in Haswell)
+            </summary>
+            <param name="buffer"></param>
+            <param name="samplesA"></param>
+            <param name="volumeA"></param>
+            <param name="samplesB"></param>
+            <param name="volumeB"></param>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
             Interleaves and stores Stereo samples to <paramref name="buffer"/>.
@@ -18704,6 +18794,58 @@
             <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
         </member>
         <member name="T:Shamisen.Utils.Numerics.Vector2Int16">
             <summary>
@@ -20274,6 +20416,14 @@
             <param name="vector1">The value to multiply.</param>
             <returns>The dot product of two vectors.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Returns the dot product of two vectors.
+            </summary>
+            <param name="vector0">The value to multiply.</param>
+            <param name="vector1">The value to multiply.</param>
+            <returns>The dot product of two vectors.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.ReverseElements(System.Numerics.Vector4)">
             <summary>
             Returns a new <see cref="T:System.Numerics.Vector4"/> value with reversed elements of <paramref name="value"/>.
@@ -20353,6 +20503,13 @@
             <param name="left">The first value to add.</param>
             <param name="right">The second value to add.</param>
             <returns>The added value.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
         </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
@@ -21020,7 +21177,7 @@
         </member>
         <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
             <summary>
-            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/> and converts the value to <see cref="T:System.Single"/>.
+            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
@@ -21696,6 +21853,16 @@
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
             </summary>
         </member>
+        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
+             <summary>
+            
+             </summary>
+             <param name="vector"></param>
+             <param name="v0"></param>
+             <param name="v1"></param>
+             <param name="v2"></param>
+             <param name="v3"></param>
+        </member>
         <member name="T:System.ThrowHelper">
             <summary>
             Helps throwing exceptions while in-lining aggressively.
@@ -22350,6 +22517,12 @@
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
             </summary>
             <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
         </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
