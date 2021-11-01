@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Core.Tests.CoreFx.TestUtils;
 
-namespace Shamisen.Core.Tests.CoreFx.Conversion
+namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
 {
     [TestFixture]
     public class SampleToPcm32ConverterTest

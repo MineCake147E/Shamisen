@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -8,71 +8,57 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.WaveToSampleConverters;
 
-namespace Shamisen.Benchmarks.Conversion
+namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
-    [MedianColumn]
-    public class ALawToSampleConverterBenchmarks
+    public class MuLawToSampleConverterBenchmarks
     {
-        private const int Frames = 4095;
 
         private class Config : ManualConfig
         {
             public Config()
             {
-                _ = AddColumn(new FrameThroughputColumn(a => Frames));
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                _ = AddColumn(new FrameThroughputColumn(FrameSelector));
             }
         }
         private float[] buffer;
+        private const int SampleRate = 192000;
         [Params(1)]
         public int Channels { get; set; }
 
+        [Params(/*2047, */4095, Priority = -990)]
+        public int Frames { get; set; }
+
         [GlobalSetup]
-        public void Setup()
-        {
-            buffer = new float[Frames * Channels];
-            var g = MemoryMarshal.AsBytes(buffer.AsSpan());
-            RandomNumberGenerator.Fill(g);
-        }
+        public void Setup() => buffer = new float[Frames * Channels];
 
         [Benchmark]
-        public void Avx2M2()
+        public void Sse41()
         {
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2M2(byteSpan, span);
+            MuLawToSampleConverter.ProcessSse41(byteSpan, span);
         }
         [Benchmark]
-        public void Avx2M3()
+        public void Avx2MM128()
         {
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2M3(byteSpan, span);
+            MuLawToSampleConverter.ProcessAvx2MM128(byteSpan, span);
         }
-
-        //[Benchmark]
-        //public void Avx2FP()
-        //{
-        //    var span = buffer.AsSpan();
-        //    var byteSpan = MemoryMarshal.AsBytes(span);
-        //    byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-        //    ALawToSampleConverter.ProcessAvx2FP(byteSpan, span);
-        //}
-        /*[Benchmark]
-        public void Avx2()
+        [Benchmark]
+        public void Avx2MM256()
         {
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-#pragma warning disable CS0618
-            ALawToSampleConverter.ProcessAvx2(byteSpan, span);
-#pragma warning restore CS0618
-        }*/
-
+            MuLawToSampleConverter.ProcessAvx2MM256(byteSpan, span);
+        }
         [GlobalCleanup]
         public void Cleanup() => buffer = null;
     }

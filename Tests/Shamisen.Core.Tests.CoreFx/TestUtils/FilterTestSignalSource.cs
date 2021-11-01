@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Shamisen.Mathematics;
 
-namespace Shamisen.Core.Tests.CoreFx
+namespace Shamisen.Core.Tests.CoreFx.TestUtils
 {
     public sealed class FilterTestSignalSource : ISampleSource
     {
@@ -93,9 +93,9 @@ namespace Shamisen.Core.Tests.CoreFx
             Format = format;
             theta = new double[format.Channels];
             SamplingFrequencyInverse = 1.0 / format.SampleRate;
-            double y = 0.0;
-            double q = Math.Tau / format.Channels;
-            for (int i = 0; i < theta.Length; i++)
+            var y = 0.0;
+            var q = Math.Tau / format.Channels;
+            for (var i = 0; i < theta.Length; i++)
             {
                 theta[i] = y;
                 y = AppendTheta(y, q);
@@ -109,13 +109,13 @@ namespace Shamisen.Core.Tests.CoreFx
         /// <returns></returns>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            double omega = Omega;
-            double[] t = theta;
-            for (int i = 0; i < buffer.Length; i += channels)
+            var omega = Omega;
+            var t = theta;
+            for (var i = 0; i < buffer.Length; i += channels)
             {
-                for (int ch = 0; ch < channels; ch++)
+                for (var ch = 0; ch < channels; ch++)
                 {
                     buffer[i + ch] = (float)(t[ch] * (1 / Math.PI));
                     t[ch] = AppendTheta(t[ch], omega);

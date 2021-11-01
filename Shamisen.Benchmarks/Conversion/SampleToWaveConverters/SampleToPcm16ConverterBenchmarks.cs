@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 
 using BenchmarkDotNet.Attributes;
@@ -13,7 +15,7 @@ using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks.Conversion
+namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 {
     [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     /*[SimpleJob(RuntimeMoniker.NetCoreApp31)]
@@ -36,20 +38,9 @@ namespace Shamisen.Benchmarks.Conversion
         }
         private IReadableAudioSource<float, SampleFormat> source;
         private SampleToPcm16Converter converter;
-        private byte[] buffer;
+        private float[] srcBuffer;
+        private short[] dstBuffer;
         private const int SampleRate = 192000;
-
-        [Params(1)]
-        public int Channels { get; set; }
-
-        [Params(true, false)]
-        public bool DoDeltaSigmaModulation { get; set; }
-
-        [ParamsAllValues]
-        public Endianness TargetEndianness { get; set; }
-
-        [Params((X86Intrinsics)X86IntrinsicsMask.None, (X86Intrinsics)X86IntrinsicsMask.Sse42, (X86Intrinsics)X86IntrinsicsMask.Avx2)]
-        public X86Intrinsics EnabledX86Intrinsics { get; set; }
 
         [Params(/*2047, */4095, Priority = -990)]
         public int Frames { get; set; }
@@ -57,24 +48,30 @@ namespace Shamisen.Benchmarks.Conversion
         [GlobalSetup]
         public void Setup()
         {
-            source = new DummySource<float, SampleFormat>(new SampleFormat(Channels, SampleRate));
-            converter = new SampleToPcm16Converter(source, true, EnabledX86Intrinsics, IntrinsicsUtils.ArmIntrinsics, DoDeltaSigmaModulation, TargetEndianness);
-            buffer = new byte[Frames * Channels * sizeof(short)];
+            dstBuffer = new short[Frames];
+            srcBuffer = new float[Frames];
+            var g = MemoryMarshal.AsBytes(srcBuffer.AsSpan());
+            RandomNumberGenerator.Fill(g);
         }
 
         [Benchmark]
-        public void SampleToPcm16()
-        {
-            var span = buffer.AsSpan();
-            _ = converter.Read(span);
-        }
-
+        public void ProcessNormalAvx2() => SampleToPcm16Converter.ProcessNormalAvx2(srcBuffer, dstBuffer);
+        [Benchmark]
+        public void ProcessNormalSse2() => SampleToPcm16Converter.ProcessNormalSse2(srcBuffer, dstBuffer);
+        [Benchmark]
+        public void ProcessNormalStandard() => SampleToPcm16Converter.ProcessNormalStandard(srcBuffer, dstBuffer);
+        [Benchmark]
+        public void ProcessReversedAvx2() => SampleToPcm16Converter.ProcessReversedAvx2(srcBuffer, dstBuffer);
+        [Benchmark]
+        public void ProcessReversedSsse3() => SampleToPcm16Converter.ProcessReversedSsse3(srcBuffer, dstBuffer);
+        [Benchmark]
+        public void ProcessReversedStandard() => SampleToPcm16Converter.ProcessReversedStandard(srcBuffer, dstBuffer);
         [GlobalCleanup]
         public void Cleanup()
         {
             converter?.Dispose();
             source?.Dispose();
-            buffer = null;
+            dstBuffer = null;
         }
 
 #pragma warning disable S125 // Sections of code should not be commented out

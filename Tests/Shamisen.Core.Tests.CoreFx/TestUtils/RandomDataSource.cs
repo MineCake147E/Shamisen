@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using Shamisen.Data;
 
-namespace Shamisen.Core.Tests.CoreFx
+namespace Shamisen.Core.Tests.CoreFx.TestUtils
 {
     public sealed class RandomDataSource : IReadableDataSource<byte>
     {
@@ -42,7 +42,7 @@ namespace Shamisen.Core.Tests.CoreFx
             state = seed;
             DebugID = debugID;
             DoDumpRead = doDumpRead;
-            increment = (streamId * 1551207485500673479ul) | 1ul;
+            increment = streamId * 1551207485500673479ul | 1ul;
             byteBuffer = new byte[sizeof(uint)];
         }
 
@@ -51,8 +51,8 @@ namespace Shamisen.Core.Tests.CoreFx
 
         private uint Next()
         {
-            ulong x = state;
-            int count = (int)(x >> 59);       // 59 = 64 - 5
+            var x = state;
+            var count = (int)(x >> 59);       // 59 = 64 - 5
 
             state = x * Multiplier + increment;
             x ^= x >> 18;                               // 18 = (64 - 27)/2
@@ -95,14 +95,14 @@ namespace Shamisen.Core.Tests.CoreFx
                         }
                     }
                     var j = MemoryUtils.CastSplit<byte, uint>(rem, out rem);
-                    for (int i = 0; i < j.Length; i++)
+                    for (var i = 0; i < j.Length; i++)
                     {
                         j[i] = BinaryExtensions.ConvertToLittleEndian(Next());
                     }
                     if (remainingBytes.IsEmpty)
                     {
                         var h = MemoryMarshal.Cast<byte, uint>(byteBuffer.AsSpan());
-                        for (int i = 0; i < h.Length; i++)
+                        for (var i = 0; i < h.Length; i++)
                         {
                             h[i] = BinaryExtensions.ConvertToLittleEndian(Next());
                         }

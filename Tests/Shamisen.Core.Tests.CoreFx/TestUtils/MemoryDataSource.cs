@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Shamisen.Data;
 
-namespace Shamisen.Core.Tests.CoreFx
+namespace Shamisen.Core.Tests.CoreFx.TestUtils
 {
     public class MemoryDataSource : IReadableDataSource<byte>, IAsyncReadSupport<byte>
     {
@@ -39,7 +39,7 @@ namespace Shamisen.Core.Tests.CoreFx
             //{
             //    buffer = buffer.SliceWhile((int)(memory.Length - memory.Position));
             //}
-            int h = memory.Read(buffer);
+            var h = memory.Read(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 
@@ -49,7 +49,7 @@ namespace Shamisen.Core.Tests.CoreFx
             //{
             //    buffer = buffer.Slice((int)(memory.Length - memory.Position));
             //}
-            int h = await memory.ReadAsync(buffer);
+            var h = await memory.ReadAsync(buffer);
             return h < 1 ? ReadResult.WaitingForSource : h;
         }
 

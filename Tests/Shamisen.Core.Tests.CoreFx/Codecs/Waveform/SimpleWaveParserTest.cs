@@ -14,6 +14,7 @@ using Shamisen.Codecs.Waveform;
 using Shamisen.Codecs.Waveform.Parsing;
 using Shamisen.Codecs.Waveform.Riff;
 using Shamisen.Conversion.Resampling.Sample;
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
 using Shamisen.Filters;

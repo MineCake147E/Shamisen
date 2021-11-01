@@ -9,7 +9,7 @@ using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.WaveToSampleConverters;
 
-namespace Shamisen.Benchmarks.Conversion
+namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
 {
     [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]

@@ -257,7 +257,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     }
                 }
 #endif
-                ProcessReversedOrdinal(wrote, dest);
+                ProcessReversedStandard(wrote, dest);
             }
             else
             {
@@ -281,7 +281,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessReversedOrdinal(Span<float> wrote, Span<short> dest)
+        internal static void ProcessReversedStandard(Span<float> wrote, Span<short> dest)
         {
             ProcessNormalStandard(wrote, dest);
             dest.ReverseEndianness();

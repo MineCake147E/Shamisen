@@ -1,10 +1,25 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
 using Shamisen.Utils;
 
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+using Shamisen.Utils.Intrinsics;
+
+using System.Security.Cryptography;
+
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
+#endif
 namespace Shamisen.Conversion.WaveToSampleConverters
 {
     /// <summary>
@@ -110,10 +125,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var rr = Source.Read(MemoryMarshal.AsBytes(reader));
                 if (rr.HasNoData)
                 {
-                    int len = buffer.Length - cursor.Length;
+                    var len = buffer.Length - cursor.Length;
                     return rr.IsEndOfStream && len <= 0 ? rr : len;
                 }
-                int u = rr.Length / BytesPerSample;
+                var u = rr.Length / BytesPerSample;
                 var wrote = reader.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -124,23 +139,284 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
                 if (IsEndiannessConversionRequired)
                 {
-                    for (int i = 0; i < wrote.Length && i < dest.Length; i++)
+                    for (var i = 0; i < wrote.Length && i < dest.Length; i++)
                     {
                         dest[i] = Int24.ReverseEndianness(wrote[i]) / Divisor;
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < wrote.Length && i < dest.Length; i++)
-                    {
-                        dest[i] = wrote[i] / Divisor;
-                    }
+                    ProcessNormal(wrote, dest);
                 }
                 cursor = cursor.Slice(u);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
             return buffer.Length;
         }
+
+        private static void ProcessNormal(Span<Int24> wrote, Span<float> dest)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported)
+                {
+                    ProcessNormalAvx2P(wrote, dest);
+                }
+#endif
+                ProcessNormalStandard(wrote, dest);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalStandard(Span<Int24> wrote, Span<float> dest)
+        {
+            for (var i = 0; i < wrote.Length && i < dest.Length; i++)
+            {
+                dest[i] = wrote[i] / Divisor;
+            }
+        }
+        #region X86
+#if NETCOREAPP3_1_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalAvx2P(Span<Int24> wrote, Span<float> dest)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(dest);
+            ref var rsi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(wrote));
+            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var ymm15 = Vector256.Create(1.0f);
+            var ymm14 = Vector256.Create(0, 1, 2, 6, 3, 4, 5, 7);
+            var ymm13 = Vector256.Create(0, 2, 3, 4, 1, 5, 6, 7);
+            var ymm12 = Vector256.Create(0, 4, 5, 6, 1, 2, 3, 7);
+            var ymm11 = Vector256.Create(0, 4, 1, 1, 5, 6, 7, 0);
+            var ymm10 = Vector256.Create(0, 1, 2, 0, 6, 3, 7, 0);
+            var ymm9 = Vector256.Create(128, 0, 1, 2, 128, 3, 4, 5, 128, 6, 7, 8, 128, 9, 10, 11, 128, 0, 1, 2, 128, 3, 4, 5, 128, 6, 7, 8, 128, 9, 10, 11);
+            var ymm8 = Vector256.Create(int.MinValue);
+            var olen = length - 31;
+            for (; i < olen; i += 32, j += 96)
+            {
+                var ymm0 = Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rsi, j));
+                var ymm2 = Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rsi, j + 32));
+                var ymm3 = Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rsi, j + 64));
+                ymm0 = Avx2.PermuteVar8x32(ymm0, ymm14);
+                ymm3 = Avx2.PermuteVar8x32(ymm3, ymm13);
+                var ymm1 = Avx2.PermuteVar8x32(ymm2, ymm12);
+                ymm2 = Avx2.AlignRight(ymm3, ymm1, 4);  //12, 13, 14, 16, 10, 11, 15, 17
+                ymm1 = Avx2.AlignRight(ymm1, ymm0, 12); //6, 8, 12, 13, 7, 9, 10, 11
+                ymm3 = Avx2.AlignRight(ymm3, ymm3, 4);
+                ymm1 = Avx2.PermuteVar8x32(ymm1, ymm11);
+                ymm2 = Avx2.PermuteVar8x32(ymm2, ymm10);
+                ymm0 = Avx2.Shuffle(ymm0.AsByte(), ymm9).AsInt32();
+                ymm1 = Avx2.Shuffle(ymm1.AsByte(), ymm9).AsInt32();
+                ymm2 = Avx2.Shuffle(ymm2.AsByte(), ymm9).AsInt32();
+                ymm3 = Avx2.Shuffle(ymm3.AsByte(), ymm9).AsInt32();
+                var ymm4 = Avx2.And(ymm8, ymm0);
+                ymm0 = Avx2.Abs(ymm0).AsInt32();
+                var ymm5 = Avx2.And(ymm8, ymm1);
+                ymm1 = Avx2.Abs(ymm1).AsInt32();
+                var ymm6 = Avx2.And(ymm8, ymm2);
+                ymm2 = Avx2.Abs(ymm2).AsInt32();
+                var ymm7 = Avx2.And(ymm8, ymm3);
+                ymm3 = Avx2.Abs(ymm3).AsInt32();
+                ymm0 = Avx2.ShiftRightLogical(ymm0, 8);
+                ymm1 = Avx2.ShiftRightLogical(ymm1, 8);
+                ymm2 = Avx2.ShiftRightLogical(ymm2, 8);
+                ymm3 = Avx2.ShiftRightLogical(ymm3, 8);
+                ymm0 = Avx2.Add(ymm0, ymm15.AsInt32());
+                ymm1 = Avx2.Add(ymm1, ymm15.AsInt32());
+                ymm2 = Avx2.Add(ymm2, ymm15.AsInt32());
+                ymm3 = Avx2.Add(ymm3, ymm15.AsInt32());
+                ymm0 = Avx2.Or(ymm0, ymm4);
+                ymm4 = Avx2.Or(ymm4, ymm15.AsInt32());
+                ymm1 = Avx2.Or(ymm1, ymm5);
+                ymm5 = Avx2.Or(ymm5, ymm15.AsInt32());
+                ymm2 = Avx2.Or(ymm2, ymm6);
+                ymm6 = Avx2.Or(ymm6, ymm15.AsInt32());
+                ymm3 = Avx2.Or(ymm3, ymm7);
+                ymm7 = Avx2.Or(ymm7, ymm15.AsInt32());
+                ymm0 = Avx.Subtract(ymm0.AsSingle(), ymm4.AsSingle()).AsInt32();
+                ymm1 = Avx.Subtract(ymm1.AsSingle(), ymm5.AsSingle()).AsInt32();
+                ymm2 = Avx.Subtract(ymm2.AsSingle(), ymm6.AsSingle()).AsInt32();
+                ymm3 = Avx.Subtract(ymm3.AsSingle(), ymm7.AsSingle()).AsInt32();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm0.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm1.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm2.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm3.AsSingle();
+            }
+            for (; i < length; i++, j += 3)
+            {
+                var xmm0 = Vector128.CreateScalarUnsafe((uint)Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rsi, j))).AsInt32();
+                var xmm1 = Vector128.CreateScalarUnsafe((uint)Unsafe.Add(ref rsi, j + 2)).AsInt32();
+                xmm0 = Sse2.ShiftLeftLogical(xmm0, 8);
+                xmm1 = Sse2.ShiftLeftLogical(xmm1, 24);
+                xmm1 = Sse2.Or(xmm1, xmm0);
+                var xmm4 = Sse2.And(ymm8.GetLower(), xmm1);
+                xmm1 = Ssse3.Abs(xmm1).AsInt32();
+                xmm1 = Sse2.ShiftRightLogical(xmm1, 8);
+                xmm1 = Sse2.Add(xmm1, ymm15.GetLower().AsInt32());
+                xmm1 = Sse2.Or(xmm1, xmm4);
+                xmm4 = Sse2.Or(xmm4, ymm15.GetLower().AsInt32());
+                xmm1 = Sse.SubtractScalar(xmm1.AsSingle(), xmm4.AsSingle()).AsInt32();
+                Unsafe.Add(ref rdi, i + 0) = xmm1.AsSingle().GetElement(0);
+            }
+        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalAvx2M(Span<Int24> wrote, Span<float> dest)
+        {
+            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var ymm15 = Vector256.Create(1.0f);
+            var ymm14 = Vector256.Create(0, 1, 2, 6, 3, 4, 5, 7);
+            var ymm13 = Vector256.Create(-1, -1, -1, -1, -1, -1, 0, 0);
+            var ymm9 = Vector256.Create(128, 0, 1, 2, 128, 3, 4, 5, 128, 6, 7, 8, 128, 9, 10, 11, 128, 0, 1, 2, 128, 3, 4, 5, 128, 6, 7, 8, 128, 9, 10, 11);
+            var ymm8 = Vector256.Create(int.MinValue);
+            var olen = length - 31;
+#if DEBUG
+unsafe
+            {
+                fixed (float* rdi = dest)
+                fixed (Int24* rcx = wrote)
+                {
+                    var rsi = (byte*)rcx;
+                    for (; i < olen; i += 32, j += 96)
+                    {
+                        var ymm0 = Avx2.MaskLoad((int*)(rsi + j + 0 * 24), ymm13);
+                        var ymm1 = Avx2.MaskLoad((int*)(rsi + j + 1 * 24), ymm13);
+                        var ymm2 = Avx2.MaskLoad((int*)(rsi + j + 2 * 24), ymm13);
+                        var ymm3 = Avx2.MaskLoad((int*)(rsi + j + 3 * 24), ymm13);
+                        ymm0 = Avx2.PermuteVar8x32(ymm0, ymm14);
+                        ymm3 = Avx2.PermuteVar8x32(ymm3, ymm14);
+                        ymm1 = Avx2.PermuteVar8x32(ymm1, ymm14);
+                        ymm2 = Avx2.PermuteVar8x32(ymm2, ymm14);
+                        ymm0 = Avx2.Shuffle(ymm0.AsByte(), ymm9).AsInt32();
+                        ymm1 = Avx2.Shuffle(ymm1.AsByte(), ymm9).AsInt32();
+                        ymm2 = Avx2.Shuffle(ymm2.AsByte(), ymm9).AsInt32();
+                        ymm3 = Avx2.Shuffle(ymm3.AsByte(), ymm9).AsInt32();
+                        var ymm4 = Avx2.And(ymm8, ymm0);
+                        ymm0 = Avx2.Abs(ymm0).AsInt32();
+                        var ymm5 = Avx2.And(ymm8, ymm1);
+                        ymm1 = Avx2.Abs(ymm1).AsInt32();
+                        var ymm6 = Avx2.And(ymm8, ymm2);
+                        ymm2 = Avx2.Abs(ymm2).AsInt32();
+                        var ymm7 = Avx2.And(ymm8, ymm3);
+                        ymm3 = Avx2.Abs(ymm3).AsInt32();
+                        ymm0 = Avx2.ShiftRightLogical(ymm0, 8);
+                        ymm1 = Avx2.ShiftRightLogical(ymm1, 8);
+                        ymm2 = Avx2.ShiftRightLogical(ymm2, 8);
+                        ymm3 = Avx2.ShiftRightLogical(ymm3, 8);
+                        ymm0 = Avx2.Add(ymm0, ymm15.AsInt32());
+                        ymm1 = Avx2.Add(ymm1, ymm15.AsInt32());
+                        ymm2 = Avx2.Add(ymm2, ymm15.AsInt32());
+                        ymm3 = Avx2.Add(ymm3, ymm15.AsInt32());
+                        ymm0 = Avx2.Or(ymm0, ymm4);
+                        ymm4 = Avx2.Or(ymm4, ymm15.AsInt32());
+                        ymm1 = Avx2.Or(ymm1, ymm5);
+                        ymm5 = Avx2.Or(ymm5, ymm15.AsInt32());
+                        ymm2 = Avx2.Or(ymm2, ymm6);
+                        ymm6 = Avx2.Or(ymm6, ymm15.AsInt32());
+                        ymm3 = Avx2.Or(ymm3, ymm7);
+                        ymm7 = Avx2.Or(ymm7, ymm15.AsInt32());
+                        ymm0 = Avx.Subtract(ymm0.AsSingle(), ymm4.AsSingle()).AsInt32();
+                        ymm1 = Avx.Subtract(ymm1.AsSingle(), ymm5.AsSingle()).AsInt32();
+                        ymm2 = Avx.Subtract(ymm2.AsSingle(), ymm6.AsSingle()).AsInt32();
+                        ymm3 = Avx.Subtract(ymm3.AsSingle(), ymm7.AsSingle()).AsInt32();
+                        *(Vector256<float>*)(rdi + i + 0) = ymm0.AsSingle();
+                        *(Vector256<float>*)(rdi + i + 8) = ymm1.AsSingle();
+                        *(Vector256<float>*)(rdi + i + 16) = ymm2.AsSingle();
+                        *(Vector256<float>*)(rdi + i + 24) = ymm3.AsSingle();
+                    }
+                    for (; i < length; i++, j += 3)
+                    {
+                        var xmm0 = Vector128.CreateScalarUnsafe((uint)*(ushort*)(rsi + j)).AsInt32();
+                        var xmm1 = Vector128.CreateScalarUnsafe((uint)*(rsi + j + 2)).AsInt32();
+                        xmm0 = Sse2.ShiftLeftLogical(xmm0, 8);
+                        xmm1 = Sse2.ShiftLeftLogical(xmm1, 24);
+                        xmm1 = Sse2.Or(xmm1, xmm0);
+                        var xmm4 = Sse2.And(ymm8.GetLower(), xmm1);
+                        xmm1 = Ssse3.Abs(xmm1).AsInt32();
+                        xmm1 = Sse2.ShiftRightLogical(xmm1, 8);
+                        xmm1 = Sse2.Add(xmm1, ymm15.GetLower().AsInt32());
+                        xmm1 = Sse2.Or(xmm1, xmm4);
+                        xmm4 = Sse2.Or(xmm4, ymm15.GetLower().AsInt32());
+                        xmm1 = Sse.SubtractScalar(xmm1.AsSingle(), xmm4.AsSingle()).AsInt32();
+                        rdi[i] = xmm1.AsSingle().GetElement(0);
+                    }
+                }
+            }
+#else
+            unsafe
+            {
+                ref var rdi = ref MemoryMarshal.GetReference(dest);
+                ref var rsi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(wrote));
+                for (; i < olen; i += 32, j += 96)
+                {
+                    var r14 = (int*)Unsafe.AsPointer(ref Unsafe.Add(ref rsi, j));
+                    var ymm0 = Avx2.MaskLoad(r14 + 0 * 6, ymm13);
+                    var ymm1 = Avx2.MaskLoad(r14 + 1 * 6, ymm13);
+                    var ymm2 = Avx2.MaskLoad(r14 + 2 * 6, ymm13);
+                    var ymm3 = Avx2.MaskLoad(r14 + 3 * 6, ymm13);
+                    ymm0 = Avx2.PermuteVar8x32(ymm0, ymm14);
+                    ymm3 = Avx2.PermuteVar8x32(ymm3, ymm14);
+                    ymm1 = Avx2.PermuteVar8x32(ymm1, ymm14);
+                    ymm2 = Avx2.PermuteVar8x32(ymm2, ymm14);
+                    ymm0 = Avx2.Shuffle(ymm0.AsByte(), ymm9).AsInt32();
+                    ymm1 = Avx2.Shuffle(ymm1.AsByte(), ymm9).AsInt32();
+                    ymm2 = Avx2.Shuffle(ymm2.AsByte(), ymm9).AsInt32();
+                    ymm3 = Avx2.Shuffle(ymm3.AsByte(), ymm9).AsInt32();
+                    var ymm4 = Avx2.And(ymm8, ymm0);
+                    ymm0 = Avx2.Abs(ymm0).AsInt32();
+                    var ymm5 = Avx2.And(ymm8, ymm1);
+                    ymm1 = Avx2.Abs(ymm1).AsInt32();
+                    var ymm6 = Avx2.And(ymm8, ymm2);
+                    ymm2 = Avx2.Abs(ymm2).AsInt32();
+                    var ymm7 = Avx2.And(ymm8, ymm3);
+                    ymm3 = Avx2.Abs(ymm3).AsInt32();
+                    ymm0 = Avx2.ShiftRightLogical(ymm0, 8);
+                    ymm1 = Avx2.ShiftRightLogical(ymm1, 8);
+                    ymm2 = Avx2.ShiftRightLogical(ymm2, 8);
+                    ymm3 = Avx2.ShiftRightLogical(ymm3, 8);
+                    ymm0 = Avx2.Add(ymm0, ymm15.AsInt32());
+                    ymm1 = Avx2.Add(ymm1, ymm15.AsInt32());
+                    ymm2 = Avx2.Add(ymm2, ymm15.AsInt32());
+                    ymm3 = Avx2.Add(ymm3, ymm15.AsInt32());
+                    ymm0 = Avx2.Or(ymm0, ymm4);
+                    ymm4 = Avx2.Or(ymm4, ymm15.AsInt32());
+                    ymm1 = Avx2.Or(ymm1, ymm5);
+                    ymm5 = Avx2.Or(ymm5, ymm15.AsInt32());
+                    ymm2 = Avx2.Or(ymm2, ymm6);
+                    ymm6 = Avx2.Or(ymm6, ymm15.AsInt32());
+                    ymm3 = Avx2.Or(ymm3, ymm7);
+                    ymm7 = Avx2.Or(ymm7, ymm15.AsInt32());
+                    ymm0 = Avx.Subtract(ymm0.AsSingle(), ymm4.AsSingle()).AsInt32();
+                    ymm1 = Avx.Subtract(ymm1.AsSingle(), ymm5.AsSingle()).AsInt32();
+                    ymm2 = Avx.Subtract(ymm2.AsSingle(), ymm6.AsSingle()).AsInt32();
+                    ymm3 = Avx.Subtract(ymm3.AsSingle(), ymm7.AsSingle()).AsInt32();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm0.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm1.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm2.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm3.AsSingle();
+                }
+                for (; i < length; i++, j += 3)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe((uint)Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rsi, j))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe((uint)Unsafe.Add(ref rsi, j + 2)).AsInt32();
+                    xmm0 = Sse2.ShiftLeftLogical(xmm0, 8);
+                    xmm1 = Sse2.ShiftLeftLogical(xmm1, 24);
+                    xmm1 = Sse2.Or(xmm1, xmm0);
+                    var xmm4 = Sse2.And(ymm8.GetLower(), xmm1);
+                    xmm1 = Ssse3.Abs(xmm1).AsInt32();
+                    xmm1 = Sse2.ShiftRightLogical(xmm1, 8);
+                    xmm1 = Sse2.Add(xmm1, ymm15.GetLower().AsInt32());
+                    xmm1 = Sse2.Or(xmm1, xmm4);
+                    xmm4 = Sse2.Or(xmm4, ymm15.GetLower().AsInt32());
+                    xmm1 = Sse.SubtractScalar(xmm1.AsSingle(), xmm4.AsSingle()).AsInt32();
+                    Unsafe.Add(ref rdi, i + 0) = xmm1.AsSingle().GetElement(0);
+                }
+            }
+#endif
+        }
+#endif
+        #endregion
+
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

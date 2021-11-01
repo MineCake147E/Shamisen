@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
 

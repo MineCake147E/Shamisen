@@ -12,7 +12,7 @@ using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Benchmarks.Conversion
+namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 {
     [SimpleJob(RuntimeMoniker.HostProcess, baseline: true)]
     [Config(typeof(Config))]

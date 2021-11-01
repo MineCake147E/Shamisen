@@ -17,7 +17,7 @@ using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
 
-namespace Shamisen.Core.Tests.CoreFx.Conversion
+namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
 {
     [TestFixture]
     public class SampleToPcm8ConverterTest

@@ -15,7 +15,7 @@ using Shamisen.Data;
 using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
 
-namespace Shamisen.Core.Tests.CoreFx
+namespace Shamisen.Core.Tests.CoreFx.TestUtils
 {
     public static class TestHelper
     {
@@ -68,20 +68,20 @@ namespace Shamisen.Core.Tests.CoreFx
         /// </remarks>
         public static string CoerceValidFileName(string filename)
         {
-            string invalidChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
-            string invalidReStr = string.Format(@"[{0}]+", invalidChars);
+            var invalidChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
+            var invalidReStr = string.Format(@"[{0}]+", invalidChars);
 
-            string[] reservedWords = new[]
+            var reservedWords = new[]
             {
                 "CON", "PRN", "AUX", "CLOCK$", "NUL", "COM0", "COM1", "COM2", "COM3", "COM4",
                 "COM5", "COM6", "COM7", "COM8", "COM9", "LPT0", "LPT1", "LPT2", "LPT3", "LPT4",
                 "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
             };
 
-            string sanitisedNamePart = Regex.Replace(filename, invalidReStr, "_");
-            foreach (string reservedWord in reservedWords)
+            var sanitisedNamePart = Regex.Replace(filename, invalidReStr, "_");
+            foreach (var reservedWord in reservedWords)
             {
-                string reservedWordPattern = string.Format("^{0}\\.", reservedWord);
+                var reservedWordPattern = string.Format("^{0}\\.", reservedWord);
                 sanitisedNamePart = Regex.Replace(sanitisedNamePart, reservedWordPattern, "_reservedWord_.", RegexOptions.IgnoreCase);
             }
 
@@ -107,8 +107,8 @@ namespace Shamisen.Core.Tests.CoreFx
             Console.WriteLine(path.FullName);
             if (!Directory.Exists("./dumps")) _ = Directory.CreateDirectory("./dumps");
             using var dc = new AudioCache<float, SampleFormat>(source.Format);
-            float[] buffer = new float[(ulong)frameLen * (ulong)dc.Format.Channels];
-            for (int i = 0; i < framesToWrite; i++)
+            var buffer = new float[(ulong)frameLen * (ulong)dc.Format.Channels];
+            for (var i = 0; i < framesToWrite; i++)
             {
                 var q = source.Read(buffer);
                 dc.Write(buffer.AsSpan(0, q.Length));
