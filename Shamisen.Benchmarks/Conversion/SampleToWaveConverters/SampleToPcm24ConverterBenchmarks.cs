@@ -20,7 +20,7 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     [MedianColumn]
-    public class SampleToPcm24ConverterBenchmarks
+    public class SampleToPcm8ConverterBenchmarks
     {
         private const int Frames = 4095;
 
@@ -33,7 +33,7 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         }
 
         private float[] bufferSrc;
-        private Int24[] bufferDst;
+        private byte[] bufferDst;
         [Params(1)]
         public int Channels { get; set; }
 
@@ -41,15 +41,17 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         public void Setup()
         {
             bufferSrc = new float[Frames * Channels];
-            bufferDst = new Int24[Frames * Channels];
+            bufferDst = new byte[Frames * Channels];
             var g = MemoryMarshal.AsBytes(bufferSrc.AsSpan());
             RandomNumberGenerator.Fill(g);
         }
 
+        /*[Benchmark]
+        public void ProcessNormalAvx2M() => SampleToPcm8Converter.ProcessNormalAvx2M(bufferSrc, bufferDst);*/
         [Benchmark]
-        public void ProcessNormalAvx2() => SampleToPcm24Converter.ProcessNormalAvx2(bufferSrc, bufferDst);
+        public void ProcessNormalAvx2A() => SampleToPcm8Converter.ProcessNormalAvx2A(bufferSrc, bufferDst);
         [Benchmark]
-        public void ProcessNormalStandard() => SampleToPcm24Converter.ProcessNormalStandard(bufferSrc, bufferDst);
+        public void ProcessNormalStandard() => SampleToPcm8Converter.ProcessNormalStandard(bufferSrc, bufferDst);
         [GlobalCleanup]
         public void Cleanup() => bufferSrc = null;
     }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -32,7 +32,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private const float Multiplier = 8388608.0f;
         private const int ActualBytesPerSample = 3;   //sizeof(Int24)
         private const int BufferMax = 1024;
-        private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
+        private int ActualBufferMax => BufferMax - BufferMax % Source.Format.Channels;
 
         private Memory<Int24> dsmLastOutput;
         private Memory<float> dsmAccumulator;
@@ -116,7 +116,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     dsmChannelPointer %= dsmAcc.Length;
                     for (var i = 0; i < dest.Length; i++)
                     {
-                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
+                        var diff = wrote[i] - dsmLastOut[dsmChannelPointer] / Multiplier;
                         dsmAcc[dsmChannelPointer] += diff;
                         var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
                         dest[i] = IsEndiannessConversionRequired ? Int24.ReverseEndianness(v) : v;
@@ -161,10 +161,65 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalStandard(Span<float> wrote, Span<Int24> dest)
         {
-            for (var i = 0; i < dest.Length; i++)
+            ref var rsi = ref MemoryMarshal.GetReference(wrote);
+            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(dest));
+            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            Vector4 mul = new(Multiplier);
+            Vector4 max = new(8388607.0f / 8388608.0f);
+            Vector4 min = new(-1.0f);
+            var olen = length - 7;
+            for (; i < olen; i += 8, j += 24)
             {
-                var v = Convert(wrote[i]);
-                dest[i] = v;
+                var v0_4s = Vector4.Min(max, Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsi, i + 0)));
+                var v1_4s = Vector4.Min(max, Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsi, i + 4)));
+                v0_4s = Vector4.Max(min, v0_4s);
+                v1_4s = Vector4.Max(min, v1_4s);
+                v0_4s *= mul;
+                v1_4s *= mul;
+                v0_4s = VectorUtils.Round(v0_4s);
+                v1_4s = VectorUtils.Round(v1_4s);
+                var w0 = (uint)(int)v0_4s.X;
+                var w1 = (uint)(int)v0_4s.Y;
+                var w2 = (uint)(int)v0_4s.Z;
+                var w3 = (uint)(int)v0_4s.W;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 0)) = (ushort)w0;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 3)) = (ushort)w1;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 6)) = (ushort)w2;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 9)) = (ushort)w3;
+                w0 >>= 16;
+                w1 >>= 16;
+                w2 >>= 16;
+                w3 >>= 16;
+                Unsafe.Add(ref rdi, j + 2) = (byte)w0;
+                Unsafe.Add(ref rdi, j + 5) = (byte)w1;
+                Unsafe.Add(ref rdi, j + 8) = (byte)w2;
+                Unsafe.Add(ref rdi, j + 11) = (byte)w3;
+                w0 = (uint)(int)v1_4s.X;
+                w1 = (uint)(int)v1_4s.Y;
+                w2 = (uint)(int)v1_4s.Z;
+                w3 = (uint)(int)v1_4s.W;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 12)) = (ushort)w0;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 15)) = (ushort)w1;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 18)) = (ushort)w2;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j + 21)) = (ushort)w3;
+                w0 >>= 16;
+                w1 >>= 16;
+                w2 >>= 16;
+                w3 >>= 16;
+                Unsafe.Add(ref rdi, j + 14) = (byte)w0;
+                Unsafe.Add(ref rdi, j + 17) = (byte)w1;
+                Unsafe.Add(ref rdi, j + 20) = (byte)w2;
+                Unsafe.Add(ref rdi, j + 23) = (byte)w3;
+            }
+            for (; i < length; i++, j += 3)
+            {
+                var s0 = FastMath.Min(max.X, Unsafe.Add(ref rsi, i));
+                s0 = FastMath.Max(min.X, s0);
+                s0 *= mul.X;
+                s0 = FastMath.Round(s0);
+                var h = (uint)(int)s0;
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j)) = (ushort)h;
+                Unsafe.Add(ref rdi, j + 2) = (byte)(h >> 16);
             }
         }
         #region X86

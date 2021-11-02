@@ -26,32 +26,35 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float FastDotProduct(Vector4 vector0, Vector4 vector1)
         {
+            unchecked
+            {
 #if NET5_0_OR_GREATER
-            if (AdvSimd.Arm64.IsSupported)
-            {
-                return FastDotAdvSimd64(vector0.AsVector128(), vector1.AsVector128());
-            }
-            if (Avx.IsSupported)
-            {
-                return FastDotAvx(vector0.AsVector128(), vector1.AsVector128());
-            }
-            if (Sse.IsSupported)
-            {
-                return FastDotSse(vector0.AsVector128(), vector1.AsVector128());
-            }
+                if (AdvSimd.Arm64.IsSupported)
+                {
+                    return FastDotAdvSimd64(vector0.AsVector128(), vector1.AsVector128());
+                }
+                if (Avx.IsSupported)
+                {
+                    return FastDotAvx(vector0.AsVector128(), vector1.AsVector128());
+                }
+                if (Sse.IsSupported)
+                {
+                    return FastDotSse(vector0.AsVector128(), vector1.AsVector128());
+                }
 #endif
 #if NETCOREAPP3_1_OR_GREATER && !NET5_0_OR_GREATER
-            if (Avx.IsSupported)
-            {
-                return FastDotAvx(Unsafe.As<Vector4, Vector128<float>>(ref vector0), Unsafe.As<Vector4, Vector128<float>>(ref vector1));
-            }
-            if (Sse.IsSupported)
-            {
-                return FastDotSse(Unsafe.As<Vector4, Vector128<float>>(ref vector0), Unsafe.As<Vector4, Vector128<float>>(ref vector1));
-            }
+                if (Avx.IsSupported)
+                {
+                    return FastDotAvx(Unsafe.As<Vector4, Vector128<float>>(ref vector0), Unsafe.As<Vector4, Vector128<float>>(ref vector1));
+                }
+                if (Sse.IsSupported)
+                {
+                    return FastDotSse(Unsafe.As<Vector4, Vector128<float>>(ref vector0), Unsafe.As<Vector4, Vector128<float>>(ref vector1));
+                }
 #endif
-            var g = vector0 * vector1;
-            return g.X + g.Z + (g.Y + g.W);
+                var g = vector0 * vector1;
+                return g.X + g.Z + (g.Y + g.W);
+            }
         }
 #if NETCOREAPP3_1_OR_GREATER
         /// <summary>
@@ -63,21 +66,24 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float FastDotProduct(Vector128<float> vector0, Vector128<float> vector1)
         {
+            unchecked
+            {
 #if NET5_0_OR_GREATER
-            if (AdvSimd.Arm64.IsSupported)
-            {
-                return FastDotAdvSimd64(vector0, vector1);
-            }
+                if (AdvSimd.Arm64.IsSupported)
+                {
+                    return FastDotAdvSimd64(vector0, vector1);
+                }
 #endif
-            if (Avx.IsSupported)
-            {
-                return FastDotAvx(vector0, vector1);
+                if (Avx.IsSupported)
+                {
+                    return FastDotAvx(vector0, vector1);
+                }
+                if (Sse.IsSupported)
+                {
+                    return FastDotSse(vector0, vector1);
+                }
+                return FastDotProduct(Unsafe.As<Vector128<float>, Vector4>(ref vector0), Unsafe.As<Vector128<float>, Vector4>(ref vector1));
             }
-            if (Sse.IsSupported)
-            {
-                return FastDotSse(vector0, vector1);
-            }
-            return FastDotProduct(Unsafe.As<Vector128<float>, Vector4>(ref vector0), Unsafe.As<Vector128<float>, Vector4>(ref vector1));
         }
 #endif
 #if NETCOREAPP3_1_OR_GREATER
@@ -158,43 +164,46 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector4 ReverseElements(Vector4 value)
         {
+            unchecked
+            {
 #if NET5_0_OR_GREATER
-            if (AdvSimd.IsSupported)
-            {
-                var v0_4s = value.AsVector128();
-                v0_4s = AdvSimd.ReverseElement32(v0_4s.AsUInt64()).AsSingle();
-                v0_4s = AdvSimd.ExtractVector128(v0_4s, v0_4s, 8);
-                return v0_4s.AsVector4();
-            }
-            if (Avx.IsSupported)
-            {
-                return Avx.Permute(value.AsVector128(), 0x1B).AsVector4();
-            }
-            if (Sse2.IsSupported)
-            {
-                return Sse2.Shuffle(value.AsVector128().AsInt32(), 0x1B).AsSingle().AsVector4();
-            }
-            if (Sse.IsSupported)
-            {
-                var xmm0 = value.AsVector128();
-                xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
-                return xmm0.AsVector4();
-            }
+                if (AdvSimd.IsSupported)
+                {
+                    var v0_4s = value.AsVector128();
+                    v0_4s = AdvSimd.ReverseElement32(v0_4s.AsUInt64()).AsSingle();
+                    v0_4s = AdvSimd.ExtractVector128(v0_4s, v0_4s, 8);
+                    return v0_4s.AsVector4();
+                }
+                if (Avx.IsSupported)
+                {
+                    return Avx.Permute(value.AsVector128(), 0x1B).AsVector4();
+                }
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Shuffle(value.AsVector128().AsInt32(), 0x1B).AsSingle().AsVector4();
+                }
+                if (Sse.IsSupported)
+                {
+                    var xmm0 = value.AsVector128();
+                    xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
+                    return xmm0.AsVector4();
+                }
 #elif NETCOREAPP3_1_OR_GREATER
-            if (Avx.IsSupported)
-            {
-                var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
-                xmm0 = Avx.Permute(xmm0, 0x1B);
-                return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
-            }
-            if (Sse.IsSupported)
-            {
-                var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
-                xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
-                return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
-            }
+                if (Avx.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
+                    xmm0 = Avx.Permute(xmm0, 0x1B);
+                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
+                }
+                if (Sse.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
+                    xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
+                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
+                }
 #endif
-            return new(value.W, value.Z, value.Y, value.X);
+                return new(value.W, value.Z, value.Y, value.X);
+            }
         }
         #endregion
         #region FastDotMultipleChannels
@@ -209,23 +218,26 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector2 FastDotMultiple2Channels(ref Vector2 head, Vector4 coeffs)
         {
-#if NET5_0_OR_GREATER
-            if (AdvSimd.Arm64.IsSupported)
+            unchecked
             {
-                return FastDotMultiple2ChannelsAdvSimdArm64(ref head, coeffs);
-            }
+#if NET5_0_OR_GREATER
+                if (AdvSimd.Arm64.IsSupported)
+                {
+                    return FastDotMultiple2ChannelsAdvSimdArm64(ref head, coeffs);
+                }
 #endif
 #if NETCOREAPP3_1_OR_GREATER
-            if (Avx.IsSupported)
-            {
-                return FastDotMultiple2ChannelsAvx(ref head, coeffs);
-            }
-            if (Sse2.IsSupported)
-            {
-                return FastDotMultiple2ChannelsSse2(ref head, coeffs);
-            }
+                if (Avx.IsSupported)
+                {
+                    return FastDotMultiple2ChannelsAvx(ref head, coeffs);
+                }
+                if (Sse2.IsSupported)
+                {
+                    return FastDotMultiple2ChannelsSse2(ref head, coeffs);
+                }
 #endif
-            return FastDotMultiple2ChannelsStandard(ref head, coeffs);
+                return FastDotMultiple2ChannelsStandard(ref head, coeffs);
+            }
         }
 #if NET5_0_OR_GREATER
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -250,27 +262,30 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Vector2 FastDotMultiple2ChannelsSse2(ref Vector2 head, Vector4 coeffs)
         {
+            unchecked
+            {
 #if NET5_0_OR_GREATER
-            var xmm0 = coeffs.AsVector128();
+                var xmm0 = coeffs.AsVector128();
 #else
-            var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref coeffs);
+                var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref coeffs);
 #endif
-            var xmm1 = Unsafe.As<Vector2, Vector128<float>>(ref head);
-            var xmm2 = Unsafe.As<Vector2, Vector128<float>>(ref Unsafe.Add(ref head, 2));
-            var xmm3 = Sse.Shuffle(xmm1, xmm2, 0x88);
-            xmm1 = Sse.Shuffle(xmm1, xmm2, 0xdd);
-            xmm2 = Sse.Multiply(xmm3, xmm0);
-            xmm0 = Sse.Multiply(xmm1, xmm0);
-            xmm1 = Sse.UnpackLow(xmm2, xmm0);
-            xmm0 = Sse.UnpackHigh(xmm2, xmm0);
-            xmm0 = Sse.Add(xmm1, xmm0);
-            xmm3 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
-            xmm0 = Sse.Add(xmm0, xmm3);
+                var xmm1 = Unsafe.As<Vector2, Vector128<float>>(ref head);
+                var xmm2 = Unsafe.As<Vector2, Vector128<float>>(ref Unsafe.Add(ref head, 2));
+                var xmm3 = Sse.Shuffle(xmm1, xmm2, 0x88);
+                xmm1 = Sse.Shuffle(xmm1, xmm2, 0xdd);
+                xmm2 = Sse.Multiply(xmm3, xmm0);
+                xmm0 = Sse.Multiply(xmm1, xmm0);
+                xmm1 = Sse.UnpackLow(xmm2, xmm0);
+                xmm0 = Sse.UnpackHigh(xmm2, xmm0);
+                xmm0 = Sse.Add(xmm1, xmm0);
+                xmm3 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                xmm0 = Sse.Add(xmm0, xmm3);
 #if NET5_0_OR_GREATER
-            return xmm0.AsVector2();
+                return xmm0.AsVector2();
 #else
-            return Unsafe.As<Vector128<float>, Vector2>(ref xmm0);
+                return Unsafe.As<Vector128<float>, Vector2>(ref xmm0);
 #endif
+            }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -321,23 +336,26 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector3 FastDotMultiple3Channels(ref Vector3 head, Vector4 coeffs)
         {
-#if NET5_0_OR_GREATER
-            if (AdvSimd.IsSupported)
+            unchecked
             {
-                return FastDotMultiple3ChannelsAdvSimd(ref head, coeffs);
-            }
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return FastDotMultiple3ChannelsAdvSimd(ref head, coeffs);
+                }
 #endif
 #if NETCOREAPP3_1_OR_GREATER
-            //if (Ssse3.IsSupported)
-            //{
-            //    return FastDotMultiple3ChannelsSsse3(ref head, coeffs);
-            //}
-            if (Sse2.IsSupported)
-            {
-                return FastDotMultiple3ChannelsSse2(ref head, coeffs);
-            }
+                //if (Ssse3.IsSupported)
+                //{
+                //    return FastDotMultiple3ChannelsSsse3(ref head, coeffs);
+                //}
+                if (Sse2.IsSupported)
+                {
+                    return FastDotMultiple3ChannelsSse2(ref head, coeffs);
+                }
 #endif
-            return FastDotMultiple3ChannelsStandard(ref head, coeffs);
+                return FastDotMultiple3ChannelsStandard(ref head, coeffs);
+            }
         }
 
 #if NET5_0_OR_GREATER
@@ -462,13 +480,16 @@ namespace Shamisen.Utils
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector4 FastDotMultiple4Channels(ref Vector4 head, Vector4 coeffs)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            if (Sse.IsSupported)
+            unchecked
             {
-                return FastDotMultiple4ChannelsSse(ref head, coeffs);
-            }
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse.IsSupported)
+                {
+                    return FastDotMultiple4ChannelsSse(ref head, coeffs);
+                }
 #endif
-            return FastDotMultiple4ChannelsStandard(ref head, coeffs);
+                return FastDotMultiple4ChannelsStandard(ref head, coeffs);
+            }
         }
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -708,6 +729,48 @@ namespace Shamisen.Utils
                 v += a;
                 v -= a;
                 return Vector.BitwiseOr(v, s);
+            }
+        }
+
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <returns>The integer <see cref="Vector4"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector4"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        public static Vector4 Round(Vector4 values)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector4();
+                }
+                if (Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector4();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref values);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
+                }
+#endif
+                var s0 = values.X;
+                var s1 = values.Y;
+                var s2 = values.Z;
+                var s3 = values.W;
+                s0 = FastMath.Round(s0);
+                s1 = FastMath.Round(s1);
+                s2 = FastMath.Round(s2);
+                s3 = FastMath.Round(s3);
+                return new(s0, s1, s2, s3);
             }
         }
         #endregion

@@ -20770,6 +20770,16 @@
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a floating-point <see cref="T:System.Numerics.Vector`1"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Round(System.Numerics.Vector4)">
+            <summary>
+            Rounds a vector of single-precision floating-point value to the nearest integral values,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+            <returns>The integer <see cref="T:System.Numerics.Vector4"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a floating-point <see cref="T:System.Numerics.Vector4"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.
