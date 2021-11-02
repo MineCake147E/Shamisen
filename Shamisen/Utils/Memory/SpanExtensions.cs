@@ -830,43 +830,43 @@ namespace Shamisen
             var mask256 = Vector256.Create(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14).AsByte();
             ref var rdi = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
-            var olen = length - 127;
-            for (; i < olen; i += 128)
+            var olen = length - 8 * Vector256<short>.Count + 1;
+            for (; i < olen; i += 8 * Vector256<short>.Count)
             {
-                var ymm0 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 0));
-                var ymm1 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 16));
-                var ymm2 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 32));
-                var ymm3 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 48));
+                var ymm0 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 0 * Vector256<short>.Count));
+                var ymm1 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 1 * Vector256<short>.Count));
+                var ymm2 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 2 * Vector256<short>.Count));
+                var ymm3 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 3 * Vector256<short>.Count));
                 ymm0 = Avx2.Shuffle(ymm0.AsByte(), mask256).AsInt16();
                 ymm1 = Avx2.Shuffle(ymm1.AsByte(), mask256).AsInt16();
                 ymm2 = Avx2.Shuffle(ymm2.AsByte(), mask256).AsInt16();
                 ymm3 = Avx2.Shuffle(ymm3.AsByte(), mask256).AsInt16();
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm0;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm1;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 32)) = ymm2;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 48)) = ymm3;
-                ymm0 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 64));
-                ymm1 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 80));
-                ymm2 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 96));
-                ymm3 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 112));
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 0 * Vector256<short>.Count)) = ymm0;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 1 * Vector256<short>.Count)) = ymm1;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 2 * Vector256<short>.Count)) = ymm2;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 3 * Vector256<short>.Count)) = ymm3;
+                ymm0 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 4 * Vector256<short>.Count));
+                ymm1 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 5 * Vector256<short>.Count));
+                ymm2 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 6 * Vector256<short>.Count));
+                ymm3 = Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 7 * Vector256<short>.Count));
                 ymm0 = Avx2.Shuffle(ymm0.AsByte(), mask256).AsInt16();
                 ymm1 = Avx2.Shuffle(ymm1.AsByte(), mask256).AsInt16();
                 ymm2 = Avx2.Shuffle(ymm2.AsByte(), mask256).AsInt16();
                 ymm3 = Avx2.Shuffle(ymm3.AsByte(), mask256).AsInt16();
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 64)) = ymm0;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 80)) = ymm1;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 96)) = ymm2;
-                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 112)) = ymm3;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 4 * Vector256<short>.Count)) = ymm0;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 5 * Vector256<short>.Count)) = ymm1;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 6 * Vector256<short>.Count)) = ymm2;
+                Unsafe.As<short, Vector256<short>>(ref Unsafe.Add(ref rdi, i + 7 * Vector256<short>.Count)) = ymm3;
             }
-            olen = length - 15;
-            for (; i < olen; i += 16)
+            olen = length - 2 * Vector128<short>.Count + 1;
+            for (; i < olen; i += 2 * Vector128<short>.Count)
             {
-                var xmm0 = Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 0));
-                var xmm1 = Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 8));
+                var xmm0 = Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 0 * Vector128<short>.Count));
+                var xmm1 = Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 1 * Vector128<short>.Count));
                 xmm0 = Ssse3.Shuffle(xmm0.AsByte(), mask256.GetLower()).AsInt16();
                 xmm1 = Ssse3.Shuffle(xmm1.AsByte(), mask256.GetLower()).AsInt16();
-                Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm0;
-                Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 8)) = xmm1;
+                Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 0 * Vector128<short>.Count)) = xmm0;
+                Unsafe.As<short, Vector128<short>>(ref Unsafe.Add(ref rdi, i + 1 * Vector128<short>.Count)) = xmm1;
             }
             for (; i < length; i++)
             {

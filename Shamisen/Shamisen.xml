@@ -20778,6 +20778,19 @@
             <param name="right">The second value to add.</param>
             <returns>The added value.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.CreateVector4(System.Single,System.Single,System.Single,System.Single)">
+            <inheritdoc cref="M:System.Numerics.Vector4.#ctor(System.Single,System.Single,System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.ConvertAndCreateVector4(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a vector whose elements have the specified values.
+            </summary>
+            <param name="x">The value to assign to the <see cref="F:System.Numerics.Vector4.X"/> field.</param>
+            <param name="y">The value to assign to the <see cref="F:System.Numerics.Vector4.Y"/> field.</param>
+            <param name="z">The value to assign to the <see cref="F:System.Numerics.Vector4.Z"/> field.</param>
+            <param name="w">The value to assign to the <see cref="F:System.Numerics.Vector4.W"/> field.</param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
             Provides some functions that helps you about binary things.

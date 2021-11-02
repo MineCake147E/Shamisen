@@ -1,10 +1,25 @@
 ﻿using System;
-using System.Buffers.Binary;
+using System.Linq;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
 using Shamisen.Utils;
+
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+using Shamisen.Utils.Intrinsics;
+
+using System.Security.Cryptography;
+
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
+#endif
 
 namespace Shamisen.Conversion.SampleToWaveConverters
 {
@@ -85,7 +100,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var rr = Source.Read(reader.Span);
                 if (rr.IsEndOfStream && buffer.Length == cursor.Length) return rr;
                 if (rr.HasNoData) return buffer.Length - cursor.Length;
-                int u = rr.Length;
+                var u = rr.Length;
                 var wrote = reader.Span.Slice(0, u);
                 var dest = cursor.Slice(0, wrote.Length);
                 if (wrote.Length != dest.Length)
@@ -99,9 +114,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     var dsmAcc = dsmAccumulator.Span;
                     var dsmLastOut = dsmLastOutput.Span;
                     dsmChannelPointer %= dsmAcc.Length;
-                    for (int i = 0; i < dest.Length; i++)
+                    for (var i = 0; i < dest.Length; i++)
                     {
-                        float diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
+                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
                         dsmAcc[dsmChannelPointer] += diff;
                         var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
                         dest[i] = IsEndiannessConversionRequired ? Int24.ReverseEndianness(v) : v;
@@ -110,10 +125,17 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 }
                 else
                 {
-                    for (int i = 0; i < dest.Length; i++)
+                    if (IsEndiannessConversionRequired)
                     {
-                        var v = Convert(wrote[i]);
-                        dest[i] = IsEndiannessConversionRequired ? Int24.ReverseEndianness(v) : v;
+                        for (var i = 0; i < dest.Length; i++)
+                        {
+                            var v = Convert(wrote[i]);
+                            dest[i] = Int24.ReverseEndianness(v);
+                        }
+                    }
+                    else
+                    {
+                        ProcessNormal(wrote, dest);
                     }
                 }
                 cursor = cursor.Slice(dest.Length);
@@ -121,8 +143,96 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             return buffer.Length;
         }
+        private static void ProcessNormal(Span<float> wrote, Span<Int24> dest)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported)
+                {
+                    ProcessNormalAvx2(wrote, dest);
+                    return;
+                }
+#endif
+                ProcessNormalStandard(wrote, dest);
+            }
+        }
 
-        private static Int24 Convert(float srcval) => (Int24)Math.Min(Int24.MaxValue, Math.Max(srcval * Multiplier, Int24.MinValue));
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalStandard(Span<float> wrote, Span<Int24> dest)
+        {
+            for (var i = 0; i < dest.Length; i++)
+            {
+                var v = Convert(wrote[i]);
+                dest[i] = v;
+            }
+        }
+        #region X86
+#if NETCOREAPP3_1_OR_GREATER
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalAvx2(Span<float> wrote, Span<Int24> dest)
+        {
+            ref var rsi = ref MemoryMarshal.GetReference(wrote);
+            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(dest));
+            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var ymm15 = Vector256.Create(-1.0f);
+            var ymm14 = Vector256.Create(8388607.0f / 8388608.0f);
+            var ymm13 = Vector256.Create(0x0b800000);
+            var ymm12 = Vector256.Create(0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 128, 128, 128, 128, 0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 128, 128, 128, 128);
+            var ymm11 = Vector256.Create(2, 4, 3, 0, 5, 6, 7, 1);
+            var ymm10 = Vector256.Create(0, 1, 3, 5, 2, 4, 7, 6);
+            var ymm9 = Vector256.Create(1, 2, 3, 5, 6, 7, 0, 4);
+            var ymm8 = Vector256.Create(0, 4, 1, 2, 3, 5, 6, 7);
+            var olen = length - 31;
+            for (; i < olen; i += 32, j += 96)
+            {
+                var ymm0 = Avx.Min(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0))).AsInt32();
+                var ymm1 = Avx.Min(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 8))).AsInt32();
+                var ymm2 = Avx.Min(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 16))).AsInt32();
+                var ymm3 = Avx.Min(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 24))).AsInt32();
+                ymm0 = Avx.Max(ymm15, ymm0.AsSingle()).AsInt32();
+                ymm1 = Avx.Max(ymm15, ymm1.AsSingle()).AsInt32();
+                ymm2 = Avx.Max(ymm15, ymm2.AsSingle()).AsInt32();
+                ymm3 = Avx.Max(ymm15, ymm3.AsSingle()).AsInt32();
+                ymm0 = Avx2.Add(ymm13, ymm0);
+                ymm1 = Avx2.Add(ymm13, ymm1);
+                ymm2 = Avx2.Add(ymm13, ymm2);
+                ymm3 = Avx2.Add(ymm13, ymm3);
+                ymm0 = Avx.ConvertToVector256Int32(ymm0.AsSingle());
+                ymm1 = Avx.ConvertToVector256Int32(ymm1.AsSingle());
+                ymm2 = Avx.ConvertToVector256Int32(ymm2.AsSingle());
+                ymm3 = Avx.ConvertToVector256Int32(ymm3.AsSingle());
+                ymm0 = Avx2.Shuffle(ymm0.AsByte(), ymm12).AsInt32();
+                ymm1 = Avx2.Shuffle(ymm1.AsByte(), ymm12).AsInt32();
+                ymm2 = Avx2.Shuffle(ymm2.AsByte(), ymm12).AsInt32();
+                ymm3 = Avx2.Shuffle(ymm3.AsByte(), ymm12).AsInt32();
+                ymm1 = Avx2.PermuteVar8x32(ymm1, ymm11);
+                ymm2 = Avx2.PermuteVar8x32(ymm2, ymm10);
+                ymm0 = Avx2.AlignRight(ymm0, ymm1, 12);
+                ymm3 = Avx2.AlignRight(ymm3, ymm2, 12);
+                ymm1 = Avx2.UnpackLow(ymm1.AsInt64(), ymm2.AsInt64()).AsInt32();
+                ymm0 = Avx2.PermuteVar8x32(ymm0, ymm9);
+                ymm1 = Avx2.Permute4x64(ymm1.AsInt64(), 0b11_01_10_00).AsInt32();
+                ymm3 = Avx2.PermuteVar8x32(ymm3, ymm8);
+                Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rdi, j + 0)) = ymm0;
+                Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rdi, j + 32)) = ymm1;
+                Unsafe.As<byte, Vector256<int>>(ref Unsafe.Add(ref rdi, j + 64)) = ymm3;
+            }
+            for (; i < length; i++, j += 3)
+            {
+                var xmm0 = Sse.MinScalar(ymm14.GetLower(), Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i)));
+                xmm0 = Sse.MaxScalar(ymm15.GetLower(), xmm0);
+                xmm0 = Sse2.Add(ymm13.GetLower(), xmm0.AsInt32()).AsSingle();
+                var h = (uint)Sse.ConvertToInt32(xmm0);
+                Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rdi, j)) = (ushort)h;
+                Unsafe.Add(ref rdi, j + 2) = (byte)(h >> 16);
+            }
+        }
+
+#endif
+        #endregion
+        private static Int24 Convert(float srcval) => (Int24)Math.Round(Math.Min(Int24.MaxValue, Math.Max(srcval * Multiplier, Int24.MinValue)));
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
