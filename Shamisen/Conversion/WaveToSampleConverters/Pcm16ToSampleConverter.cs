@@ -115,10 +115,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             var rr = Source.Read(MemoryMarshal.AsBytes(reader));
             if (rr.HasNoData)
             {
-                int len = 0;
+                var len = 0;
                 return rr.IsEndOfStream && len <= 0 ? rr : len;
             }
-            int u = rr.Length / ActualBytesPerSample;
+            var u = rr.Length / ActualBytesPerSample;
             var wrote = reader.Slice(0, u);
             var dest = buffer.Slice(0, wrote.Length);
             if (wrote.Length != dest.Length)
@@ -144,12 +144,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         private static void ProcessNormal(Span<float> buffer, ReadOnlySpan<short> source)
         {
 #if NETCOREAPP3_1_OR_GREATER
-            if (buffer.Length >= 128 && IntrinsicsUtils.AvoidAvxHeavyOperations && Avx2.IsSupported)
+            if (buffer.Length >= 128 && Avx2.IsSupported)
             {
                 ProcessNormalAvx2(buffer, source);
                 return;
             }
-            if (Sse2.IsSupported)
+            if (Sse41.IsSupported)
             {
                 ProcessNormalSse41(buffer, source);
                 return;
@@ -162,11 +162,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalStandard(Span<float> buffer, ReadOnlySpan<short> source)
         {
             Vector<float> mul = new(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
-            ref short rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
-            int size = Vector<float>.Count;
-            int sizeEpi16 = Vector<short>.Count;
+            var size = Vector<float>.Count;
+            var sizeEpi16 = Vector<short>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
             {
                 Vector.Widen(Unsafe.As<short, Vector<short>>(ref Unsafe.Add(ref rsi, i + sizeEpi16 * 0)), out var v0_nd, out var v1_nd);
@@ -209,8 +209,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalAvx2(Span<float> buffer, ReadOnlySpan<short> source)
         {
             var mul = Vector256.Create(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
-            ref short rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
@@ -269,8 +269,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessNormalSse41(Span<float> buffer, ReadOnlySpan<short> source)
         {
             var mul = Vector128.Create(Multiplier);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
-            ref short rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             //Loop for Haswell in 128-bit AVX for better frequency behaviour
             for (i = 0; i < length - 31; i += 32)
@@ -358,10 +358,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #region ProcessReversed
         internal static void ProcessReversed(Span<short> wrote, Span<float> dest)
         {
-            for (int i = 0; i < wrote.Length && i < dest.Length; i++)
-            {
-                dest[i] = BinaryPrimitives.ReverseEndianness(wrote[i]) * Multiplier;
-            }
+            wrote.ReverseEndianness();
+            ProcessNormal(dest, wrote);
         }
         #endregion
         /// <summary>

@@ -754,7 +754,59 @@ namespace Shamisen.Utils
 #endif
         }
         #endregion
-
+        #region CreateVector4
+        /// <inheritdoc cref="Vector4(float, float, float, float)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector4 CreateVector4(float x, float y, float z, float w)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    var xmm2 = Vector128.CreateScalarUnsafe(z);
+                    var xmm3 = Vector128.CreateScalarUnsafe(w);
+                    xmm2 = Sse.UnpackLow(xmm2, xmm3);
+                    xmm0 = Sse.UnpackLow(xmm0, xmm1);
+                    xmm0 = Sse.MoveLowToHigh(xmm0, xmm2);
+                    return xmm0.AsVector4();
+                }
+#endif
+                return new Vector4(x, y, z, w);
+            }
+        }
+        /// <summary>
+        /// Creates a vector whose elements have the specified values.
+        /// </summary>
+        /// <param name="x">The value to assign to the <see cref="Vector4.X"/> field.</param>
+        /// <param name="y">The value to assign to the <see cref="Vector4.Y"/> field.</param>
+        /// <param name="z">The value to assign to the <see cref="Vector4.Z"/> field.</param>
+        /// <param name="w">The value to assign to the <see cref="Vector4.W"/> field.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector4 ConvertAndCreateVector4(int x, int y, int z, int w)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    var xmm2 = Vector128.CreateScalarUnsafe(z);
+                    var xmm3 = Vector128.CreateScalarUnsafe(w);
+                    xmm2 = Sse2.UnpackLow(xmm2, xmm3);
+                    xmm0 = Sse2.UnpackLow(xmm0, xmm1);
+                    xmm0 = Sse2.UnpackLow(xmm0.AsInt64(), xmm2.AsInt64()).AsInt32();
+                    return Sse2.ConvertToVector128Single(xmm0.AsInt32()).AsVector4();
+                }
+#endif
+                return new Vector4(x, y, z, w);
+            }
+        }
+        #endregion
         #region AsVector128
 #if NETCOREAPP3_1
         /// <summary>
@@ -764,6 +816,17 @@ namespace Shamisen.Utils
         /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector128<float> AsVector128(this Vector4 value) => Unsafe.As<Vector4, Vector128<float>>(ref value);
+#endif
+        #endregion
+        #region AsVector4
+#if NETCOREAPP3_1
+        /// <summary>
+        /// Reinterprets a <see cref="Vector128{T}"/> as a new <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector4"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector4 AsVector4(this Vector128<float> value) => Unsafe.As<Vector128<float>, Vector4>(ref value);
 #endif
         #endregion
     }
