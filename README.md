@@ -45,15 +45,15 @@ A Cross-Platform Audio Library for:
 
 #### Fast conversion between PCM sample formats
 
-| To\From | IEEE754 Binary32(float) | 32bit LPCM(Q0.31) | 24bit LPCM(Q0.23) | 16bit LPCM(Q0.15) | 8bit LPCM(Excess-128) | G.711 μ−Law | G.711 A-Law |
-|--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| IEEE754 Binary32(float) |✖️|✅|✔️|✅|✅|✅|✅|
-| 32bit LPCM(Q0.31) |✅|✖️|☑️|☑️|☑️|☑️|☑️|
-| 24bit LPCM(Q0.23) |✔️|☑️|✖️|☑️|☑️|☑️|☑️|
-| 16bit LPCM(Q0.15) |✅|☑️|☑️|✖️|☑️|☑️|☑️|
-| 8bit LPCM(Excess-128) |✔️|☑️|⭕|☑️|✖️|☑️|☑️|
-| G.711 μ−Law |❎|❎|❎|❎|❎|✖️|❎|
-| G.711 A-Law |❎|❎|❎|❎|❎|❎|✖️|
+| To\From | IEEE 754<br>Binary32(float) | 32bit Linear<br>PCM(Q0.31) | 24bit Linear<br>PCM(Q0.23) | 16bit Linear<br>PCM(Q0.15) | 8bit LPCM<br>(Excess-128) | G.711<br>μ−Law | G.711<br>A-Law |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| IEEE 754<br>Binary32(float) | ✖️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 32bit Linear<br>PCM(Q0.31) | ✅ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| 24bit Linear<br>PCM(Q0.23) | ✔️ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| 16bit Linear<br>PCM(Q0.15) | ✅ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ |
+| 8bit LPCM<br>(Excess-128) | ✅ | ☑️ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ |
+| G.711 μ−Law | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ | ❎ |
+| G.711 A-Law | ❎ | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ |
 
 Legends:  
 ✅: Shamisen has optimized implementation of direct conversion.  
