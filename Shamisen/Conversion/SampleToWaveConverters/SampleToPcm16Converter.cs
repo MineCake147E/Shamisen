@@ -162,31 +162,40 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             switch (channels)
             {
                 case 1:
-                    ProcessAccurateMonaural(wrote, dest);
+                    ProcessAccurateMonaural(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 case 2:
                     ProcessAccurateStereoStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                case 3:
+                    ProcessAccurate3ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                case 4:
+                    ProcessAccurate4ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 default:
                     ProcessAccurateOrdinal(wrote, dest);
                     break;
             }
+            if (IsEndiannessConversionRequired)
+            {
+                dest.ReverseEndianness();
+            }
         }
 
-        private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest)
+        private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
         {
-            var accSpan = dsmAccumulator.Span;
             var dsmAcc = MemoryMarshal.GetReference(accSpan);
-            var loSpan = dsmLastOutput.Span;
             var dsmPrev = MemoryMarshal.GetReference(loSpan);
             ref var rWrote = ref MemoryMarshal.GetReference(wrote);
             ref var rDest = ref MemoryMarshal.GetReference(dest);
             nint nLength = dest.Length;
+            var mul = new Vector4(Multiplier);
             for (nint i = 0; i < nLength; i++)
             {
-                var diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
+                var diff = mul.X * Unsafe.Add(ref rWrote, i) - dsmPrev;
                 dsmAcc += diff;
-                var v = dsmPrev = Convert(dsmAcc);
+                var v = dsmPrev = ConvertScaled(dsmAcc);
                 Unsafe.Add(ref rDest, i) = v;
             }
             MemoryMarshal.GetReference(accSpan) = dsmAcc;
@@ -201,38 +210,92 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             ref var rWrote = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(wrote));
             ref var rDest = ref Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(dest));
             var nLength = (nint)dest.Length / 2;
-            var min = new Vector2(-1.0f);
-            var max = new Vector2(0.999969482421875f);
+            var min = new Vector2(-32768.0f);
+            var max = new Vector2(32767.0f);
             var mul = new Vector2(32768.0f);
             for (nint i = 0; i < nLength; i++)
             {
-                var diff = Unsafe.Add(ref rWrote, i) - dsmPrev * MultiplierInv;
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
                 dsmAcc += diff;
-                var v = Vector2.Clamp(dsmAcc, min, max);
-                v *= mul;
-                var x = (short)v.X;
-                var y = (short)v.Y;
-                dsmPrev = new Vector2(x, y);
-                Unsafe.Add(ref rDest, i) = (x, y);
+                var v = VectorUtils.Round(dsmAcc);
+                dsmPrev = Vector2.Clamp(v, min, max);
+                Unsafe.Add(ref rDest, i) = ((short)dsmPrev.X, (short)dsmPrev.Y);
             }
             Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
             Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y);
         }
 
-        private void ProcessAccurateOrdinal(Span<float> wrote, Span<short> dest)
+        private static void ProcessAccurate3ChannelsStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
         {
-            var dsmAcc = dsmAccumulator.Span;
-            var dsmLastOut = dsmLastOutput.Span;
-            dsmChannelPointer %= dsmAcc.Length;
-            for (var i = 0; i < dest.Length; i++)
+            var dsmAcc = Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<short, (short x, short y, short z)>(ref MemoryMarshal.GetReference(loSpan));
+            var dsmPrev = new Vector3(dsmLastOut.x, dsmLastOut.y, dsmLastOut.z);
+            ref var rWrote = ref Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<short, (short x, short y, short z)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 3;
+            var min = new Vector3(-32768.0f);
+            var max = new Vector3(32767.0f);
+            var mul = new Vector3(32768.0f);
+            for (nint i = 0; i < nLength; i++)
             {
-                var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / Multiplier);
-                dsmAcc[dsmChannelPointer] += diff;
-                var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
-                dest[i] = IsEndiannessConversionRequired ? BinaryPrimitives.ReverseEndianness(v) : v;
-                dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                var v = Vector3.Clamp(dsmAcc, min, max);
+                dsmPrev = VectorUtils.Round(v);
+                Unsafe.Add(ref rDest, i) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z);
             }
+            Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<short, (short x, short y, short z)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z);
         }
+
+        private static void ProcessAccurate4ChannelsStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        {
+            var dsmAcc = Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<short, (short x, short y, short z, short w)>(ref MemoryMarshal.GetReference(loSpan));
+            var dsmPrev = new Vector4(dsmLastOut.x, dsmLastOut.y, dsmLastOut.z, dsmLastOut.w);
+            ref var rWrote = ref Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<short, (short x, short y, short z, short w)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 4;
+            var min = new Vector4(-32768.0f);
+            var max = new Vector4(32767.0f);
+            var mul = new Vector4(32768.0f);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                var v = Vector4.Clamp(dsmAcc, min, max);
+                dsmPrev = VectorUtils.Round(v);
+                Unsafe.Add(ref rDest, i) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z, (short)dsmPrev.W);
+            }
+            Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<short, (short x, short y, short z, short w)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z, (short)dsmPrev.W);
+        }
+        private static nint ProcessAccurateDirectGenericStandard(Span<float> wrote, Span<short> dest, Span<float> dsmAcc, Span<short> dsmLast, int dsmChannelPointer)
+        {
+            ref var acc = ref MemoryMarshal.GetReference(dsmAcc);
+            ref var dlo = ref MemoryMarshal.GetReference(dsmLast);
+            ref var src = ref MemoryMarshal.GetReference(wrote);
+            ref var dst = ref MemoryMarshal.GetReference(dest);
+            var channels = dsmAcc.Length;
+            nint ch = dsmChannelPointer % channels;
+            nint i = 0, length = wrote.Length;
+            const float Mul = Multiplier;
+            for (; i < length; i++)
+            {
+                var a = Unsafe.Add(ref acc, ch);
+                var diff = Mul * Unsafe.Add(ref src, i) - Unsafe.Add(ref dlo, ch);
+                a += diff;
+                var v = ConvertScaled(a);
+                Unsafe.Add(ref dlo, ch) = v;
+                Unsafe.Add(ref acc, ch) = a;
+                var h = ++ch < channels;
+                var hh = -Unsafe.As<bool, byte>(ref h);
+                Unsafe.Add(ref dst, i) = v;
+                ch &= hh;
+            }
+            return ch;
+        }
+        private void ProcessAccurateOrdinal(Span<float> wrote, Span<short> dest) => dsmChannelPointer = (int)ProcessAccurateDirectGenericStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span, dsmChannelPointer);
 
         #endregion Accurate
 
@@ -305,6 +368,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var v1_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 1));
                 var v2_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 2));
                 var v3_ns = mul * Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, i + Vector<float>.Count * 3));
+                v0_ns = VectorUtils.RoundInLoop(v0_ns, sign, reciprocalEpsilon);
+                v1_ns = VectorUtils.RoundInLoop(v1_ns, sign, reciprocalEpsilon);
+                v2_ns = VectorUtils.RoundInLoop(v2_ns, sign, reciprocalEpsilon);
+                v3_ns = VectorUtils.RoundInLoop(v3_ns, sign, reciprocalEpsilon);
                 v0_ns = Vector.Min(v0_ns, max);
                 v1_ns = Vector.Min(v1_ns, max);
                 v2_ns = Vector.Min(v2_ns, max);
@@ -313,10 +380,6 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 v1_ns = Vector.Max(v1_ns, min);
                 v2_ns = Vector.Max(v2_ns, min);
                 v3_ns = Vector.Max(v3_ns, min);
-                v0_ns = VectorUtils.RoundInLoop(v0_ns, sign, reciprocalEpsilon);
-                v1_ns = VectorUtils.RoundInLoop(v1_ns, sign, reciprocalEpsilon);
-                v2_ns = VectorUtils.RoundInLoop(v2_ns, sign, reciprocalEpsilon);
-                v3_ns = VectorUtils.RoundInLoop(v3_ns, sign, reciprocalEpsilon);
                 var v0_ns2 = Vector.ConvertToInt32(v0_ns);
                 var v1_ns2 = Vector.ConvertToInt32(v1_ns);
                 var v2_ns2 = Vector.ConvertToInt32(v2_ns);
@@ -339,8 +402,31 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
         #endregion Normal
 
+        /// <summary>
+        /// Clamps the specified <paramref name="srcval"/> between -1 and 1, and then converts to <see cref="short"/>.
+        /// </summary>
+        /// <param name="srcval"></param>
+        /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static short Convert(float srcval) => (short)Math.Min(short.MaxValue, Math.Max(srcval * Multiplier, short.MinValue));
+        internal static short Convert(float srcval)
+        {
+            srcval *= Multiplier;
+            return ConvertScaled(srcval);
+        }
+
+        /// <summary>
+        /// Clamps the specified <paramref name="srcval"/> between -32768.0f and 32767.0f, and then converts to <see cref="short"/>.
+        /// </summary>
+        /// <param name="srcval"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static short ConvertScaled(float srcval)
+        {
+            srcval = FastMath.Round(srcval);
+            srcval = FastMath.Max(srcval, -32768.0f);
+            srcval = FastMath.Min(srcval, 32767.0f);
+            return (short)srcval;
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

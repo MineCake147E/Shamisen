@@ -120,7 +120,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             return (int)ch;
         }
 
-        private static IntPtr ProcessAccurateDirectGenericStandard(Span<float> wrote, Span<float> dsmAcc, Span<int> dsmLast, int dsmChannelPointer)
+        private static nint ProcessAccurateDirectGenericStandard(Span<float> wrote, Span<float> dsmAcc, Span<int> dsmLast, int dsmChannelPointer)
         {
             ref var acc = ref MemoryMarshal.GetReference(dsmAcc);
             ref var dlo = ref MemoryMarshal.GetReference(dsmLast);

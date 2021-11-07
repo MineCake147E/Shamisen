@@ -755,7 +755,7 @@ namespace Shamisen.Utils
                 }
 #endif
 #if NETCOREAPP3_1
-                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                if (Sse41.IsSupported)
                 {
                     var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref values);
                     xmm0 = Sse41.RoundToNearestInteger(xmm0);
@@ -771,6 +771,85 @@ namespace Shamisen.Utils
                 s2 = FastMath.Round(s2);
                 s3 = FastMath.Round(s3);
                 return new(s0, s1, s2, s3);
+            }
+        }
+
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <returns>The integer <see cref="Vector2"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector2"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        public static Vector2 Round(Vector2 values)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector2();
+                }
+                if (Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector2();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Sse41.IsSupported)
+                {
+                    var t = new Vector4(values, 0f, 0f);
+                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref t);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector2>(ref xmm0);
+                }
+#endif
+                var s0 = values.X;
+                var s1 = values.Y;
+                s0 = FastMath.Round(s0);
+                s1 = FastMath.Round(s1);
+                return new(s0, s1);
+            }
+        }
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <returns>The integer <see cref="Vector3"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector3"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        public static Vector3 Round(Vector3 values)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector3();
+                }
+                if (Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector3();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Sse41.IsSupported)
+                {
+                    var t = new Vector4(values, 0f);
+                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref t);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector3>(ref xmm0);
+                }
+#endif
+                var s0 = values.X;
+                var s1 = values.Y;
+                var s2 = values.Z;
+                s0 = FastMath.Round(s0);
+                s1 = FastMath.Round(s1);
+                s2 = FastMath.Round(s2);
+                return new(s0, s1, s2);
             }
         }
         #endregion

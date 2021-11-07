@@ -79,11 +79,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <returns>
         /// The length of the data written.
         /// </returns>
-        public override ReadResult Read(Span<float> buffer)
-        {
-            var g = Source.Read(MemoryMarshal.AsBytes(buffer));
-            return g.HasData ? g.Length / 4 : g;
-        }
+        public override ReadResult Read(Span<float> buffer) => Source.Read(MemoryMarshal.AsBytes(buffer)) / 4;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

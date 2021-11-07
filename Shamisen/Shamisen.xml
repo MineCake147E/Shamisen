@@ -8218,6 +8218,20 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.Convert(System.Single)">
+            <summary>
+            Clamps the specified <paramref name="srcval"/> between -1 and 1, and then converts to <see cref="T:System.Int16"/>.
+            </summary>
+            <param name="srcval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.ConvertScaled(System.Single)">
+            <summary>
+            Clamps the specified <paramref name="srcval"/> between -32768.0f and 32767.0f, and then converts to <see cref="T:System.Int16"/>.
+            </summary>
+            <param name="srcval"></param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -20780,6 +20794,26 @@
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a floating-point <see cref="T:System.Numerics.Vector4"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Round(System.Numerics.Vector2)">
+            <summary>
+            Rounds a vector of single-precision floating-point value to the nearest integral values,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+            <returns>The integer <see cref="T:System.Numerics.Vector2"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a floating-point <see cref="T:System.Numerics.Vector2"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Round(System.Numerics.Vector3)">
+            <summary>
+            Rounds a vector of single-precision floating-point value to the nearest integral values,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+            <returns>The integer <see cref="T:System.Numerics.Vector3"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a floating-point <see cref="T:System.Numerics.Vector3"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.
@@ -21721,6 +21755,12 @@
             <param name="span">The span.</param>
         </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int32})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Int24})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>

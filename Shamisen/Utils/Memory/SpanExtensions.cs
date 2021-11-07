@@ -761,6 +761,114 @@ namespace Shamisen
         }
         #endregion
 
+        #region 24-bits-wide
+        /// <summary>
+        /// Reverses the endianness of each elements in specified <paramref name="span"/>.
+        /// </summary>
+        /// <param name="span">The span.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ReverseEndianness(this Span<Int24> span)
+        {
+            /*
+#if NET5_0_OR_GREATER
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                ReverseEndiannessAdvSimdArm64(span);
+                return;
+            }
+            if (AdvSimd.IsSupported)
+            {
+                ReverseEndiannessAdvSimd(span);
+                return;
+            }
+#endif
+            */
+#if NETCOREAPP3_1_OR_GREATER
+            if (Ssse3.IsSupported)
+            {
+                ReverseEndiannessSsse3(span);
+                return;
+            }
+#endif
+            ReverseEndiannessFallback(span);
+        }
+#if NET5_0_OR_GREATER
+        //AdvSimd version requires multi-register versions of VectorTableLookup.
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+        #region X86
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessSsse3(Span<Int24> span)
+        {
+            var mask0 = Vector128.Create(2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 15).AsByte();
+            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(span));
+            nint i = 0, length = span.Length * 3 - 2;
+            var olen = length - 16 * 3 + 1;
+            for (; i < olen; i += 16 * 3)
+            {
+                var xmm0 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 0 * 16));
+                var xmm1 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 1 * 16));
+                var xmm2 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 2 * 16));
+                var xmm3 = Ssse3.AlignRight(xmm1, xmm0, 15);
+                var xmm4 = Ssse3.AlignRight(xmm2, xmm1, 14);
+                var xmm5 = Ssse3.AlignRight(xmm0, xmm2, 13);
+                xmm0 = Ssse3.Shuffle(xmm0, mask0);
+                xmm3 = Ssse3.Shuffle(xmm3, mask0);
+                xmm4 = Ssse3.Shuffle(xmm4, mask0);
+                xmm5 = Ssse3.Shuffle(xmm5, mask0);
+                xmm0 = Ssse3.AlignRight(xmm0, xmm0, 15);
+                xmm1 = Ssse3.AlignRight(xmm3, xmm3, 15);
+                xmm2 = Ssse3.AlignRight(xmm4, xmm4, 15);
+                xmm0 = Ssse3.AlignRight(xmm3, xmm0, 1);
+                xmm3 = Ssse3.AlignRight(xmm4, xmm1, 2);
+                xmm4 = Ssse3.AlignRight(xmm5, xmm2, 3);
+                Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 0 * 16)) = xmm0;
+                Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 1 * 16)) = xmm3;
+                Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref rdi, i + 2 * 16)) = xmm4;
+            }
+            for (; i < length; i += 3)
+            {
+                var t = Unsafe.Add(ref rdi, i);
+                Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rdi, i + 2);
+                Unsafe.Add(ref rdi, i + 2) = t;
+            }
+        }
+        #endregion
+#endif
+
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ReverseEndiannessFallback(Span<Int24> span)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i = 0, length = span.Length;
+            for (; i < length - 7; i += 8)
+            {
+                var x0 = Unsafe.Add(ref rdi, i + 0);
+                var x1 = Unsafe.Add(ref rdi, i + 1);
+                Unsafe.Add(ref rdi, i + 0) = Int24.ReverseEndianness(x0);
+                Unsafe.Add(ref rdi, i + 1) = Int24.ReverseEndianness(x1);
+                x0 = Unsafe.Add(ref rdi, i + 2);
+                Unsafe.Add(ref rdi, i + 2) = Int24.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 3);
+                Unsafe.Add(ref rdi, i + 3) = Int24.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 4);
+                Unsafe.Add(ref rdi, i + 4) = Int24.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 5);
+                Unsafe.Add(ref rdi, i + 5) = Int24.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 6);
+                Unsafe.Add(ref rdi, i + 6) = Int24.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref rdi, i + 7);
+                Unsafe.Add(ref rdi, i + 7) = Int24.ReverseEndianness(x0);
+            }
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref rdi, i) = Int24.ReverseEndianness(Unsafe.Add(ref rdi, i));
+            }
+        }
+        #endregion
+
         #region 16-bits-wide
         /// <summary>
         /// Reverses the endianness of each elements in specified <paramref name="span"/>.

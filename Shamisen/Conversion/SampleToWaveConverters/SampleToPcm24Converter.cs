@@ -119,30 +119,24 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                         var diff = wrote[i] - dsmLastOut[dsmChannelPointer] / Multiplier;
                         dsmAcc[dsmChannelPointer] += diff;
                         var v = dsmLastOut[dsmChannelPointer] = Convert(dsmAcc[dsmChannelPointer]);
-                        dest[i] = IsEndiannessConversionRequired ? Int24.ReverseEndianness(v) : v;
+                        dest[i] = v;
                         dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
                     }
                 }
                 else
                 {
-                    if (IsEndiannessConversionRequired)
-                    {
-                        for (var i = 0; i < dest.Length; i++)
-                        {
-                            var v = Convert(wrote[i]);
-                            dest[i] = Int24.ReverseEndianness(v);
-                        }
-                    }
-                    else
-                    {
-                        ProcessNormal(wrote, dest);
-                    }
+                    ProcessNormal(wrote, dest);
+                }
+                if (IsEndiannessConversionRequired)
+                {
+                    dest.ReverseEndianness();
                 }
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
             return buffer.Length;
         }
+
         private static void ProcessNormal(Span<float> wrote, Span<Int24> dest)
         {
             unchecked

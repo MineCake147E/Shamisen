@@ -248,6 +248,43 @@ namespace Shamisen.Core.Tests.CoreFx
         }
 
         #endregion
+        #region Int24
+        [Test]
+        public void ReverseEndiannessInt24FallbackWorksCorrectly()
+        {
+            Span<Int24> spanS = new Int24[SpanExtensionsTest.Size];
+            Span<Int24> spanD = new Int24[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessFallback(spanD);
+            for (var i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != Int24.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
+        public void ReverseEndiannessInt24Ssse3WorksCorrectly()
+        {
+            if (!Ssse3.IsSupported)
+            {
+                Assert.Warn("Ssse3 is not supported!");
+                return;
+            }
+            Span<Int24> spanS = new Int24[SpanExtensionsTest.Size];
+            Span<Int24> spanD = new Int24[spanS.Length];
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(spanS));
+            spanS.CopyTo(spanD);
+            SpanExtensions.ReverseEndiannessSsse3(spanD);
+            for (var i = 0; i < spanD.Length; i++)
+            {
+                if (spanD[i] != Int24.ReverseEndianness(spanS[i])) Assert.Fail("The ReverseEndianness doesn't reverse correctly!");
+            }
+            Assert.Pass();
+        }
+
+        #endregion
         #region Int16
         [Test]
         public void ReverseEndiannessInt16FallbackWorksCorrectly()

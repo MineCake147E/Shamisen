@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using CSCore.DSP;
@@ -17,8 +18,26 @@ using Shamisen.Synthesis;
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
     [SimpleJob(RuntimeMoniker.HostProcess)]
+    [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
+    [Config(typeof(Config))]
     public class ResamplerComparisonBenchmarks
     {
+        #region Configs and custom columns
+
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a) => (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                _ = AddColumn(new FrameThroughputColumn(FrameSelector));
+                //_ = AddColumn(new PlaybackSpeedColumn(
+                //    FrameSelector,
+                //    a => ((ConversionRatioProps)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "ConversionRatio")).Value).After));
+
+            }
+        }
+        #endregion
+
         private DummySource<float, SampleFormat> sourceMA;
         private DummySourceCSCore sourceCC;
         private DmoResampler dmoResampler;
@@ -29,11 +48,14 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 
         public IEnumerable<(int, int)> ValuesForConversionRatio => new[] { (44100, 192000) };
 
-        private float[] bufferMA;
+        private float[] bufferS;
         private byte[] bufferCC;
 
         [Params(1, 2)]
         public int Channels { get; set; }
+
+        [Params(4095)]
+        public int Frames { get; set; }
 
         [GlobalSetup]
         public void Setup()
@@ -43,8 +65,8 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
             splineResampler = new SplineResampler(sourceMA, ConversionRatio.after);
             dmoResampler = new DmoResampler(sourceCC, new CSCore.WaveFormat(ConversionRatio.after, 32, Channels, CSCore.AudioEncoding.IeeeFloat));
 
-            bufferMA = new float[2560 * Channels];
-            bufferCC = new byte[sizeof(float) * bufferMA.Length];
+            bufferS = new float[Frames * Channels];
+            bufferCC = new byte[sizeof(float) * bufferS.Length];
         }
 
         [GlobalCleanup]
@@ -54,13 +76,13 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
             sourceMA?.Dispose();
             dmoResampler?.Dispose();
             sourceCC?.Dispose();
-            bufferMA = null;
+            bufferS = null;
         }
 
         [Benchmark]
         public void ShamisenSplineResampler()
         {
-            var span = bufferMA.AsSpan();
+            var span = bufferS.AsSpan();
             _ = splineResampler.Read(span);
         }
 
@@ -73,7 +95,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         public void CSCoreDmoResampler(int quality)
         {
             dmoResampler.Quality = quality;
-            _ = dmoResampler.Read(bufferCC, 0, bufferMA.Length);
+            _ = dmoResampler.Read(bufferCC, 0, bufferS.Length);
         }
 
         /*
