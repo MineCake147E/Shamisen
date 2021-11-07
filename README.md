@@ -49,7 +49,7 @@ A Cross-Platform Audio Library for:
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | IEEE 754<br>Binary32(float) | ✖️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 32bit Linear<br>PCM(Q0.31) | ✅ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| 24bit Linear<br>PCM(Q0.23) | ✔️ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| 24bit Linear<br>PCM(Q0.23) | ✅ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | 16bit Linear<br>PCM(Q0.15) | ✅ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ |
 | 8bit LPCM<br>(Excess-128) | ✅ | ☑️ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ |
 | G.711 μ−Law | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ | ❎ |
