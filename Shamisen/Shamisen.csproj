@@ -18,6 +18,10 @@
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

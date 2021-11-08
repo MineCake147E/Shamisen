@@ -9,6 +9,3 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("Shamisen.Core.Tests.CoreFx")]
 [assembly: InternalsVisibleTo("Shamisen.Core.Tests.CoreFx.*")]
 [assembly: InternalsVisibleTo("Shamisen.Benchmarks")]
-#if NET6_0_OR_GREATER
-[assembly: RequiresPreviewFeatures]
-#endif
