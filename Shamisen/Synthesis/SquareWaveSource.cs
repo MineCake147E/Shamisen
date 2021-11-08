@@ -96,7 +96,7 @@ namespace Shamisen.Synthesis
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var omega = AngularVelocity;
             var theta = Theta;
@@ -113,7 +113,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static float GenerateMonauralSample(Fixed64 theta)
         {
-            int y = (int)(theta.Value >> 32) & int.MinValue;
+            var y = (int)(theta.Value >> 32) & int.MinValue;
             y |= 0x3f80_0000;
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
             return BitConverter.Int32BitsToSingle(y);
@@ -124,7 +124,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
         {
-            ulong r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out ulong q);
+            var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
             return r > 0 ? q + 1 : q;
         }
 
@@ -156,8 +156,8 @@ namespace Shamisen.Synthesis
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             //TODO: AdvSimd and Sse42 variant
-            long t = theta.Value;
-            long o = omega.Value;
+            var t = theta.Value;
+            var o = omega.Value;
             var ymm12 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm12.GetLower());
@@ -169,9 +169,9 @@ namespace Shamisen.Synthesis
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
             var ymm14 = Vector256.Create(1.0f).AsInt32();
             var ymm13 = Vector256.Create(int.MinValue).AsInt32();
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 31;
+            var olen = length - 31;
             //Everything is in integer, so Haswell will be fine even with 256-bit vectors.
             for (; i < olen; i += 32)
             {
@@ -241,7 +241,7 @@ namespace Shamisen.Synthesis
             }
             for (; i < length; i++)
             {
-                int y = (int)(t >> 32);
+                var y = (int)(t >> 32);
                 t += o;
                 y &= int.MinValue;
                 y |= 0x3f80_0000;
@@ -255,14 +255,14 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            long t = theta.Value;
-            long o = omega.Value;
-            ref int rdi = ref Unsafe.As<float, int>(ref MemoryMarshal.GetReference(buffer));
+            var t = theta.Value;
+            var o = omega.Value;
+            ref var rdi = ref Unsafe.As<float, int>(ref MemoryMarshal.GetReference(buffer));
             nint i = 0, length = buffer.Length;
-            nint olen = length - 7;
+            var olen = length - 7;
             for (; i < olen; i += 8)
             {
-                int y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
+                var y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
                 t += o;
                 Unsafe.Add(ref rdi, i + 0) = y;
                 y = ((int)(t >> 32) & int.MinValue) | 0x3f80_0000;
@@ -289,7 +289,7 @@ namespace Shamisen.Synthesis
             }
             for (; i < length; i++)
             {
-                int y = (int)(t >> 32);
+                var y = (int)(t >> 32);
                 t += o;
                 y &= int.MinValue;
                 y |= 0x3f80_0000;

@@ -60,16 +60,16 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nram = ram;
             nint nacc = acc;
-            nint nracc = nram - nacc;
-            nint nram16 = nram * 16;
+            var nracc = nram - nacc;
+            var nram16 = nram * 16;
             nint nrci = rci * 16;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector128<float> xmm7;
-            nint oram = nracc * 3;
-            nint olen = length - 3;
-            nint nracc4 = -nracc * 4;
+            var oram = nracc * 3;
+            var olen = length - 3;
+            var nracc4 = -nracc * 4;
             while (true)
             {
                 if (i >= olen) break;
@@ -86,7 +86,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     psx += nracc4;
                     isx += 4;
                     nrci += 64;
-                    bool j = nrci >= nram16;
+                    var j = nrci >= nram16;
                     nint z = Unsafe.As<bool, byte>(ref j);
                     nrci -= -z & nram16;
                     var xmm2 = Sse2.UnpackHigh(xmm7.AsDouble(), xmm8.AsDouble()).AsSingle();
@@ -95,7 +95,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     xmm0 = Sse.Add(xmm0, xmm2);
                     xmm10 = Sse2.UnpackLow(xmm9.AsDouble(), xmm10.AsDouble()).AsSingle();
                     xmm1 = Sse.Add(xmm1, xmm10);
-                    bool h = psx < 0;
+                    var h = psx < 0;
                     nint y = Unsafe.As<bool, byte>(ref h);
                     xmm2 = Sse.Shuffle(xmm0, xmm1, 0b11_01_11_01);
                     xmm7 = Sse.Shuffle(xmm0, xmm1, 0b10_00_10_00);
@@ -113,14 +113,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                     nrci += 16;
                     xmm0 = Sse.Multiply(xmm0, xmm7);
                     psx += nacc;
-                    bool j = nrci < nram16;
+                    var j = nrci < nram16;
                     nint z = Unsafe.As<bool, byte>(ref j);
                     var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
                     xmm0 = Sse.Add(xmm0, xmm6);
                     nrci &= -z;
                     xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
                     xmm0 = Sse.AddScalar(xmm0, xmm6);
-                    bool h = psx >= nram;
+                    var h = psx >= nram;
                     nint y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     y = -y;
@@ -138,12 +138,12 @@ namespace Shamisen.Conversion.Resampling.Sample
                 var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
                 xmm0 = Sse.Add(xmm0, xmm6);
                 psx += nacc;
-                bool j = nrci < nram16;
+                var j = nrci < nram16;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
                 nrci &= -z;
                 xmm0 = Sse.AddScalar(xmm0, xmm6);
-                bool h = psx >= nram;
+                var h = psx >= nram;
                 nint y = Unsafe.As<bool, byte>(ref h);
                 isx += y;
                 y = -y;
@@ -177,8 +177,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = ram;
             nint nrci = rci;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             var xmm7 = Unsafe.As<float, Vector128<float>>(ref src);
             for (i = 0; i < length; i++)
             {
@@ -187,7 +187,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 var xmm6 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10);
                 xmm0 = Sse.Add(xmm0, xmm6);
                 psx += acc;
-                bool j = ++nrci < nram;
+                var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 xmm6 = Sse.Shuffle(xmm0, xmm0, 0b01_01_01_01);
                 nrci &= -z;
@@ -213,8 +213,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint isx = 0;
             nint psx = x;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             var xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             for (i = 0; i < length; i++)
             {
@@ -241,22 +241,22 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = ram;
             nint nrci = rci;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector128<float> xmm7;
             for (i = 0; i < length; i++)
             {
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
                 var xmm0 = Unsafe.Add(ref coeff, nrci);
                 xmm0 = Sse.Multiply(xmm0, xmm7);
-                bool j = ++nrci < nram;
+                var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 psx += acc;
                 xmm7 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
                 nrci &= -z;
                 isx += facc;
                 xmm0 = Sse.Add(xmm0, xmm7);
-                bool v = psx >= nram;
+                var v = psx >= nram;
                 nint v1 = Unsafe.As<bool, byte>(ref v);
                 xmm7 = Sse3.MoveHighAndDuplicate(xmm0);
                 isx += v1;
@@ -276,8 +276,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint isx = 0;
             nint psx = x & 1;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             var xmm6 = Unsafe.As<float, Vector128<float>>(ref src);
             var xmm0 = Unsafe.Add(ref coeff, 0);
             var xmm1 = Unsafe.Add(ref coeff, 1);
@@ -293,7 +293,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm6 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
                 psx = 0;
             }
-            nint olen = length - 3;
+            var olen = length - 3;
             for (; i < olen; i += 4)
             {
                 var xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx + 1));
@@ -353,8 +353,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint isx = 0;
             nint psx = x & 3;
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector128<float> xmm7;
             if (psx > 0)
             {
@@ -376,7 +376,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             var c1 = Unsafe.Add(ref coeff, 1);
             var c2 = Unsafe.Add(ref coeff, 2);
             var c3 = Unsafe.Add(ref coeff, 3);
-            nint olen = length - 3;
+            var olen = length - 3;
             for (; i < olen; i += 4)
             {
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
@@ -437,8 +437,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
-            ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
-            ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
+            ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i;
             nint length = buffer.Length / 2;
@@ -451,7 +451,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 var vr = Sse.Shuffle(c, c, 0b11_11_10_10);
                 vl = Sse.Multiply(vx, vl);
                 vr = Sse.Multiply(vz, vr);
-                bool j = nrci < nram;
+                var j = nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 vl = Sse.Add(vl, vr);
                 vr = Sse.Shuffle(vl, vl, 0b00_00_11_10);
@@ -477,8 +477,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint isx = 0;
             nint psx = x;
-            ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
-            ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
+            ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i;
             nint length = buffer.Length / 2;
@@ -514,8 +514,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint isx = 0;
             nint psx = x;
-            ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
-            ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
+            ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i = 0;
             nint length = buffer.Length / 2;
@@ -541,7 +541,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm7 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
                 psx = 0;
             }
-            nint olen = length - 1;
+            var olen = length - 1;
             for (; i < olen; i += 2)
             {
                 var xmm4 = Sse.Multiply(xmm6, xmm0);    //L0 * C0, R0 * C0, L1 * C1, R1 * C1
@@ -590,8 +590,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint isx = 0;
             nint psx = x;
-            ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
-            ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
+            ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i = 0;
             nint length = buffer.Length / 2;
@@ -633,7 +633,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             xmm5 = Sse.Shuffle(xmm5, xmm5, 0b11_11_10_10);      //C2, C2, C3, C3
             var xmm6 = Sse.Shuffle(xmm7, xmm7, 0b01_01_00_00);  //C4, C4, C5, C5
             xmm7 = Sse.Shuffle(xmm7, xmm7, 0b11_11_10_10);      //C6, C6, C7, C7
-            nint olen = length - 3;
+            var olen = length - 3;
             for (; i < olen; i += 4)
             {
                 var xmm8 = Sse.Multiply(xmm14, xmm0);
@@ -691,8 +691,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
-            ref double vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
-            ref double vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
+            ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
+            ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             nint i;
             nint length = buffer.Length / 2;
@@ -707,14 +707,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                 isx += facc;
                 vl = Sse.Multiply(vx, vl);
                 vr = Sse.Multiply(vz, vr);
-                bool j = nrci < nram;
+                var j = nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 vl = Sse.Add(vl, vr);
                 vr = Sse.Shuffle(vl, vl, 0b00_00_11_10);
                 vl = Sse.Add(vl, vr);
                 Unsafe.Add(ref vBuffer, i) = vl.AsDouble().GetElement(0);
                 nrci &= -z;
-                bool a = psx >= nram;
+                var a = psx >= nram;
                 int b = Unsafe.As<bool, byte>(ref a);
                 isx += b;
                 psx -= nram & (-b);
@@ -743,8 +743,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = ram;
             nint nrci = rci;
             nint nchannels = channels;
-            nint length = buffer.Length - nchannels + 1;
-            int rch = channels & 0x3;
+            var length = buffer.Length - nchannels + 1;
+            var rch = channels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
 
             unsafe
@@ -756,10 +756,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                     {
                         psx += acc;
                         var y0 = Unsafe.Add(ref coeffPtr, nrci);
-                        float* head = rsi + isx * nchannels;
-                        float* head2 = head + nchannels * 2;
+                        var head = rsi + isx * nchannels;
+                        var head2 = head + nchannels * 2;
                         nint nch = 0;
-                        nint cholen = nchannels - 7;
+                        var cholen = nchannels - 7;
                         for (; nch < cholen; nch += 8)
                         {
                             var vy0 = y0.AsVector128();
@@ -809,10 +809,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                             v0 = Sse.Add(v0, v1);
                             Avx.MaskStore(rdi + i + nch, mask, v0);
                         }
-                        bool j = ++nrci < nram;
+                        var j = ++nrci < nram;
                         nint z = Unsafe.As<bool, byte>(ref j);
                         nrci &= -z;
-                        bool h = psx >= nram;
+                        var h = psx >= nram;
                         nint g = Unsafe.As<bool, byte>(ref h);
                         isx += g;
                         isx += facc;
@@ -844,11 +844,11 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nchannels = channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
-            nint rewc = rew * nchannels;
-            int rch = channels & 0x3;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
+            var rewc = rew * nchannels;
+            var rch = channels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -858,14 +858,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                 {
                     if (red < 0)
                     {
-                        nint olen = MathI.Min(length, rec * nchannels + nchannels);
+                        var olen = MathI.Min(length, rec * nchannels + nchannels);
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -917,7 +917,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -930,14 +930,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                     while (i < length)
                     {
-                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        var olen = MathI.Min(length, i - rec * nchannels + rewc);
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = Unsafe.Add(ref coeffPtr, rec++);
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -989,7 +989,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -1003,10 +1003,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -1058,7 +1058,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -1092,11 +1092,11 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nchannels = channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
-            nint rewc = rew * nchannels;
-            int rch = channels & 0x3;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
+            var rewc = rew * nchannels;
+            var rch = channels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -1106,14 +1106,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                 {
                     if (red < 0)
                     {
-                        nint olen = MathI.Min(length, rec * nchannels);
+                        var olen = MathI.Min(length, rec * nchannels);
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -1165,7 +1165,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -1178,14 +1178,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                     while (i < length)
                     {
-                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        var olen = MathI.Min(length, i - rec * nchannels + rewc);
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = Unsafe.Add(ref coeffPtr, rec++);
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -1237,7 +1237,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -1251,10 +1251,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
-                            float* head2 = head + nchannels * 2;
+                            var head = rsi + isx * nchannels;
+                            var head2 = head + nchannels * 2;
                             nint nch = 0;
-                            nint cholen = nchannels - 7;
+                            var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
                                 var vy0 = y0.AsVector128();
@@ -1306,7 +1306,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                             }
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -1338,21 +1338,21 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint i = 0;
             nint isx = 0;
-            int psx = x;
-            int spsx = psx;
-            int nram = ram;
+            var psx = x;
+            var spsx = psx;
+            var nram = ram;
             nint nchannels = channels;
-            nint length = buffer.Length - nchannels + 1;
+            var length = buffer.Length - nchannels + 1;
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
             Vector4 x1 = default, x2 = default, x3 = default;
             Vector4 y0 = default, y1 = default, y2 = default;
-            int rch = channels & 0x3;
+            var rch = channels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch, rch - 1, rch - 2, rch - 3), Vector128<int>.Zero).AsSingle();
-            for (int j = 0; j < 4; j++)
+            for (var j = 0; j < 4; j++)
             {
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 int g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -1373,10 +1373,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                     for (; i < length; i += nchannels)
                     {
                         psx += acc;
-                        float* head = rsi + isx * nchannels;
-                        float* head2 = head + nchannels * 2;
+                        var head = rsi + isx * nchannels;
+                        var head2 = head + nchannels * 2;
                         nint nch = 0;
-                        nint cholen = nchannels - 7;
+                        var cholen = nchannels - 7;
                         for (; nch < cholen; nch += 8)
                         {
                             var vy0 = y0.AsVector128();
@@ -1426,14 +1426,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                             v0 = Sse.Add(v0, v1);
                             Avx.MaskStore(rdi + i + nch, mask, v0);
                         }
-                        bool h = psx >= nram;
+                        var h = psx >= nram;
                         int g = Unsafe.As<bool, byte>(ref h);
                         isx += g;
                         isx += facc;
                         psx -= -g & nram;
                         var nx3 = new Vector4(spsx * rmi);
                         spsx += acc;
-                        bool h2 = spsx >= nram;
+                        var h2 = spsx >= nram;
                         int g2 = Unsafe.As<bool, byte>(ref h2);
                         y0 = y1 * x1;
                         y0 += c3;

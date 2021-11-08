@@ -58,7 +58,7 @@ namespace Shamisen.Formats
         /// <value>
         /// The size of block.
         /// </value>
-        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => Channels; }
+        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => Channels; }
 
         /// <summary>
         /// Gets the value indicates how many <see cref="Half"/>s are required per 1-channel sample.<br/>
@@ -67,7 +67,7 @@ namespace Shamisen.Formats
         /// <value>
         /// The size of a frame in <see cref="Half"/>s.
         /// </value>
-        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => 1; }
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => 1; }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="obj">An object to compare with this object.</param>

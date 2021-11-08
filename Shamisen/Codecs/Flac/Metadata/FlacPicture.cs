@@ -111,18 +111,18 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
             }
-            uint pictype = BinaryPrimitives.ReadUInt32BigEndian(buffer);
+            var pictype = BinaryPrimitives.ReadUInt32BigEndian(buffer);
             var br = buffer.Slice(4);
-            int mimeLength = (int)BinaryPrimitives.ReadUInt32BigEndian(br);
+            var mimeLength = (int)BinaryPrimitives.ReadUInt32BigEndian(br);
             if ((uint)mimeLength > br.Length - sizeof(uint) * 6) throw new FlacException("Invalid Picture!");
             br = br.Slice(4);
-            byte[]? mime = new byte[mimeLength];
+            var mime = new byte[mimeLength];
             br.SliceWhile(mimeLength).CopyTo(mime);
             br = br.Slice(mimeLength);
-            int descLength = (int)BinaryPrimitives.ReadUInt32BigEndian(br);
+            var descLength = (int)BinaryPrimitives.ReadUInt32BigEndian(br);
             br = br.Slice(4);
             if ((uint)descLength > br.Length - sizeof(uint) * 5) throw new FlacException("Invalid Picture!");
-            byte[]? desc = new byte[descLength];
+            var desc = new byte[descLength];
             br.SliceWhile(descLength).CopyTo(desc);
             br = br.Slice(descLength);
             //ValueTuples of equal-typed variables deconstructs sequentially.
@@ -137,7 +137,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
             }
-            byte[]? bin = new byte[binSize];
+            var bin = new byte[binSize];
             br.SliceWhile(bin.Length).CopyTo(bin);
             return new FlacPicture((FlacPictureType)pictype, mime, desc, w, h, bpp, indLen, bin);
         }

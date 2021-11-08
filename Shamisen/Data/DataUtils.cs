@@ -34,7 +34,7 @@ namespace Shamisen
                 {
                     var pbuf = new PooledArray<TSample>((int)Math.Min(numberOfElementsToSkip, 2048));
                     var buffer = pbuf.Span;
-                    ulong h = numberOfElementsToSkip;
+                    var h = numberOfElementsToSkip;
                     while (h > 0 && h <= numberOfElementsToSkip)
                     {
                         var result = source.Read(buffer.SliceWhile((int)Math.Min((ulong)buffer.Length, h)));

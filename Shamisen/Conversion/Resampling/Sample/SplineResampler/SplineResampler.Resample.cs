@@ -29,14 +29,14 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static int ResampleCachedDirectVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
-            int i = 0;
+            var i = 0;
             nint length = buffer.Length;
-            int isx = 0;
+            var isx = 0;
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             for (; i < vBuffer.Length; i++)
@@ -46,12 +46,12 @@ namespace Shamisen.Conversion.Resampling.Sample
                     (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W)>(ref vSrcBuffer[isx]);
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
                 isx += facc;
-                bool j = ++nrci < nram;
+                var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 var value1 = values.X * cutmullCoeffs.X;
                 nrci &= -z;
                 var value2 = values.Y * cutmullCoeffs.Y;
-                bool h = x >= ram;
+                var h = x >= ram;
                 int y = Unsafe.As<bool, byte>(ref h);
                 var value3 = values.Z * cutmullCoeffs.Z;
                 var value4 = values.W * cutmullCoeffs.W;
@@ -82,16 +82,16 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
             for (; i < length; i++)
             {
                 psx += acc;
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
-                bool h = psx >= nram;
+                var h = psx >= nram;
                 nint y = Unsafe.As<bool, byte>(ref h);
-                bool j = ++nrci < nram;
+                var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 nrci &= -z;
@@ -114,16 +114,16 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
             for (i = 0; i < length; i++)
             {
                 psx += acc;
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
-                bool h = psx >= nram;
+                var h = psx >= nram;
                 nint y = Unsafe.As<bool, byte>(ref h);
-                bool j = ++nrci < nram;
+                var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 nrci &= -z;
@@ -143,14 +143,14 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint length = buffer.Length;
             nint isx = 0;
             nint psx = x;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
             for (i = 0; i < length; i++)
             {
                 values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx++);
-                bool h = psx >= ram;
+                var h = psx >= ram;
                 int y = Unsafe.As<bool, byte>(ref h);
                 Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                 isx += y;
@@ -167,8 +167,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint length = buffer.Length;
             nint isx = 0;
             nint psx = x;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             var c0 = Unsafe.Add(ref coeffPtr, 0);
             var c1 = Unsafe.Add(ref coeffPtr, 1);
             Vector4 values, values2;
@@ -220,8 +220,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint length = buffer.Length;
             nint isx = 0;
             nint psx = x;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
             var c0 = coeffPtr;
             var c1 = Unsafe.Add(ref coeffPtr, 1);
@@ -300,8 +300,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint nram = ram;
             nint nrci = rci;
             nint nchannels = channels;
-            nint length = buffer.Length - nchannels + 1;
-            int rch = channels & 0x3;
+            var length = buffer.Length - nchannels + 1;
+            var rch = channels & 0x3;
             unsafe
             {
                 fixed (float* rsi = srcBuffer)
@@ -311,10 +311,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                     {
                         psx += acc;
                         var y0 = Unsafe.Add(ref coeffPtr, nrci);
-                        float* head = rsi + isx * nchannels;
-                        float* head2 = head + nchannels * 2;
+                        var head = rsi + isx * nchannels;
+                        var head2 = head + nchannels * 2;
                         nint nch = 0;
-                        nint cholen = nchannels - 3;
+                        var cholen = nchannels - 3;
                         for (; nch < cholen; nch += 4)
                         {
                             var vy0 = y0;
@@ -336,10 +336,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                             var values = new Vector4(*(head + nch), *(head + nchannels + nch), *(head2 + nch), *(head2 + nchannels + nch));
                             *(rdi + i + nch) = VectorUtils.FastDotProduct(values, y0);
                         }
-                        bool j = ++nrci < nram;
+                        var j = ++nrci < nram;
                         nint z = Unsafe.As<bool, byte>(ref j);
                         nrci &= -z;
-                        bool h = psx >= nram;
+                        var h = psx >= nram;
                         nint g = Unsafe.As<bool, byte>(ref h);
                         isx += g;
                         isx += facc;
@@ -364,18 +364,18 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint length = buffer.Length;
             nint isx = 0;
             nint psx = x;
-            nint spsx = psx;
+            var spsx = psx;
             nint nram = ram;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
             Vector4 x1 = default, x2 = default, x3 = default;
             Vector4 y0 = default, y1 = default, y2 = default;
-            for (int j = 0; j < 4; j++)
+            for (var j = 0; j < 4; j++)
             {
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 nint g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -391,7 +391,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             for (; i < length; i++)
             {
                 psx += acc;
-                bool h = psx >= nram;
+                var h = psx >= nram;
                 nint g = Unsafe.As<bool, byte>(ref h);
                 var values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 isx += g;
@@ -399,7 +399,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, y0);
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 nint g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -423,7 +423,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint i = 0;
             nint isx = 0;
             nint psx = x;
-            nint spsx = psx;
+            var spsx = psx;
             nint nram = ram;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
@@ -433,11 +433,11 @@ namespace Shamisen.Conversion.Resampling.Sample
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
             Vector4 x1 = default, x2 = default, x3 = default;
             Vector4 y0 = default, y1 = default, y2 = default;
-            for (int j = 0; j < 4; j++)
+            for (var j = 0; j < 4; j++)
             {
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 nint g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -453,7 +453,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             for (; i < length; i++)
             {
                 psx += acc;
-                bool h = psx >= nram;
+                var h = psx >= nram;
                 nint g = Unsafe.As<bool, byte>(ref h);
                 ref var values = ref Unsafe.As<Vector<float>, (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W)>(ref Unsafe.Add(ref src, isx));
                 isx += g;
@@ -470,7 +470,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 Unsafe.Add(ref dst, i) = value1 + value3 + (value2 + value4);
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 nint g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -516,21 +516,21 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             nint i = 0;
             nint isx = 0;
-            int psx = x;
-            int spsx = psx;
-            int nram = ram;
+            var psx = x;
+            var spsx = psx;
+            var nram = ram;
             nint nchannels = channels;
             nint length = buffer.Length - channels + 1;
-            ref float src = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float dst = ref MemoryMarshal.GetReference(buffer);
+            ref var src = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
             Vector4 x1 = default, x2 = default, x3 = default;
             Vector4 y0 = default, y1 = default, y2 = default;
-            for (int j = 0; j < 4; j++)
+            for (var j = 0; j < 4; j++)
             {
                 var nx3 = new Vector4(spsx * rmi);
                 spsx += acc;
-                bool h2 = spsx >= nram;
+                var h2 = spsx >= nram;
                 int g2 = Unsafe.As<bool, byte>(ref h2);
                 y0 = y1 * x1;
                 y0 += c3;
@@ -551,10 +551,10 @@ namespace Shamisen.Conversion.Resampling.Sample
                     for (; i < length; i += channels)
                     {
                         psx += acc;
-                        float* head = rsi + isx * nchannels;
-                        float* head2 = head + nchannels * 2;
+                        var head = rsi + isx * nchannels;
+                        var head2 = head + nchannels * 2;
                         nint nch = 0;
-                        nint cholen = nchannels - 3;
+                        var cholen = nchannels - 3;
                         for (; nch < cholen; nch += 4)
                         {
                             var vy0 = y0;
@@ -576,14 +576,14 @@ namespace Shamisen.Conversion.Resampling.Sample
                             var values = new Vector4(*(head + nch), *(head + nchannels + nch), *(head2 + nch), *(head2 + nchannels + nch));
                             *(rdi + i + nch) = VectorUtils.FastDotProduct(values, y0);
                         }
-                        bool h = psx >= nram;
+                        var h = psx >= nram;
                         int g = Unsafe.As<bool, byte>(ref h);
                         isx += g;
                         isx += facc;
                         psx -= -g & nram;
                         var nx3 = new Vector4(spsx * rmi);
                         spsx += acc;
-                        bool h2 = spsx >= nram;
+                        var h2 = spsx >= nram;
                         int g2 = Unsafe.As<bool, byte>(ref h2);
                         y0 = y1 * x1;
                         y0 += c3;

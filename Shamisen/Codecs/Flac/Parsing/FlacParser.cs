@@ -12,6 +12,7 @@ using Shamisen.Codecs.Flac.Metadata;
 using Shamisen.Codecs.Flac.Parsing;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
+using Shamisen.Formats;
 
 namespace Shamisen.Codecs.Flac
 {
@@ -20,7 +21,7 @@ namespace Shamisen.Codecs.Flac
     /// https://xiph.org/flac/format.html
     /// </summary>
     /// <seealso cref="IWaveSource" />
-    public sealed class FlacParser : IReadableAudioSource<int, Int32LinearPcmSampleFormat>
+    public sealed class FlacParser : IReadableAudioSource<int, Int32RangedLinearPcmSampleFormat>
     {
         private readonly FlacStreamInfoBlock streamInfoBlock;
         private Int32Divisor channelsDivisor;
@@ -74,7 +75,7 @@ namespace Shamisen.Codecs.Flac
         /// <value>
         /// The format.
         /// </value>
-        public Int32LinearPcmSampleFormat Format { get; }
+        public Int32RangedLinearPcmSampleFormat Format { get; }
 
         /// <summary>
         /// Gets the remaining length.
@@ -100,15 +101,15 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ulong TotalLength { get; }
 
-        ulong? IAudioSource<int, Int32LinearPcmSampleFormat>.Length => Length;
+        ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.Length => Length;
 
-        ulong? IAudioSource<int, Int32LinearPcmSampleFormat>.Position => Position;
+        ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.Position => Position;
 
-        ISeekSupport? IAudioSource<int, Int32LinearPcmSampleFormat>.SeekSupport { get; }
+        ISeekSupport? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.SeekSupport { get; }
 
-        ISkipSupport? IAudioSource<int, Int32LinearPcmSampleFormat>.SkipSupport { get; }
+        ISkipSupport? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.SkipSupport { get; }
 
-        ulong? IAudioSource<int, Int32LinearPcmSampleFormat>.TotalLength => TotalLength;
+        ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.TotalLength => TotalLength;
 
         private FlacBitReader BitReader { get; }
 
@@ -129,14 +130,14 @@ namespace Shamisen.Codecs.Flac
         public FlacParser(IReadableDataSource<byte> source, FlacParserOptions options = default)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            uint fLaC = source.ReadUInt32LittleEndian();
+            var fLaC = source.ReadUInt32LittleEndian();
             if (fLaC != BinaryExtensions.ConvertToBigEndian(0x664C_6143))
                 throw new ArgumentException("The FLAC Stream is invalid!", nameof(source));
             var streamInfoHeader = ReadMetadataHeader(source);
             if (streamInfoHeader.MetadataBlockType != FlacMetadataBlockType.StreamInfo)
                 throw new ArgumentException("The FLAC Stream is invalid!", nameof(source));
             var streamInfo = streamInfoBlock = FlacStreamInfoBlock.ToReadableValue(Read<FlacStreamInfoBlock>(source));
-            Format = new(streamInfo.Channels, (int)streamInfo.SampleRate);
+            Format = new(streamInfo.Channels, (int)streamInfo.SampleRate, streamInfo.BitDepth);
             channelsDivisor = new(Format.Channels);
             TotalLength = streamInfo.TotalSamples;
             var currentHeader = streamInfoHeader;
@@ -151,21 +152,21 @@ namespace Shamisen.Codecs.Flac
                     case FlacMetadataBlockType.Application when options.PreserveApplication:
                         {
                             var h = source.ReadStruct<VectorB4>();
-                            byte[]? u = new byte[currentHeader.Size - 4];
+                            var u = new byte[currentHeader.Size - 4];
                             source.ReadAll(u);
                             appl.Add(new FlacApplicationMetadata(h, u));
                         }
                         break;
                     case FlacMetadataBlockType.Picture when options.ParsePictures:
                         {
-                            byte[]? u = new byte[currentHeader.Size];
+                            var u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             pics.Add(FlacPicture.ReadFrom(u));
                         }
                         break;
                     case FlacMetadataBlockType.Padding when options.PreservePadding:
                         {
-                            byte[]? u = new byte[currentHeader.Size];
+                            var u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             unused.Add(new FlacUnusedMetadata(currentHeader.MetadataBlockType, u));
                         }
@@ -188,7 +189,7 @@ namespace Shamisen.Codecs.Flac
                     default:    //Reserved
                         if (options.PreserveUnusedMetadata && currentHeader.MetadataBlockType != FlacMetadataBlockType.Padding)
                         {
-                            byte[]? u = new byte[currentHeader.Size];
+                            var u = new byte[currentHeader.Size];
                             source.ReadAll(u);
                             unused.Add(new FlacUnusedMetadata(currentHeader.MetadataBlockType, u));
                         }

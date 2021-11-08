@@ -85,11 +85,11 @@ namespace Shamisen.Codecs.Flac.Parsing
         {
             var value = left;
             var w = MemoryUtils.CastSplit<byte, ulong>(right, out var rem);
-            for (int i = 0; i < w.Length; i++)
+            for (var i = 0; i < w.Length; i++)
             {
                 value *= w[i];
             }
-            for (int i = 0; i < rem.Length; i++)
+            for (var i = 0; i < rem.Length; i++)
             {
                 value *= rem[i];
             }
@@ -108,7 +108,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         public static FlacCrc16 operator *(FlacCrc16 left, ReadOnlySpan<ulong> right)
         {
             var value = left;
-            for (int i = 0; i < right.Length; i++)
+            for (var i = 0; i < right.Length; i++)
             {
                 value *= right[i];
             }
@@ -189,7 +189,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
             #endregion License notice
 
-            ushort t = left.state;
+            var t = left.state;
             t ^= (ushort)(value >> 48);
             t = (ushort)(
                 GetTable7At((byte)(t >> 8)) ^ GetTable6At((byte)t) ^

@@ -127,7 +127,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
         #region ProcessNormal
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormal(Span<float> buffer)
+        internal static void ProcessNormal(Span<float> buffer)
         {
 #if NETCOREAPP3_1_OR_GREATER
             if (buffer.Length >= 512 && IntrinsicsUtils.EnableExtremeLoopUnrolling && Avx2.IsSupported)

@@ -14,18 +14,18 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddMonauralStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
-            int isx = 0;
-            int psx = x;
+            var isx = 0;
+            var psx = x;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
             nint i = 0, length = buffer.Length;
-            ref float rsi = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             if (red < 0)
             {
-                nint olen = MathI.Min(length, rec);
+                var olen = MathI.Min(length, rec);
                 for (; i < olen; i++)
                 {
                     var values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsi, isx));
@@ -33,7 +33,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -45,7 +45,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             while (i < length)
             {
-                nint olen = MathI.Min(length, i - rec + rew);
+                var olen = MathI.Min(length, i - rec + rew);
                 for (; i < olen; i++)
                 {
                     var values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsi, isx));
@@ -53,7 +53,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -71,7 +71,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -87,12 +87,12 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
-            int isx = 0;
-            int psx = x;
+            var isx = 0;
+            var psx = x;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             nint i = 0, length = vBuffer.Length;
@@ -100,7 +100,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             ref var rdi = ref MemoryMarshal.GetReference(vBuffer);
             if (red < 0)
             {
-                nint olen = MathI.Min(length, rec);
+                var olen = MathI.Min(length, rec);
                 for (; i < olen; i++)
                 {
                     ref var values = ref Unsafe.As<Vector<float>,
@@ -113,7 +113,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -126,7 +126,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             while (i < length)
             {
-                nint olen = MathI.Min(length, i - rec + rew);
+                var olen = MathI.Min(length, i - rec + rew);
                 for (; i < olen; i++)
                 {
                     ref var values = ref Unsafe.As<Vector<float>, (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W)>
@@ -139,7 +139,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -162,7 +162,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -194,10 +194,10 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nchannels = channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
-            nint rewc = rew * nchannels;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
+            var rewc = rew * nchannels;
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
             {
@@ -206,15 +206,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                 {
                     if (red < 0)
                     {
-                        nint olen = MathI.Min(length, rec * nchannels);
+                        var olen = MathI.Min(length, rec * nchannels);
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -227,15 +227,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                     while (i < length)
                     {
-                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        var olen = MathI.Min(length, i - rec * nchannels + rewc);
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -249,11 +249,11 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -274,15 +274,15 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenMonauralStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
-            int isx = 0;
-            int psx = x;
+            var isx = 0;
+            var psx = x;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
             nint i = 0, length = buffer.Length;
-            ref float rsi = ref MemoryMarshal.GetReference(srcBuffer);
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rsi = ref MemoryMarshal.GetReference(srcBuffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             if (red < 0)
             {
                 for (; i < length && rec >= 0; i++)
@@ -292,7 +292,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -312,7 +312,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -329,7 +329,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -346,12 +346,12 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
-            int isx = 0;
-            int psx = x;
+            var isx = 0;
+            var psx = x;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             nint i = 0, length = vBuffer.Length;
@@ -371,7 +371,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -396,7 +396,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -418,7 +418,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
                     psx += acc;
                     isx += facc;
-                    bool h = psx >= ram;
+                    var h = psx >= ram;
                     int y = Unsafe.As<bool, byte>(ref h);
                     isx += y;
                     psx -= -y & ram;
@@ -450,10 +450,10 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint psx = x;
             nint nchannels = channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            int rec = rearrangedCoeffsIndex;
-            int red = rearrangedCoeffsDirection;
-            int rew = cspan.Length;
-            nint rewc = rew * nchannels;
+            var rec = rearrangedCoeffsIndex;
+            var red = rearrangedCoeffsDirection;
+            var rew = cspan.Length;
+            var rewc = rew * nchannels;
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
             {
@@ -462,15 +462,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                 {
                     if (red < 0)
                     {
-                        nint olen = MathI.Min(length, rec * nchannels + nchannels);
+                        var olen = MathI.Min(length, rec * nchannels + nchannels);
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -483,15 +483,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                     while (i < length)
                     {
-                        nint olen = MathI.Min(length, i - rec * nchannels + rewc);
+                        var olen = MathI.Min(length, i - rec * nchannels + rewc);
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = Unsafe.Add(ref coeffPtr, rec++);
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;
@@ -505,11 +505,11 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var cutmullCoeffs = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
-                            float* head = rsi + isx * nchannels;
+                            var head = rsi + isx * nchannels;
                             FastDotProductGeneric(nchannels, i, rdi, cutmullCoeffs, head);
                             psx += acc;
                             isx += facc;
-                            bool h = psx >= ram;
+                            var h = psx >= ram;
                             int y = Unsafe.As<bool, byte>(ref h);
                             isx += y;
                             psx -= -y & ram;

@@ -28,9 +28,9 @@ namespace Shamisen.Codecs.Flac.Metadata
             Vendor = Encoding.UTF8.GetString(RawVendor.ToArray());
 
 #endif
-            string[]? uc = new string[RawUserComments.Length];
+            var uc = new string[RawUserComments.Length];
             var span = RawUserComments.Span;
-            for (int i = 0; i < RawUserComments.Length; i++)
+            for (var i = 0; i < RawUserComments.Length; i++)
             {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                 uc[i] = Encoding.UTF8.GetString(span[i].Span);
@@ -84,24 +84,24 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
             }
-            uint vendorLength = BinaryPrimitives.ReadUInt32LittleEndian(buffer);
+            var vendorLength = BinaryPrimitives.ReadUInt32LittleEndian(buffer);
             if (vendorLength > buffer.Length - 8 || vendorLength > UInt24.MaxValue)
             {
                 throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
             }
-            byte[]? vendor = new byte[vendorLength];
+            var vendor = new byte[vendorLength];
             buffer.Slice(4, (int)vendorLength).CopyTo(vendor);
-            uint uclength = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4 + (int)vendorLength));
+            var uclength = BinaryPrimitives.ReadUInt32LittleEndian(buffer.Slice(4 + (int)vendorLength));
             var br = buffer.Slice(8 + (int)vendorLength);
             var userComments = new ReadOnlyMemory<byte>[uclength];
-            for (int i = 0; i < userComments.Length; i++)
+            for (var i = 0; i < userComments.Length; i++)
             {
                 if (br.Length < 4)
                 {
                     throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
                 }
-                int clen = (int)BinaryPrimitives.ReadUInt32LittleEndian(br);
-                byte[]? comment = new byte[clen];
+                var clen = (int)BinaryPrimitives.ReadUInt32LittleEndian(br);
+                var comment = new byte[clen];
                 br = br.Slice(4);
                 if (br.Length < clen)
                 {

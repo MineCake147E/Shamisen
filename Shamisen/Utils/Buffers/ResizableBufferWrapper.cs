@@ -51,7 +51,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                int newSizeInBytes = sizeof(T) * newSize;
+                var newSizeInBytes = sizeof(T) * newSize;
                 ResizeInternal(newSizeInBytes);
                 if (CurrentSizeInBytes < newSizeInBytes) throw new InvalidProgramException("Failed to allocate memory!");
             }

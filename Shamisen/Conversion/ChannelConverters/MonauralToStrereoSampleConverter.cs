@@ -97,7 +97,7 @@ namespace Shamisen.Conversion.ChannelConverters
         {
             if (Source is null) throw new ObjectDisposedException(nameof(MonauralToStrereoSampleConverter));
             buffer = buffer.SliceAlign(2);
-            int internalBufferLengthRequired = CheckBuffer(buffer.Length / 2);
+            var internalBufferLengthRequired = CheckBuffer(buffer.Length / 2);
             var srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
             var readBuffer = srcBuffer;
             var rr = Source.Read(readBuffer);
@@ -115,9 +115,9 @@ namespace Shamisen.Conversion.ChannelConverters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int CheckBuffer(int sampleLengthOut)
         {
-            int v = sampleLengthOut;
-            int samplesRequired = v;
-            int internalBufferLengthRequired = samplesRequired;
+            var v = sampleLengthOut;
+            var samplesRequired = v;
+            var internalBufferLengthRequired = samplesRequired;
             if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
             {
                 ExpandBuffer(internalBufferLengthRequired);

@@ -25,7 +25,7 @@ namespace Shamisen.Core.Tests.CoreFx
             span.QuickFill(Value);
             for (var i = 0; i < span.Length; i++)
             {
-                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+                if (span[i] != Value) Assert.Fail("The QuickFill doesn't fill correctly!");
             }
             Assert.Pass();
         }
@@ -38,7 +38,7 @@ namespace Shamisen.Core.Tests.CoreFx
             span.QuickFill(Value);
             for (var i = 0; i < span.Length; i++)
             {
-                if (span[i] != Value) Assert.Fail("The FastFill doesn't fill correctly!");
+                if (span[i] != Value) Assert.Fail("The QuickFill doesn't fill correctly!");
             }
             Assert.Pass();
         }

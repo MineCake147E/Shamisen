@@ -21,7 +21,7 @@ namespace Shamisen.Filters.BiQuad.Cascaded
         /// <exception cref="ArgumentNullException"></exception>
         public CascadedBiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter[] parameters)
         {
-            int channels = source.Format.Channels;
+            var channels = source.Format.Channels;
 
             Source = source;
         }

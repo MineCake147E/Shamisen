@@ -161,11 +161,11 @@ namespace Shamisen.Codecs.Waveform.Parsing
             if (dataSource is null) throw new ArgumentNullException(nameof(dataSource));
             Rf64ChunkReader mainReader;
             Rf64ChunkReader = mainReader = new Rf64ChunkReader(dataSource, this, out var setter);
-            var result = mainReader.TryReadUInt32LittleEndian(out uint read);
+            var result = mainReader.TryReadUInt32LittleEndian(out var read);
             result.ThrowWhenInsufficient(1, $"initializing {nameof(SimpleWaveParser)}");
             if ((RiffSubChunkId)read != RiffSubChunkId.Wave)
             {
-                char[] chars = ConvertChunkNameToChars(read);
+                var chars = ConvertChunkNameToChars(read);
                 throw new NotSupportedException($"The \"{chars}\" file is not supported!");
             }
             metadataList = new List<object>();
@@ -295,9 +295,9 @@ namespace Shamisen.Codecs.Waveform.Parsing
 
         private static char[] ConvertChunkNameToChars(uint read)
         {
-            byte[]? buffer = new byte[sizeof(int)];
+            var buffer = new byte[sizeof(int)];
             BinaryPrimitives.WriteUInt32LittleEndian(buffer.AsSpan(), read);
-            char[]? chars = Encoding.UTF8.GetChars(buffer);
+            var chars = Encoding.UTF8.GetChars(buffer);
             return chars;
         }
 

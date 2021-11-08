@@ -104,10 +104,10 @@ namespace Shamisen.Codecs.Waveform.Composing
             if (source.TotalLength is { } tlen)
             {
                 //TODO: metadata support
-                ulong dsize = tlen * (ulong)source.Format.BlockSize;
+                var dsize = tlen * (ulong)source.Format.BlockSize;
                 var fmt = GenerateFormatChunk(source.Format);
-                ulong riffSize = ChunkHeaderSize * 2 + fmt.ActualSize + sizeof(RiffSubChunkId) + dsize;
-                uint dataSize = dsize > uint.MaxValue ? uint.MaxValue : (uint)dsize;
+                var riffSize = ChunkHeaderSize * 2 + fmt.ActualSize + sizeof(RiffSubChunkId) + dsize;
+                var dataSize = dsize > uint.MaxValue ? uint.MaxValue : (uint)dsize;
                 MutableRf64Chunk riff;
                 if (riffSize <= uint.MaxValue && options.PreferRiff)
                 {
@@ -146,7 +146,7 @@ namespace Shamisen.Codecs.Waveform.Composing
             if (sink.SeekSupport is { } seek)
             {
                 var fmt = GenerateFormatChunk(source.Format);
-                byte[]? headerBuffer = new byte[sizeof(uint) * 3];
+                var headerBuffer = new byte[sizeof(uint) * 3];
                 var hSpan = headerBuffer.AsSpan();
                 hSpan.FastFill(0);
                 ref var rf64head = ref Unsafe.As<byte, RiffChunkHeader>(ref MemoryMarshal.GetReference(hSpan));
@@ -160,9 +160,9 @@ namespace Shamisen.Codecs.Waveform.Composing
                 GenerateFactChunk(uint.MaxValue).WriteTo(sink);
                 sink.WriteInt32LittleEndian((int)ChunkId.Data);
                 sink.WriteInt32LittleEndian(-1);
-                ulong dsize = WriteData(source, sink, 0, ChunkHeaderSize + fmt.ActualSize + (ulong)hSpan.Length);
-                ulong riffSize = ChunkHeaderSize + fmt.ActualSize + dsize + (ulong)hSpan.Length;
-                ulong sampleCount = dsize / (uint)source.Format.BlockSize;
+                var dsize = WriteData(source, sink, 0, ChunkHeaderSize + fmt.ActualSize + (ulong)hSpan.Length);
+                var riffSize = ChunkHeaderSize + fmt.ActualSize + dsize + (ulong)hSpan.Length;
+                var sampleCount = dsize / (uint)source.Format.BlockSize;
                 var ds64 = new Rf64DataSizeChunkHeader(riffSize, dsize, sampleCount, 0);
                 seek.SeekTo(sizeof(uint) * 3);
                 ds64.WriteTo(sink);
@@ -173,7 +173,7 @@ namespace Shamisen.Codecs.Waveform.Composing
         {
             if (source.TotalLength is { } tlen)
             {
-                byte[]? buffer = new byte[(int)tlen * source.Format.BlockSize];
+                var buffer = new byte[(int)tlen * source.Format.BlockSize];
                 var rem = buffer.AsSpan();
                 while (!rem.IsEmpty)
                 {
@@ -203,10 +203,10 @@ namespace Shamisen.Codecs.Waveform.Composing
 
         private static ulong WriteData(IReadableAudioSource<byte, IWaveFormat> source, IDataSink<byte> sink, ulong tlen, ulong headerSize)
         {
-            byte[] buffer = new byte[MaxBufferSize - MaxBufferSize % source.Format.BlockSize];
+            var buffer = new byte[MaxBufferSize - MaxBufferSize % source.Format.BlockSize];
             var span = buffer.AsSpan();
             ulong written = 0;
-            ulong availableSize = sink.RemainingSpace ?? ulong.MaxValue - headerSize;
+            var availableSize = sink.RemainingSpace ?? ulong.MaxValue - headerSize;
             while (true)
             {
                 var rr = source.Read(span);
@@ -218,7 +218,7 @@ namespace Shamisen.Codecs.Waveform.Composing
                 sink.Write(span.SliceWhileIfLongerThan(rr.Length));
                 written += (ulong)rr.Length;
             }
-            ulong length = tlen * (ulong)source.Format.BlockSize;
+            var length = tlen * (ulong)source.Format.BlockSize;
             if (written < length)
             {
                 span.FastFill();

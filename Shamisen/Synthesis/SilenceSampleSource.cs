@@ -46,7 +46,7 @@ namespace Shamisen.Synthesis
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
-            float offset = Offset;
+            var offset = Offset;
             buffer.FastFill(offset);
             return buffer.Length;
         }

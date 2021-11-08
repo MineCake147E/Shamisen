@@ -65,7 +65,7 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateLPFParameter(double samplingFrequency, double cutOffFrequency, double quality)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out var cosW0, out var sinW0);
             return CreateLPFCoefficients(cosW0, CalculateAlphaFromQuality(quality, sinW0));
         }
 
@@ -78,7 +78,7 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateHPFParameter(double samplingFrequency, double cutOffFrequency, double quality)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out var cosW0, out var sinW0);
             return CreateHPFCoefficients(cosW0, CalculateAlphaFromQuality(quality, sinW0));
         }
 
@@ -91,7 +91,7 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateAPFParameter(double samplingFrequency, double cutOffFrequency, double quality)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out var cosW0, out var sinW0);
             return CreateAPFCoefficients(cosW0, CalculateAlphaFromQuality(quality, sinW0));
         }
 
@@ -106,8 +106,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentException">The kind of gain is invalid! - gainKind</exception>
         public static BiQuadParameter CreateBPFParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, BpfGainKind gainKind)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromQuality(quality, sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateBPFCoefficients(gainKind, cosW0, sinW0, alpha);
         }
 
@@ -122,8 +122,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentException">The kind of gain is invalid! - gainKind</exception>
         public static BiQuadParameter CreateBPFParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth, BpfGainKind gainKind)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out var w0, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreateBPFCoefficients(gainKind, cosW0, sinW0, alpha);
         }
 
@@ -136,8 +136,8 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateNotchFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromQuality(quality, sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateNotchFilterCoefficients(cosW0, alpha);
         }
 
@@ -150,8 +150,8 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateNotchFilterParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth)
         {
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out var w0, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreateNotchFilterCoefficients(cosW0, alpha);
         }
 
@@ -165,9 +165,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreatePeakingEqualizerParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromQuality(quality, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreatePeakingEqualizerCoefficients(cosW0, alpha, A);
         }
 
@@ -181,9 +181,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreatePeakingEqualizerParameterFromBandWidth(double samplingFrequency, double centerFrequency, double bandWidth, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out double w0, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out var w0, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromBandWidth(bandWidth, w0, sinW0);
             return CreatePeakingEqualizerCoefficients(cosW0, alpha, A);
         }
 
@@ -197,9 +197,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateLowShelfFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromQuality(quality, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateLowShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -213,9 +213,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateLowShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromSlope(slope, A, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromSlope(slope, A, sinW0);
             return CreateLowShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -229,9 +229,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateHighShelfFilterParameterFromQuality(double samplingFrequency, double centerFrequency, double quality, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromQuality(quality, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, centerFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromQuality(quality, sinW0);
             return CreateHighShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -245,9 +245,9 @@ namespace Shamisen.Filters
         /// <returns></returns>
         public static BiQuadParameter CreateHighShelfFilterParameterFromSlope(double samplingFrequency, double cutOffFrequency, double slope, double dBGain)
         {
-            double A = CalculateA(dBGain);
-            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out double cosW0, out double sinW0);
-            double alpha = CalculateAlphaFromSlope(slope, A, sinW0);
+            var A = CalculateA(dBGain);
+            CalculateOmega0RelatedValues(samplingFrequency, cutOffFrequency, out _, out var cosW0, out var sinW0);
+            var alpha = CalculateAlphaFromSlope(slope, A, sinW0);
             return CreateHighShelfCoefficients(cosW0, A, alpha);
         }
 
@@ -301,42 +301,42 @@ namespace Shamisen.Filters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateLPFCoefficients(double cosW0, double alpha)
         {
-            float b1 = (float)(1 - cosW0);
-            float b0b2 = 0.5f * b1;
-            float a0 = (float)(1 + alpha);
-            float a1 = -2f * (float)cosW0;
-            float a2 = (float)(1 - alpha);
+            var b1 = (float)(1 - cosW0);
+            var b0b2 = 0.5f * b1;
+            var a0 = (float)(1 + alpha);
+            var a1 = -2f * (float)cosW0;
+            var a2 = (float)(1 - alpha);
             return new BiQuadParameter(b0b2, b1, b0b2, a0, a1, a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateHPFCoefficients(double cosW0, double alpha)
         {
-            float b1 = -(float)(1 + cosW0);
-            float b0b2 = -0.5f * b1;
-            float a0 = (float)(1 + alpha);
-            float a1 = -2f * (float)cosW0;
-            float a2 = (float)(1 - alpha);
+            var b1 = -(float)(1 + cosW0);
+            var b0b2 = -0.5f * b1;
+            var a0 = (float)(1 + alpha);
+            var a1 = -2f * (float)cosW0;
+            var a2 = (float)(1 - alpha);
             return new BiQuadParameter(b0b2, b1, b0b2, a0, a1, a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateConstSkirtBPFCoefficients(double alpha, double sinW0, double cosW0)
         {
-            float b0b2 = 0.5f * (float)sinW0;
-            float a0 = (float)(1 + alpha);
-            float a1 = -2f * (float)cosW0;
-            float a2 = (float)(1 - alpha);
+            var b0b2 = 0.5f * (float)sinW0;
+            var a0 = (float)(1 + alpha);
+            var a1 = -2f * (float)cosW0;
+            var a2 = (float)(1 - alpha);
             return new BiQuadParameter(b0b2, 0, -b0b2, a0, a1, a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateZeroDBPeakGainBPFCoefficients(double alpha, double cosW0)
         {
-            float a0 = (float)(1 + alpha);
-            float a1 = -2f * (float)cosW0;
-            float a2 = (float)(1 - alpha);
-            float alphaF = (float)alpha;
+            var a0 = (float)(1 + alpha);
+            var a1 = -2f * (float)cosW0;
+            var a2 = (float)(1 - alpha);
+            var alphaF = (float)alpha;
             return new BiQuadParameter(alphaF, 0, -alphaF, a0, a1, a2);
         }
 
@@ -357,60 +357,60 @@ namespace Shamisen.Filters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateNotchFilterCoefficients(double cosW0, double alpha)
         {
-            float a0 = (float)(1 + alpha);
-            float b1a1 = -2f * (float)cosW0;
-            float a2 = (float)(1 - alpha);
+            var a0 = (float)(1 + alpha);
+            var b1a1 = -2f * (float)cosW0;
+            var a2 = (float)(1 - alpha);
             return new BiQuadParameter(1, b1a1, 1, a0, b1a1, a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateAPFCoefficients(double cosW0, double alpha)
         {
-            float b2a0 = (float)(1 + alpha);
-            float b1a1 = -2f * (float)cosW0;
-            float b0a2 = (float)(1 - alpha);
+            var b2a0 = (float)(1 + alpha);
+            var b1a1 = -2f * (float)cosW0;
+            var b0a2 = (float)(1 - alpha);
             return new BiQuadParameter(b0a2, b1a1, b2a0, b2a0, b1a1, b0a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreatePeakingEqualizerCoefficients(double cosW0, double alpha, double a)
         {
-            double alphamA = alpha * a;
-            double alphadA = alpha / a;
-            float b1a1 = -2f * (float)cosW0;
+            var alphamA = alpha * a;
+            var alphadA = alpha / a;
+            var b1a1 = -2f * (float)cosW0;
             return new BiQuadParameter((float)(1 + alphamA), b1a1, (float)(1 - alphamA), (float)(1 + alphadA), b1a1, (float)(1 - alphadA));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateLowShelfCoefficients(double cosW0, double a, double alpha)
         {
-            double TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
-            double Ap1 = a + 1;
-            double As1 = a - 1;
-            double As1CosW0 = As1 * cosW0;
-            float b0 = (float)(a * (Ap1 - As1CosW0 + TwomSqrtAmAlpha));
-            float b1 = (float)(2 * a * (As1 - Ap1 * cosW0));
-            float b2 = (float)(a * (Ap1 - As1CosW0 - TwomSqrtAmAlpha));
-            float a0 = (float)(Ap1 + As1CosW0 + TwomSqrtAmAlpha);
-            float a1 = (float)(-2 * (As1 + Ap1 * cosW0));
-            float a2 = (float)(Ap1 + As1CosW0 - TwomSqrtAmAlpha);
+            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            var Ap1 = a + 1;
+            var As1 = a - 1;
+            var As1CosW0 = As1 * cosW0;
+            var b0 = (float)(a * (Ap1 - As1CosW0 + TwomSqrtAmAlpha));
+            var b1 = (float)(2 * a * (As1 - Ap1 * cosW0));
+            var b2 = (float)(a * (Ap1 - As1CosW0 - TwomSqrtAmAlpha));
+            var a0 = (float)(Ap1 + As1CosW0 + TwomSqrtAmAlpha);
+            var a1 = (float)(-2 * (As1 + Ap1 * cosW0));
+            var a2 = (float)(Ap1 + As1CosW0 - TwomSqrtAmAlpha);
             return new BiQuadParameter(b0, b1, b2, a0, a1, a2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiQuadParameter CreateHighShelfCoefficients(double cosW0, double a, double alpha)
         {
-            double TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
-            double Ap1 = a + 1;
-            double As1 = a - 1;
-            double As1CosW0 = As1 * cosW0;
-            double Ap1CosW0 = Ap1 * cosW0;
-            float b0 = (float)(a * (Ap1 + As1CosW0 + TwomSqrtAmAlpha));
-            float b1 = (float)(-2 * a * (As1 + Ap1CosW0));
-            float b2 = (float)(a * (Ap1 + As1CosW0 - TwomSqrtAmAlpha));
-            float a0 = (float)(Ap1 - As1CosW0 + TwomSqrtAmAlpha);
-            float a1 = (float)(2 * (As1 - Ap1CosW0));
-            float a2 = (float)(Ap1 - As1CosW0 - TwomSqrtAmAlpha);
+            var TwomSqrtAmAlpha = 2 * Math.Sqrt(a) * alpha;
+            var Ap1 = a + 1;
+            var As1 = a - 1;
+            var As1CosW0 = As1 * cosW0;
+            var Ap1CosW0 = Ap1 * cosW0;
+            var b0 = (float)(a * (Ap1 + As1CosW0 + TwomSqrtAmAlpha));
+            var b1 = (float)(-2 * a * (As1 + Ap1CosW0));
+            var b2 = (float)(a * (Ap1 + As1CosW0 - TwomSqrtAmAlpha));
+            var a0 = (float)(Ap1 - As1CosW0 + TwomSqrtAmAlpha);
+            var a1 = (float)(2 * (As1 - Ap1CosW0));
+            var a2 = (float)(Ap1 - As1CosW0 - TwomSqrtAmAlpha);
             return new BiQuadParameter(b0, b1, b2, a0, a1, a2);
         }
 

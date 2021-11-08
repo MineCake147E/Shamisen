@@ -84,7 +84,7 @@ namespace Shamisen.Data
             buffersFilled = new();
             buffersEmpty = new();
             buffersNeededToBeResized = new ConcurrentQueue<(BufferInstance<TSample> buffer, int newSize)>();
-            for (int i = 0; i < internalBufferNumber; i++)
+            for (var i = 0; i < internalBufferNumber; i++)
             {
                 var b = new BufferInstance<TSample>(initialBlockSize);
                 var rr = ReadFromSource(b.ActualBuffer.Span);
@@ -121,8 +121,8 @@ namespace Shamisen.Data
         /// </returns>
         public ReadResult Read(Span<TSample> destination)
         {
-            int written = 0;
-            bool doDirectRead = false;
+            var written = 0;
+            var doDirectRead = false;
             try
             {
                 bufferSize = Math.Max(destination.Length, bufferSize);
@@ -276,7 +276,7 @@ namespace Shamisen.Data
                     await readSemaphore.WaitAsync(token);
                     var rr = ReadFromSource(internalBuffer.ActualBuffer.Span);
 
-                    int readLength = rr.Length;
+                    var readLength = rr.Length;
                     if (rr.IsEndOfStream) //End of stream
                     {
                         internalBuffer.Filled = Memory<TSample>.Empty;

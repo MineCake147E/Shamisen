@@ -84,7 +84,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         public static FlacCrc8 operator *(FlacCrc8 left, Span<byte> right)
         {
             var value = left;
-            for (int i = 0; i < right.Length; i++)
+            for (var i = 0; i < right.Length; i++)
             {
                 value *= right[i];
             }

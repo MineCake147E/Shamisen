@@ -146,7 +146,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
                 ? new StackOnlyActionContainer<ulong>((size) =>
                 {
                     TotalSize = size;
-                    ulong read = RemainingBytes - uint.MaxValue;
+                    var read = RemainingBytes - uint.MaxValue;
                     RemainingBytes = read + TotalSize;
                 })
                 : new StackOnlyActionContainer<ulong>((size) => { });
@@ -240,7 +240,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
             }
             else
             {
-                int rBytes = (int)RemainingBytes;
+                var rBytes = (int)RemainingBytes;
                 if (destination.Length > rBytes)
                 {
                     destination = destination.Slice(0, rBytes);
@@ -276,7 +276,7 @@ namespace Shamisen.Codecs.Waveform.Rf64
             }
             else
             {
-                int rBytes = (int)RemainingBytes;
+                var rBytes = (int)RemainingBytes;
                 if (destination.Length > rBytes)
                 {
                     destination = destination.Slice(0, rBytes);

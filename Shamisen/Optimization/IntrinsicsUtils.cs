@@ -31,7 +31,8 @@ namespace Shamisen.Optimization
             {
                 if (!Avx2.IsSupported)  //Sandy Bridge or Ivy Bridge
                 {
-                    avoidAvxFloatingPoint = true;
+                    avoidAvxFloatingPoint = false;
+                    preferShiftVariable = false;
                 }
                 else //after Haswell
                 {
@@ -45,19 +46,36 @@ namespace Shamisen.Optimization
                         {
                             //AMD Zen3
                             enableExtremeLoopUnrolling = true;
+                            preferShiftVariable = true;
+                        }
+                        else
+                        {
+                            preferShiftVariable = false;
                         }
                     }
                     else
                     {
-                        avoidAvxFloatingPoint = (Eax & 0x000f_00f0) switch
+                        var model = Eax & 0x000f_00f0;
+                        avoidAvxFloatingPoint = model switch
                         {
                             0x60040 or 0x50040 or 0xc0030 or 0xf0030 => true,   //Haswell
                             _ => false, //Broadwell or later
                         };
+                        preferShiftVariable = Avx2.IsSupported & !avoidAvxFloatingPoint;
+#if NET6_0_OR_GREATER
+                        preferShiftVariable &= AvxVnni.IsSupported | model switch
+#else
+                        preferShiftVariable &= model switch
+#endif
+                        {
+                            0x70040 or 0xd0030 or 0xf0040 or 0x60050 => true,   //Broadwell
+                            _ => true, //Skylake or later
+                        };
                     }
 #else
-                    //There is no way to determine the CPU is post-haswell, so
-                    avoidAvxFloatingPoint = true;
+                        //There is no way to determine the CPU is post-haswell, so
+                        avoidAvxFloatingPoint = false;
+                    preferShiftVariable = true;
 #endif
                 }
             }
@@ -166,6 +184,8 @@ namespace Shamisen.Optimization
 
         private static bool avoidAvxFloatingPoint = false;
         private static bool enableExtremeLoopUnrolling = false;
+        private static bool preferShiftVariable = false;
+
         /// <summary>
         /// Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
         /// </summary>
@@ -174,6 +194,11 @@ namespace Shamisen.Optimization
         /// Gets the value which indicates whether the Shamisen should enable extreme loop unrolling for Zen3-like microarchitecture.
         /// </summary>
         public static bool EnableExtremeLoopUnrolling => enableExtremeLoopUnrolling;
+
+        /// <summary>
+        /// Gets the value which indicates whether the Shamisen should prefer vpsllvd over vpslld even if the shift amount is same for all values.
+        /// </summary>
+        public static bool PreferShiftVariable => preferShiftVariable;
 
         /// <summary>
         /// Determines whether the specified value has features specified by mask.

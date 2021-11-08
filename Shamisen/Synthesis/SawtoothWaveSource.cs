@@ -96,7 +96,7 @@ namespace Shamisen.Synthesis
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var omega = AngularVelocity;
             var theta = Theta;
@@ -113,7 +113,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static float GenerateMonauralSample(Fixed64 theta)
         {
-            int y = (int)(theta.Value >> 32) & int.MinValue;
+            var y = (int)(theta.Value >> 32) & int.MinValue;
             y |= 0x3f80_0000;
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
             return BitConverter.Int32BitsToSingle(y);
@@ -124,7 +124,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
         {
-            ulong r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out ulong q);
+            var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
             return r > 0 ? q + 1 : q;
         }
 
@@ -156,8 +156,8 @@ namespace Shamisen.Synthesis
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             //TODO: AdvSimd and Sse42 variant
-            long t = theta.Value;
-            long o = omega.Value;
+            var t = theta.Value;
+            var o = omega.Value;
             var ymm12 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm12.GetLower());
@@ -168,9 +168,9 @@ namespace Shamisen.Synthesis
             ymm0 = Avx2.Add(ymm0, ymm15.AsInt64());
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
             var ymm14 = Vector256.Create((float)(-1.0 / int.MinValue));
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 31;
+            var olen = length - 31;
             for (; i < olen; i += 32)
             {
                 var ymm2 = Avx2.Add(ymm0, ymm12);
@@ -239,7 +239,7 @@ namespace Shamisen.Synthesis
             }
             for (; i < length; i++)
             {
-                int y = (int)(t >> 32);
+                var y = (int)(t >> 32);
                 t += o;
                 y &= int.MinValue;
                 y |= 0x3f80_0000;
@@ -253,15 +253,15 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            long t = theta.Value;
-            long o = omega.Value;
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            var t = theta.Value;
+            var o = omega.Value;
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 7;
+            var olen = length - 7;
             const float Multiplier = -1.0f / int.MinValue;
             for (; i < olen; i += 8)
             {
-                int y = (int)(t >> 32);
+                var y = (int)(t >> 32);
                 t += o;
                 Unsafe.Add(ref rdi, i + 0) = y * Multiplier;
                 y = (int)(t >> 32);
@@ -288,7 +288,7 @@ namespace Shamisen.Synthesis
             }
             for (; i < length; i++)
             {
-                int y = (int)(t >> 32);
+                var y = (int)(t >> 32);
                 t += o;
                 Unsafe.Add(ref rdi, i) = y * Multiplier;
             }

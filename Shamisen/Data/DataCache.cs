@@ -93,15 +93,15 @@ namespace Shamisen.Data
         private (int buffer, int local) FindBufferIndex(ulong position)
         {
             //if (buffers.Count < 2) return (0, (int)position);
-            int imax = buffers.Count;
-            int imin = 0;
+            var imax = buffers.Count;
+            var imin = 0;
             //Binary search
             do
             {
-                int checking = imin + (imax - imin) / 2;
+                var checking = imin + (imax - imin) / 2;
                 if (checking >= buffers.Count) break;
                 var buf = buffers[checking];
-                int cmp = buf.CompareRegion(position);
+                var cmp = buf.CompareRegion(position);
                 if (cmp == 0)
                 {
                     return (checking, (int)(position - buf.InitialIndex));
@@ -142,8 +142,8 @@ namespace Shamisen.Data
         public ReadResult Read(Span<TSample> buffer)
         {
             this.ThrowIfDisposed(disposedValue);
-            int wlen = 0;
-            ulong position = ReadPosition;
+            var wlen = 0;
+            var position = ReadPosition;
             var p = FindBufferIndex(position);
             var destRem = buffer;
             while (!destRem.IsEmpty && destRem.Length > 0 && p.buffer >= 0)
@@ -201,14 +201,14 @@ namespace Shamisen.Data
         public void Write(ReadOnlySpan<TSample> buffer)
         {
             this.ThrowIfDisposed(disposedValue);
-            ulong position = BytesWritten;
+            var position = BytesWritten;
             var p = FindBufferIndex(position);
             var srcBuffer = buffer;
             while (!srcBuffer.IsEmpty && srcBuffer.Length > 0)
             {
                 if (p.buffer < 0)   //Buffer exceeded
                 {
-                    uint size = allocUnitDivisor.FloorRem((uint)srcBuffer.Length, out uint g) + (g > 0 ? allocUnitDivisor.Divisor : 0);
+                    var size = allocUnitDivisor.FloorRem((uint)srcBuffer.Length, out var g) + (g > 0 ? allocUnitDivisor.Divisor : 0);
                     var buf = new BufferInstance(
                         new TSample[size]
                         , buffers.Last().NextIndex);
@@ -217,7 +217,7 @@ namespace Shamisen.Data
                     continue;
                 }
                 var dest = buffers[p.buffer];
-                int h = dest.Write(srcBuffer);
+                var h = dest.Write(srcBuffer);
                 srcBuffer = srcBuffer.Slice(h);
                 position += (ulong)h;
                 p = FindBufferIndex(position);
@@ -254,7 +254,7 @@ namespace Shamisen.Data
         /// <param name="origin">The origin.</param>
         public void Seek(long offset, SeekOrigin origin)
         {
-            ulong rpos = ReadPosition;
+            var rpos = ReadPosition;
             switch (origin)
             {
                 case SeekOrigin.Begin:

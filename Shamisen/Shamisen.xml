@@ -8841,6 +8841,14 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            This one can be slightly faster than simple approach.
+            </summary>
+            <param name="dest"></param>
+            <param name="wrote"></param>
+        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -9113,6 +9121,90 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter">
+            <summary>
+            Converts 32-bit Ranged Linear PCM to IEEE 754 Single Precision Floating-Point Sample.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Int32,Shamisen.Formats.Int32RangedLinearPcmSampleFormat})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter"/> class.
+            </summary>
+            <param name="source"></param>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Source">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE16Avx2(System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE16Sse2(System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE8Avx2(System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE8Sse2(System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Avx2(System.Span{System.Single},System.Int32)">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+            <param name="effectiveBitDepth"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Avx2PSV(System.Span{System.Single},System.Int32)">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.<br/>
+            Optimized for environments where <see cref="P:Shamisen.Optimization.IntrinsicsUtils.PreferShiftVariable"/> is <c>true</c>.
+            </summary>
+            <param name="buffer"></param>
+            <param name="effectiveBitDepth"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Sse2(System.Span{System.Single},System.Int32)">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            </summary>
+            <param name="buffer"></param>
+            <param name="effectiveBitDepth"></param>
         </member>
         <member name="T:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase">
             <summary>
@@ -13091,6 +13183,116 @@
             The extra data.
             </value>
         </member>
+        <member name="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat">
+            <summary>
+            Represents a format of a 32-bit Ranged Linear PCM sample source.<br/>
+            The samples is not scaled appropriately to the maximum values of 32-bit signed integer if <see cref="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.EffectiveBitDepth"/> is not 32.<br/>
+            Instead, samples are aligned to the least significant bits.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="effectiveBitDepth">The effective bits stored in every samples.</param>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.SampleRate">
+            <summary>
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.EffectiveBitDepth">
+            <summary>
+            Gets the number indicates how many bits are actually stored per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Channels"/>.
+            </summary>
+            <value>
+            The effective bit depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int32"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Int32"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Int32"/>s.
+            </value>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Equals(Shamisen.Formats.Int32RangedLinearPcmSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.Equals(Shamisen.IAudioFormat{System.Int32})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.op_Equality(Shamisen.Formats.Int32RangedLinearPcmSampleFormat,Shamisen.Formats.Int32RangedLinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of left is the same as the value of right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Formats.Int32RangedLinearPcmSampleFormat.op_Inequality(Shamisen.Formats.Int32RangedLinearPcmSampleFormat,Shamisen.Formats.Int32RangedLinearPcmSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="T:Shamisen.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.<br/>
@@ -15231,6 +15433,11 @@
         <member name="P:Shamisen.Optimization.IntrinsicsUtils.EnableExtremeLoopUnrolling">
             <summary>
             Gets the value which indicates whether the Shamisen should enable extreme loop unrolling for Zen3-like microarchitecture.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.PreferShiftVariable">
+            <summary>
+            Gets the value which indicates whether the Shamisen should prefer vpsllvd over vpslld even if the shift amount is same for all values.
             </summary>
         </member>
         <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86IntrinsicsMask)">

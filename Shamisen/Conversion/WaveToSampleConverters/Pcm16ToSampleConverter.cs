@@ -265,6 +265,87 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
+        /// <summary>
+        /// Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+        /// This one can be slightly faster than simple approach.
+        /// </summary>
+        /// <param name="dest"></param>
+        /// <param name="wrote"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessNormalAvx2A(Span<float> dest, Span<short> wrote)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(dest);
+            ref var rsi = ref MemoryMarshal.GetReference(wrote);
+            nint i = 0, length = MathI.Min(dest.Length, wrote.Length);
+            var ymm0 = Vector256.Create(0x4040_0000);
+            var ymm1 = Vector256.Create(-3.0f);
+            var olen = length - 63;
+            for (; i < olen; i += 64)
+            {
+                var ymm2 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 0 * 8)));
+                var ymm3 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 1 * 8)));
+                var ymm4 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 2 * 8)));
+                var ymm5 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 3 * 8)));
+                ymm2 = Avx2.ShiftLeftLogical(ymm2, 7);
+                ymm3 = Avx2.ShiftLeftLogical(ymm3, 7);
+                ymm4 = Avx2.ShiftLeftLogical(ymm4, 7);
+                ymm5 = Avx2.ShiftLeftLogical(ymm5, 7);
+                ymm2 = Avx2.Xor(ymm2, ymm0);
+                ymm3 = Avx2.Xor(ymm3, ymm0);
+                ymm4 = Avx2.Xor(ymm4, ymm0);
+                ymm5 = Avx2.Xor(ymm5, ymm0);
+                ymm2 = Avx.Add(ymm2.AsSingle(), ymm1).AsInt32();
+                ymm3 = Avx.Add(ymm3.AsSingle(), ymm1).AsInt32();
+                ymm4 = Avx.Add(ymm4.AsSingle(), ymm1).AsInt32();
+                ymm5 = Avx.Add(ymm5.AsSingle(), ymm1).AsInt32();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0 * 8)) = ymm2.AsSingle();
+                ymm2 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 4 * 8)));
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 1 * 8)) = ymm3.AsSingle();
+                ymm3 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 5 * 8)));
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 2 * 8)) = ymm4.AsSingle();
+                ymm4 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 6 * 8)));
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 3 * 8)) = ymm5.AsSingle();
+                ymm5 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 7 * 8)));
+                ymm2 = Avx2.ShiftLeftLogical(ymm2, 7);
+                ymm3 = Avx2.ShiftLeftLogical(ymm3, 7);
+                ymm4 = Avx2.ShiftLeftLogical(ymm4, 7);
+                ymm5 = Avx2.ShiftLeftLogical(ymm5, 7);
+                ymm2 = Avx2.Xor(ymm2, ymm0);
+                ymm3 = Avx2.Xor(ymm3, ymm0);
+                ymm4 = Avx2.Xor(ymm4, ymm0);
+                ymm5 = Avx2.Xor(ymm5, ymm0);
+                ymm2 = Avx.Add(ymm2.AsSingle(), ymm1).AsInt32();
+                ymm3 = Avx.Add(ymm3.AsSingle(), ymm1).AsInt32();
+                ymm4 = Avx.Add(ymm4.AsSingle(), ymm1).AsInt32();
+                ymm5 = Avx.Add(ymm5.AsSingle(), ymm1).AsInt32();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 4 * 8)) = ymm2.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 5 * 8)) = ymm3.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 6 * 8)) = ymm4.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 7 * 8)) = ymm5.AsSingle();
+            }
+            olen = length - 15;
+            for (; i < olen; i += 16)
+            {
+                var ymm2 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 0 * 8)));
+                var ymm3 = Avx2.ConvertToVector256Int32(Unsafe.As<short, Vector128<ushort>>(ref Unsafe.Add(ref rsi, i + 1 * 8)));
+                ymm2 = Avx2.ShiftLeftLogical(ymm2, 7);
+                ymm3 = Avx2.ShiftLeftLogical(ymm3, 7);
+                ymm2 = Avx2.Xor(ymm2, ymm0);
+                ymm3 = Avx2.Xor(ymm3, ymm0);
+                ymm2 = Avx.Add(ymm2.AsSingle(), ymm1).AsInt32();
+                ymm3 = Avx.Add(ymm3.AsSingle(), ymm1).AsInt32();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0 * 8)) = ymm2.AsSingle();
+                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 1 * 8)) = ymm3.AsSingle();
+            }
+            for (; i < length; i++)
+            {
+                var v = (ushort)Unsafe.Add(ref rsi, i) << 7;
+                v ^= 0x4040_0000;
+                var h = Vector128.CreateScalarUnsafe(v).AsSingle();
+                Unsafe.Add(ref rdi, i) = Sse.AddScalar(h, ymm1.GetLower()).GetElement(0);
+            }
+        }
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessNormalSse41(Span<float> buffer, ReadOnlySpan<short> source)
         {

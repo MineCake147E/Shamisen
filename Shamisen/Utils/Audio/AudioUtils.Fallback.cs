@@ -18,17 +18,17 @@ namespace Shamisen.Utils
                 {
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
-                    ref int rL = ref MemoryMarshal.GetReference(left);
-                    ref int rR = ref MemoryMarshal.GetReference(right);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     nint length = left.Length;
-                    nint u8Length = length & ~1;
+                    var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
                     for (; i < u8Length; i += 2)
                     {
                         //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -40,7 +40,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1)
                     {
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -56,17 +56,17 @@ namespace Shamisen.Utils
                 {
                     if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
                     if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
-                    ref float rL = ref MemoryMarshal.GetReference(left);
-                    ref float rR = ref MemoryMarshal.GetReference(right);
-                    ref float rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     nint length = left.Length;
-                    nint u8Length = length & ~1;
+                    var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
                     for (; i < u8Length; i += 2)
                     {
                         //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
-                        float a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -78,7 +78,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1)
                     {
-                        float a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -100,18 +100,18 @@ namespace Shamisen.Utils
                     _ = right[left.Length - 1];
                     _ = center[left.Length - 1];
                     _ = buffer[left.Length * Channels - 1];
-                    ref int rL = ref MemoryMarshal.GetReference(left);
-                    ref int rR = ref MemoryMarshal.GetReference(right);
-                    ref int rC = ref MemoryMarshal.GetReference(center);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var rL = ref MemoryMarshal.GetReference(left);
+                    ref var rR = ref MemoryMarshal.GetReference(right);
+                    ref var rC = ref MemoryMarshal.GetReference(center);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     nint length = left.Length;
-                    nint u8Length = length & ~1;
+                    var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
                     for (; i < u8Length; i += 2)
                     {
                         //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -127,7 +127,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1)
                     {
-                        int a = Unsafe.Add(ref rL, i);
+                        var a = Unsafe.Add(ref rL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -144,19 +144,19 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 4;
-                    ref int rFL = ref MemoryMarshal.GetReference(frontLeft);
-                    ref int rFR = ref MemoryMarshal.GetReference(frontRight);
-                    ref int rRL = ref MemoryMarshal.GetReference(rearLeft);
-                    ref int rRR = ref MemoryMarshal.GetReference(rearRight);
-                    ref int rB = ref MemoryMarshal.GetReference(buffer);
+                    ref var rFL = ref MemoryMarshal.GetReference(frontLeft);
+                    ref var rFR = ref MemoryMarshal.GetReference(frontRight);
+                    ref var rRL = ref MemoryMarshal.GetReference(rearLeft);
+                    ref var rRR = ref MemoryMarshal.GetReference(rearRight);
+                    ref var rB = ref MemoryMarshal.GetReference(buffer);
                     nint length = MathI.Min(buffer.Length / 4, MathI.Min(MathI.Min(frontLeft.Length, frontRight.Length), MathI.Min(rearLeft.Length, rearRight.Length)));
-                    nint u8Length = length & ~1;
+                    var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
                     for (; i < u8Length; i += 2)
                     {
                         //The Unsafe.Add(ref Unsafe.Add(ref T, IntPtr), int) pattern avoids extra lea instructions.
-                        int a = Unsafe.Add(ref rFL, i);
+                        var a = Unsafe.Add(ref rFL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rFR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -176,7 +176,7 @@ namespace Shamisen.Utils
                     }
                     for (; i < length; i += 1)
                     {
-                        int a = Unsafe.Add(ref rFL, i);
+                        var a = Unsafe.Add(ref rFL, i);
                         Unsafe.Add(ref rB, j) = a;
                         a = Unsafe.Add(ref rFR, i);
                         Unsafe.Add(ref Unsafe.Add(ref rB, j), 1) = a;
@@ -196,10 +196,10 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = Math.Min(source.Length, destination.Length / 2);
-                nint olen = length - 3;
+                var olen = length - 3;
                 for (; i < olen; i += 4)
                 {
                     var h = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, i));
@@ -210,7 +210,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float h = Unsafe.Add(ref src, i);
+                    var h = Unsafe.Add(ref src, i);
                     Unsafe.As<float, Vector2>(ref Unsafe.Add(ref dst, i * 2)) = new Vector2(h);
                 }
             }
@@ -221,14 +221,14 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float src = ref MemoryMarshal.GetReference(source);
-                ref float dst = ref MemoryMarshal.GetReference(destination);
+                ref var src = ref MemoryMarshal.GetReference(source);
+                ref var dst = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = MathI.Min(source.Length, destination.Length / 3);
-                nint olen = length - 3;
+                var olen = length - 3;
                 for (; i < olen; i += 4)
                 {
                     var v0_4s = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, i));
-                    float s1 = v0_4s.X;
+                    var s1 = v0_4s.X;
                     Unsafe.Add(ref dst, i * 3 + 0) = s1;
                     Unsafe.Add(ref dst, i * 3 + 1) = s1;
                     Unsafe.Add(ref dst, i * 3 + 2) = s1;
@@ -247,7 +247,7 @@ namespace Shamisen.Utils
                 }
                 for (; i < length; i++)
                 {
-                    float s1 = Unsafe.Add(ref src, i);
+                    var s1 = Unsafe.Add(ref src, i);
                     Unsafe.Add(ref dst, i * 3 + 0) = s1;
                     Unsafe.Add(ref dst, i * 3 + 1) = s1;
                     Unsafe.Add(ref dst, i * 3 + 2) = s1;
@@ -259,10 +259,10 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo4Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
-                ref float x0 = ref MemoryMarshal.GetReference(source);
-                ref float x1 = ref MemoryMarshal.GetReference(destination);
+                ref var x0 = ref MemoryMarshal.GetReference(source);
+                ref var x1 = ref MemoryMarshal.GetReference(destination);
                 nint i = 0, length = MathI.Min(source.Length * (nint)4, destination.Length);
-                nint olen = length - 3 * 4;
+                var olen = length - 3 * 4;
                 for (; i < olen; i += 4 * 4)
                 {
                     var v0_4s = new Vector4(Unsafe.AddByteOffset(ref x0, i + 0));

@@ -54,7 +54,7 @@ namespace Shamisen.Filters
         {
             var rr = Source.Read(buffer);
             if (rr.HasNoData) return rr;
-            int r = rr.Length;
+            var r = rr.Length;
             buffer.Slice(0, r).FastScalarMultiply(Scale);
             return r;
         }

@@ -23,7 +23,7 @@ namespace Shamisen.Mathematics
         {
             if (div == 0) throw new ArgumentOutOfRangeException(nameof(div), $"{nameof(div)} must not be 0!");
             if (mul == div) return (1, 1);
-            int gcd = Gcd(mul, div);
+            var gcd = Gcd(mul, div);
             return (mul / gcd, div / gcd);
         }
 
@@ -38,7 +38,7 @@ namespace Shamisen.Mathematics
         {
             if (div == 0) throw new ArgumentOutOfRangeException(nameof(div), $"{nameof(div)} must not be 0!");
             if (mul == div) return (1, 1);
-            ulong gcd = Gcd(mul, div);
+            var gcd = Gcd(mul, div);
             return (mul / gcd, div / gcd);
         }
 
@@ -54,7 +54,7 @@ namespace Shamisen.Mathematics
         {
             while (n != 0)
             {
-                int k = n;
+                var k = n;
                 n = m % n;
                 m = k;
             }
@@ -73,7 +73,7 @@ namespace Shamisen.Mathematics
         {
             while (n != 0)
             {
-                ulong k = n;
+                var k = n;
                 n = m % n;
                 m = k;
             }

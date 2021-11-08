@@ -44,8 +44,8 @@ namespace Shamisen
                 {
                     return 32;
                 }
-                long v2 = -value;
-                uint index = (((uint)v2 & value) * 0x077C_B531u) >> 27;
+                var v2 = -value;
+                var index = (((uint)v2 & value) * 0x077C_B531u) >> 27;
 
                 return Unsafe.AddByteOffset(
                     ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn),
@@ -83,7 +83,7 @@ namespace Shamisen
                 value |= value >> 4;
                 value |= value >> 8;
                 value |= value >> 16;
-                uint index = (value * 0x07C4_ACDDu) >> 27;
+                var index = (value * 0x07C4_ACDDu) >> 27;
 
                 return Unsafe.AddByteOffset(
                     ref MemoryMarshal.GetReference(Log2DeBruijn),

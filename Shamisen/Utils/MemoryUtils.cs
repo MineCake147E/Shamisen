@@ -27,7 +27,7 @@ namespace Shamisen
             where TTo : struct
         {
             var res = MemoryMarshal.Cast<TFrom, TTo>(span);
-            int resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
+            var resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
             residue = span.Slice(resLen);
             return res;
         }
@@ -46,7 +46,7 @@ namespace Shamisen
             where TTo : struct
         {
             var res = MemoryMarshal.Cast<TFrom, TTo>(span);
-            int resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
+            var resLen = Unsafe.SizeOf<TTo>() * res.Length / Unsafe.SizeOf<TFrom>();
             residue = span.Slice(resLen);
             return res;
         }

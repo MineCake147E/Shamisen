@@ -68,7 +68,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             X86Intrinsics = x86Intrinsics;
             bufferWrapper = new ResizablePooledBufferWrapper<float>(1);
             sampleCache = new float[3][];
-            for (int i = 0; i < sampleCache.Length; i++)
+            for (var i = 0; i < sampleCache.Length; i++)
             {
                 sampleCache[i] = new float[Channels];
             }
@@ -117,16 +117,16 @@ namespace Shamisen.Conversion.Resampling.Sample
         private static void RearrangeCoefficentsCachedDirect(Span<Vector4> coeffs, int rateMul, int acc)
         {
             if (acc == 1) return;
-            float[]? g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
+            var g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
             var gs = MemoryMarshal.Cast<float, Vector4>(g.AsSpan(0, 4 * coeffs.Length));
             coeffs.CopyTo(gs);
             ref var vd = ref MemoryMarshal.GetReference(gs);
-            int h = 0;
-            for (int i = 0; i < coeffs.Length; i++)
+            var h = 0;
+            for (var i = 0; i < coeffs.Length; i++)
             {
                 coeffs[i] = Unsafe.Add(ref vd, h);
                 h += acc;
-                bool j = h >= rateMul;
+                var j = h >= rateMul;
                 int f = Unsafe.As<bool, byte>(ref j);
                 h -= -f & rateMul;
             }
@@ -147,22 +147,22 @@ namespace Shamisen.Conversion.Resampling.Sample
 
             static Vector4 GetCatmullRomCoefficentsOdd(ref Vector4 coeffs, int i, int rateMul)
             {
-                int x = i;
+                var x = i;
                 if (i <= rateMul >> 1) return Unsafe.Add(ref coeffs, x);
                 x = rateMul - i;
                 var q = Unsafe.Add(ref coeffs, x);
                 return VectorUtils.ReverseElements(q);
             }
-            float[]? g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
+            var g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
             var gs = MemoryMarshal.Cast<float, Vector4>(g.AsSpan(0, 4 * coeffs.Length));
             coeffs.CopyTo(gs);
             ref var vd = ref MemoryMarshal.GetReference(gs);
-            int h = 0;
-            for (int i = 0; i < coeffs.Length; i++)
+            var h = 0;
+            for (var i = 0; i < coeffs.Length; i++)
             {
                 coeffs[i] = GetCatmullRomCoefficentsOdd(ref vd, h, rateMul);
                 h += acc;
-                bool j = h >= rateMul;
+                var j = h >= rateMul;
                 int f = Unsafe.As<bool, byte>(ref j);
                 h -= -f & rateMul;
             }
@@ -183,25 +183,25 @@ namespace Shamisen.Conversion.Resampling.Sample
 
             static Vector4 GetCatmullRomCoefficentsEven(ref Vector4 coeffs, int i, int rateMul)
             {
-                int x = i;
+                var x = i;
                 if (i < rateMul >> 1) return Unsafe.Add(ref coeffs, x);
                 x = rateMul - i - 1;
                 var q = Unsafe.Add(ref coeffs, x);
                 return VectorUtils.ReverseElements(q);
             }
-            float[]? g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
+            var g = ArrayPool<float>.Shared.Rent(4 * coeffs.Length);
             var gs = MemoryMarshal.Cast<float, Vector4>(g.AsSpan(0, 4 * coeffs.Length));
             coeffs.CopyTo(gs);
             ref var vd = ref MemoryMarshal.GetReference(gs);
-            int inverse = MathI.ModularMultiplicativeInverse(acc, rateMul);
-            int pred = (rateMul - 1) * inverse % rateMul;
-            int wpred = (pred + 1) >> 1;
-            int h = wpred * acc % rateMul;
-            for (int i = 0; i < coeffs.Length; i++)
+            var inverse = MathI.ModularMultiplicativeInverse(acc, rateMul);
+            var pred = (rateMul - 1) * inverse % rateMul;
+            var wpred = (pred + 1) >> 1;
+            var h = wpred * acc % rateMul;
+            for (var i = 0; i < coeffs.Length; i++)
             {
                 coeffs[i] = GetCatmullRomCoefficentsEven(ref vd, h, rateMul);
                 h += acc;
-                bool j = h >= rateMul;
+                var j = h >= rateMul;
                 int f = Unsafe.As<bool, byte>(ref j);
                 h -= -f & rateMul;
             }
@@ -391,7 +391,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             nint i = 0, length = coeffs.Length;
             for (; i < length; i++)
             {
-                float x = i * rateMulInverse;
+                var x = i * rateMulInverse;
                 var vx = new Vector4(x);
                 var y = c0;
                 y *= vx;
@@ -426,9 +426,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static unsafe void FastDotProductGenericStandard(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
         {
-            float* head2 = head + nchannels * 2;
+            var head2 = head + nchannels * 2;
             nint nch = 0;
-            nint cholen = nchannels - 3;
+            var cholen = nchannels - 3;
             for (; nch < cholen; nch += 4)
             {
                 var vy0 = cutmullCoeffs;
@@ -455,9 +455,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static unsafe void FastDotProductGenericAvx2(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
         {
-            float* head2 = head + nchannels * 2;
+            var head2 = head + nchannels * 2;
             nint nch = 0;
-            nint cholen = nchannels - 7;
+            var cholen = nchannels - 7;
             for (; nch < cholen; nch += 8)
             {
                 var vy0 = cutmullCoeffs.AsVector128();
@@ -503,7 +503,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         private static uint Abs(int value)
         {
             //TODO: get outside
-            int mask = value >> 31;
+            var mask = value >> 31;
             return (uint)((value + mask) ^ mask);
         }
 
@@ -528,7 +528,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             unchecked
             {
                 conversionGradient += GradientIncrement;
-                int t = IndexIncrement;
+                var t = IndexIncrement;
                 if (conversionGradient >= RateMul)
                 {
                     t++;
@@ -542,7 +542,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             unchecked
             {
                 conversionGradient += rad;
-                int l = 0;
+                var l = 0;
                 while (conversionGradient >= ram)
                 {
                     conversionGradient -= ram;
@@ -560,16 +560,16 @@ namespace Shamisen.Conversion.Resampling.Sample
             //Row 1: #=to read $=not to read %=read and copied to $s
             //$$$############################%%%%
             // ^ process head                 ^process tail
-            int v = sampleLengthOut * RateDiv + conversionGradient;
-            uint h = RateMulDivisor.DivRem((uint)v, out uint b);
-            int samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
-            int internalBufferLengthRequired = samplesRequired * channels;
+            var v = sampleLengthOut * RateDiv + conversionGradient;
+            var h = RateMulDivisor.DivRem((uint)v, out var b);
+            var samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
+            var internalBufferLengthRequired = samplesRequired * channels;
             return internalBufferLengthRequired;
         }
 
         private void ExpandBuffer(int internalBufferLengthRequired)
         {
-            int lengthReserved = framesReserved * Channels;
+            var lengthReserved = framesReserved * Channels;
             Span<float> a = stackalloc float[lengthReserved];
 
             if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer.Slice(0, lengthReserved).CopyTo(a);
@@ -584,7 +584,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// <returns>The length of the data written.</returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            int channels = Channels;
+            var channels = Channels;
             if (buffer.Length < channels) throw new InvalidOperationException($"The length of buffer is less than {channels}!");
             if (isEndOfStream) return ReadResult.EndOfStream;
 
@@ -593,15 +593,15 @@ namespace Shamisen.Conversion.Resampling.Sample
             //Align the length of the buffer.
             buffer = buffer.SliceAlign(Format.Channels);
 
-            int SampleLengthOut = (int)((uint)buffer.Length / ChannelsDivisor);
-            int internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
+            var SampleLengthOut = (int)((uint)buffer.Length / ChannelsDivisor);
+            var internalBufferLengthRequired = CheckBuffer(channels, SampleLengthOut);
             if (internalBufferLengthRequired > bufferWrapper.Buffer.Length)
             {
                 ExpandBuffer(internalBufferLengthRequired);
             }
             //Resampling start
             var srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
-            int lengthReserved = channels * framesReserved;
+            var lengthReserved = channels * framesReserved;
             var readBuffer = srcBuffer.Slice(lengthReserved).SliceAlign(ChannelsDivisor);
             var rr = Source.Read(readBuffer);
 
@@ -631,17 +631,17 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             if (rr.Length < readBuffer.Length)   //The input result was not as long as the buffer we gave
             {
-                int v = sampleLengthOut * RateDiv + conversionGradient;
-                uint h = RateMulDivisor.DivRem((uint)v, out uint b);
-                int readSamples = rr.Length + lengthReserved;
+                var v = sampleLengthOut * RateDiv + conversionGradient;
+                var h = RateMulDivisor.DivRem((uint)v, out var b);
+                var readSamples = rr.Length + lengthReserved;
                 srcBuffer = srcBuffer.SliceWhile(readSamples).SliceAlign(ChannelsDivisor);
-                int framesAvailable = (int)((uint)readSamples / ChannelsDivisor);
-                int bA = framesAvailable - 3 - (h > 0 ? 1 : 0);
-                long vA = h + bA * RateMul;
-                int outLenFrames = (int)((uint)vA / RateDivDivisor);
+                var framesAvailable = (int)((uint)readSamples / ChannelsDivisor);
+                var bA = framesAvailable - 3 - (h > 0 ? 1 : 0);
+                var vA = h + bA * RateMul;
+                var outLenFrames = (int)((uint)vA / RateDivDivisor);
                 buffer = buffer.SliceWhile(outLenFrames * channels).SliceAlign(ChannelsDivisor);
             }
-            int lastInputSampleIndex = -1;
+            var lastInputSampleIndex = -1;
 
             switch (Strategy)
             {

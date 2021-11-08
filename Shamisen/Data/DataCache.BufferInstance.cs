@@ -40,8 +40,8 @@ namespace Shamisen.Data
 
             public int CompareRegion(ulong globalIndex)
             {
-                bool a = globalIndex >= InitialIndex;
-                bool b = globalIndex < NextIndex;
+                var a = globalIndex >= InitialIndex;
+                var b = globalIndex < NextIndex;
                 return Unsafe.As<bool, byte>(ref a) - Unsafe.As<bool, byte>(ref b);
             }
 

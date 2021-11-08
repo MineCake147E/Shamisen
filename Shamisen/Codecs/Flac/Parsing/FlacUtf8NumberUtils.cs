@@ -20,8 +20,8 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static uint? ReadUtf8EncodedShortNumber(IReadableDataSource<byte> source)
         {
-            byte first = source.ReadByte();
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var first = source.ReadByte();
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -29,11 +29,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    uint res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -51,9 +51,9 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static uint? ReadUtf8EncodedShortNumber(IReadableDataSource<byte> source, ref FlacCrc8 crc)
         {
-            byte first = source.ReadByte();
+            var first = source.ReadByte();
             crc *= first;
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -61,11 +61,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    uint res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -84,9 +84,9 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static uint? ReadUtf8EncodedShortNumber(IReadableDataSource<byte> source, ref FlacCrc16 crc)
         {
-            byte first = source.ReadByte();
+            var first = source.ReadByte();
             crc *= first;
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -94,11 +94,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    uint res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -118,10 +118,10 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static uint? ReadUtf8EncodedShortNumber(IReadableDataSource<byte> source, ref FlacCrc8 crc8, ref FlacCrc16 crc16)
         {
-            byte first = source.ReadByte();
+            var first = source.ReadByte();
             crc8 *= first;
             crc16 *= first;
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -129,11 +129,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    uint res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -152,8 +152,8 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static ulong? ReadUtf8EncodedLongNumber(IReadableDataSource<byte> source)
         {
-            byte first = source.ReadByte();
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var first = source.ReadByte();
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -161,11 +161,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    ulong res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((ulong)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -183,9 +183,9 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static ulong? ReadUtf8EncodedLongNumber(IReadableDataSource<byte> source, ref FlacCrc8 crc)
         {
-            byte first = source.ReadByte();
+            var first = source.ReadByte();
             crc *= first;
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -193,11 +193,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
-                    ulong res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                    var bytesToRead = locnt - 1;
+                    var res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((ulong)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }
@@ -217,10 +217,10 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns></returns>
         public static ulong? ReadUtf8EncodedLongNumber(IReadableDataSource<byte> source, ref FlacCrc8 crc8, ref FlacCrc16 crc16)
         {
-            byte first = source.ReadByte();
+            var first = source.ReadByte();
             crc8 *= first;
             crc16 *= first;
-            int locnt = MathI.LeadingZeroCount(~((uint)first << 24));
+            var locnt = MathI.LeadingZeroCount(~((uint)first << 24));
             switch (locnt)
             {
                 case 0:
@@ -228,11 +228,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 1:
                     return null;
                 case < 8:
-                    int bytesToRead = locnt - 1;
+                    var bytesToRead = locnt - 1;
                     ulong res = MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
                     Span<byte> q = stackalloc byte[bytesToRead];
                     source.ReadAll(q);
-                    for (int i = 0; i < q.Length; i++)
+                    for (var i = 0; i < q.Length; i++)
                     {
                         res |= ((ulong)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
                     }

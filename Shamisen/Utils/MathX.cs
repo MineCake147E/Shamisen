@@ -93,11 +93,11 @@ namespace Shamisen
                 return PowerRootsOfUnity.Span[1];
             }
             var result = Complex.One;
-            ulong g = (DSUtils.Abs(value.Value) << 1) & mask;
+            var g = (DSUtils.Abs(value.Value) << 1) & mask;
             ref var prouHead = ref MemoryMarshal.GetReference(PowerRootsOfUnity.Span);
             while (g > 0)
             {
-                int index = MathI.LeadingZeroCount(g);
+                var index = MathI.LeadingZeroCount(g);
                 g ^= 0x8000_0000_0000_0000u >> index;
                 result *= Unsafe.Add(ref prouHead, index);
             }
@@ -138,8 +138,8 @@ namespace Shamisen
         public static float SinF(Fixed64 value)
 #endif
         {
-            int u = (int)(value.Value >> 32);
-            uint a = MathI.Abs(u);
+            var u = (int)(value.Value >> 32);
+            var a = MathI.Abs(u);
             a = Math.Min(a, 0x8000_0000u - a);
             return Math.Sign(u) * SinFInternal32((int)a);
         }
@@ -161,9 +161,9 @@ namespace Shamisen
             unchecked
             {
                 const float OneOverTwoToThe31stPower = -1.0f / int.MinValue;
-                float x = OneOverTwoToThe31stPower * value;
-                float x2 = x * x;
-                float res = C9;
+                var x = OneOverTwoToThe31stPower * value;
+                var x2 = x * x;
+                var res = C9;
                 res = res * x + C8;
                 res = res * x + C7;
                 res = res * x + C6;

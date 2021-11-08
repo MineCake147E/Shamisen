@@ -89,7 +89,7 @@ namespace Shamisen.Data
         /// <returns>The number of <see cref="byte"/>s read from this <see cref="IDataSource{TSample}"/>.</returns>
         public ReadResult Read(Span<byte> buffer)
         {
-            int rr = source.Read(buffer);
+            var rr = source.Read(buffer);
             return rr < 1 ? ReadResult.EndOfStream : rr;
         }
 

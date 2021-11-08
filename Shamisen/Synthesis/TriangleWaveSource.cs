@@ -57,7 +57,7 @@ namespace Shamisen.Synthesis
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var omega = AngularVelocity;
             var theta = Theta;
@@ -85,8 +85,8 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            long t = theta.Value;
-            long o = omega.Value;
+            var t = theta.Value;
+            var o = omega.Value;
             var ymm13 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm13.GetLower());
@@ -99,9 +99,9 @@ namespace Shamisen.Synthesis
             ymm15 = Vector256.Create(0x8000_0000u).AsInt32();
             var ymm14 = Vector256.Create((float)(1.0 / 0x4000_0000));
 
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 31;
+            var olen = length - 31;
             for (; i < olen; i += 32)
             {
                 var ymm2 = Avx2.Add(ymm0, ymm13).AsInt32();
@@ -205,7 +205,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, ref Fixed64 theta)
         {
-            for (int i = 0; i < buffer.Length; i++)
+            for (var i = 0; i < buffer.Length; i++)
             {
                 buffer[i] = GenerateMonauralSample(theta);
                 theta = AppendTheta(theta, omega);
@@ -226,13 +226,13 @@ namespace Shamisen.Synthesis
         private static float GenerateMonauralSample(Fixed64 theta)
         {
             const float Multiplier = 1.0f / 0x4000_0000;
-            int t = (int)(theta.Value >> 32);
-            int s = -(t >> 31);
-            uint n = MathI.Abs(t);
+            var t = (int)(theta.Value >> 32);
+            var s = -(t >> 31);
+            var n = MathI.Abs(t);
             n = MathI.Min(n, 0x8000_0000u - n);
             n += (uint)s;
             n ^= (uint)s;
-            float f = n * Multiplier;
+            var f = n * Multiplier;
             return f;
         }
 

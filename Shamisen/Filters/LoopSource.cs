@@ -30,7 +30,7 @@ namespace Shamisen.Filters
 #pragma warning disable IDE0083
             if (!(source.TotalLength is ulong tlen)) throw new ArgumentException($"{nameof(source.TotalLength)} must not be null!", nameof(source));
 #pragma warning restore IDE0083
-            int allocationUnit = (int)Math.Min(tlen, 4096ul);
+            var allocationUnit = (int)Math.Min(tlen, 4096ul);
             cache = new(allocationUnit);
             var buffer = new TSample[allocationUnit];
             var span = buffer.AsSpan();
@@ -104,7 +104,7 @@ namespace Shamisen.Filters
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<TSample> buffer)
         {
-            int written = 0;
+            var written = 0;
             var rem = buffer;
             while (!rem.IsEmpty)
             {

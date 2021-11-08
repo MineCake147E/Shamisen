@@ -99,14 +99,14 @@ namespace Shamisen.Synthesis
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
-            double freq = Frequency;
-            double omega = MathHelper.DoublePI * freq * SamplingFrequencyInverse;
+            var freq = Frequency;
+            var omega = MathHelper.DoublePI * freq * SamplingFrequencyInverse;
             switch (channels)   //Unrolling assignations
             {
                 case 1:
-                    for (int i = 0; i < buffer.Length; i++)
+                    for (var i = 0; i < buffer.Length; i++)
                     {
                         buffer[i] = GenerateMonauralSample(Theta);
                         Theta = AppendTheta(omega);
@@ -115,7 +115,7 @@ namespace Shamisen.Synthesis
                 case 2:
                     {
                         var m = Cast<float, Vector2>(buffer);
-                        for (int i = 0; i < m.Length; i++)
+                        for (var i = 0; i < m.Length; i++)
                         {
                             m[i] = new Vector2(GenerateMonauralSample(Theta));
                             Theta = AppendTheta(omega);
@@ -125,7 +125,7 @@ namespace Shamisen.Synthesis
                 case 3:
                     {
                         var m = Cast<float, Vector3>(buffer);
-                        for (int i = 0; i < m.Length; i++)
+                        for (var i = 0; i < m.Length; i++)
                         {
                             m[i] = new Vector3(GenerateMonauralSample(Theta));
                             Theta = AppendTheta(omega);
@@ -135,7 +135,7 @@ namespace Shamisen.Synthesis
                 case 4:
                     {
                         var m = Cast<float, Vector4>(buffer);
-                        for (int i = 0; i < m.Length; i++)
+                        for (var i = 0; i < m.Length; i++)
                         {
                             m[i] = new Vector4(GenerateMonauralSample(Theta));
                             Theta = AppendTheta(omega);
@@ -143,9 +143,9 @@ namespace Shamisen.Synthesis
                         return buffer.Length;
                     }
                 default:
-                    for (int i = 0; i < buffer.Length; i += channels)
+                    for (var i = 0; i < buffer.Length; i += channels)
                     {
-                        float value = GenerateMonauralSample(Theta);
+                        var value = GenerateMonauralSample(Theta);
                         buffer.Slice(i, channels).FastFill(value);
                         Theta = AppendTheta(omega);
                     }

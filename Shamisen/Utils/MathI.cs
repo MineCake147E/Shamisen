@@ -52,7 +52,7 @@ namespace Shamisen
 #endif
         public static (int newLength, int remainder) FloorStepRem(int value, int step)
         {
-            int m = value % step;
+            var m = value % step;
             return (value - m, m);
         }
         #endregion
@@ -69,7 +69,7 @@ namespace Shamisen
 #endif
         public static int Rectify(int value)
         {
-            int h = value >> 31;
+            var h = value >> 31;
             return value & ~h;
         }
         #endregion
@@ -84,11 +84,11 @@ namespace Shamisen
 #endif
         public static nint Min(nint val1, nint val2)
         {
-            bool g = val1 > val2;
+            var g = val1 > val2;
             nint y = Unsafe.As<bool, byte>(ref g);
             y = -y;
-            nint r = y & val2;
-            nint q = AndNot(y, val1);
+            var r = y & val2;
+            var q = AndNot(y, val1);
             return r | q;
         }
 
@@ -103,11 +103,11 @@ namespace Shamisen
 #endif
         public static int Min(int val1, int val2)
         {
-            bool g = val1 > val2;
+            var g = val1 > val2;
             int y = Unsafe.As<bool, byte>(ref g);
             y = -y;
-            int r = y & val2;
-            int q = AndNot(y, val1);
+            var r = y & val2;
+            var q = AndNot(y, val1);
             return r | q;
         }
 
@@ -119,11 +119,11 @@ namespace Shamisen
 #endif
         public static uint Min(uint val1, uint val2)
         {
-            bool g = val1 > val2;
+            var g = val1 > val2;
             uint y = Unsafe.As<bool, byte>(ref g);
             y = (uint)-(int)y;
-            uint r = y & val2;
-            uint q = AndNot(y, val1);
+            var r = y & val2;
+            var q = AndNot(y, val1);
             return r | q;
         }
         #endregion
@@ -289,7 +289,7 @@ namespace Shamisen
             unchecked
             {
 #if NET5_0_OR_GREATER
-                long high = Math.BigMul(x, y, out long low);
+                var high = Math.BigMul(x, y, out var low);
                 return ((ulong)low, high);
 #else
                 var (low, high) = BigMul((ulong)x, (ulong)y);
@@ -313,7 +313,7 @@ namespace Shamisen
             unchecked
             {
 #if NET5_0_OR_GREATER
-                ulong high = Math.BigMul(x, y, out ulong low);
+                var high = Math.BigMul(x, y, out var low);
                 return (low, high);
 #else
                 return (x * y, DSUtils.MultiplyHigh(x, y));
@@ -334,15 +334,15 @@ namespace Shamisen
         public static int ModularMultiplicativeInverse(int a, int n)
         {
             if (a == 1) return 1;
-            int t = 0;
-            int nt = 1;
-            int r = n;
-            int nr = a;
+            var t = 0;
+            var nt = 1;
+            var r = n;
+            var nr = a;
             while (nr != 0)
             {
-                int q = r / nr;
-                int ot = t;
-                int or = r;
+                var q = r / nr;
+                var ot = t;
+                var or = r;
                 t = nt;
                 r = nr;
                 nt = ot - q * nt;

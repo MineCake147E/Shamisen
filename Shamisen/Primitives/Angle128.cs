@@ -41,7 +41,7 @@ namespace Shamisen.Primitives
         /// <param name="multiplesOfPi">The multiples of pi.</param>
         public Angle128(double multiplesOfPi)
         {
-            double v = multiplesOfPi * 9.223372036854776E+18f;
+            var v = multiplesOfPi * 9.223372036854776E+18f;
             high = new Fixed64((long)Math.Floor(v));
             low = v - high.Value;
         }
@@ -53,7 +53,7 @@ namespace Shamisen.Primitives
         /// <param name="low">The low part.</param>
         public Angle128(Fixed64 high, double low)
         {
-            double carry = Math.Floor(low);
+            var carry = Math.Floor(low);
             this.high = high + new Fixed64((long)carry);
             this.low = low - carry;
         }
@@ -123,7 +123,7 @@ namespace Shamisen.Primitives
         public static Angle128 operator +(Angle128 left, Angle128 right)
         {
             var h = left.high + right.high;
-            double l = left.low + right.low;
+            var l = left.low + right.low;
             return new Angle128(h, l);
         }
 
@@ -138,7 +138,7 @@ namespace Shamisen.Primitives
         public static Angle128 operator -(Angle128 left, Angle128 right)
         {
             var h = left.high - right.high;
-            double l = left.low - right.low;
+            var l = left.low - right.low;
             return new Angle128(h, l);
         }
 

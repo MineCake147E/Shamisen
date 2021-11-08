@@ -30,8 +30,8 @@ namespace Shamisen.Filters.BiQuad.Cascaded
                 internal static void ProcessMonauralOrder8Avx2(Span<float> target, Span<float> parameters, Span<float> internalStates)
                 {
                     const int MaxOrder = 8;
-                    ref float p = ref MemoryMarshal.GetReference(parameters);
-                    ref float s = ref MemoryMarshal.GetReference(internalStates);
+                    ref var p = ref MemoryMarshal.GetReference(parameters);
+                    ref var s = ref MemoryMarshal.GetReference(internalStates);
                     var ymm15 = Vector256.Create(1, 2, 3, 4, 5, 6, 7, 0);
                     var b0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref p, MaxOrder * 0));  //ymm14
                     var b1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref p, MaxOrder * 1));  //ymm13
@@ -42,11 +42,11 @@ namespace Shamisen.Filters.BiQuad.Cascaded
                     var d0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref s, MaxOrder * 0));  //ymm0
                     var d1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref s, MaxOrder * 1));  //ymm1
                     var ymm2 = Vector256.Create(0f);    //stores a temporal output of each BiQuad filters.
-                    ref float rdi = ref MemoryMarshal.GetReference(target);
+                    ref var rdi = ref MemoryMarshal.GetReference(target);
 
                     nint i = 0, length = target.Length;
                     //TODO: corner cases that length is less than 16.
-                    nint olen = MathI.Min(7, length);
+                    var olen = MathI.Min(7, length);
                     //startup
                     for (; i < olen; i++)
                     {
@@ -128,8 +128,8 @@ namespace Shamisen.Filters.BiQuad.Cascaded
                 internal static void ProcessMonauralOrder4Sse41(Span<float> target, Span<float> parameters, Span<float> internalStates)
                 {
                     const int MaxOrder = 4;
-                    ref float p = ref MemoryMarshal.GetReference(parameters);
-                    ref float s = ref MemoryMarshal.GetReference(internalStates);
+                    ref var p = ref MemoryMarshal.GetReference(parameters);
+                    ref var s = ref MemoryMarshal.GetReference(internalStates);
                     var b0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref p, MaxOrder * 0));  //xmm15
                     var b1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref p, MaxOrder * 1));  //xmm14
                     var b2 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref p, MaxOrder * 2));  //xmm13
@@ -139,10 +139,10 @@ namespace Shamisen.Filters.BiQuad.Cascaded
                     var d0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref s, MaxOrder * 0));  //xmm0
                     var d1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref s, MaxOrder * 1));  //xmm1
                     var xmm2 = Vector128.Create(0f);    //stores a temporal output of each BiQuad filters.
-                    ref float rdi = ref MemoryMarshal.GetReference(target);
+                    ref var rdi = ref MemoryMarshal.GetReference(target);
 
                     nint i = 0, length = target.Length;
-                    nint olen = MathI.Min(3, length);
+                    var olen = MathI.Min(3, length);
                     //startup
                     for (; i < olen; i++)
                     {

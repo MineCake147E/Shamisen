@@ -32,7 +32,7 @@ namespace Shamisen
         {
             var sb = new StringBuilder();
             int i;
-            byte[] a = new byte[16];
+            var a = new byte[16];
             for (i = 0; i < data.Length - 15; i += 16)
             {
                 _ = sb.Append($"{i:X16}: ");

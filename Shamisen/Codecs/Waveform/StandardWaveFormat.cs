@@ -105,7 +105,7 @@ namespace Shamisen.Codecs.Waveform
         /// <value>
         /// The size of the frame.
         /// </value>
-        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => (BitDepth + 7) / 8; }
 
         /// <summary>
         /// Gets the size.

@@ -15,6 +15,7 @@
         <RepositoryType>git</RepositoryType>
         <Version>0.0.1</Version>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

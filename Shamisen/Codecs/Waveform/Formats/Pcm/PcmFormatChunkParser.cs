@@ -27,23 +27,23 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
             ChunkId = source.ChunkId;
             ChunkLength = source.TotalSize;
             //Data for formatTag is already consumed by IChunkParserFactory.
-            ushort nCh = source.ReadUInt16LittleEndian();
-            uint nSampleRate = source.ReadUInt32LittleEndian();
-            uint nByteRate = source.ReadUInt32LittleEndian();
-            ushort nBlockAlign = source.ReadUInt16LittleEndian();
-            ushort nBitDepth = source.ReadUInt16LittleEndian();
+            var nCh = source.ReadUInt16LittleEndian();
+            var nSampleRate = source.ReadUInt32LittleEndian();
+            var nByteRate = source.ReadUInt32LittleEndian();
+            var nBlockAlign = source.ReadUInt16LittleEndian();
+            var nBitDepth = source.ReadUInt16LittleEndian();
             var standardWaveFormat = new StandardWaveFormat(encoding, nCh, nSampleRate, nByteRate, nBlockAlign, nBitDepth);
             if (source.RemainingBytes >= 2)
             {
-                ushort cbSize = source.ReadUInt16LittleEndian();
+                var cbSize = source.ReadUInt16LittleEndian();
                 if (cbSize > 0)  //When the format is LPCM, the cbSize must be 0 or 22
                 {
-                    ushort validBitsPerSample = source.ReadUInt16LittleEndian();
+                    var validBitsPerSample = source.ReadUInt16LittleEndian();
                     var channelMask = (Speakers)source.ReadUInt32LittleEndian();
                     var guid = source.ReadStruct<Guid>();
                     if (source.RemainingBytes > 0)
                     {
-                        byte[]? bytes = new byte[source.RemainingBytes];
+                        var bytes = new byte[source.RemainingBytes];
                         source.ReadAll(bytes.AsSpan());
                         Data = new ExtensibleWaveFormat(standardWaveFormat, cbSize, validBitsPerSample, channelMask, guid, bytes.AsMemory());
                         return;

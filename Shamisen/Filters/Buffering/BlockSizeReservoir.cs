@@ -105,7 +105,7 @@ namespace Shamisen.Filters.Buffering
             unchecked
             {
                 var rem = buffer;
-                int w = 0;
+                var w = 0;
                 if (!written.IsEmpty)
                 {
                     written.CopyTo(buffer);
@@ -125,7 +125,7 @@ namespace Shamisen.Filters.Buffering
                     return ReadResult.WaitingForSource;
                 }
                 w += rr.Length;
-                uint r = blockSizeDivisor.FloorRem((uint)w, out uint len);
+                var r = blockSizeDivisor.FloorRem((uint)w, out var len);
                 if (r > 0)
                 {
                     rem.Slice((int)len, (int)r).CopyTo(this.buffer.AsSpan());

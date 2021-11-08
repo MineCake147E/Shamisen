@@ -53,7 +53,7 @@ namespace Shamisen
         {
             unchecked
             {
-                byte vp = (byte)value;
+                var vp = (byte)value;
 
                 this.value = (byte)(vp ^ Inverter);
             }
@@ -210,7 +210,7 @@ namespace Shamisen
         /// </returns>
         public static bool TryParse(string s, out OffsetSByte result)
         {
-            bool g = sbyte.TryParse(s, out sbyte b);
+            var g = sbyte.TryParse(s, out var b);
             result = new OffsetSByte(b);
             return g;
         }

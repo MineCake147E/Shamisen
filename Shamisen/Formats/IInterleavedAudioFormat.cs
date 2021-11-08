@@ -21,7 +21,7 @@ namespace Shamisen
         /// <value>
         /// The size of frame.
         /// </value>
-        int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get; }
+        int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get; }
 
         /// <summary>
         /// Gets the value indicates how many <typeparamref name="TSample"/>s are required per 1-channel sample.<br/>

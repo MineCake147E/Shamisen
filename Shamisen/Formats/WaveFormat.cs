@@ -67,7 +67,7 @@ namespace Shamisen
         /// <value>
         /// The size of block.
         /// </value>
-        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => Channels * SampleSize; }
+        public int BlockSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => Channels * SampleSize; }
 
         /// <summary>
         /// Gets the value indicates how the samples are encoded.
@@ -117,7 +117,7 @@ namespace Shamisen
         /// <value>
         /// The size of the frame.
         /// </value>
-        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)]get => (BitDepth + 7) / 8; }
+        public int SampleSize { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => (BitDepth + 7) / 8; }
 
         /// <summary>
         /// Gets the extra data.

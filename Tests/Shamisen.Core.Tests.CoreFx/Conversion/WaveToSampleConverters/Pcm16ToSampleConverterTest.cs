@@ -25,8 +25,12 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             var na = new NeumaierAccumulator(default, default);
             for (var i = 0; i < spanI.Length && i < spanF.Length; i++)
             {
-                double d = spanI[i] * M - spanF[i];
-                na += d * d;
+                var simple = spanI[i] * M;
+                var optimized = spanF[i];
+                double diff = simple - optimized;
+                na += diff * diff;
+                if (diff != 0)
+                    Console.WriteLine($"{i}: {spanI[i]}, {simple}, {optimized}, {diff}");
             }
             Assert.AreEqual(0.0, na.Sum);
         }
@@ -66,6 +70,20 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             }
             PrepareArrays(frames, out var spanI, out var spanF);
             Pcm16ToSampleConverter.ProcessNormalAvx2(spanF, spanI);
+            CheckResultNormal(spanI, spanF);
+        }
+
+        [TestCase(2048)]
+        [TestCase(2881)]
+        public void ProcessNormalAvx2AConvertsCorrectly(int frames)
+        {
+            if (!Avx2.IsSupported)
+            {
+                Assert.Warn("AVX2 is not supported!");
+                return;
+            }
+            PrepareArrays(frames, out var spanI, out var spanF);
+            Pcm16ToSampleConverter.ProcessNormalAvx2A(spanF, spanI);
             CheckResultNormal(spanI, spanF);
         }
 

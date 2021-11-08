@@ -62,22 +62,22 @@ namespace Shamisen.Synthesis
                 switch (sizeof(TSample))
                 {
                     case 1:
-                        byte boffset = Unsafe.As<TSample, byte>(ref offset);
+                        var boffset = Unsafe.As<TSample, byte>(ref offset);
                         var bbuffer = MemoryMarshal.Cast<TSample, byte>(buffer);
                         bbuffer.FastFill(boffset);
                         break;
                     case 2:
-                        ushort woffset = Unsafe.As<TSample, ushort>(ref offset);
+                        var woffset = Unsafe.As<TSample, ushort>(ref offset);
                         var wbuffer = MemoryMarshal.Cast<TSample, ushort>(buffer);
                         wbuffer.FastFill(woffset);
                         break;
                     case 4:
-                        float doffset = Unsafe.As<TSample, float>(ref offset);
+                        var doffset = Unsafe.As<TSample, float>(ref offset);
                         var dbuffer = MemoryMarshal.Cast<TSample, float>(buffer);
                         dbuffer.FastFill(doffset);
                         break;
                     case 8:
-                        double qoffset = Unsafe.As<TSample, double>(ref offset);
+                        var qoffset = Unsafe.As<TSample, double>(ref offset);
                         var qbuffer = MemoryMarshal.Cast<TSample, double>(buffer);
                         qbuffer.FastFill(qoffset);
                         break;

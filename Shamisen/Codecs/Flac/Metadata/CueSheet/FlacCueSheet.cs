@@ -72,7 +72,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             var y = MemoryMarshal.Read<RawCueSheet>(buffer);
             var br = buffer.Slice(Unsafe.SizeOf<RawCueSheet>());
             bytesConsumed = Unsafe.SizeOf<RawCueSheet>();
-            byte[]? catalogNumber = new byte[RawCueSheet.CatalogNumberLength];
+            var catalogNumber = new byte[RawCueSheet.CatalogNumberLength];
             unsafe
             {
                 new Span<byte>(y.catalogNumber, RawCueSheet.CatalogNumberLength).CopyTo(catalogNumber.AsSpan());
@@ -80,9 +80,9 @@ namespace Shamisen.Codecs.Flac.Metadata
             if (y.length > 0)
             {
                 var tracks = new CueSheetTrack[y.length];
-                for (int i = 0; i < tracks.Length; i++)
+                for (var i = 0; i < tracks.Length; i++)
                 {
-                    tracks[i] = CueSheetTrack.ReadFrom(br, out int rr);
+                    tracks[i] = CueSheetTrack.ReadFrom(br, out var rr);
                     br = br.Slice(rr);
                     bytesConsumed += rr;
                 }

@@ -65,7 +65,7 @@ namespace Shamisen.Synthesis
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
-            int channels = Format.Channels;
+            var channels = Format.Channels;
             buffer = buffer.SliceAlign(channels);
             var omega = AngularVelocity;
             var theta = Theta;
@@ -96,7 +96,7 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, ref Fixed64 theta)
         {
-            for (int i = 0; i < buffer.Length; i++)
+            for (var i = 0; i < buffer.Length; i++)
             {
                 buffer[i] = GenerateMonauralSample(theta);
                 theta = AppendTheta(theta, omega);
@@ -121,8 +121,8 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2FmaMM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            long t = theta.Value;
-            long o = omega.Value;
+            var t = theta.Value;
+            var o = omega.Value;
             var ymm2 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm2.GetLower());
@@ -141,9 +141,9 @@ namespace Shamisen.Synthesis
             var ymm9 = Vector256.Create(-C1);
             var ymm8 = Vector256.Create(C0);
             //TODO: AdvSimd, Avx2FmaMM, and Sse42 variant
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 7;
+            var olen = length - 7;
             for (; i < olen; i += 8)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsUInt32();
@@ -214,8 +214,8 @@ namespace Shamisen.Synthesis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
-            long t = theta.Value;
-            long o = omega.Value;
+            var t = theta.Value;
+            var o = omega.Value;
             var ymm2 = Vector256.Create(o * 8);
             var ymm0 = Vector256.Create(t);
             var ymm1 = Vector256.Create(t + o * 2);
@@ -231,9 +231,9 @@ namespace Shamisen.Synthesis
             var ymm9 = Vector256.Create(-C1);
             var ymm8 = Vector256.Create(C0);
 
-            ref float rdi = ref MemoryMarshal.GetReference(buffer);
+            ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
-            nint olen = length - 7;
+            var olen = length - 7;
             for (; i < olen; i += 8)
             {
                 var ymm3 = Avx.Shuffle(ymm0.AsSingle(), ymm1.AsSingle(), 0b11_01_11_01).AsUInt32();

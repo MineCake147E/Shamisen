@@ -198,7 +198,7 @@ namespace Shamisen.Codecs.Waveform
             }
             else
             {
-                int rBytes = (int)RemainingBytes;
+                var rBytes = (int)RemainingBytes;
                 if (destination.Length > rBytes)
                 {
                     destination = destination.Slice(0, rBytes);
@@ -234,7 +234,7 @@ namespace Shamisen.Codecs.Waveform
             }
             else
             {
-                int rBytes = (int)RemainingBytes;
+                var rBytes = (int)RemainingBytes;
                 if (destination.Length > rBytes)
                 {
                     destination = destination.Slice(0, rBytes);

@@ -96,13 +96,13 @@ namespace Shamisen.Filters
         {
             if (position >= TotalLength) return ReadResult.EndOfStream;
             buffer = buffer.SliceAlign(blockSizeDivisorU32);
-            uint pinc = (uint)buffer.Length / blockSizeDivisorU32;
+            var pinc = (uint)buffer.Length / blockSizeDivisorU32;
             if (Length < pinc)
             {
                 buffer = buffer.SliceWhileIfLongerThan((int)Length * Format.BlockSize);
             }
             var rr = Source.Read(buffer);
-            uint ppnc = (uint)rr.Length / blockSizeDivisorU32;
+            var ppnc = (uint)rr.Length / blockSizeDivisorU32;
             position += ppnc;
             return rr;
         }

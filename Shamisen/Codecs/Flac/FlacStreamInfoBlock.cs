@@ -201,7 +201,7 @@ namespace Shamisen.Codecs.Flac
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get
             {
-                byte[]? h = new byte[16];
+                var h = new byte[16];
                 BinaryPrimitives.WriteUInt64BigEndian(h, md5Head);
                 BinaryPrimitives.WriteUInt64BigEndian(h.AsSpan(8), md5Head);
                 return h;

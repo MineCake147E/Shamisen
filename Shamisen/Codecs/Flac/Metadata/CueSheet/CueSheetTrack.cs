@@ -105,13 +105,13 @@ namespace Shamisen.Codecs.Flac.Metadata
                 {
                     throw new ArgumentException("The dataSource has not enough data!", nameof(dataSource));
                 }
-                for (int i = 0; i < m.Length; i++)
+                for (var i = 0; i < m.Length; i++)
                 {
                     m[i] = CueSheetTrackIndex.ConvertToBigEndian(m[i]);
                 }
                 unsafe
                 {
-                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, m);
                 }
@@ -120,7 +120,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 unsafe
                 {
-                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, ReadOnlyMemory<CueSheetTrackIndex>.Empty);
                 }
@@ -153,13 +153,13 @@ namespace Shamisen.Codecs.Flac.Metadata
                     throw new ArgumentException("The buffer has not enough data!", nameof(buffer));
                 }
                 br.SliceWhile(g.Length).CopyTo(g);
-                for (int i = 0; i < m.Length; i++)
+                for (var i = 0; i < m.Length; i++)
                 {
                     m[i] = CueSheetTrackIndex.ConvertToBigEndian(m[i]);
                 }
                 unsafe
                 {
-                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     bytesConsumed = Unsafe.SizeOf<RawCueSheetTrack>() + g.Length;
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, m);
@@ -169,7 +169,7 @@ namespace Shamisen.Codecs.Flac.Metadata
             {
                 unsafe
                 {
-                    byte[]? isrc = new byte[RawCueSheetTrack.ISRCLength];
+                    var isrc = new byte[RawCueSheetTrack.ISRCLength];
                     new Span<byte>(y.isrc, 12).CopyTo(isrc.AsSpan());
                     bytesConsumed = Unsafe.SizeOf<RawCueSheetTrack>();
                     return new(y.trackOffset, y.trackNumber, isrc, y.field4, ReadOnlyMemory<CueSheetTrackIndex>.Empty);
