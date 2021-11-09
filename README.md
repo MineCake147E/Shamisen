@@ -116,7 +116,7 @@ Legends:
 
 | Name of Backend                        | Author of Backend                   | License (binding)                                                                      | Target Platform | Status                |
 | -------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------- | --------------- | --------------------- |
-| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Android >10     | Gathering Information |
+| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Android >10     | Planned |
 
 #### Managed backends
 
@@ -126,6 +126,8 @@ Legends:
 
 | Name of Backend | Author of Backend | License (binding)                                                                      | Target Platforms | Status  |
 | --------------- | ----------------- | -------------------------------------------------------------------------------------- | ---------------- | ------- |
+| [Silk.NET](https://github.com/dotnet/Silk.NET) OpenAL | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Cross Platform(OpenAL) | Gathering Information |
+| [Silk.NET](https://github.com/dotnet/Silk.NET) XAudio | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Windows-Like(XAudio) | Planned |
 | Xamarin.iOS     | Microsoft         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | iOS              | Planned |
 
 ### File Formats and Codecs
