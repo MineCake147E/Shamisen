@@ -12,6 +12,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 using Shamisen.Utils.Intrinsics;
+using Shamisen.Filters;
 
 #endif
 #if NET5_0_OR_GREATER
@@ -25,11 +26,15 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     /// <seealso cref="SampleToWaveConverterBase" />
     public sealed class SampleToPcm8Converter : SampleToWaveConverterBase
     {
-        private Memory<byte> dsmLastOutput;
+        private const float Multiplier = 128.0f;
+        private Memory<sbyte> dsmLastOutput;
         private Memory<float> dsmAccumulator;
         private int dsmChannelPointer = 0;
         private Memory<float> readBuffer;
         private const int BufferMax = 1024; //The bufferMax is fixed to 1024 regardless of the destination type because the buffer is float.
+        private const float Minimum = -128.0f;
+        private const float Maximum = 127.0f;
+
         private int ActualBufferMax => BufferMax - (BufferMax % Source.Format.Channels);
 
         /// <summary>
@@ -43,7 +48,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             if (accuracyNeeded)
             {
                 dsmAccumulator = new float[source.Format.Channels];
-                dsmLastOutput = new byte[source.Format.Channels];
+                dsmLastOutput = new sbyte[source.Format.Channels];
             }
             AccuracyMode = accuracyNeeded;
             readBuffer = new float[ActualBufferMax];
@@ -92,16 +97,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
                 if (AccuracyMode)
                 {
-                    var dsmAcc = dsmAccumulator.Span;
-                    var dsmLastOut = dsmLastOutput.Span;
-                    dsmChannelPointer %= dsmAcc.Length;
-                    for (var i = 0; i < dest.Length; i++)
-                    {
-                        var diff = wrote[i] - (dsmLastOut[dsmChannelPointer] / 128.0f - 1);
-                        dsmAcc[dsmChannelPointer] += diff;
-                        dest[i] = dsmLastOut[dsmChannelPointer] = (byte)Math.Min(byte.MaxValue, Math.Max(dsmAcc[dsmChannelPointer] * 128 + 128, byte.MinValue));
-                        dsmChannelPointer = ++dsmChannelPointer % dsmAcc.Length;
-                    }
+                    ProcessAccurate(wrote, dest);
                 }
                 else
                 {
@@ -112,6 +108,150 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             return buffer.Length;
         }
+
+        #region Accurate
+
+        private void ProcessAccurate(Span<float> wrote, Span<byte> dest)
+        {
+            var channels = Format.Channels;
+            if (dsmAccumulator.Length < channels || dsmLastOutput.Length < channels)
+                throw new InvalidOperationException("Channels must be smaller than or equals to dsmAccumulator's length!");
+            switch (channels)
+            {
+                case 1:
+                    ProcessAccurateMonaural(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                case 2:
+                    ProcessAccurateStereoStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                case 3:
+                    ProcessAccurate3ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                case 4:
+                    ProcessAccurate4ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    break;
+                default:
+                    ProcessAccurateOrdinal(wrote, dest);
+                    break;
+            }
+        }
+
+        private static void ProcessAccurateMonaural(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)
+        {
+            var dsmAcc = MemoryMarshal.GetReference(accSpan);
+            var dsmPrev = MemoryMarshal.GetReference(loSpan);
+            ref var rWrote = ref MemoryMarshal.GetReference(wrote);
+            ref var rDest = ref MemoryMarshal.GetReference(dest);
+            nint nLength = dest.Length;
+            var mul = new Vector4(Multiplier);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = mul.X * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                dsmAcc = Clamp(dsmAcc);
+                var v = dsmPrev = ConvertScaledClamped(dsmAcc);
+                Unsafe.Add(ref rDest, i) = (byte)(v ^ 128);
+            }
+            MemoryMarshal.GetReference(accSpan) = dsmAcc;
+            MemoryMarshal.GetReference(loSpan) = dsmPrev;
+        }
+
+        private static void ProcessAccurateStereoStandard(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)
+        {
+            var dsmAcc = Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<sbyte, (sbyte x, sbyte y)>(ref MemoryMarshal.GetReference(loSpan));
+            var dsmPrev = new Vector2(dsmLastOut.x, dsmLastOut.y);
+            ref var rWrote = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<byte, (byte x, byte y)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 2;
+            var min = new Vector2(Minimum);
+            var max = new Vector2(Maximum);
+            var mul = new Vector2(Multiplier);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                var v = VectorUtils.Round(dsmAcc);
+                dsmPrev = Vector2.Clamp(v, min, max);
+                Unsafe.Add(ref rDest, i) = ((byte)(dsmPrev.X + 128), (byte)(dsmPrev.Y + 128));
+            }
+            Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<sbyte, (sbyte x, sbyte y)>(ref MemoryMarshal.GetReference(loSpan)) = ((sbyte)dsmPrev.X, (sbyte)dsmPrev.Y);
+        }
+
+        private static void ProcessAccurate3ChannelsStandard(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)
+        {
+            var dsmAcc = Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<sbyte, (sbyte x, sbyte y, sbyte z)>(ref MemoryMarshal.GetReference(loSpan));
+            var dsmPrev = new Vector3(dsmLastOut.x, dsmLastOut.y, dsmLastOut.z);
+            ref var rWrote = ref Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<byte, (byte x, byte y, byte z)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 3;
+            var min = new Vector3(Minimum);
+            var max = new Vector3(Maximum);
+            var mul = new Vector3(Multiplier);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                var v = Vector3.Clamp(dsmAcc, min, max);
+                dsmPrev = VectorUtils.Round(v);
+                Unsafe.Add(ref rDest, i) = ((byte)(dsmPrev.X + 128), (byte)(dsmPrev.Y + 128), (byte)(dsmPrev.Z + 128));
+            }
+            Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<sbyte, (sbyte x, sbyte y, sbyte z)>(ref MemoryMarshal.GetReference(loSpan)) = ((sbyte)dsmPrev.X, (sbyte)dsmPrev.Y, (sbyte)dsmPrev.Z);
+        }
+
+        private static void ProcessAccurate4ChannelsStandard(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)
+        {
+            var dsmAcc = Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan));
+            var dsmLastOut = Unsafe.As<sbyte, (sbyte x, sbyte y, sbyte z, sbyte w)>(ref MemoryMarshal.GetReference(loSpan));
+            var dsmPrev = new Vector4(dsmLastOut.x, dsmLastOut.y, dsmLastOut.z, dsmLastOut.w);
+            ref var rWrote = ref Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(wrote));
+            ref var rDest = ref Unsafe.As<byte, (byte x, byte y, byte z, byte w)>(ref MemoryMarshal.GetReference(dest));
+            var nLength = (nint)dest.Length / 4;
+            var min = new Vector4(Minimum);
+            var max = new Vector4(Maximum);
+            var mul = new Vector4(Multiplier);
+            for (nint i = 0; i < nLength; i++)
+            {
+                var diff = mul * Unsafe.Add(ref rWrote, i) - dsmPrev;
+                dsmAcc += diff;
+                var v = Vector4.Clamp(dsmAcc, min, max);
+                dsmPrev = VectorUtils.Round(v);
+                Unsafe.Add(ref rDest, i) = ((byte)(dsmPrev.X + 128), (byte)(dsmPrev.Y + 128), (byte)(dsmPrev.Z + 128), (byte)(dsmPrev.W + 128));
+            }
+            Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
+            Unsafe.As<sbyte, (sbyte x, sbyte y, sbyte z, sbyte w)>(ref MemoryMarshal.GetReference(loSpan)) = ((sbyte)dsmPrev.X, (sbyte)dsmPrev.Y, (sbyte)dsmPrev.Z, (sbyte)dsmPrev.W);
+        }
+        private static nint ProcessAccurateDirectGenericStandard(Span<float> wrote, Span<byte> dest, Span<float> dsmAcc, Span<sbyte> dsmLast, int dsmChannelPointer)
+        {
+            ref var acc = ref MemoryMarshal.GetReference(dsmAcc);
+            ref var dlo = ref MemoryMarshal.GetReference(dsmLast);
+            ref var src = ref MemoryMarshal.GetReference(wrote);
+            ref var dst = ref MemoryMarshal.GetReference(dest);
+            var channels = dsmAcc.Length;
+            nint ch = dsmChannelPointer % channels;
+            nint i = 0, length = wrote.Length;
+            const float Mul = Multiplier;
+            for (; i < length; i++)
+            {
+                var a = Unsafe.Add(ref acc, ch);
+                var diff = Mul * Unsafe.Add(ref src, i) - Unsafe.Add(ref dlo, ch);
+                a += diff;
+                var v = ConvertScaled(a);
+                Unsafe.Add(ref dlo, ch) = v;
+                Unsafe.Add(ref acc, ch) = a;
+                var h = ++ch < channels;
+                var hh = -Unsafe.As<bool, byte>(ref h);
+                Unsafe.Add(ref dst, i) = (byte)(v + 128);
+                ch &= hh;
+            }
+            return ch;
+        }
+        private void ProcessAccurateOrdinal(Span<float> wrote, Span<byte> dest) => dsmChannelPointer = (int)ProcessAccurateDirectGenericStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span, dsmChannelPointer);
+
+        #endregion
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessNormal(Span<float> wrote, Span<byte> dest)
@@ -270,6 +410,44 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
 #endif
         #endregion
+        /// <summary>
+        /// Clamps the specified <paramref name="srcval"/> between -1 and 1, and then converts to <see cref="byte"/>.
+        /// </summary>
+        /// <param name="srcval"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static sbyte Convert(float srcval)
+        {
+            srcval *= 128.0f;
+            return ConvertScaled(srcval);
+        }
+
+        /// <summary>
+        /// Clamps the specified <paramref name="srcval"/> between -32768.0f and 32767.0f, and then converts to <see cref="byte"/>.
+        /// </summary>
+        /// <param name="srcval"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static sbyte ConvertScaled(float srcval)
+        {
+            srcval = Clamp(srcval);
+            return ConvertScaledClamped(srcval);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float Clamp(float srcval)
+        {
+            srcval = FastMath.Max(srcval, -128.0f);
+            srcval = FastMath.Min(srcval, 127.0f);
+            return srcval;
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static sbyte ConvertScaledClamped(float srcval)
+        {
+            srcval = FastMath.Round(srcval);
+            return (sbyte)srcval;
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

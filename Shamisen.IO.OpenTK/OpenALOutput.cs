@@ -17,9 +17,11 @@ namespace Shamisen.IO
         private const double MinLengthInMilliseconds = 16;
         private const int BUFNUM = 4;
 #else
-        private const double MinLengthInMilliseconds = 1;
-        private const int BUFNUM = 32;
+        private const double MinLengthInMilliseconds = 4;
+        private const int BUFNUM = 16;
 #endif
+        private const int NumberOfBuffers = BUFNUM;
+        private const double ReciprocalNumberOfBuffers = 1.0 / NumberOfBuffers;
         private int[] bufferPointers;
 
         private static readonly TimeSpan MinimumSleep = TimeSpan.FromMilliseconds(1);
@@ -90,11 +92,11 @@ namespace Shamisen.IO
             {
                 contextHandle = ALC.CreateContext(device, (int*)null);
             }
-            ALC.GetInteger(device, AlcGetInteger.AttributesSize, 1, out int asize);
-            int[] attr = new int[asize];
+            ALC.GetInteger(device, AlcGetInteger.AttributesSize, 1, out var asize);
+            var attr = new int[asize];
             ALC.GetInteger(device, AlcGetInteger.AllAttributes, asize, attr);
             var sAttr = MemoryMarshal.Cast<int, (AlcContextAttributes Key, int Value)>(attr.AsSpan());
-            int sampleRate = int.MinValue;
+            var sampleRate = int.MinValue;
             foreach (var (Key, Value) in sAttr)
             {
                 switch (Key)
@@ -109,9 +111,9 @@ namespace Shamisen.IO
             }
             if (sampleRate < 0) throw new ArgumentException($"The device {name} is not supported!", nameof(name));
             Console.WriteLine($"SampleRate:{sampleRate}");
-            Latency = latency / BUFNUM;
+            Latency = latency * ReciprocalNumberOfBuffers;
             Latency = Latency.TotalMilliseconds < MinLengthInMilliseconds ? TimeSpan.FromMilliseconds(MinLengthInMilliseconds) : Latency;
-            bufferPointers = AL.GenBuffers(BUFNUM); CheckErrors();
+            bufferPointers = AL.GenBuffers(NumberOfBuffers); CheckErrors();
 #if DEBUG
             var version = AL.Get(ALGetString.Version); CheckErrors();
             var vendor = AL.Get(ALGetString.Vendor); CheckErrors();
@@ -186,13 +188,13 @@ namespace Shamisen.IO
                 {
                     if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers); CheckErrors(); }
                     if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
-                    bufferPointers = AL.GenBuffers(BUFNUM); CheckErrors();
+                    bufferPointers = AL.GenBuffers(NumberOfBuffers); CheckErrors();
                     src = AL.GenSource(); CheckErrors();
                     var sf = sourceFormat ?? throw new ArgumentNullException();
 
                     inbuf = new byte[sf.GetBufferSizeRequired(Latency)];
-                    format = GetALFormat(sf);
-                    foreach (int item in bufferPointers)
+                    format = OpenALDevice.ConvertToALFormat(sf);
+                    foreach (var item in bufferPointers)
                     {
                         var cnt = Source.Read(inbuf.AsSpan());
                         AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
@@ -207,7 +209,7 @@ namespace Shamisen.IO
                     }
 
                     AL.Source(src, ALSourceb.SourceRelative, true); CheckErrors();
-                    AL.SourceQueueBuffers(src, BUFNUM, bufferPointers); CheckErrors();
+                    AL.SourceQueueBuffers(src, NumberOfBuffers, bufferPointers); CheckErrors();
                     AL.Source(src, ALSourcef.Gain, 1); CheckErrors();
                     AL.Source(src, ALSource3f.Position, 0, 0, 0); CheckErrors();
                     AL.SourcePlay(src); CheckErrors();
@@ -238,7 +240,7 @@ namespace Shamisen.IO
                         }
                         CheckErrors();
                     }
-                    if (bp < 1) await Task.Delay(TimeSpan.FromMilliseconds(Math.Max(MinimumSleep.TotalMilliseconds, Latency.TotalMilliseconds / BUFNUM)), token);
+                    if (bp < 1) await Task.Delay(TimeSpan.FromMilliseconds(Math.Max(MinimumSleep.TotalMilliseconds, Latency.TotalMilliseconds * ReciprocalNumberOfBuffers)), token);
                 }
             }
             catch (Exception e)
@@ -257,10 +259,10 @@ namespace Shamisen.IO
             if (Source is null || sourceFormat is null) throw new Exception("");
             while (bp > 0)
             {
-                int buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
-                AL.GetBuffer(buffer, ALGetBufferi.Size, out int size);
+                var buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
+                AL.GetBuffer(buffer, ALGetBufferi.Size, out var size);
                 CheckErrors();
-                AL.GetBuffer(buffer, ALGetBufferi.Bits, out int bits);
+                AL.GetBuffer(buffer, ALGetBufferi.Bits, out var bits);
                 CheckErrors();
                 if (bits == 0)
                 {
@@ -306,6 +308,7 @@ namespace Shamisen.IO
         /// </exception>
         public void Play()
         {
+            if (PlaybackState == PlaybackState.Playing) return;
             if (PlaybackState == PlaybackState.Paused)
             {
                 Resume();

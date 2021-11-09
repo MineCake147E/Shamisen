@@ -9,6 +9,7 @@ using Reactive.Bindings;
 
 using ReactiveUI;
 
+using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Filters;
 using Shamisen.Filters.Mixing;
@@ -66,14 +67,21 @@ namespace Shamisen.Tests.IO.OpenTK
 
         private void InitializeInternal()
         {
-            int y = 1;
+            var y = 1;
             foreach (var item in Devices.ToArray().Where(a => a.Checked))
             {
                 var t = item.Device.CreateSoundOut();
-                var source = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
-                var source2 = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 880 };
-                var mult = new Multiplier(new SimpleSourceBufferPair(source), new SimpleSourceBufferPair(source2));
-                t.Initialize(new SampleToPcm16Converter(mult, false));
+                var source = new TriangleWaveSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ }; ;
+                //var resampler = new SplineResampler(source, 192000);
+                //var biquad = new BiQuadFilter(resampler, BiQuadParameter.CreateNotchFilterParameterFromQuality(192000, 440, 3.0));
+                if (item.Device.CheckSupportStatus(new WaveFormat(192000, 32, 1, AudioEncoding.IeeeFloat)).IsSupported)
+                {
+                    t.Initialize(new SampleToFloat32Converter(source));
+                }
+                else
+                {
+                    t.Initialize(new SampleToPcm8Converter(source, false));
+                }
                 outputs.Add(t);
                 sinusoidSources.Add(source);
             }
@@ -116,7 +124,10 @@ namespace Shamisen.Tests.IO.OpenTK
     {
         private bool @checked;
 
-        public DeviceViewModel(IAudioOutputDevice<OpenALOutput> device) => Device = device ?? throw new ArgumentNullException(nameof(device));
+        public DeviceViewModel(IAudioOutputDevice<OpenALOutput> device)
+        {
+            Device = device ?? throw new ArgumentNullException(nameof(device));
+        }
 
         public bool Checked
         {

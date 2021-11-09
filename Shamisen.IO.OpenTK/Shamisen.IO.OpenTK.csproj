@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFrameworks>net6.0;net5.0</TargetFrameworks>
         <RootNamespace>Shamisen.IO</RootNamespace>
         <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
@@ -20,7 +20,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTK" Version="4.6.7" />
+        <PackageReference Include="OpenTK" Version="5.0.0-pre.6" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

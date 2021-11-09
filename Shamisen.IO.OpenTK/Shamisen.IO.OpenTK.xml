@@ -48,7 +48,6 @@
             <param name="format">The format to judge the availability.</param>
             <param name="mode">The share mode.</param>
             <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by <see cref="N:Shamisen"/>.</returns>
-            <exception cref="T:System.NotSupportedException">The {nameof(IOExclusivity.Exclusive)} mode is not supported!</exception>
         </member>
         <member name="M:Shamisen.IO.OpenALDevice.CreateSoundOut(System.TimeSpan)">
             <summary>

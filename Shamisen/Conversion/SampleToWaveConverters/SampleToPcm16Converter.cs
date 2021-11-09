@@ -183,7 +183,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        private void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        private static void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = MemoryMarshal.GetReference(accSpan);
             var dsmPrev = MemoryMarshal.GetReference(loSpan);

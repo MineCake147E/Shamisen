@@ -29,7 +29,7 @@ namespace Shamisen.IO
         /// <summary>
         /// The value which indicates the <see cref="IAudioDevice"/> has no ability to check the support status currently.
         /// </summary>
-        public static readonly FormatSupportStatus Unchecked = new(true, false, false);
+        public static readonly FormatSupportStatus Unchecked = new(false, false, false);
 
         /// <summary>
         /// The value which indicates the <see cref="IWaveFormat"/> is not supported by the <see cref="IAudioDevice"/>.
@@ -37,20 +37,20 @@ namespace Shamisen.IO
         public static readonly FormatSupportStatus NotSupported = new(true, false, false);
 
         /// <summary>
-        /// The value which indicates the <see cref="IWaveFormat"/> is supported by the <see cref="IAudioDevice"/>, by converting the audio into some different format.
+        /// The value which indicates the <see cref="IWaveFormat"/> is supported by the <see cref="IAudioDevice"/> and its binding, by converting the audio into some different format.
         /// </summary>
-        public static readonly FormatSupportStatus SupportedBySoftware = new(true, true, false);
+        public static readonly FormatSupportStatus SupportedByBinding = new(true, true, false);
 
         /// <summary>
         /// The value which indicates the <see cref="IWaveFormat"/> is supported by the <see cref="IAudioDevice"/> natively, without converting the audio into some different format.
         /// </summary>
-        public static readonly FormatSupportStatus SupportedByHardware = new(true, false, true);
+        public static readonly FormatSupportStatus SupportedByBackend = new(true, false, true);
 
-        private FormatSupportStatus(bool isChecked, bool hasSoftwareSupport, bool isNativelySupported)
+        private FormatSupportStatus(bool isChecked, bool hasBindingSupport, bool isNativelySupported)
         {
             TFlags v = 0;
             if (isChecked) v |= FlagChecked;
-            if (hasSoftwareSupport) v |= FlagHasSoftwareSupport;
+            if (hasBindingSupport) v |= FlagHasSoftwareSupport;
             if (isNativelySupported) v |= FlagNativelySupported;
             value = v;
         }
