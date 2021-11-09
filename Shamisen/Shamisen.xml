@@ -9160,52 +9160,6 @@
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.Dispose">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE16Avx2(System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE16Sse2(System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE8Avx2(System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessE8Sse2(System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Avx2(System.Span{System.Single},System.Int32)">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-            <param name="effectiveBitDepth"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Avx2PSV(System.Span{System.Single},System.Int32)">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.<br/>
-            Optimized for environments where <see cref="P:Shamisen.Optimization.IntrinsicsUtils.PreferShiftVariable"/> is <c>true</c>.
-            </summary>
-            <param name="buffer"></param>
-            <param name="effectiveBitDepth"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.RangedPcm32ToSampleConverter.X86.ProcessELessThan24Sse2(System.Span{System.Single},System.Int32)">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            </summary>
-            <param name="buffer"></param>
-            <param name="effectiveBitDepth"></param>
-        </member>
         <member name="T:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase">
             <summary>
             Converts wave data to samples.

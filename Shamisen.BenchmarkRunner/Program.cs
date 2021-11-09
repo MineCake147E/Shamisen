@@ -1,6 +1,7 @@
 ﻿using System;
 
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
@@ -16,7 +17,8 @@ namespace Shamisen.Benchmarks.Running
         {
             BenchmarkSwitcher
             .FromAssembly(typeof(ResamplerBenchmarks).Assembly)
-            .Run(args, DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256)));
+            .Run(args, DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256)).DontOverwriteResults()
+            );
             Console.Write("Press any key to exit:");
             Console.ReadKey();
         }

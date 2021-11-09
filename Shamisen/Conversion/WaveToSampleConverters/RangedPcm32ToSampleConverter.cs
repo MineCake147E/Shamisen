@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 using Shamisen.Formats;
-
-using System.Numerics;
 
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -59,11 +58,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 return rr;
             }
             buffer = buffer.SliceWhile(rr.Length / 4);
-            Process(buffer, Source.Format.EffectiveBitDepth);
+            Process(buffer, MemoryMarshal.Cast<float, int>(buffer), Source.Format.EffectiveBitDepth);
             return buffer.Length;
         }
 
-        private static void Process(Span<float> buffer, int effectiveBitDepth)
+        private static void Process(Span<float> buffer, ReadOnlySpan<int> source, int effectiveBitDepth)
         {
             if (effectiveBitDepth >= 32)
             {
@@ -71,55 +70,62 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
             else
             {
-#if NETCOREAPP3_1_OR_GREATER
-                if (X86.IsSupported)
-                {
-                    X86.Process(buffer, effectiveBitDepth);
-                    return;
-                }
-#endif
-                ProcessEMoreThan24Standard(buffer, effectiveBitDepth);
+
+                ProcessEMoreThan24Standard(buffer, source, effectiveBitDepth);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessEMoreThan24Standard(Span<float> buffer, int effectiveBitDepth)
+        internal static float CalculateMultiplier(int effectiveBitDepth)
         {
-            Vector<float> mul = new(2.0f / (1 << effectiveBitDepth));
-            ref var rdi = ref MemoryMarshal.GetReference(buffer);
-            ref var rsi = ref Unsafe.As<float, int>(ref rdi);
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                return BitConverter.Int32BitsToSingle(0x40000000 - (effectiveBitDepth << 23));
+#else
+                return (float)BitConverter.Int64BitsToDouble(0x4000000000000000 - ((long)effectiveBitDepth << 52));
+#endif
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessEMoreThan24Standard(Span<float> buffer, ReadOnlySpan<int> source, int effectiveBitDepth)
+        {
+            Vector<float> mul = new(CalculateMultiplier(effectiveBitDepth));
+            ref var x10 = ref MemoryMarshal.GetReference(buffer);
+            ref var x9 = ref MemoryMarshal.GetReference(source);
             nint i, length = buffer.Length;
             var size = Vector<float>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
             {
-                var v0_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 0)));
-                var v1_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 1)));
-                var v2_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 2)));
-                var v3_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 3)));
+                var v0_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 0)));
+                var v1_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 1)));
+                var v2_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 2)));
+                var v3_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 3)));
                 v0_ns *= mul;
                 v1_ns *= mul;
                 v2_ns *= mul;
                 v3_ns *= mul;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 0)) = v0_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 1)) = v1_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 2)) = v2_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 3)) = v3_ns;
-                v0_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 4)));
-                v1_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 5)));
-                v2_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 6)));
-                v3_ns = Vector.ConvertToSingle(Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref rdi, i + size * 7)));
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 0)) = v0_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 1)) = v1_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 2)) = v2_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 3)) = v3_ns;
+                v0_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 4)));
+                v1_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 5)));
+                v2_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 6)));
+                v3_ns = Vector.ConvertToSingle(Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref Unsafe.Add(ref x9, i), size * 7)));
                 v0_ns *= mul;
                 v1_ns *= mul;
                 v2_ns *= mul;
                 v3_ns *= mul;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 4)) = v0_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 5)) = v1_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 6)) = v2_ns;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + size * 7)) = v3_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 4)) = v0_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 5)) = v1_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 6)) = v2_ns;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x10, i + size * 7)) = v3_ns;
             }
             for (; i < length; i++)
             {
-                Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * mul[0];
+                Unsafe.Add(ref x10, i) = Unsafe.Add(ref x9, i) * mul[0];
             }
         }
         private void Dispose(bool disposing)

@@ -61,12 +61,11 @@ namespace Shamisen.Optimization
                             0x60040 or 0x50040 or 0xc0030 or 0xf0030 => true,   //Haswell
                             _ => false, //Broadwell or later
                         };
-                        preferShiftVariable = Avx2.IsSupported & !avoidAvxFloatingPoint;
+                        preferShiftVariable = Avx2.IsSupported && !avoidAvxFloatingPoint;
 #if NET6_0_OR_GREATER
-                        preferShiftVariable &= AvxVnni.IsSupported | model switch
-#else
-                        preferShiftVariable &= model switch
+                        //preferShiftVariable &= AvxVnni.IsSupported;
 #endif
+                        preferShiftVariable = preferShiftVariable && model switch
                         {
                             0x70040 or 0xd0030 or 0xf0040 or 0x60050 => true,   //Broadwell
                             _ => true, //Skylake or later

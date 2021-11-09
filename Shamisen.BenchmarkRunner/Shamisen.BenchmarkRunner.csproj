@@ -7,7 +7,6 @@
         <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.Benchmarks\Shamisen.Benchmarks.csproj" />
         <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
