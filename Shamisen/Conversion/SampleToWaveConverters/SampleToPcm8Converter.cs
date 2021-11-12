@@ -139,7 +139,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private static void ProcessAccurateMonaural(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)
         {
             var dsmAcc = MemoryMarshal.GetReference(accSpan);
-            var dsmPrev = MemoryMarshal.GetReference(loSpan);
+            var dsmPrev = (float)MemoryMarshal.GetReference(loSpan);
             ref var rWrote = ref MemoryMarshal.GetReference(wrote);
             ref var rDest = ref MemoryMarshal.GetReference(dest);
             nint nLength = dest.Length;
@@ -149,11 +149,12 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var diff = mul.X * Unsafe.Add(ref rWrote, i) - dsmPrev;
                 dsmAcc += diff;
                 dsmAcc = Clamp(dsmAcc);
-                var v = dsmPrev = ConvertScaledClamped(dsmAcc);
+                dsmPrev = FastMath.Round(dsmAcc);
+                var v = (sbyte)dsmPrev;
                 Unsafe.Add(ref rDest, i) = (byte)(v ^ 128);
             }
             MemoryMarshal.GetReference(accSpan) = dsmAcc;
-            MemoryMarshal.GetReference(loSpan) = dsmPrev;
+            MemoryMarshal.GetReference(loSpan) = (sbyte)dsmPrev;
         }
 
         private static void ProcessAccurateStereoStandard(Span<float> wrote, Span<byte> dest, Span<float> accSpan, Span<sbyte> loSpan)

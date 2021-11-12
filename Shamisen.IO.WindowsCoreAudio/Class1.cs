@@ -13,7 +13,7 @@ namespace Shamisen.IO.WindowsCoreAudio
 {
     public class Class1
     {
-        public static void Main()
+        public static unsafe void Main()
         {
             var hr = PInvoke.CoCreateInstance(typeof(MMDeviceEnumerator).GUID, null, CLSCTX.CLSCTX_ALL, typeof(IMMDeviceEnumerator).GUID, out var enumObject);
             hr.ThrowOnFailure();

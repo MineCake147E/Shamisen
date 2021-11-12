@@ -273,7 +273,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                var xmm0 = Vector128.Create(~0u);
                 var xmm1 = Vector128.Create(0x8000_0000u);
                 var xmm2 = Vector128.Create(0x3b84_0000u);
                 var xmm3 = Vector128.Create(0x83f8_0000u);
@@ -284,34 +283,26 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var olen = length - 15;
                 for (i = 0; i < olen; i += 16)
                 {
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
-                    var xmm5 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 4)));
-                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 8)));
-                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 12)));
-                    xmm4 = Sse2.Xor(xmm4, xmm0);
-                    xmm5 = Sse2.Xor(xmm5, xmm0);
-                    xmm6 = Sse2.Xor(xmm6, xmm0);
-                    xmm7 = Sse2.Xor(xmm7, xmm0);
-                    xmm4 = Sse41.ConvertToVector128Int32(xmm4.AsSByte()).AsUInt32();
-                    xmm5 = Sse41.ConvertToVector128Int32(xmm5.AsSByte()).AsUInt32();
-                    xmm6 = Sse41.ConvertToVector128Int32(xmm6.AsSByte()).AsUInt32();
-                    xmm7 = Sse41.ConvertToVector128Int32(xmm7.AsSByte()).AsUInt32();
+                    var xmm4 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i))).AsSByte()).AsUInt32();
+                    var xmm5 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 4))).AsSByte()).AsUInt32();
+                    var xmm6 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 8))).AsSByte()).AsUInt32();
+                    var xmm7 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 12))).AsSByte()).AsUInt32();
+                    var xmm8 = Sse2.AndNot(xmm4, xmm1);
+                    var xmm9 = Sse2.AndNot(xmm5, xmm1);
+                    var xmm10 = Sse2.AndNot(xmm6, xmm1);
+                    var xmm11 = Sse2.AndNot(xmm7, xmm1);
                     xmm4 = Sse2.ShiftLeftLogical(xmm4, 19);
                     xmm5 = Sse2.ShiftLeftLogical(xmm5, 19);
                     xmm6 = Sse2.ShiftLeftLogical(xmm6, 19);
                     xmm7 = Sse2.ShiftLeftLogical(xmm7, 19);
-                    var xmm8 = Sse2.And(xmm4, xmm1);
-                    var xmm9 = Sse2.And(xmm5, xmm1);
-                    var xmm10 = Sse2.And(xmm6, xmm1);
-                    var xmm11 = Sse2.And(xmm7, xmm1);
                     xmm8 = Sse2.Or(xmm8, xmm2);
                     xmm9 = Sse2.Or(xmm9, xmm2);
                     xmm10 = Sse2.Or(xmm10, xmm2);
                     xmm11 = Sse2.Or(xmm11, xmm2);
-                    xmm4 = Sse2.And(xmm4, xmm3);
-                    xmm5 = Sse2.And(xmm5, xmm3);
-                    xmm6 = Sse2.And(xmm6, xmm3);
-                    xmm7 = Sse2.And(xmm7, xmm3);
+                    xmm4 = Sse2.AndNot(xmm4, xmm3);
+                    xmm5 = Sse2.AndNot(xmm5, xmm3);
+                    xmm6 = Sse2.AndNot(xmm6, xmm3);
+                    xmm7 = Sse2.AndNot(xmm7, xmm3);
                     xmm4 = Sse2.Add(xmm4, xmm2);
                     xmm4 = Sse.Subtract(xmm4.AsSingle(), xmm8.AsSingle()).AsUInt32();
                     xmm5 = Sse2.Add(xmm5, xmm2);
@@ -327,8 +318,14 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
+                    var xmm4 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i)).AsSByte()).AsUInt32();
+                    var xmm8 = Sse2.AndNot(xmm4, xmm1);
+                    xmm4 = Sse2.ShiftLeftLogical(xmm4, 19);
+                    xmm8 = Sse2.Or(xmm8, xmm2);
+                    xmm4 = Sse2.AndNot(xmm4, xmm3);
+                    xmm4 = Sse2.Add(xmm4, xmm2);
+                    xmm4 = Sse.SubtractScalar(xmm4.AsSingle(), xmm8.AsSingle()).AsUInt32();
+                    Unsafe.Add(ref rdi, i) = xmm4.AsSingle().GetElement(0);
                 }
             }
         }
@@ -337,7 +334,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                var xmm0 = Vector128.CreateScalarUnsafe(~0ul).AsUInt32();
                 var ymm1 = Vector256.Create(0x8000_0000u);
                 var ymm2 = Vector256.Create(0x3b84_0000u);
                 var ymm3 = Vector256.Create(0x83f8_0000u);
@@ -348,34 +344,26 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var olen = length - 31;
                 for (i = 0; i < olen; i += 32)
                 {
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    var xmm5 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 16))).AsUInt32();
-                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 24))).AsUInt32();
-                    xmm4 = Sse2.Xor(xmm4, xmm0);
-                    xmm5 = Sse2.Xor(xmm5, xmm0);
-                    xmm6 = Sse2.Xor(xmm6, xmm0);
-                    xmm7 = Sse2.Xor(xmm7, xmm0);
-                    var ymm4 = Avx2.ConvertToVector256Int32(xmm4.AsSByte()).AsUInt32();
-                    var ymm5 = Avx2.ConvertToVector256Int32(xmm5.AsSByte()).AsUInt32();
-                    var ymm6 = Avx2.ConvertToVector256Int32(xmm6.AsSByte()).AsUInt32();
-                    var ymm7 = Avx2.ConvertToVector256Int32(xmm7.AsSByte()).AsUInt32();
+                    var ymm4 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref Unsafe.Add(ref rsi, i), 0))).AsSByte()).AsUInt32();
+                    var ymm5 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref Unsafe.Add(ref rsi, i), 8))).AsSByte()).AsUInt32();
+                    var ymm6 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref Unsafe.Add(ref rsi, i), 16))).AsSByte()).AsUInt32();
+                    var ymm7 = Avx2.ConvertToVector256Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref Unsafe.Add(ref rsi, i), 24))).AsSByte()).AsUInt32();
+                    var ymm8 = Avx2.AndNot(ymm4, ymm1);
+                    var ymm9 = Avx2.AndNot(ymm5, ymm1);
+                    var ymm10 = Avx2.AndNot(ymm6, ymm1);
+                    var ymm11 = Avx2.AndNot(ymm7, ymm1);
                     ymm4 = Avx2.ShiftLeftLogical(ymm4, 19);
                     ymm5 = Avx2.ShiftLeftLogical(ymm5, 19);
                     ymm6 = Avx2.ShiftLeftLogical(ymm6, 19);
                     ymm7 = Avx2.ShiftLeftLogical(ymm7, 19);
-                    var ymm8 = Avx2.And(ymm4, ymm1);
-                    var ymm9 = Avx2.And(ymm5, ymm1);
-                    var ymm10 = Avx2.And(ymm6, ymm1);
-                    var ymm11 = Avx2.And(ymm7, ymm1);
                     ymm8 = Avx2.Or(ymm8, ymm2);
                     ymm9 = Avx2.Or(ymm9, ymm2);
                     ymm10 = Avx2.Or(ymm10, ymm2);
                     ymm11 = Avx2.Or(ymm11, ymm2);
-                    ymm4 = Avx2.And(ymm4, ymm3);
-                    ymm5 = Avx2.And(ymm5, ymm3);
-                    ymm6 = Avx2.And(ymm6, ymm3);
-                    ymm7 = Avx2.And(ymm7, ymm3);
+                    ymm4 = Avx2.AndNot(ymm4, ymm3);
+                    ymm5 = Avx2.AndNot(ymm5, ymm3);
+                    ymm6 = Avx2.AndNot(ymm6, ymm3);
+                    ymm7 = Avx2.AndNot(ymm7, ymm3);
                     ymm4 = Avx2.Add(ymm4, ymm2);
                     ymm4 = Avx.Subtract(ymm4.AsSingle(), ymm8.AsSingle()).AsUInt32();
                     ymm5 = Avx2.Add(ymm5, ymm2);
@@ -392,21 +380,25 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 olen = length - 3;
                 for (; i < olen; i += 4)
                 {
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i)));
-                    xmm4 = Sse2.Xor(xmm4, xmm0);
-                    xmm4 = Sse41.ConvertToVector128Int32(xmm4.AsSByte()).AsUInt32();
+                    var xmm4 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i))).AsSByte()).AsUInt32();
                     xmm4 = Sse2.ShiftLeftLogical(xmm4, 19);
-                    var xmm6 = Sse2.And(xmm4, ymm1.GetLower());
+                    var xmm6 = Sse2.AndNot(xmm4, ymm1.GetLower());
                     xmm6 = Sse2.Or(xmm6, ymm2.GetLower());
-                    xmm4 = Sse2.And(xmm4, ymm3.GetLower());
+                    xmm4 = Sse2.AndNot(xmm4, ymm3.GetLower());
                     xmm4 = Sse2.Add(xmm4, ymm2.GetLower());
                     xmm4 = Sse.Subtract(xmm4.AsSingle(), xmm6.AsSingle()).AsUInt32();
                     Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm4.AsSingle();
                 }
                 for (; i < length; i++)
                 {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
+                    var xmm4 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i)).AsSByte()).AsUInt32();
+                    var xmm8 = Sse2.AndNot(xmm4, ymm1.GetLower());
+                    xmm4 = Sse2.ShiftLeftLogical(xmm4, 19);
+                    xmm8 = Sse2.Or(xmm8, ymm2.GetLower());
+                    xmm4 = Sse2.AndNot(xmm4, ymm3.GetLower());
+                    xmm4 = Sse2.Add(xmm4, ymm2.GetLower());
+                    xmm4 = Sse.SubtractScalar(xmm4.AsSingle(), xmm8.AsSingle()).AsUInt32();
+                    Unsafe.Add(ref rdi, i) = xmm4.AsSingle().GetElement(0);
                 }
             }
         }
@@ -449,8 +441,14 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
                 for (; i < length; i++)
                 {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertMuLawToSingle(g);
+                    var xmm4 = Sse41.ConvertToVector128Int32(Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i)).AsSByte()).AsUInt32();
+                    var xmm8 = Sse2.AndNot(xmm4, xmm1);
+                    xmm4 = Sse2.ShiftLeftLogical(xmm4, 19);
+                    xmm8 = Sse2.Or(xmm8, xmm2);
+                    xmm4 = Sse2.AndNot(xmm4, xmm3);
+                    xmm4 = Sse2.Add(xmm4, xmm2);
+                    xmm4 = Sse.SubtractScalar(xmm4.AsSingle(), xmm8.AsSingle()).AsUInt32();
+                    Unsafe.Add(ref rdi, i) = xmm4.AsSingle().GetElement(0);
                 }
             }
         }

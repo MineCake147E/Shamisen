@@ -296,17 +296,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         private bool disposedValue = false;
 
-        /// <summary>
-        /// Releases all resource used by the
-        /// <see cref="ResamplerBase"/> object.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the
-        /// <see cref="ResamplerBase"/>. The <see cref="Dispose()"/>
-        /// method leaves the <see cref="ResamplerBase"/> in an
-        /// unusable state. After calling <see cref="Dispose()"/>, you must release all references to the
-        /// <see cref="ResamplerBase"/> so the garbage collector can
-        /// reclaim the memory that the <see cref="ResamplerBase"/>
-        /// was occupying.</remarks>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
