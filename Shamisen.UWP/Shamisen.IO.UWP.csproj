@@ -163,6 +163,14 @@
       <HintPath Condition="'$(Configuration)' == 'Debug'">..\Shamisen\bin\Debug\netstandard2.0\Shamisen.dll</HintPath>
       <HintPath Condition="'$(Configuration)' == 'Release'">..\Shamisen\bin\Release\netstandard2.0\Shamisen.dll</HintPath>
     </Reference>
+    <Reference Include="Shamisen.Core" />
+    <Reference Include="Shamisen.Core">
+      <HintPath>..\Shamisen.IO\bin\Release\netstandard2.0\Shamisen.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Shamisen.IO" />
+    <Reference Include="Shamisen.IO">
+      <HintPath>..\Shamisen.IO\bin\Release\netstandard2.0\Shamisen.IO.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

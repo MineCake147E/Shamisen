@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shamisen.IO</name>
+    </assembly>
+    <members>
+        <member name="T:Shamisen.IO.DataAvailableEventHandler">
+            <summary>
+            Represents an event handler that holds recorded audio data.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Shamisen.IO.DataAvailableEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:Shamisen.IO.DataAvailableEventArgs">
+            <summary>
+            Represents an event arguments that holds recorded audio data.<br/>
+            It is a <c>struct</c> which has <c>ref</c> and <c>readonly</c> modifier because the event occurs frequently and has a <see cref="T:System.Span`1"/> to deliver a raw buffer.<br/>
+            <b>CAUTION! REF STRUCT! IT CANNOT BE STORED ON HEAPS!</b>
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte},Shamisen.WaveFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.DataAvailableEventArgs" /> struct.
+            </summary>
+            <param name="data">The data.</param>
+            <param name="format">The format.</param>
+        </member>
+        <member name="P:Shamisen.IO.DataAvailableEventArgs.Data">
+            <summary>
+            Gets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.DataAvailableEventArgs.Format">
+            <summary>
+            Gets the format of the available <see cref="P:Shamisen.IO.DataAvailableEventArgs.Data"/>.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.DataFlow">
+            <summary>
+            Represents a flow kind of audio data.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.None">
+            <summary>
+            Invalid.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Render">
+            <summary>
+            Output.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Capture">
+            <summary>
+            Input.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.FormatSupportStatus">
+            <summary>
+            Indicates how the <see cref="T:Shamisen.IWaveFormat"/> is supported by the <see cref="N:Shamisen"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatSupportStatus.Unchecked">
+            <summary>
+            The value which indicates the <see cref="T:Shamisen.IO.IAudioDevice"/> has no ability to check the support status currently.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatSupportStatus.NotSupported">
+            <summary>
+            The value which indicates the <see cref="T:Shamisen.IWaveFormat"/> is not supported by the <see cref="T:Shamisen.IO.IAudioDevice"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatSupportStatus.SupportedByBinding">
+            <summary>
+            The value which indicates the <see cref="T:Shamisen.IWaveFormat"/> is supported by the <see cref="T:Shamisen.IO.IAudioDevice"/> and its binding, by converting the audio into some different format.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatSupportStatus.SupportedByBackend">
+            <summary>
+            The value which indicates the <see cref="T:Shamisen.IWaveFormat"/> is supported by the <see cref="T:Shamisen.IO.IAudioDevice"/> natively, without converting the audio into some different format.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.FormatSupportStatus.IsChecked">
+            <summary>
+            Gets a value indicating whether the <see cref="T:Shamisen.IWaveFormat"/> has been checked the availability on the device.
+            </summary>
+            <value>
+              <c>true</c> if this instance is checked; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.FormatSupportStatus.IsSupported">
+            <summary>
+            Gets a value indicating whether the format is supported.
+            </summary>
+            <value>
+              <c>true</c> if this instance is supported; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.IO.FormatSupportStatus.IsNativelySupported">
+            <summary>
+            Gets a value indicating whether the <see cref="T:Shamisen.IWaveFormat"/> is natively supported.
+            </summary>
+            <value>
+              <c>true</c> if this instance is natively supported; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns>
+            true if <paramref name="obj">obj</paramref> and this instance are the same type and represent the same value; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.Equals(Shamisen.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.op_Equality(Shamisen.IO.FormatSupportStatus,Shamisen.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.FormatSupportStatus"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.IO.FormatSupportStatus"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.IO.FormatSupportStatus"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.op_Inequality(Shamisen.IO.FormatSupportStatus,Shamisen.IO.FormatSupportStatus)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.FormatSupportStatus"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.IO.FormatSupportStatus"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.IO.FormatSupportStatus"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="T:Shamisen.IO.IAudioDevice">
+            <summary>
+            Defines a base structure of an audio device.<br/>
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IAudioDevice.Name">
+            <summary>
+            Gets the name of this audio device.
+            </summary>
+            <value>
+            The name of this audio device.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.IAudioDeviceEnumerator">
+            <summary>
+            Defines a base infrastructure of an audio device enumerator.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAudioDeviceEnumerator.EnumerateDevices(Shamisen.IO.DataFlow)">
+            <summary>
+            Enumerates devices of specified <paramref name="dataFlow"/>.
+            </summary>
+            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow"/> kind to enumerate devices of.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio devices.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioDeviceEnumerator.EnumerateDevicesAsync(Shamisen.IO.DataFlow)">
+            <summary>
+            Enumerates devices of specified <paramref name="dataFlow"/> asynchronously.
+            </summary>
+            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow"/> kind to enumerate devices of.</param>
+            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio devices.</returns>
+        </member>
+        <member name="T:Shamisen.IO.IAudioInputDevice">
+            <summary>
+            Defines a base structure of audio input device.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAudioInputDevice.IsFormatSupported(Shamisen.WaveFormat)">
+            <summary>
+            Indicates whether the audio input device supports a particular stream format.
+            </summary>
+            <param name="format">The format to judge the availability.</param>
+            <returns><c>true</c> if succeeded and the audio device supports the specified stream format.</returns>
+        </member>
+        <member name="T:Shamisen.IO.IAudioOutputDevice`1">
+            <summary>
+            Defines a base structure of audio output device.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDevice`1.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.IOExclusivity)">
+            <summary>
+            Indicates whether the audio output device supports a particular stream format.
+            </summary>
+            <param name="format">The format to judge the availability.</param>
+            <param name="mode">The share mode.</param>
+            <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by <see cref="N:Shamisen"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDevice`1.CreateSoundOut(System.TimeSpan)">
+            <summary>
+            Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device.
+            </summary>
+            <param name="latency">The desired latency for output.</param>
+            <returns>The <typeparamref name="TSoundOut"/> instance.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDevice`1.CreateSoundOut(System.TimeSpan,Shamisen.IO.IOExclusivity)">
+            <summary>
+            Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device with the specified <paramref name="mode"/>.
+            </summary>
+            <param name="latency">The latency.</param>
+            <param name="mode">The share mode.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.IO.IOExclusivity">
+            <summary>
+            Represents an exclusivity of audio IO.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.IOExclusivity.Shared">
+            <summary>
+            The <see cref="T:Shamisen.IO.ISoundOut"/> will be opened under some sharing system.<br/>
+            The other applications will be able to access the device.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.IOExclusivity.Exclusive">
+            <summary>
+            The <see cref="T:Shamisen.IO.ISoundOut"/> will be created exclusively.<br/>
+            The other applications can't access the device anymore.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.ISoundIn">
+            <summary>
+            Defines a base infrastructure of a sound input.<br/>
+            CAUTION! IT HAS SOME EVENT HANDLERS! IMPLEMENTERS MUST NOT FORGET TO RELEASE THEM!
+            </summary>
+        </member>
+        <member name="E:Shamisen.IO.ISoundIn.DataAvailable">
+            <summary>
+            Occurs when some data are available.
+            </summary>
+        </member>
+        <member name="E:Shamisen.IO.ISoundIn.Stopped">
+            <summary>
+            Occurs when the recording stopped.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.ISoundIn.Start">
+            <summary>
+            Starts recording.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.ISoundIn.Stop">
+            <summary>
+            Stops recording.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.ISoundIn.Initialize">
+            <summary>
+            Initializes the recorder.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.ISoundIn.RecordingState">
+            <summary>
+            Gets the state of the recording.
+            </summary>
+            <value>
+            The state of the recording.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.ISoundOut">
+            <summary>
+            Defines a base infrastructure of a sound output.
+            </summary>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="M:Shamisen.IO.ISoundOut.Initialize(Shamisen.IWaveSource)">
+            <summary>
+            Initializes the <see cref="T:Shamisen.IO.ISoundOut"/> for playing a <paramref name="source"/>.
+            </summary>
+            <param name="source">The source to play.</param>
+        </member>
+        <member name="T:Shamisen.IO.ISoundOutputDevice">
+            <summary>
+            Defines a base structure of an audio output device.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.RecordingState">
+            <summary>
+            Represents a state of recording.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Stopped">
+            <summary>
+            The recording is stopped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Recording">
+            <summary>
+            The recording is in progress.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.RecordingStoppedEventArgs">
+            <summary>
+            Represents an event arguments that tells you that the recording has (been) stopped and holds why.<br/>
+            </summary>
+            <seealso cref="T:Shamisen.StoppedEventArgs" />
+        </member>
+        <member name="M:Shamisen.IO.RecordingStoppedEventArgs.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.RecordingStoppedEventArgs"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.RecordingStoppedEventArgs.#ctor(System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.RecordingStoppedEventArgs"/> class.
+            </summary>
+            <param name="exception">The exception.</param>
+        </member>
+    </members>
+</doc>

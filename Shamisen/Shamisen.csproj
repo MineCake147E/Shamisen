@@ -4,342 +4,51 @@
         <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
         <RootNamespace>Shamisen</RootNamespace>
         <AssemblyName>Shamisen</AssemblyName>
-        <LangVersion>9.0</LangVersion>
-        <Nullable>enable</Nullable>
-        <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
-        <Authors>MineCake1.4.7</Authors>
-        <Copyright>Copyright 2021 MineCake1.4.7</Copyright>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/MineCake147E/Shamisen</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/MineCake147E/Shamisen.git</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <Version>0.0.1</Version>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-        <SonarQubeTestProject>False</SonarQubeTestProject>
     </PropertyGroup>
-
+    <Import Project="../Shamisen.Core.targets" />
     <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
         <!--<EnablePreviewFeatures>true</EnablePreviewFeatures>-->
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>latest</LangVersion>
-
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DocumentationFile></DocumentationFile>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Data\**" />
+      <Compile Remove="Formats\**" />
+      <Compile Remove="Metadata\**" />
+      <Compile Remove="Optimization\**" />
+      <Compile Remove="Utils\**" />
+      <EmbeddedResource Remove="Data\**" />
+      <EmbeddedResource Remove="Formats\**" />
+      <EmbeddedResource Remove="Metadata\**" />
+      <EmbeddedResource Remove="Optimization\**" />
+      <EmbeddedResource Remove="Utils\**" />
+      <None Remove="Data\**" />
+      <None Remove="Formats\**" />
+      <None Remove="Metadata\**" />
+      <None Remove="Optimization\**" />
+      <None Remove="Utils\**" />
+    </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="Codecs\HeaderPreservingDataSource.cs" />
-        <Compile Remove="Data\AsyncStreamSynchronizer.cs" />
-        <Compile Remove="Data\DataReader.cs" />
-        <Compile Remove="Data\DataReaders.cs" />
-        <Compile Remove="Data\DataWriter.cs" />
-        <Compile Remove="Data\SampleDataReader.cs" />
-        <Compile Remove="Data\SynchronizedDataReader.cs" />
         <Compile Remove="Filters\SimpleMixerEntry.cs" />
     </ItemGroup>
-
     <ItemGroup>
-        <PackageReference Include="DivideSharp" Version="0.0.4" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-        <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-        <PackageReference Include="System.Buffers" Version="4.5.1" />
-        <PackageReference Include="System.IO" Version="4.3.0" />
-        <PackageReference Include="System.Memory" Version="4.5.4" />
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-        <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
-        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
-        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Include="Codecs\Flac\Parsing\FlacCrc16.table.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Flac\Parsing\FlacCrc8.table.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>BinaryContent.g.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Waveform\InfoSubChunkId.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
-        </None>
-        <None Include="Codecs\Waveform\WaveformSubFormats.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
-        </None>
-        <None Include="Data\Binary\DataSinkUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
-        </None>
-        <None Include="Formats\PcmSampleFormats.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Intrinsics\AdvSimdUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
-        </None>
-        <None Include="Utils\MathITemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MathITemplate.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Memory\SpanExtensionsTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Audio\AudioUtils.Fallback.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Audio\AudioUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.g.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Audio\AudioUtils.Intrinsics.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
-        </None>
-        <None Include="Utils\Binary\BinaryExtensions.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
-        </None>
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="Codecs\Flac\Parsing\FlacCrc16.table.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>FlacCrc16.table.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Flac\Parsing\FlacCrc8.table.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>FlacLinearPredictionSubFrame.Intrinsics.g.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>FlacLinearPredictionSubFrame.X86.g.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Waveform\InfoSubChunkId.g.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>InfoSubChunkId.g.cs</LastGenOutput>
-        </None>
-        <None Update="Codecs\Waveform\WaveformSubFormats.g.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>WaveformSubFormats.g.cs</LastGenOutput>
-        </None>
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>SplineResampler.Resample.Standard.g.cs</LastGenOutput>
-        </None>
-        <None Update="Data\Binary\DataSinkUtils.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>DataSinkUtils.g.cs</LastGenOutput>
-        </None>
-        <None Update="Formats\PcmSampleFormats.g.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\MathITemplate.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>MathITemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Audio\AudioUtils.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Binary\BinaryExtensions.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\Tuples\Tuples.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>Tuples.g.cs</LastGenOutput>
         </None>
     </ItemGroup>
     <ItemGroup>
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Update="Codecs\Flac\Parsing\FlacCrc16.table.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacCrc16.table.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Flac\Parsing\FlacCrc8.table.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacCrc8.table.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Flac\SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>BinaryContent.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Waveform\InfoSubChunkId.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Codecs\Waveform\WaveformSubFormats.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
-        </Compile>
         <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.g.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
         </Compile>
-        <Compile Update="Data\Binary\DataSinkUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Formats\PcmSampleFormats.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\MathITemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MathITemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Memory\SpanExtensionsTemplate.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Audio\AudioUtils.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Tuples\Tuples.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Tuples.tt</DependentUpon>
-        </Compile>
-        <Compile Update="Utils\Tuples\Tuples.g.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Tuples.g.tt</DependentUpon>
-        </Compile>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Codecs\Flac\Composing\" />
-        <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
-        <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
-        <Folder Include="Codecs\Waveform\Formats\ALaw\" />
-        <Folder Include="Codecs\Waveform\Headers\" />
-        <Folder Include="Data\Composing\" />
-        <Folder Include="Metadata\Id3\" />
-        <Folder Include="Optimization\Intrinsics\X86\" />
-        <Folder Include="Utils\Samples\" />
+      <ProjectReference Include="..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
+      <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
     </ItemGroup>
 </Project>

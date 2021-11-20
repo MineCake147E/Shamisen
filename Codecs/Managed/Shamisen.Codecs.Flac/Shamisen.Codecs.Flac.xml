@@ -1,0 +1,2215 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shamisen.Codecs.Flac</name>
+    </assembly>
+    <members>
+        <member name="T:Shamisen.Codecs.Flac.FlacChannelAssignments">
+            <summary>
+            Represents a channel assignment of FLAC file.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Monaural">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.Monaural"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.OrdinalStereo">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.SideStereo"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FrontThree">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.FrontThree"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Quad">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.Quad"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FrontFive">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.FrontFive"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FivePointOne">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.FrontFivePointOne"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.DolbySixPointOne">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.DolbySixPointOne"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.SevenPointOne">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.SevenPointOne"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.LeftAndDifference">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with raw left and (left - right).
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.RightAndDifference">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with (left - right) and raw right.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.CenterAndDifference">
+            <summary>
+            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with (left + right) >> 1 and (left - right).
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1011">
+            <summary>
+            The Reserved space with bit pattern 1011.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1100">
+            <summary>
+            The Reserved space with bit pattern 1100.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1101">
+            <summary>
+            The Reserved space with bit pattern 1101.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1110">
+            <summary>
+            The Reserved space with bit pattern 1110.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1111">
+            <summary>
+            The Reserved space with bit pattern 1111.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacChannelAssignmentsUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.Codecs.Flac.FlacChannelAssignments"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacChannelAssignmentsUtils.GetChannels(Shamisen.Codecs.Flac.FlacChannelAssignments)">
+            <summary>
+            Gets the number of channels for specified <paramref name="assignments"/>.
+            </summary>
+            <param name="assignments">The <see cref="T:Shamisen.Codecs.Flac.FlacChannelAssignments"/> to calculate the count of channels.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacException">
+            <summary>
+            Represents a FLAC exception.
+            </summary>
+            <seealso cref="T:System.Exception" />
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacException"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="inner">The inner.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacException.#ctor(System.String,Shamisen.Codecs.Flac.Parsing.FlacBitReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="bitReader">The bit reader to dump.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader">
+            <summary>
+            Represents a FLAC metadata block header.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> struct.
+            </summary>
+            <param name="head">The head.</param>
+            <param name="sizeHigh">The size high.</param>
+            <param name="sizeMid">The size mid.</param>
+            <param name="sizeLow">The size low.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.#ctor(System.Boolean,Shamisen.Codecs.Flac.FlacMetadataBlockType,System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> struct.
+            </summary>
+            <param name="isLastBlock">if set to <c>true</c> [is last block].</param>
+            <param name="type">The type.</param>
+            <param name="length">The length in 24-bits.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.IsLastMetadataBlock">
+            <summary>
+            Gets a value indicating whether the block is last metadata block.
+            </summary>
+            <value>
+              <c>true</c> if the block is last metadata block; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.MetadataBlockType">
+            <summary>
+            Gets the type of the metadata block.
+            </summary>
+            <value>
+            The type of the metadata block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.Size">
+            <summary>
+            Gets the size of the metadata block.
+            </summary>
+            <value>
+            The size.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.Equals(Shamisen.Codecs.Flac.FlacMetadataBlockHeader)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.op_Equality(Shamisen.Codecs.Flac.FlacMetadataBlockHeader,Shamisen.Codecs.Flac.FlacMetadataBlockHeader)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacMetadataBlockHeader.op_Inequality(Shamisen.Codecs.Flac.FlacMetadataBlockHeader,Shamisen.Codecs.Flac.FlacMetadataBlockHeader)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacMetadataBlockHeader"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacMetadataBlockType">
+            <summary>
+            Represents a FLAC metadata block's type.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.StreamInfo">
+            <summary>
+            The stream information.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.Padding">
+            <summary>
+            The padding.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.Application">
+            <summary>
+            The application specific information.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.SeekTable">
+            <summary>
+            The seek table.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.VorbisComment">
+            <summary>
+            The comment.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.CueSheet">
+            <summary>
+            The cue sheet.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.Picture">
+            <summary>
+            The picture.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.FlacMetadataBlockType.Invalid">
+            <summary>
+            The invalid value.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacSeekPoint">
+            <summary>
+            Represents a seek point of FLAC file.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.#ctor(System.UInt64,System.UInt64,System.UInt16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> struct.
+            </summary>
+            <param name="firstIndex">The sample index of the first sample in the target FLAC frame in terms of the number of inter-channel samples.</param>
+            <param name="targetOffset">The offset in bytes from the first byte of the header of the first FLAC frame, to the first byte of the header of the target FLAC frame.</param>
+            <param name="samplesInFrame">The length of the target FLAC frame.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacSeekPoint.FirstIndex">
+            <summary>
+            Get the sample index of the first sample in the target FLAC frame in terms of the number of inter-channel samples.
+            </summary>
+            <value>
+            The first index.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacSeekPoint.TargetFrameOffset">
+            <summary>
+            Gets the offset in bytes from the first byte of the header of the first FLAC frame, to the first byte of the header of the target FLAC frame.
+            </summary>
+            <value>
+            The target frame offset.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacSeekPoint.TargetFrameLength">
+            <summary>
+            Gets the length of the target FLAC frame.
+            </summary>
+            <value>
+            The length of the target FLAC frame.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.ToReadableValue(Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Converts the specified <paramref name="value"/> read directly from <see cref="T:System.Span`1"/> of <see cref="T:System.Byte"/>, to readable value.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.ToWritableValue(Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Converts the specified <paramref name="value"/> constructed manually in user code, to writable value.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.ReverseEndianness(Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Reverses the endianness of every field in <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to convert endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.Equals(Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.op_Equality(Shamisen.Codecs.Flac.FlacSeekPoint,Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSeekPoint.op_Inequality(Shamisen.Codecs.Flac.FlacSeekPoint,Shamisen.Codecs.Flac.FlacSeekPoint)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacSeekPoint"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacSideStereoUtils">
+            <summary>
+            Contains some utilities for side stereo samples in FLAC.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSideStereoUtils.DecodeAndInterleaveLeftSideStereo(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Decodes and interleaves the left side stereo samples.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <exception cref="T:System.ArgumentException">
+            right must be as long as left! - right
+            or
+            buffer must be twice as long as left!
+            </exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSideStereoUtils.DecodeAndInterleaveRightSideStereo(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Decodes and interleaves the right side stereo samples.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <exception cref="T:System.ArgumentException">
+            right must be as long as left! - right
+            or
+            buffer must be twice as long as left!
+            </exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacSideStereoUtils.DecodeAndInterleaveMidSideStereo(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Decodes and interleaves the mid side stereo samples.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <exception cref="T:System.ArgumentException">
+            right must be as long as left! - right
+            or
+            buffer must be twice as long as left!
+            </exception>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock">
+            <summary>
+            Represents a FLAC Stream Info block.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> struct directly.
+            </summary>
+            <param name="blockMinSize">Minimum size of the block.</param>
+            <param name="blockMaxSize">Maximum size of the block.</param>
+            <param name="frameMinSize">Minimum size of the frame.</param>
+            <param name="frameMaxSize">Maximum size of the frame.</param>
+            <param name="field4">The 5th field which contains informations of <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.SampleRate"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Channels"/>, <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.BitDepth"/>, and <see cref="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.TotalSamples"/>.</param>
+            <param name="md5head">The md5 head.</param>
+            <param name="md5tail">The md5 tail.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.#ctor(System.UInt16,System.UInt16,Shamisen.UInt24,Shamisen.UInt24,System.UInt32,System.Byte,System.Byte,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> struct.<br/>
+            Suitable for encoding purpose.
+            </summary>
+            <param name="minimumBlockSize">Minimum size of the block.</param>
+            <param name="maximumBlockSize">Maximum size of the block.</param>
+            <param name="minimumFrameSize">Minimum size of the frame.</param>
+            <param name="maximumFrameSize">Maximum size of the frame.</param>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="channels">The channels.</param>
+            <param name="bitDepth">The bit depth.</param>
+            <param name="totalSamples">The total samples.</param>
+            <param name="md5Head">The MD5 head.</param>
+            <param name="md5Tail">The MD5 tail.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MinimumBlockSize">
+            <summary>
+            Gets the minimum size of the block in samples.
+            </summary>
+            <value>
+            The minimum size of the block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MaximumBlockSize">
+            <summary>
+            Gets the maximum size of the block.
+            </summary>
+            <value>
+            The maximum size of the block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MinimumFrameSize">
+            <summary>
+            Gets the minimum size of the FLAC frame in bytes.
+            </summary>
+            <value>
+            The minimum size of the frame.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MaximumFrameSize">
+            <summary>
+            Gets the maximum size of the FLAC frame in bytes.
+            </summary>
+            <value>
+            The maximum size of the frame.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.SampleRate">
+            <summary>
+            Gets the sample rate.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Channels">
+            <summary>
+            Gets the channels.
+            </summary>
+            <value>
+            The channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.BitDepth">
+            <summary>
+            Gets the bit depth.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.TotalSamples">
+            <summary>
+            Gets the total inter-channel samples(aka "Frames" in Shamisen) in this FLAC stream.
+            </summary>
+            <value>
+            The total samples.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacStreamInfoBlock.MD5Signature">
+            <summary>
+            Gets the MD5 signature.
+            </summary>
+            <value>
+            The MD5 signature.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.ToReadableValue(Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Converts the specified <paramref name="value"/> read directly from <see cref="T:System.Span`1"/> of <see cref="T:System.Byte"/>, to readable value.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.ToWritableValue(Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Converts the specified <paramref name="value"/> constructed manually in user code, to writable value.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.ReverseEndianness(Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Reverses the endianness of every field in <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to convert endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.Equals(Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.op_Equality(Shamisen.Codecs.Flac.FlacStreamInfoBlock,Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacStreamInfoBlock.op_Inequality(Shamisen.Codecs.Flac.FlacStreamInfoBlock,Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacStreamInfoBlock"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.IFlacSubFrame">
+            <summary>
+            Defines a base infrastructure of a FLAC sub-frame.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.IFlacSubFrame.WastedBits">
+            <summary>
+            Gets the number of wasted LSBs.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.IFlacSubFrame.SubFrameType">
+            <summary>
+            Gets the type of the sub-frame.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack">
+            <summary>
+            Represents a track in FLAC cue-sheet.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.#ctor(System.UInt64,System.Byte,System.ReadOnlyMemory{System.Byte},System.Byte,System.ReadOnlyMemory{Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/> struct.
+            </summary>
+            <param name="trackOffsetInFrames">The track offset in frames.</param>
+            <param name="trackNumber">The track number.</param>
+            <param name="trackISRC">The track ISRC.</param>
+            <param name="field4">The field4 containing <see cref="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.IsAudio"/> and <see cref="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.PreEmphasis"/>.</param>
+            <param name="trackIndexes">The track indexes.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackOffsetInFrames">
+            <summary>
+            Gets the track offset in frames.
+            </summary>
+            <value>
+            The track offset in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackNumber">
+            <summary>
+            Gets the track number of this track.
+            </summary>
+            <value>
+            The track number.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackISRC">
+            <summary>
+            Gets the track International Standard Recording Code.
+            </summary>
+            <value>
+            The track International Standard Recording Code.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.IsAudio">
+            <summary>
+            Gets a value indicating whether this track is audio track.
+            </summary>
+            <value>
+              <c>true</c> if this track is audio track; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.PreEmphasis">
+            <summary>
+            Gets the pre-emphasis flag.
+            </summary>
+            <value>
+            The pre-emphasis flag.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.TrackIndexes">
+            <summary>
+            Gets the track indexes.
+            </summary>
+            <value>
+            The track indexes.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.ReadFrom(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/> from the specified data source.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrack.ReadFrom(System.ReadOnlySpan{System.Byte},System.Int32@)">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack" /> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bytesConsumed">The bytes consumed.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">The buffer has not enough data! - buffer
+            or
+            The buffer has not enough data! - buffer</exception>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex">
+            <summary>
+            Represents a track index of a <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrack"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.#ctor(System.UInt64,System.Byte,Shamisen.UInt24)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> struct.
+            </summary>
+            <param name="offset">The offset.</param>
+            <param name="index">The index.</param>
+            <param name="reserved">The reserved.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.Offset">
+            <summary>
+            Gets the offset.
+            </summary>
+            <value>
+            The offset.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.IndexPointNumber">
+            <summary>
+            Gets the index point number.
+            </summary>
+            <value>
+            The index point number.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.Reserved">
+            <summary>
+            Gets the reserved space.
+            </summary>
+            <value>
+            The reserved space.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ConvertToBigEndian(Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> from the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex.ReadFrom(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.CueSheetTrackIndex"/> from the specified <paramref name="dataSource"/>.
+            </summary>
+            <param name="dataSource">The data source.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet">
+            <summary>
+            Represents a CUE-sheet of FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.#ctor(System.ReadOnlyMemory{System.Byte},System.UInt64,System.Boolean,System.ReadOnlyMemory{Shamisen.Codecs.Flac.Metadata.CueSheetTrack})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet"/> struct.
+            </summary>
+            <param name="mediaCatalogNumber">The media catalog number.</param>
+            <param name="leadInSamples">The lead in samples.</param>
+            <param name="isCD">if set to <c>true</c> [is cd].</param>
+            <param name="tracks">The tracks.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.MediaCatalogNumber">
+            <summary>
+            The Media catalog number
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.LeadInSamples">
+            <summary>
+            Gets the number of lead-in samples.
+            </summary>
+            <value>
+            The number of lead-in samples.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.IsCD">
+            <summary>
+            Gets a value indicating whether this cue sheet corresponds to a Compact Disc.
+            </summary>
+            <value>
+              <c>true</c> if this cue sheet corresponds to a Compact Disc; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.Tracks">
+            <summary>
+            Gets the tracks.
+            </summary>
+            <value>
+            The tracks.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacCueSheet.ReadFrom(System.ReadOnlySpan{System.Byte},System.Int32@)">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacCueSheet"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bytesConsumed">The bytes consumed.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata">
+            <summary>
+            Represents an application metadata in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.#ctor(Shamisen.VectorB4,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata"/> struct.
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.Id">
+            <summary>
+            Gets the registered application identifier.
+            </summary>
+            <value>
+            The application identifier.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacApplicationMetadata.Data">
+            <summary>
+            Gets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacPicture">
+            <summary>
+            Represents a picture in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacPicture.#ctor(Shamisen.Codecs.Flac.Metadata.FlacPictureType,System.ReadOnlyMemory{System.Byte},System.ReadOnlyMemory{System.Byte},System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacPicture"/> struct.
+            </summary>
+            <param name="pictureType">Type of the picture.</param>
+            <param name="mimeType">Type of the MIME.</param>
+            <param name="description">The description.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+            <param name="colorDepth">The color depth.</param>
+            <param name="indexedColors">The indexed colors.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.PictureType">
+            <summary>
+            Gets the type of the picture.
+            </summary>
+            <value>
+            The type of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.MimeType">
+            <summary>
+            Gets the MIME type string.
+            </summary>
+            <value>
+            The MIME type string.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Description">
+            <summary>
+            Gets the description of the picture.
+            </summary>
+            <value>
+            The description of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Width">
+            <summary>
+            Gets the width of the picture.
+            </summary>
+            <value>
+            The width of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Height">
+            <summary>
+            Gets the height of the picture.
+            </summary>
+            <value>
+            The height of the picture.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.ColorDepth">
+            <summary>
+            Gets the color depth of the picture in bits per pixel.
+            </summary>
+            <value>
+            The color depth.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.IndexedColors">
+            <summary>
+            Gets the number of indexed colors. 0 for non-indexed pictures.
+            </summary>
+            <value>
+            The number of indexed colors.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacPicture.Data">
+            <summary>
+            Gets the binary picture data.
+            </summary>
+            <value>
+            The binary picture data.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacPicture.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacPicture"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacPictureType">
+            <summary>
+            Represents a picture type.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Other">
+            <summary>
+            Other
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.FileIcon">
+            <summary>
+            32x32 pixels 'file icon' (PNG only)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.OtherIcon">
+            <summary>
+            Other file icon
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.FrontCover">
+            <summary>
+            Cover (front)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.BackCover">
+            <summary>
+            Cover (back)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.LeafletPage">
+            <summary>
+            Leaflet page
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Media">
+            <summary>
+            Media (e.g. label side of CD)
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.LeadArtist">
+            <summary>
+            Lead artist/lead performer/soloist
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Artist">
+            <summary>
+            Artist/performer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Conductor">
+            <summary>
+            Conductor
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Band">
+            <summary>
+            Band/Orchestra
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Composer">
+            <summary>
+            Composer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Lyricist">
+            <summary>
+            Lyricist/text writer
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.RecordingLocation">
+            <summary>
+            Recording Location
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.DuringRecording">
+            <summary>
+            During recording
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.DuringPerformance">
+            <summary>
+            During performance
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.MovieScreenCapture">
+            <summary>
+            Movie/video screen capture
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.BrightColouredFish">
+            <summary>
+            A bright coloured fish
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.Illustration">
+            <summary>
+            Illustration
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.ArtistLogotype">
+            <summary>
+            Band/artist logotype
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.Metadata.FlacPictureType.StudioLogotype">
+            <summary>
+            Publisher/Studio logotype
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata">
+            <summary>
+            Represents an unused metadata in FLAC files.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.#ctor(Shamisen.Codecs.Flac.FlacMetadataBlockType,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata"/> struct.
+            </summary>
+            <param name="metadataBlockType">Type of the metadata block.</param>
+            <param name="data">The data.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.MetadataBlockType">
+            <summary>
+            Gets the type of the metadata block.
+            </summary>
+            <value>
+            The type of the metadata block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.FlacUnusedMetadata.Data">
+            <summary>
+            Gets the data.
+            </summary>
+            <value>
+            The data.
+            </value>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Metadata.VorbisComment">
+            <summary>
+            Represents a Vorbis comment without framing bit.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.VorbisComment.#ctor(System.ReadOnlyMemory{System.Byte},System.ReadOnlyMemory{System.ReadOnlyMemory{System.Byte}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Metadata.VorbisComment"/> struct.
+            </summary>
+            <param name="vendor">The vendor.</param>
+            <param name="userComments">The user comments.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.RawVendor">
+            <summary>
+            Gets the raw data of <see cref="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.Vendor"/>.
+            </summary>
+            <value>
+            The vendor.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.RawUserComments">
+            <summary>
+            Gets the raw data of user comments.
+            </summary>
+            <value>
+            The user comments.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.Vendor">
+            <summary>
+            Gets the vendor.
+            </summary>
+            <value>
+            The vendor.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Metadata.VorbisComment.UserComments">
+            <summary>
+            Gets the user comments.
+            </summary>
+            <value>
+            The user comments.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Metadata.VorbisComment.ReadFrom(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Reads the <see cref="T:Shamisen.Codecs.Flac.Metadata.VorbisComment"/> from the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader">
+            <summary>
+            Provides a functionality for reading bit stream data.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ConsumedBits">
+            <summary>
+            Gets the consumed bits in a word.
+            </summary>
+            <value>
+            The consumed bits.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ConsumedWords">
+            <summary>
+            Gets the consumed words.
+            </summary>
+            <value>
+            The consumed words.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Crc16">
+            <summary>
+            Gets or resets the current CRC16.
+            </summary>
+            <value>
+            The CRC16.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.DebugDumpCurrentWord">
+            <summary>
+            Gets the debug dump of current word.
+            </summary>
+            <value>
+            The debug dump current word.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.IsByteAligned">
+            <summary>
+            Gets a value indicating whether this instance is byte aligned.
+            </summary>
+            <value>
+              <c>true</c> if this instance is byte aligned; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.RemainingUnalignedBits">
+            <summary>
+            Gets the remaining unaligned bits.
+            </summary>
+            <value>
+            The remaining unaligned bits.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+            <exception cref="T:System.ObjectDisposedException">FlacBitReader</exception>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.UnconsumedInputBits">
+            <summary>
+            Gets the unconsumed input bits.
+            </summary>
+            <value>
+            The unconsumed input bits.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc16">The CRC16.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Clear">
+            <summary>
+            Clears this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadAligned(System.Span{System.Byte})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsInt32(System.Byte)">
+            <summary>
+             Reads the number with specified <paramref name="bits"/>.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=32.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsInt32(System.Byte,System.Int32@)">
+            <summary>
+            Reads the number with specified <paramref name="bits"/>.
+            </summary>
+            <param name="bits">The bits.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt32(System.Byte)">
+            <summary>
+            Reads the number with specified <paramref name="bits"/>.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=32.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt32(System.Byte,System.UInt32@)">
+            <summary>
+            Reads the number with specified <paramref name="bits" />.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=32.</param>
+            <param name="value">The value read.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            bits - The bits must be less than 33!
+            or
+            bits
+            </exception>
+            <exception cref="T:Shamisen.Codecs.Flac.FlacException">
+            This is a bug!
+            </exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte)">
+            <summary>
+            Reads the number with specified <paramref name="bits"/>.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=64.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte,System.UInt64@)">
+            <summary>
+            Reads the number with specified <paramref name="bits" />.
+            </summary>
+            <param name="bits">The bits to read. must be &lt;=64.</param>
+            <param name="value">The value read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadByte(System.Byte@)">
+            <summary>
+            Reads a byte from this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadRiceCode(System.Int32)">
+            <summary>
+            Reads the rice code from this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
+            </summary>
+            <param name="parameter">The Rice parameter.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadRiceCodes(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Reads the multiple rice code from this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
+            </summary>
+            <param name="span">The span to write the data to.</param>
+            <param name="parameter">The Rice parameter.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadUInt32LittleEndian">
+            <summary>
+            Reads the <see cref="T:System.UInt32"/> value in little-endian.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadUnaryUnsigned(System.UInt32@)">
+            <summary>
+            Reads the unary code without sign bit.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadUtf8UInt32(System.UInt32@,System.Span{System.Byte},System.Int32@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="value"></param>
+            <param name="rawData"></param>
+            <param name="bytesRead"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadUtf8UInt64(System.UInt64@,System.Span{System.Byte},System.Int32@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="value"></param>
+            <param name="rawData"></param>
+            <param name="bytesRead"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadZeroPadding">
+            <summary>
+            Reads the zero padding.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.SkipBitsWithoutCrc(System.UInt32)">
+            <summary>
+            Skips the bits without calculating CRC.
+            </summary>
+            <param name="bits">The bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.UpdateCrc16">
+            <summary>
+            Updates the CRC16.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.SkipByteBlockWithoutCrc(System.UInt32)">
+            <summary>
+            Skips the byte block without calculating CRC.
+            </summary>
+            <param name="values">The values.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Dump">
+            <summary>
+            Dumps this instance.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16">
+            <summary>
+            Calculates a CRC-16 for FLAC stream. Polynomial: CRC-16-IBM
+            </summary>
+            <summary>
+            Calculates a CRC16 for FLAC stream.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.#ctor(System.UInt16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> struct.
+            </summary>
+            <param name="state">The state.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacCrc16.State">
+            <summary>
+            Gets the state.
+            </summary>
+            <value>
+            The state.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Implicit(Shamisen.Codecs.Flac.Parsing.FlacCrc16)~System.UInt16">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> to <see cref="T:System.UInt16"/>.
+            </summary>
+            <param name="crc16">The CRC16.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.Byte)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-16-IBM value.</param>
+            <param name="right">The new byte.</param>
+            <returns>
+            The next value of CRC16.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.UInt64)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-16-IBM value.</param>
+            <param name="right">The new bytes in little endian.</param>
+            <returns>
+            The next value of CRC16.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-16-IBM value.</param>
+            <param name="right">The new bytes.</param>
+            <returns>
+            The next value of CRC16.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.ReadOnlySpan{System.UInt64})">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-16-IBM value.</param>
+            <param name="right">The new bytes.</param>
+            <returns>
+            The next value of CRC16.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.UInt16)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-16-IBM value.</param>
+            <param name="right">The new bytes.</param>
+            <returns>
+            The next value of CRC16.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.GenerateNext(System.Byte)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.GenerateNext(System.UInt64)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.GenerateNext(Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.UInt64)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+            </summary>
+            <param name="left">The CRC16 to calculate the next value.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.Equals(Shamisen.Codecs.Flac.Parsing.FlacCrc16)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Equality(Shamisen.Codecs.Flac.Parsing.FlacCrc16,Shamisen.Codecs.Flac.Parsing.FlacCrc16)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.op_Inequality(Shamisen.Codecs.Flac.Parsing.FlacCrc16,Shamisen.Codecs.Flac.Parsing.FlacCrc16)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc16.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            The converted <see cref="T:System.String"/> instance.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8">
+            <summary>
+            Calculates a CRC-8 for FLAC stream. Polynomial: CRC-8-CCITT
+            </summary>
+            <summary>
+            Calculates a CRC8 for FLAC stream.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.#ctor(System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> struct.
+            </summary>
+            <param name="state">The state.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacCrc8.State">
+            <summary>
+            Gets the state.
+            </summary>
+            <value>
+            The state.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Implicit(Shamisen.Codecs.Flac.Parsing.FlacCrc8)~System.Byte">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> to <see cref="T:System.Byte"/>.
+            </summary>
+            <param name="crc8">The CRC8.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc8,System.Byte)">
+            <summary>
+            Calculates the next value of CRC-8-CCITT with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-8-CCITT value.</param>
+            <param name="right">The new byte.</param>
+            <returns>
+            The next value of CRC8.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc8,System.UInt16)">
+            <summary>
+            Calculates the next value of CRC-8-CCITT with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-8-CCITT value.</param>
+            <param name="right">The new byte.</param>
+            <returns>
+            The next value of CRC8.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.GenerateNext(System.Byte)">
+            <summary>
+            Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Multiply(Shamisen.Codecs.Flac.Parsing.FlacCrc8,System.Span{System.Byte})">
+            <summary>
+            Calculates the next value of CRC-8-CCITT with <paramref name="right"/>.
+            </summary>
+            <param name="left">The current CRC-8-CCITT value.</param>
+            <param name="right">The new bytes.</param>
+            <returns>
+            The next value of CRC8.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.Equals(Shamisen.Codecs.Flac.Parsing.FlacCrc8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Equality(Shamisen.Codecs.Flac.Parsing.FlacCrc8,Shamisen.Codecs.Flac.Parsing.FlacCrc8)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacCrc8.op_Inequality(Shamisen.Codecs.Flac.Parsing.FlacCrc8,Shamisen.Codecs.Flac.Parsing.FlacCrc8)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacFrameParser">
+            <summary>
+            Parses FLAC frames.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Length">
+            <summary>
+            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Position">
+            <summary>
+            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
+            </summary>
+            <value>
+            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.SeekSupport">
+            <summary>
+            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.SkipSupport">
+            <summary>
+            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Source">
+            <summary>
+            Gets the source.
+            </summary>
+            <value>
+            The source.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.StreamInfoBlock">
+            <summary>
+            Gets the stream information block.
+            </summary>
+            <value>
+            The stream information block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.TotalLength">
+            <summary>
+            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
+            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
+            </summary>
+            <value>
+            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.#ctor(Shamisen.Codecs.Flac.Parsing.FlacBitReader,Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacFrameParser"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="streamInfoBlock">The stream information block.</param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.ParseNextFrame(Shamisen.Codecs.Flac.Parsing.FlacBitReader,Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
+            <summary>
+            Finds the next frame.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils">
+            <summary>
+            Provides some functions for parsing UTF-8 encoded values.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedShortNumber(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedShortNumber(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc8@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedShortNumber(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc16@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedShortNumber(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc8@,Shamisen.Codecs.Flac.Parsing.FlacCrc16@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc8">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/>.</param>
+            <param name="crc16">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedLongNumber(Shamisen.IReadableDataSource{System.Byte})">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedLongNumber(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc8@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacUtf8NumberUtils.ReadUtf8EncodedLongNumber(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.Parsing.FlacCrc8@,Shamisen.Codecs.Flac.Parsing.FlacCrc16@)">
+            <summary>
+            Reads the UTF8 encoded number.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="crc8">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc8"/>.</param>
+            <param name="crc16">The current state of <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacCrc16"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacParser">
+            <summary>
+            Parses ".flac" files from <see cref="T:Shamisen.IReadableDataSource`1"/>.
+            https://xiph.org/flac/format.html
+            </summary>
+            <seealso cref="T:Shamisen.IWaveSource" />
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.CueSheet">
+            <summary>
+            Gets the cue sheet.
+            </summary>
+            <value>
+            The cue sheet.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Comment">
+            <summary>
+            Gets the vorbis comment.
+            </summary>
+            <value>
+            The vorbis comment.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.ApplicationMetadata">
+            <summary>
+            Gets the application metadata.
+            </summary>
+            <value>
+            The application metadata.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Pictures">
+            <summary>
+            Gets the pictures.
+            </summary>
+            <value>
+            The pictures.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.UnusedMetadata">
+            <summary>
+            Gets the unused metadata.
+            </summary>
+            <value>
+            The unused metadata.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Format">
+            <summary>
+            Gets the format.
+            </summary>
+            <value>
+            The format.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Length">
+            <summary>
+            Gets the remaining length.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.Position">
+            <summary>
+            Gets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParser.TotalLength">
+            <summary>
+            Gets the total length.
+            </summary>
+            <value>
+            The total length.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="options">The options.</param>
+            <exception cref="T:System.ArgumentNullException">
+            nameof(source)
+            or
+            nameof(source)
+            or
+            nameof(source)
+            </exception>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParser.Read(System.Span{System.Byte})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.FlacParserOptions">
+            <summary>
+            Represents some options for <see cref="T:Shamisen.Codecs.Flac.FlacParser"/>
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> struct.
+            </summary>
+            <param name="parseCueSheet">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the cue sheet.</param>
+            <param name="parseVorbisComment">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the vorbis comment.</param>
+            <param name="parsePictures">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> parses the picture metadata excluding actual picture.</param>
+            <param name="preserveApplication">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the application.</param>
+            <param name="preservePadding">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the padding.</param>
+            <param name="preserveUnusedMetadata">if set to <c>true</c> the <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> preserves the unused metadata.</param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseCueSheet">
+            <summary>
+            Gets a value indicating whether to parse cue sheet.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse cue sheet; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParseVorbisComment">
+            <summary>
+            Gets a value indicating whether to parse vorbis comment.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse vorbis comment; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.ParsePictures">
+            <summary>
+            Gets a value indicating whether to parse picture metadata <b>EXCLUDING ACTUAL PICTURE</b>.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to parse pictures; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveApplication">
+            <summary>
+            Gets a value indicating whether to preserve application metadata.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve application metadata; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreservePadding">
+            <summary>
+            Gets a value indicating whether to preserve padding.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve padding; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.FlacParserOptions.PreserveUnusedMetadata">
+            <summary>
+            Gets a value indicating whether to preserve unused metadata excluding padding and invalid metadata.
+            </summary>
+            <value>
+              <c>true</c> if you want <see cref="T:Shamisen.Codecs.Flac.FlacParser"/> to preserve unused metadata; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.Equals(Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Equality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.FlacParserOptions.op_Inequality(Shamisen.Codecs.Flac.FlacParserOptions,Shamisen.Codecs.Flac.FlacParserOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Codecs.Flac.FlacParserOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame">
+            <summary>
+            Represents a constant FLAC sub-frame.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame"/>.
+            </summary>
+            <param name="value"></param>
+            <param name="wastedBits"></param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.ReadFrame(Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Byte)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame"/>.
+            </summary>
+            <param name="bitReader">A <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/> to read the constant from.</param>
+            <param name="wastedBits">The number of wasted bits.</param>
+            <param name="bitDepth"></param>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.WastedBits">
+            <summary>
+            Gets the number of wasted LSBs.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.SubFrameType">
+            <summary>
+            Gets the type of the sub-frame.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacConstantSubFrame.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacEntropyCodingMethod">
+            <summary>
+            Defines some methods for entropy coding in FLAC.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.SubFrames.FlacEntropyCodingMethod.PartitionedRice">
+            <summary>
+            The partitioned rice
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.SubFrames.FlacEntropyCodingMethod.PartitionedRice2">
+            <summary>
+            The partitioned rice2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.SubFrames.FlacEntropyCodingMethod.Reserved10">
+            <summary>
+            The reserved10
+            </summary>
+        </member>
+        <member name="F:Shamisen.Codecs.Flac.SubFrames.FlacEntropyCodingMethod.Reserved11">
+            <summary>
+            The reserved11
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame">
+             <summary>
+            
+             </summary>
+             <seealso cref="T:Shamisen.Codecs.Flac.IFlacSubFrame" />
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.SubFrameType">
+            <summary>
+            Gets the type of the sub-frame.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.WastedBits">
+            <summary>
+            Gets the number of wasted LSBs.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.#ctor(Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Byte,System.Byte)">
+             <summary>
+            
+             </summary>
+             <param name="bitReader"></param>
+             <param name="blockSize"></param>
+             <param name="wastedBits"></param>
+             <param name="bitsPerSample"></param>
+             <param name="subFrameType"></param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the specified buffer.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.Finalize">
+            <summary>
+            Finalizes this instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacFixedPredictionSubFrame.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame">
+             <summary>
+            
+             </summary>
+             <seealso cref="T:Shamisen.Codecs.Flac.IFlacSubFrame" />
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.WastedBits">
+            <summary>
+            Gets the number of wasted LSBs.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.SubFrameType">
+            <summary>
+            Gets the type of the sub-frame.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.#ctor(Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Byte,System.Byte)">
+             <summary>
+            
+             </summary>
+             <param name="bitReader"></param>
+             <param name="blockSize"></param>
+             <param name="wastedBits"></param>
+             <param name="bitsPerSample"></param>
+             <param name="subFrameType"></param>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer" />.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>
+            The length of the data written.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacLinearPredictionSubFrame.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacUtils">
+            <summary>
+            Contains some utility functions about manipulating FLAC audio samples.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacUtils.ReadRiceEncodedResidual(System.Span{System.Int32},Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads the rice encoded residual.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="bitReader">The bit reader.</param>
+            <param name="predictorOrder">The predictor order.</param>
+            <param name="partitionOrder">The partition order.</param>
+            <param name="blockSize">Size of the block.</param>
+            <param name="isRice2">if set to <c>true</c> [is rice2].</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacUtils.ShiftLeft(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Shifts the values in specified <paramref name="span"/> left with specified <paramref name="shift"/>.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="shift">The shift.</param>
+        </member>
+        <member name="T:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame">
+            <summary>
+            Represents a verbatim FLAC sub-frame.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.WastedBits">
+            <summary>
+            Gets the number of wasted LSBs.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.SubFrameType">
+            <summary>
+            Gets the type of the sub-frame.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.#ctor(System.Span{System.Int32},System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.#ctor(Shamisen.Codecs.Flac.Parsing.FlacBitReader,System.Int32,System.Int32,System.Byte)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.Read(System.Span{System.Int32})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.SubFrames.FlacVerbatimSubFrame.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+    </members>
+</doc>
