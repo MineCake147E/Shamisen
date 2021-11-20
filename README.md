@@ -20,15 +20,16 @@ A Cross-Platform Audio Library for:
 
 ### Audio I/O and bindings
 
-#### Managed backends
+#### Managed backends using existing library
 
-| Name (Backend)                                                                                       | Author (Backend)                          | License (Binding)                                                                      | Windows10 Win32 | Windows10 UWP | Android | Linux | iOS | Mac OSX |
+| Name (Backend)                                                                                       | Author (Backend)                          | License (Binding)                                                                      | Windows10 Desktop | Windows10 UWP | Android | Linux | iOS | Mac OSX |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- | :-------------: | :-----------: | :-----: | :---: | :-: | :-----: |
-| [UWP](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ✅       |   ❎    |  ❎   | ❎  |   ❎    |
-| [Xamarin.Android](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
-| [NAudio](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
-| [CSCore](https://github.com/filoe/cscore)                                                            | [Florian](https://github.com/filoe)       | [Ms-PL](https://github.com/filoe/cscore/blob/master/license.md)                        |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
-| [OpenTK](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
+| [OpenTK (OpenAL)](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
+| [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❓        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
+| [NAudio (WaveOut, ASIO, DirectSound, WASAPI)](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
+| [UWP (AudioGraph)](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ✅       |   ❎    |  ❎   | ❎  |   ❎    |
+| [Xamarin.Android (AudioTrack)](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
+| [CSCore (WaveOut, WASAPI, DirectSoundOut, XAudio2)](https://github.com/filoe/cscore)                                                            | [Florian](https://github.com/filoe)       | [Ms-PL](https://github.com/filoe/cscore/blob/master/license.md)                        |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
 
 ❓: Not Tested or needs more information  
 ✅: Tested  
@@ -47,21 +48,22 @@ A Cross-Platform Audio Library for:
 
 | To\From | IEEE 754<br>Binary32(float) | 32bit Linear<br>PCM(Q0.31) | 24bit Linear<br>PCM(Q0.23) | 16bit Linear<br>PCM(Q0.15) | 8bit LPCM<br>(Excess-128) | G.711<br>μ−Law | G.711<br>A-Law |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| IEEE 754<br>Binary32(float) | ✖️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 32bit Linear<br>PCM(Q0.31) | ✅ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| 24bit Linear<br>PCM(Q0.23) | ✅ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| 16bit Linear<br>PCM(Q0.15) | ✅ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ | ☑️ |
-| 8bit LPCM<br>(Excess-128) | ✅ | ☑️ | ☑️ | ☑️ | ✖️ | ☑️ | ☑️ |
+| IEEE 754<br>Binary32(float) | ✖️ | ✅* | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 32bit Linear<br>PCM(Q0.31) | ✅* | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| 24bit Linear<br>PCM(Q0.23) | ✅* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| 16bit Linear<br>PCM(Q0.15) | ✅* | ☑️* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ |
+| 8bit LPCM<br>(Excess-128) | ✅* | ☑️* | ☑️* | ☑️* | ✖️ | ☑️* | ☑️* |
 | G.711 μ−Law | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ | ❎ |
 | G.711 A-Law | ❎ | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ |
 
 Legends:  
 ✅: Shamisen has optimized implementation of direct conversion.  
-☑️: Shamisen can handle conversion by 2 or more converter. Can be partially optimized.  
+☑️: Shamisen can handle conversion by 2 or more converter. Can be partially optimized. Depending on the combination, noise due to quantization error may occur.  
 ✔: Shamisen has simple implementation of direct conversion.  
-⭕: Shamisen can handle conversion by 2 or more converter. Both converter is implemented in simple way.  
+⭕: Shamisen can handle conversion by 2 or more converter. Both converter is implemented in simple way. Depending on the combination, noise due to quantization error may occur.  
 ❎: Shamisen has no support for conversion.  
 ✖️: No conversion needed(same format).  
+\* : Such conversion can cause noise due to quantization errors.  
 
 #### Optimized BiQuad Filters that supports some filtering
 
@@ -80,7 +82,7 @@ Legends:
 | Container Name    | Typical File Extensions | Implemented Codec                              | Library contains Decoder/Encoder | License                                                                                | Decoding |  Encoding   |
 | ----------------- | ----------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- | :------: | :---------: |
 | Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |     ✅      |
-| FLAC              | `.flac`                 | FLAC                                           | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
+| FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
 
 Legends:  
 ✅: Supported by Shamisen itself  
@@ -95,14 +97,10 @@ Legends:
 
 - Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
 - Requires [DivideSharp](https://github.com/MineCake147E/DivideSharp) for frequently appearing divide-by-number-of-channels operations.
-- Faster resampling requires `.NET 5` or `.NET Core 3.1`.
+- Faster resampling is only available with `.NET Core 3.1` or `.NET 5 or later`.
   - Unfortunately, older versions doesn't support Hardware Intrinsics.
 - The all processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
-
-## Useful external library for Shamisen
-
-- [CSCodec](https://github.com/MineCake147E/CSCodec) that supports more signal processing like FFT and DWT.
 
 ## Features planned or under development
 
@@ -140,6 +138,6 @@ Legends:
 
 | Container Name | Typical File Extensions | Target Codec | Planned Library containing Decoder/Encoder          | Planned Library License                                                                | Decoding | Encoding | Status              |
 | -------------- | ----------------------- | ------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------- | :------: | :------: | ------------------- |
-| FLAC           | `.flac`                 | FLAC         | Shamisen                                            | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
-| Opus           | `.opus`                 | Opus         | Shamisen(Decoder)<br/>Shamisen.Codecs.Opus(Encoder) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ⭕    | Planned             |
+| FLAC           | `.flac`                 | FLAC         | Shamisen.Codecs.Flac                                       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
+| Opus           | `.opus`                 | Opus         | Shamisen.Codecs.Opus | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ⭕    | Planned             |
 | Ogg            | `.ogg`                  | Vorbis       | Shamisen.Codecs.Ogg                                 | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ⭕    |    ⭕    | Planned             |
