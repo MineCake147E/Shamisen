@@ -3,9 +3,12 @@ using System.Buffers.Binary;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 #if NETCOREAPP3_0_OR_GREATER
+
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+
 #endif
 
 using Shamisen.Optimization;
@@ -22,6 +25,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         private const float Multiplier = 1 / 32768.0f;
         private const int ActualBytesPerSample = sizeof(short);
         private const int BufferMax = 2048;
+
         private int ActualBufferMax => BufferMax * Source.Format.Channels;
 
         private Memory<short> readBuffer;
@@ -140,6 +144,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         #region ProcessNormal
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void ProcessNormal(Span<float> buffer, ReadOnlySpan<short> source)
         {
@@ -203,6 +208,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * mul[0];
             }
         }
+
 #if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -433,28 +439,30 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * mul.GetElement(0);
             }
         }
+
 #endif
-        #endregion
+
+        #endregion ProcessNormal
 
         #region ProcessReversed
+
         internal static void ProcessReversed(Span<short> wrote, Span<float> dest)
         {
             wrote.ReverseEndianness();
             ProcessNormal(dest, wrote);
         }
-        #endregion
+
+        #endregion ProcessReversed
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposedValue && disposing)
             {
-                if (disposing)
-                {
-                    Source.Dispose();
-                }
+                Source.Dispose();
             }
             disposedValue = true;
         }

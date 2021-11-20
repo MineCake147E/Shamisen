@@ -48,7 +48,7 @@ namespace Shamisen.Benchmarks.Codecs.Flac
         }
 
         [Benchmark]
-        public FlacCrc16 Standard() => new FlacCrc16(0) * srcBuffer.AsSpan();
+        public FlacCrc16 Standard() => FlacCrc16.CalculateCrc16Standard(new FlacCrc16(0), srcBuffer.AsSpan());
 
         [Benchmark]
         public FlacCrc16 Pclmulqdq() => FlacCrc16.CalculateCrc16Pclmulqdq(new FlacCrc16(0), srcBuffer.AsSpan());

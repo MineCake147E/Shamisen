@@ -68,13 +68,13 @@ namespace Shamisen.Tests.IO.OpenTK
         private void InitializeInternal()
         {
             var y = 1;
-            foreach (var item in Devices.ToArray().Where(a => a.Checked))
+            foreach (var item in Devices.Where(a => a.Checked).Select(a => a.Device))
             {
-                var t = item.Device.CreateSoundOut();
-                var source = new TriangleWaveSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ }; ;
+                var t = item.CreateSoundOut();
+                var source = new TriangleWaveSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
                 //var resampler = new SplineResampler(source, 192000);
                 //var biquad = new BiQuadFilter(resampler, BiQuadParameter.CreateNotchFilterParameterFromQuality(192000, 440, 3.0));
-                if (item.Device.CheckSupportStatus(new WaveFormat(192000, 32, 1, AudioEncoding.IeeeFloat)).IsSupported)
+                if (item.CheckSupportStatus(new WaveFormat(192000, 32, 1, AudioEncoding.IeeeFloat)).IsSupported)
                 {
                     t.Initialize(new SampleToFloat32Converter(source));
                 }

@@ -221,7 +221,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         #region Fast CRC Calculation using Pclmulqdq
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         internal static FlacCrc16 CalculateCrc16Pclmulqdq(FlacCrc16 left, ReadOnlySpan<ulong> right)
         {
             #region License Notice

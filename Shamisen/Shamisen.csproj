@@ -16,6 +16,7 @@
         <Version>0.0.1</Version>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <SonarQubeTestProject>False</SonarQubeTestProject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">

@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if NETCOREAPP3_1_OR_GREATER
+
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
@@ -11,9 +12,11 @@ using Shamisen.Utils.Intrinsics;
 
 #endif
 #if NET5_0_OR_GREATER
+
 using System.Runtime.Intrinsics.Arm;
 
 #endif
+
 using Shamisen.Utils;
 
 namespace Shamisen.Conversion.WaveToSampleConverters
@@ -23,7 +26,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
     /// </summary>
     public sealed class MuLawToSampleConverter : WaveToSampleConverterBase
     {
-        private ResizableBufferWrapper<byte> bufferWrapper;
         private const float Multiplier = 1 / 32768.0f;
 
         /// <summary>
@@ -33,7 +35,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         public MuLawToSampleConverter(IReadableAudioSource<byte, IWaveFormat> source)
             : base(source, new SampleFormat(source.Format.Channels, source.Format.SampleRate))
         {
-            bufferWrapper = new ResizablePooledBufferWrapper<byte>(1);
         }
 
         /// <summary>
@@ -168,8 +169,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
+
 #if NET5_0_OR_GREATER
+
         #region Arm Intrinsics
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAdvSimd(Span<byte> rb, Span<float> wb)
         {
@@ -217,6 +221,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAdvSimdArm64(Span<byte> rb, Span<float> wb)
         {
@@ -263,9 +268,12 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
-        #endregion
+
+        #endregion Arm Intrinsics
+
 #endif
 #if NETCOREAPP3_1_OR_GREATER
+
         #region X86 Intrinsics
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -329,6 +337,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAvx2MM256(Span<byte> rb, Span<float> wb)
         {
@@ -402,6 +411,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessSse41(Span<byte> rb, Span<float> wb)
         {
@@ -452,7 +462,9 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 }
             }
         }
-        #endregion
+
+        #endregion X86 Intrinsics
+
 #endif
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -483,22 +495,15 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private int CheckBuffer(int sampleLengthOut) => sampleLengthOut;
 
-        private void ExpandBuffer(int internalBufferLengthRequired) => bufferWrapper.Resize(internalBufferLengthRequired);
-
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposedValue && disposing)
             {
-                if (disposing)
-                {
-                    Source.Dispose();
-                    bufferWrapper.Dispose();
-                }
-                //bufferWrapper = null;
+                Source.Dispose();
             }
             disposedValue = true;
         }

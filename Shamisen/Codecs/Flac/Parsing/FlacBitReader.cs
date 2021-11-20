@@ -403,7 +403,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 if (consumedBits > 0)
                 {
                     if (consumedBits + bitsToRead > bytesOfIncompleteWord * 8) throw new FlacException("This is a bug!", this);
-                    var result = (uint)(((Unsafe.Add(ref bufHead, consumedWords) & (~0ul >> consumedBits))) >> (BitsPerWord - consumedBits - bitsToRead));
+                    var result = (uint)((Unsafe.Add(ref bufHead, consumedWords) & (~0ul >> consumedBits)) >> (BitsPerWord - consumedBits - bitsToRead));
                     consumedBits += bitsToRead;
                     value = result;
                     return true;
