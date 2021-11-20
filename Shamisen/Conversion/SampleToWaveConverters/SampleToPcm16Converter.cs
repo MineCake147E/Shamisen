@@ -186,7 +186,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         private static void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = MemoryMarshal.GetReference(accSpan);
-            var dsmPrev = MemoryMarshal.GetReference(loSpan);
+            var dsmPrev = (float)MemoryMarshal.GetReference(loSpan);
             ref var rWrote = ref MemoryMarshal.GetReference(wrote);
             ref var rDest = ref MemoryMarshal.GetReference(dest);
             nint nLength = dest.Length;
@@ -195,11 +195,12 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             {
                 var diff = mul.X * Unsafe.Add(ref rWrote, i) - dsmPrev;
                 dsmAcc += diff;
-                var v = dsmPrev = ConvertScaled(dsmAcc);
+                dsmPrev = RoundAndClamp(dsmAcc);
+                var v = (short)dsmPrev;
                 Unsafe.Add(ref rDest, i) = v;
             }
             MemoryMarshal.GetReference(accSpan) = dsmAcc;
-            MemoryMarshal.GetReference(loSpan) = dsmPrev;
+            MemoryMarshal.GetReference(loSpan) = (short)dsmPrev;
         }
 
         private static void ProcessAccurateStereoStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
@@ -422,10 +423,17 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static short ConvertScaled(float srcval)
         {
+            srcval = RoundAndClamp(srcval);
+            return (short)srcval;
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float RoundAndClamp(float srcval)
+        {
             srcval = FastMath.Round(srcval);
             srcval = FastMath.Max(srcval, -32768.0f);
             srcval = FastMath.Min(srcval, 32767.0f);
-            return (short)srcval;
+            return srcval;
         }
 
         /// <summary>

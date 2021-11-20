@@ -26,6 +26,7 @@ namespace Shamisen.Utils
 #else
                 Sse.IsSupported;
 #endif
+
             #region Interleave
 
             #region Stereo
@@ -328,6 +329,7 @@ namespace Shamisen.Utils
                     }
                 }
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void InterleaveThreeInt32Sse41(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
@@ -445,7 +447,7 @@ namespace Shamisen.Utils
                     ref var r10 = ref MemoryMarshal.GetReference(rearLeft);
                     ref var r15 = ref MemoryMarshal.GetReference(rearRight);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = MathI.Min(buffer.Length / 4, MathI.Min(MathI.Min(frontLeft.Length, frontRight.Length), MathI.Min(rearLeft.Length, rearRight.Length))); ;
+                    nint length = MathI.Min(buffer.Length / 4, MathI.Min(MathI.Min(frontLeft.Length, frontRight.Length), MathI.Min(rearLeft.Length, rearRight.Length)));
                     nint i = 0, j = 0;
                     var olen = length - 31;
                     for (; i < olen; i += 32, j += 128)
@@ -631,10 +633,12 @@ namespace Shamisen.Utils
 
             #endregion Quad
 
-            #endregion
+            #endregion Interleave
 
             #region DuplicateMonauralToChannels
+
             #region Stereo
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -655,6 +659,7 @@ namespace Shamisen.Utils
                 }
                 Fallback.DuplicateMonauralToStereo(destination, source);
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -694,6 +699,7 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoAvx(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -721,6 +727,7 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralToStereoSse(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -740,7 +747,6 @@ namespace Shamisen.Utils
                     xmm0 = Sse.UnpackHigh(xmm1, xmm1);
                     Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 8)) = xmm0;
                     Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref dst, i * 2 + 12)) = xmm2;
-
                 }
                 for (; i < length; i++)
                 {
@@ -749,9 +755,11 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref dst, i * 2 + 1) = h;
                 }
             }
-            #endregion
+
+            #endregion Stereo
 
             #region Three
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -767,6 +775,7 @@ namespace Shamisen.Utils
                 }
                 Fallback.DuplicateMonauralTo3Channels(destination, source);
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3ChannelsAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -858,6 +867,7 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref dst, i * 3 + 2) = h;
                 }
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo3ChannelsSse2(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -918,9 +928,11 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref dst, i * 3 + 2) = h;
                 }
             }
-            #endregion
+
+            #endregion Three
 
             #region Quad
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo4Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -969,6 +981,7 @@ namespace Shamisen.Utils
                     }
                 }
             }
+
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DuplicateMonauralTo4ChannelsSse2(Span<float> destination, ReadOnlySpan<float> source)
             {
@@ -997,8 +1010,10 @@ namespace Shamisen.Utils
                     }
                 }
             }
-            #endregion
-            #endregion
+
+            #endregion Quad
+
+            #endregion DuplicateMonauralToChannels
         }
     }
 }

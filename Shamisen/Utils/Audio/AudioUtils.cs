@@ -404,6 +404,82 @@ namespace Shamisen.Utils
             }
         }
 
+        /// <summary>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+        /// </summary>
+        /// <param name="span">The span to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void FastScalarMultiply(this Span<double> span, double scale = default)
+        {
+            if (Vector<double>.Count > span.Length)
+            {
+                ref var rdi = ref MemoryMarshal.GetReference(span);
+                nint i, length = span.Length;
+                for (i = 0; i < length; i++)
+                {
+                    var v = Unsafe.Add(ref rdi, i) * scale;
+                    Unsafe.Add(ref rdi, i) = v;
+                }
+            }
+            else
+            {
+                FastScalarMultiplyStandardVariable(span, scale);
+            }
+        }
+
+        /// <summary>
+        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="scale"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastScalarMultiplyStandardVariable(Span<double> span, double scale)
+        {
+            var scaleV = new Vector<double>(scale);
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint i, length = span.Length;
+            nint width = Vector<double>.Count;
+            for (i = 0; i < length - (width * 8 - 1); i += width * 8)
+            {
+                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
+                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
+                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
+                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
+                v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 4 * width)) * scaleV;
+                v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 5 * width)) * scaleV;
+                v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 6 * width)) * scaleV;
+                v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 7 * width)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 4 * width)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 5 * width)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 6 * width)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 7 * width)) = v3;
+            }
+            if (i < length - (width * 4 - 1))
+            {
+                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
+                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
+                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
+                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
+                i += width * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rdi, i) * scaleV[0];
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
+
         #endregion
 
         #region FastMultiply

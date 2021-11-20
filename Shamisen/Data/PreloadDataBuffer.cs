@@ -26,6 +26,7 @@ namespace Shamisen.Data
         private volatile int bufferSize = 0;
 
         private volatile int totalBuffers = 0;
+        private readonly int maxBuffers = 2048;
 
         private ConcurrentQueue<(BufferInstance<TSample> buffer, bool isEndOfStream)> buffersFilled;
 
@@ -304,7 +305,7 @@ namespace Shamisen.Data
                 {
                     var b = new BufferInstance<TSample>(bufferSize);
                     buffersEmpty.Enqueue(b);
-                    totalBuffers++;
+                    Interlocked.Increment(ref totalBuffers);
                     DebugUtils.WriteLine($"Runner thread is entering direct read mode...");
                     DebugUtils.WriteLine($"Increased number of buffer to {totalBuffers}!");
                     fallbackFlag.Reset();

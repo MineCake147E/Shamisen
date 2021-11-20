@@ -16,13 +16,13 @@ namespace Shamisen.Benchmarks
         }
 
         public string Id => "FrameThroughput";
-        public string ColumnName => "Frame Throughput [Frames/s]";
+        public string ColumnName { get; init; } = "Frame Throughput [Frames/s]";
         public bool AlwaysShow => true;
         public ColumnCategory Category => ColumnCategory.Custom;
         public int PriorityInCategory => 0;
         public bool IsNumeric => true;
         public UnitType UnitType => UnitType.Dimensionless;
-        public string Legend => $"Frames processed per second";
+        public string Legend { get; init; } = $"Frames processed per second";
 
         public Func<BenchmarkCase, int> FrameSelector { get; }
         public bool IsAvailable(Summary summary) => true;
@@ -33,15 +33,15 @@ namespace Shamisen.Benchmarks
         {
             try
             {
-                int? nf = FrameSelector?.Invoke(benchmarkCase);
-                double frames = (double)nf * 1.0E9f;
-                double mean = summary[benchmarkCase].ResultStatistics.Mean;
-                double throughput = frames / mean;
+                var nf = FrameSelector?.Invoke(benchmarkCase);
+                var frames = (double)nf * 1.0E9f;
+                var mean = summary[benchmarkCase].ResultStatistics.Mean;
+                var throughput = frames / mean;
                 return $"{throughput:#,#.00000000}";
             }
             catch (Exception ex)
             {
-                foreach (string item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
+                foreach (var item in benchmarkCase.Parameters.Items.Select(a => $"{a}").ToArray())
                 {
                     Console.WriteLine(item);
                 }

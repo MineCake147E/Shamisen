@@ -169,28 +169,28 @@ namespace Shamisen.Codecs.Flac.Parsing
 			0x67,0x82,0x61,0x92,0x6B,0xA2,0x6D,0xB2,0x7F,0xC2,0x79,0xD2,0x73,0xE2,0x75,0xF2,0x57,0x02,0x51,0x12,0x5B,0x22,0x5D,0x32,0x4F,0x42,0x49,0x52,0x43,0x62,0x45,0x72,
 			0x02,0x02,0x04,0x12,0x0E,0x22,0x08,0x32,0x1A,0x42,0x1C,0x52,0x16,0x62,0x10,0x72,0x32,0x82,0x34,0x92,0x3E,0xA2,0x38,0xB2,0x2A,0xC2,0x2C,0xD2,0x26,0xE2,0x20,0xF2,
 		};
-                
+        
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable0At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table0)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable1At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table1)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable2At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table2)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable3At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table3)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable4At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table4)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable5At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table5)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable6At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table6)), (byte)index));
-        
+
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static ushort GetTable7At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table7)), (byte)index));
     }

@@ -763,5 +763,29 @@ namespace Shamisen
         }
 
         #endregion ZeroHighBits
+
+        #region IsPowerOfTwo
+
+        /// <summary>
+        /// Determines whether the specified <paramref name="i"/> is power of two.
+        /// </summary>
+        /// <param name="i">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPowerOfTwo(uint i) => i != 0 && (i & (i - 1)) == 0;
+
+        /// <summary>
+        /// Determines whether the specified <paramref name="i"/> is power of two.
+        /// </summary>
+        /// <param name="i">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPowerOfTwo(int i) => i != 0 && (i & (i - 1)) == 0;
+
+        #endregion IsPowerOfTwo
     }
 }

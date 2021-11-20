@@ -16,6 +16,7 @@
         <Version>0.0.1</Version>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <SonarQubeTestProject>False</SonarQubeTestProject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
@@ -180,9 +181,9 @@
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>WaveformSubFormats.g.cs</LastGenOutput>
         </None>
-        <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.tt">
+        <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>SplineResampler.Resample.g.cs</LastGenOutput>
+            <LastGenOutput>SplineResampler.Resample.Standard.g.cs</LastGenOutput>
         </None>
         <None Update="Data\Binary\DataSinkUtils.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
@@ -269,10 +270,10 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
         </Compile>
-        <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.g.cs">
+        <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.g.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
-            <DependentUpon>SplineResampler.Resample.tt</DependentUpon>
+            <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
         </Compile>
         <Compile Update="Data\Binary\DataSinkUtils.g.cs">
           <DesignTime>True</DesignTime>

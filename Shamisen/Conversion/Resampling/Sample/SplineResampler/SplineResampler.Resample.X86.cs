@@ -20,6 +20,8 @@ namespace Shamisen.Conversion.Resampling.Sample
 {
     public sealed partial class SplineResampler
     {
+        #region Resample
+        #region X86
         #region CachedDirect
         #region Monaural
         private int ResampleCachedDirectMonauralX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
@@ -1451,6 +1453,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             x = psx;
             return (int)isx;
         }
+        #endregion
+        #endregion
         #endregion
         #endregion
     }
