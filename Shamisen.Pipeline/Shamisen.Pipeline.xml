@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shamisen.Pipeline</name>
+    </assembly>
+    <members>
+        <member name="T:Shamisen.Pipeline.AudioPipe">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.AudioPipe.Faucet">
+            <summary>
+            Produces audio data to <see cref="T:Shamisen.Pipeline.IAudioPipelineConsumer`2"/>.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.AudioPipe.Inlet">
+            <summary>
+            Consumes audio data from <see cref="T:Shamisen.Pipeline.IAudioPipelineProducer`2"/>.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.AudioPipe`2">
+            <summary>
+            Connects two pipeline components.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="M:Shamisen.Pipeline.AudioPipe`2.#ctor(Shamisen.Pipeline.IAudioPipelineProducer{`0,`1},Shamisen.Pipeline.IAudioPipelineConsumer{`0,`1})">
+            <summary>
+            
+            </summary>
+            <param name="producer"></param>
+            <param name="consumer"></param>
+        </member>
+        <member name="P:Shamisen.Pipeline.AudioPipe`2.Producer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shamisen.Pipeline.AudioPipe`2.Consumer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.AudioPipelineProcessorComponent`2">
+            <summary>
+            Provides an implementation of simple audio processor in pipeline.
+            </summary>
+            <typeparam name="TSample"></typeparam>
+            <typeparam name="TFormat"></typeparam>
+        </member>
+        <member name="T:Shamisen.Pipeline.BufferSwapper`2">
+            <summary>
+            Swaps fixed-sized buffers for audio pipeline components.
+            </summary>
+            <typeparam name="TSample"></typeparam>
+            <typeparam name="TFormat"></typeparam>
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudioPipelineComponent`2">
+            <summary>
+            Defines a base infrastructure of an audio pipeline component.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:Shamisen.IAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudioPipelineProcessor`2">
+            <summary>
+            Defines a base infrastructure of a processor being managed by <see cref="T:Shamisen.Pipeline.AudioPipelineProcessorComponent`2"/>.
+            </summary>
+            <typeparam name="TSample"></typeparam>
+            <typeparam name="TFormat"></typeparam>
+        </member>
+        <member name="M:Shamisen.Pipeline.IAudioPipelineProcessor`2.GetRequiredSourceBlockSize(System.Int32)">
+            <summary>
+            Gets the source block size required to produce certain number of frames specified by <paramref name="outputBlockSize"/>.<br/>
+            This function is getting called each time before <see cref="T:Shamisen.Pipeline.AudioPipelineProcessorComponent`2"/> tries to read the source samples.<br/>
+            e.g. The SplineResampler-based processor can return variable results even if the <paramref name="outputBlockSize"/> is same at all time.
+            </summary>
+            <param name="outputBlockSize">The required size of output block, in frames.</param>
+            <returns>The number of frames required to produce certain number of frames specified by <paramref name="outputBlockSize"/></returns>
+        </member>
+        <member name="M:Shamisen.Pipeline.IAudioPipelineProcessor`2.Process(System.Span{`0},System.ReadOnlySpan{`0})">
+            <summary>
+            Processes the <paramref name="source"/> block and write to <paramref name="output"/>.
+            </summary>
+            <param name="output">The output block.</param>
+            <param name="source">The source block.</param>
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudioPipelineProducer`2">
+            <summary>
+            Defines a base infrastructure of an audio pipeline output.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:Shamisen.Pipeline.IAudioPipelineComponent`2" />
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudioPipelineSource`2">
+            <summary>
+            Defines a base infrastructure of a readable audio pipeline component.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <seealso cref="T:Shamisen.Pipeline.IAudioPipelineComponent`2" />
+            <seealso cref="T:Shamisen.IAsyncReadableAudioSource`2" />
+            <seealso cref="T:Shamisen.IReadableAudioSource`2" />
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudioPipelineConsumer`2">
+            <summary>
+            Defines a base infrastructure of an audio pipeline consumer.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudipPipelineConsumerFactory`3">
+            <summary>
+            Constructs a new instance of certain <see cref="T:Shamisen.Pipeline.IAudioPipelineConsumer`2"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Pipeline.IAudipPipelineConsumerFactory`3.Construct(Shamisen.Utils.ReadOnceObjectContainer{Shamisen.Pipeline.AudioPipe.Faucet})">
+            <summary>
+            Creates a new instance of <typeparamref name="TConsumer"/>.
+            </summary>
+            <param name="faucet">The setting faucet.</param>
+            <returns>The new instance of <typeparamref name="TConsumer"/>.</returns>
+        </member>
+        <member name="T:Shamisen.Pipeline.IAudipPipelineProducerFactory`3">
+            <summary>
+            Constructs a new instance of certain <see cref="T:Shamisen.Pipeline.IAudioPipelineProducer`2"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Pipeline.IAudipPipelineProducerFactory`3.Construct(Shamisen.Utils.ReadOnceObjectContainer{Shamisen.Pipeline.AudioPipe.Inlet})">
+            <summary>
+            Creates a new instance of <typeparamref name="TProducer"/>.
+            </summary>
+            <param name="inlet">The setting inlet.</param>
+            <returns>The new instance of <typeparamref name="TProducer"/>.</returns>
+        </member>
+        <member name="T:Shamisen.Pipeline.IBufferedAudioPipelineProducer`2">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.PipelineUtils">
+            <summary>
+            Provides some utility functions for dealing with pipeline system.
+            </summary>
+        </member>
+    </members>
+</doc>

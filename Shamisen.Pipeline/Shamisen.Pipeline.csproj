@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>Pipelining for Shamisen's audio processor chains.</Description>
+        <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+        <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;audio pipeline;pipeline</PackageTags>
+    </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+        <None Include="..\Shamisen-NuGetIcon.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+    </ItemGroup>
+</Project>

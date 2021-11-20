@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
       <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Description>Brand New Audio Library for mainly .NET 5 and later.</Description>
+    <Description>Core interfaces of IO features for Shamisen.</Description>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
     <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;audio io;io</PackageTags>
   </PropertyGroup>
