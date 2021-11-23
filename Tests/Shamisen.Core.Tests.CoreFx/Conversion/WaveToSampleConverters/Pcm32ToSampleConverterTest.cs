@@ -19,7 +19,6 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
     public class Pcm32ToSampleConverterTest
     {
 
-
         private static void CheckResultNormal(Span<int> spanI, Span<float> spanF)
         {
             const float M = 1.0f / 2147483648.0f;

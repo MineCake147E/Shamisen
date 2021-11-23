@@ -35,6 +35,12 @@ namespace Shamisen.Benchmarks
             buf = new byte[192000 * sizeof(int) * 1 * 60];
         }
 
+        [IterationCleanup]
+        public void IterationCleanup()
+        {
+            ms.Position = 0;
+        }
+
         [Benchmark]
         public void Decode()
         {
@@ -42,7 +48,6 @@ namespace Shamisen.Benchmarks
             {
                 _ = decoder.Read(buf);
             }
-            ms.Position = 0;
         }
 
         private static MemoryStream GetDataStreamFromResource(string name)

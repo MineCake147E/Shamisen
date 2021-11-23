@@ -24,4 +24,28 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Parsing\FlacCrc16.table.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Parsing\FlacCrc8.table.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Parsing\FlacCrc16.table.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacCrc16.table.cs</LastGenOutput>
+    </None>
+    <None Update="Parsing\FlacCrc8.table.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>

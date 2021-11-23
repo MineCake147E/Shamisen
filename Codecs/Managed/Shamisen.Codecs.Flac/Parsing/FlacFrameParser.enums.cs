@@ -22,9 +22,9 @@
 
         internal enum BitDepthState : byte
         {
-            Value,
-            RespectStreamInfo,
-            Reserved
+            Value = 0,
+            RespectStreamInfo = 1,
+            Reserved = 2
         }
     }
 }

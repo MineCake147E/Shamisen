@@ -110,6 +110,5 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             CheckResultReversed(spanI, spanF);
         }
 
-
     }
 }

@@ -157,13 +157,16 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static uint AndNot(uint a, uint b)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            if (Bmi1.IsSupported)
+            unchecked
             {
-                return Bmi1.AndNot(a, b);
-            }
+#if NETCOREAPP3_1_OR_GREATER
+                if (Bmi1.IsSupported)
+                {
+                    return Bmi1.AndNot(a, b);
+                }
 #endif
-            return ~a & b;
+                return ~a & b;
+            }
         }
 
         /// <summary>
@@ -192,13 +195,16 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong AndNot(ulong a, ulong b)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            if (Bmi1.X64.IsSupported)
+            unchecked
             {
-                return Bmi1.X64.AndNot(a, b);
-            }
+#if NETCOREAPP3_1_OR_GREATER
+                if (Bmi1.X64.IsSupported)
+                {
+                    return Bmi1.X64.AndNot(a, b);
+                }
 #endif
-            return ~a & b;
+                return ~a & b;
+            }
         }
 
         /// <summary>
@@ -227,20 +233,23 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static nuint AndNot(nuint a, nuint b)
         {
-#if NETCOREAPP3_1_OR_GREATER
-            unsafe
+            unchecked
             {
-                if (Bmi1.X64.IsSupported && sizeof(nuint) == sizeof(ulong))
+#if NETCOREAPP3_1_OR_GREATER
+                unsafe
                 {
-                    return (nuint)Bmi1.X64.AndNot(a, b);
+                    if (Bmi1.X64.IsSupported && sizeof(nuint) == sizeof(ulong))
+                    {
+                        return (nuint)Bmi1.X64.AndNot(a, b);
+                    }
+                    if (Bmi1.IsSupported && sizeof(nuint) == sizeof(uint))
+                    {
+                        return Bmi1.AndNot((uint)a, (uint)b);
+                    }
                 }
-                if (Bmi1.IsSupported && sizeof(nuint) == sizeof(uint))
-                {
-                    return Bmi1.AndNot((uint)a, (uint)b);
-                }
-            }
 #endif
-            return ~a & b;
+                return ~a & b;
+            }
         }
         #endregion
         #endregion
@@ -681,18 +690,21 @@ namespace Shamisen
 #endif
         public static uint ExtractBitField(uint value, byte start, byte length)
         {
+            unchecked
+            {
 #if NETCOREAPP3_1_OR_GREATER
-            if (Bmi2.IsSupported)
-            {
-                value >>= start;
-                return Bmi2.ZeroHighBits(value, length);
-            }
-            if (Bmi1.IsSupported)
-            {
-                return Bmi1.BitFieldExtract(value, start, length);
-            }
+                if (Bmi2.IsSupported)
+                {
+                    value >>= start;
+                    return Bmi2.ZeroHighBits(value, length);
+                }
+                if (Bmi1.IsSupported)
+                {
+                    return Bmi1.BitFieldExtract(value, start, length);
+                }
 #endif
-            return MathIFallbacks.ExtractBitField(value, start, length);
+                return MathIFallbacks.ExtractBitField(value, start, length);
+            }
         }
 
         /// <summary>
@@ -708,7 +720,6 @@ namespace Shamisen
 #endif
         public static ulong ExtractBitField(ulong value, byte start, byte length)
         {
-            if (start == 0) return value & ~(~0ul << length);
 #if NETCOREAPP3_1_OR_GREATER
 
             if (Bmi2.X64.IsSupported)
@@ -721,7 +732,7 @@ namespace Shamisen
                 return Bmi1.X64.BitFieldExtract(value, start, length);
             }
 #endif
-            return (value >> start) & ~(~0ul << length);
+            return MathIFallbacks.ExtractBitField(value, start, length);
         }
 
         #endregion ExtractBitField
@@ -731,38 +742,142 @@ namespace Shamisen
         /// <summary>
         /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
         /// </summary>
-        /// <param name="index">The index.</param>
+        /// <param name="index">The index counting from LSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static uint ZeroHighBits(int index, uint value)
         {
+#if NET5_0_OR_GREATER
+            if (ArmBase.IsSupported)
+            {
+                //LLVM said that this one might be better in Armv8.
+                index = -index;
+                var w9 = uint.MaxValue;
+                w9 >>= index;
+                return w9 & value;
+            }
+#endif
 #if NETCOREAPP3_1_OR_GREATER
             if (Bmi2.IsSupported)
             {
                 return Bmi2.ZeroHighBits(value, (uint)index);
             }
+            if (Bmi1.IsSupported)
+            {
+                return Bmi1.BitFieldExtract(value, (ushort)(index << 8));
+            }
 #endif
-            return value & ~(~0u << index);
+            index = -index;
+            value <<= index;
+            return value >> index;
         }
 
         /// <summary>
         /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
         /// </summary>
-        /// <param name="index">The index.</param>
+        /// <param name="index">The index counting from LSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong ZeroHighBits(int index, ulong value)
         {
+#if NET5_0_OR_GREATER
+            if (ArmBase.IsSupported)
+            {
+                //LLVM said that this one might be better in Armv8.
+                index = -index;
+                var x9 = ulong.MaxValue;
+                x9 >>= index;
+                return x9 & value;
+            }
+#endif
 #if NETCOREAPP3_1_OR_GREATER
             if (Bmi2.X64.IsSupported)
             {
                 return Bmi2.X64.ZeroHighBits(value, (uint)index);
             }
+            if (Bmi1.X64.IsSupported)
+            {
+                return Bmi1.X64.BitFieldExtract(value, (ushort)(index << 8));
+            }
 #endif
-            return value & ~(~0ul << index);
+            index = -index;
+            value <<= index;
+            return value >> index;
+        }
+
+        /// <summary>
+        /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> counted from MSB, to 0.
+        /// </summary>
+        /// <param name="index">The index counting from MSB.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ZeroHighBitsFromHigh(int index, uint value)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi2.IsSupported)
+            {
+                return Bmi2.ZeroHighBits(value, (uint)(32 - index));
+            }
+#endif
+            value <<= index;
+            return value >> index;
+        }
+
+        /// <summary>
+        /// Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> counted from MSB, to 0.
+        /// </summary>
+        /// <param name="index">The index counting from MSB.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ZeroHighBitsFromHigh(int index, ulong value)
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            if (Bmi2.X64.IsSupported)
+            {
+                return Bmi2.X64.ZeroHighBits(value, (uint)(64 - index));
+            }
+#endif
+            value <<= index;
+            return value >> index;
         }
 
         #endregion ZeroHighBits
+
+        #region ZeroIfFalse
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ZeroIfFalse(bool condition, uint value)
+        {
+            var c = condition;
+            var q = (uint)-Unsafe.As<bool, byte>(ref c);
+            return q & value;
+        }
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ZeroIfFalse(bool condition, ulong value)
+        {
+            var c = condition;
+            var q = (ulong)-(long)Unsafe.As<bool, byte>(ref c);
+            return q & value;
+        }
+
+        #endregion
 
         #region IsPowerOfTwo
 

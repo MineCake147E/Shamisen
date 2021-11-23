@@ -112,7 +112,6 @@ namespace Shamisen.Formats
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode() => HashCode.Combine(Channels, SampleRate);
 
-
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int32RangedLinearPcmSampleFormat"/> objects are equal.
         /// </summary>

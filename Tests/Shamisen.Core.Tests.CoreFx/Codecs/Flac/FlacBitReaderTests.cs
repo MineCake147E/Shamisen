@@ -54,7 +54,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         {
             Span<byte> w = stackalloc byte[sizeof(ulong)];
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
-            ulong expected = data >> (64 - bits);
+            var expected = data >> (64 - bits);
             using (var ms = new MemoryStream())
             {
                 ms.Write(w);
@@ -62,7 +62,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var mds = new MemoryDataSource(ms))
                 using (var reader = new FlacBitReader(mds))
                 {
-                    ulong? read = reader.ReadBitsUInt64(bits);
+                    var read = reader.ReadBitsUInt64(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -73,7 +73,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         {
             Span<byte> w = stackalloc byte[sizeof(ulong)];
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
-            uint expected = (uint)((data << bitsFirst) >> (64 - bitsSecond));
+            var expected = (uint)((data << bitsFirst) >> (64 - bitsSecond));
             using (var ms = new MemoryStream())
             {
                 ms.Write(w);
@@ -82,7 +82,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt32(bitsFirst);
-                    uint? read = reader.ReadBitsUInt32(bitsSecond);
+                    var read = reader.ReadBitsUInt32(bitsSecond);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -93,7 +93,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         {
             Span<byte> w = stackalloc byte[sizeof(ulong)];
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
-            uint expected = (uint)(data >> (64 - bits));
+            var expected = (uint)(data >> (64 - bits));
             using (var ms = new MemoryStream())
             {
                 ms.Write(w);
@@ -103,7 +103,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt64(64);
-                    uint? read = reader.ReadBitsUInt32(bits);
+                    var read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -113,10 +113,10 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         public void ReadBitsUInt32CorrectlyReadsAcrossWordBoundary(byte bits, ulong data)
         {
             Span<byte> w = stackalloc byte[sizeof(ulong)];
-            byte bhalf = (byte)(bits >> 1);
-            ulong rotatedData = (data << bhalf) | (data >> (64 - bhalf));
+            var bhalf = (byte)(bits >> 1);
+            var rotatedData = (data << bhalf) | (data >> (64 - bhalf));
             BinaryPrimitives.WriteUInt64BigEndian(w, rotatedData);
-            uint expected = (uint)(data >> (64 - bits));
+            var expected = (uint)(data >> (64 - bits));
             using (var ms = new MemoryStream())
             {
                 ms.Write(w);
@@ -126,7 +126,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 using (var reader = new FlacBitReader(mds))
                 {
                     _ = reader.ReadBitsUInt64((byte)(64 - bhalf));
-                    uint? read = reader.ReadBitsUInt32(bits);
+                    var read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(expected, read);
                 }
             }
@@ -136,10 +136,10 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         public void ReadBitsUInt32CorrectlyAscendWord(byte bits, ulong data)
         {
             Span<byte> w = stackalloc byte[sizeof(ulong)];
-            byte bhalf = (byte)(bits >> 1);
-            ulong rotatedData = (data << bhalf) | (data >> (64 - bhalf));
+            var bhalf = (byte)(bits >> 1);
+            var rotatedData = (data << bhalf) | (data >> (64 - bhalf));
             BinaryPrimitives.WriteUInt64BigEndian(w, rotatedData);
-            uint expected = (uint)(data >> (64 - bits));
+            var expected = (uint)(data >> (64 - bits));
             using (var ms = new MemoryStream())
             {
                 ms.Write(w);
@@ -151,7 +151,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                     _ = reader.ReadBitsUInt64((byte)(64 - bhalf));
                     Assert.AreEqual((64 - bhalf) % 64, reader.ConsumedBits, "ConsumedBits is different at first read!");
                     Assert.AreEqual((64 - bhalf) / 64, reader.ConsumedWords, "ConsumedWords is different at first read!");
-                    uint? read = reader.ReadBitsUInt32(bits);
+                    var read = reader.ReadBitsUInt32(bits);
                     Assert.AreEqual(bits - bhalf, reader.ConsumedBits, "ConsumedBits is different at second read!");
                     Assert.AreEqual(1, reader.ConsumedWords, "ConsumedWords is different at second read!");
                     Assert.AreEqual(expected, read);
@@ -175,7 +175,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             uint expected = bits;
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            bool flag = reader.ReadUnaryUnsigned(out uint read);
+            var flag = reader.ReadUnaryUnsigned(out var read);
             Assert.IsTrue(flag);
             Assert.AreEqual(expected, read);
         }
@@ -193,7 +193,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var reader = new FlacBitReader(new UnaryDataSource(bits));
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(reader.ReadUnaryUnsigned(out uint value));
+                Assert.IsTrue(reader.ReadUnaryUnsigned(out var value));
                 Assert.AreEqual(bits, value);
             });
         }
@@ -205,7 +205,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         private static IEnumerable<TestCaseData> ReadRiceCodesReadsCorrectlyTestCaseGenerator()
         {
             const string Prefix = "ReadRiceCodesReadsCorrectly";
-            for (int i = 1; i < 32; i++)
+            for (var i = 1; i < 32; i++)
             {
                 yield return new TestCaseData(i, 0x8000_0000_ffff_fffful, new int[] { 0 })
                     .SetName(Prefix + "SingleZero{a}");
@@ -236,12 +236,12 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            int[] m = new int[values.Length];
-            bool rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            var m = new int[values.Length];
+            var rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr);
             Assert.Multiple(() =>
             {
-                for (int i = 0; i < m.Length; i++)
+                for (var i = 0; i < m.Length; i++)
                 {
                     Assert.AreEqual(values[i], m[i], $"Decoding {i}th data from {data:X} with parameter {parameter}");
                 }
@@ -255,26 +255,26 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             Span<byte> w = stackalloc byte[sizeof(ulong)];
             BinaryPrimitives.WriteUInt64BigEndian(w, data);
             dc.Write(w);
-            ulong rdata = BinaryPrimitives.ReverseEndianness(data);
+            var rdata = BinaryPrimitives.ReverseEndianness(data);
             rdata = ((rdata << 4) & 0xf0f0_f0f0_f0f0_f0f0ul) | ((rdata >> 4) & 0x0f0f_0f0f_0f0f_0f0ful);
             BinaryPrimitives.WriteUInt64BigEndian(w, rdata);
             dc.Write(w);
             using var reader = new FlacBitReader(dc);
-            int[] m = new int[values.Length];
-            bool rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            var m = new int[values.Length];
+            var rr = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr);
             Assert.Multiple(() =>
             {
-                for (int i = 0; i < m.Length; i++)
+                for (var i = 0; i < m.Length; i++)
                 {
                     Assert.AreEqual(values[i], m[i], $"Decoding {i}th data from {data:X} with parameter {parameter}");
                 }
             });
-            bool rr2 = reader.ReadRiceCodes(m.AsSpan(), parameter);
+            var rr2 = reader.ReadRiceCodes(m.AsSpan(), parameter);
             Assert.IsTrue(rr2);
             Assert.Multiple(() =>
             {
-                for (int i = 0; i < m.Length; i++)
+                for (var i = 0; i < m.Length; i++)
                 {
                     Assert.AreEqual(values[i], m[m.Length - i - 1], $"Decoding {i}th data from {(BinaryPrimitives.ReverseEndianness(data)):X} with parameter {parameter}");
                 }
@@ -291,7 +291,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             var sr = new StreamReader(ms, Encoding.UTF8);
             while (true)
             {
-                string f = sr.ReadLine();
+                var f = sr.ReadLine();
                 if (f is not null)
                 {
                     yield return new TestCaseData(f);
@@ -304,7 +304,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         [TestCaseSource(nameof(Utf8TestCaseGenerator))]
         public void ReadUtf8UInt32ReadsCorrectly(string data)
         {
-            byte[] t = Encoding.UTF8.GetBytes(data);
+            var t = Encoding.UTF8.GetBytes(data);
             using var dc = new DataCache<byte>();
             dc.Write(t);
             using var reader = new FlacBitReader(dc);
@@ -312,7 +312,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             {
                 foreach (var item in data.EnumerateRunes())
                 {
-                    bool read = reader.ReadUtf8UInt32(out uint value, default, out int br);
+                    var read = reader.ReadUtf8UInt32(out var value, default, out var br);
                     Assert.IsTrue(read);
                     Assert.AreEqual(item.Value, (int)value);
                 }
@@ -322,7 +322,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         [TestCaseSource(nameof(Utf8TestCaseGenerator))]
         public void ReadUtf8UInt64ReadsCorrectly(string data)
         {
-            byte[] t = Encoding.UTF8.GetBytes(data);
+            var t = Encoding.UTF8.GetBytes(data);
             using var dc = new DataCache<byte>();
             dc.Write(t);
             using var reader = new FlacBitReader(dc);
@@ -330,7 +330,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             {
                 foreach (var item in data.EnumerateRunes())
                 {
-                    bool read = reader.ReadUtf8UInt64(out ulong value, default, out int br);
+                    var read = reader.ReadUtf8UInt64(out var value, default, out var br);
                     Assert.IsTrue(read);
                     Assert.AreEqual(item.Value, (int)value);
                 }
@@ -338,5 +338,25 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
         }
 
         #endregion ReadUtf8
+        #region ReadAlignedTiny
+        [TestCaseSource(nameof(Utf8TestCaseGenerator))]
+        public void ReadAlignedTinyReadsCorrectly(string data)
+        {
+            var t = Encoding.UTF8.GetBytes(data);
+            using var dc = new DataCache<byte>();
+            dc.Write(t);
+            using var reader = new FlacBitReader(dc);
+            var d = new byte[t.Length];
+            var rr = reader.ReadBytes(d);
+            Assert.AreEqual(t.Length, rr.Length);
+            Assert.Multiple(() =>
+            {
+                for (var i = 0; i < t.Length; i++)
+                {
+                    Assert.AreEqual(t[i], d[i], $"Comparing {i}th element!");
+                }
+            });
+        }
+        #endregion
     }
 }

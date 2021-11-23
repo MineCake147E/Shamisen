@@ -837,7 +837,6 @@ namespace Shamisen
         #endregion
 #endif
 
-
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessFallback(Span<Int24> span)
         {

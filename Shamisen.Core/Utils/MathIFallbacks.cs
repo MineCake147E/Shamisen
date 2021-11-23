@@ -250,7 +250,7 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static uint ExtractBitField(uint value, byte start, byte length)
-            => (value >> start) & ~(~0u << length);
+            => MathI.ZeroHighBits(length, value >> start);
 
         /// <summary>
         /// Extracts the bit field inside <paramref name="value"/>.
@@ -261,6 +261,6 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong ExtractBitField(ulong value, byte start, byte length)
-            => (value >> start) & ~(~0ul << length);
+             => MathI.ZeroHighBits(length, value >> start);
     }
 }

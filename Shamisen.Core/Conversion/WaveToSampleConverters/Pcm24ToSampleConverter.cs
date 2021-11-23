@@ -152,7 +152,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             return buffer.Length;
         }
 
-
         private static void ProcessNormal(Span<Int24> wrote, Span<float> dest)
         {
             unchecked
@@ -440,7 +439,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 #endif
         #endregion
-
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

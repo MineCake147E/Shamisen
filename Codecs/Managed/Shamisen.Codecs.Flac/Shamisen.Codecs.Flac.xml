@@ -1189,7 +1189,14 @@
             Clears this <see cref="T:Shamisen.Codecs.Flac.Parsing.FlacBitReader"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadAligned(System.Span{System.Byte})">
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadAlignedLarge(System.Span{System.Byte})">
+            <summary>
+            Reads the data to the specified <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBytes(System.Span{System.Byte})">
             <summary>
             Reads the data to the specified <paramref name="buffer"/>.
             </summary>
@@ -1697,6 +1704,11 @@
             Finds the next frame.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.ParseAllSubFrames(Shamisen.Codecs.Flac.Parsing.FlacBitReader,Shamisen.Codecs.Flac.FlacStreamInfoBlock,System.UInt32,System.ValueTuple{System.UInt32,Shamisen.Codecs.Flac.Parsing.FlacFrameParser.SampleRateState},Shamisen.Codecs.Flac.FlacChannelAssignments,System.ValueTuple{System.UInt32,Shamisen.Codecs.Flac.Parsing.FlacFrameParser.BitDepthState},Shamisen.Codecs.Flac.Parsing.FlacCrc16,System.Nullable{System.UInt64},System.Nullable{System.UInt64})">
+            <summary>
+            Inlining this method causes poor codegen which looks like in debug mode.
+            </summary>
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Read(System.Span{System.Int32})">
             <summary>
