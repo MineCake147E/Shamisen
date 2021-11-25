@@ -21,9 +21,6 @@
 
     <ItemGroup>
         <PackageReference Include="NAudio" Version="2.0.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+        <PackageReference Include="Shamisen.IO" Version="0.1.0-alpha.0.1" />
     </ItemGroup>
 </Project>

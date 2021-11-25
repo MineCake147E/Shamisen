@@ -252,16 +252,16 @@ namespace Shamisen.Data
         {
             while (true)
             {
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested) return;
                 while (buffersNeededToBeResized.TryDequeue(out var resizingBuffer))
                 {
                     DebugUtils.WriteLine($"Resizing buffer from {resizingBuffer.buffer.ActualBuffer.Length} to {resizingBuffer.newSize}...");
                     resizingBuffer.buffer.Resize(resizingBuffer.newSize);
                     buffersEmpty.Enqueue(resizingBuffer.buffer);
                 }
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested) return;
                 fillFlag.Wait(token);
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested) return;
                 if (!buffersEmpty.TryDequeue(out var internalBuffer))
                 {
                     if (!buffersNeededToBeResized.IsEmpty || !buffersEmpty.IsEmpty) continue;
@@ -272,7 +272,8 @@ namespace Shamisen.Data
                 }
                 else
                 {
-                    token.ThrowIfCancellationRequested();
+                    if (token.IsCancellationRequested)
+                        return;
                     readFlag.Wait(token);
                     await readSemaphore.WaitAsync(token);
                     var rr = ReadFromSource(internalBuffer.ActualBuffer.Span);

@@ -611,18 +611,21 @@ namespace Shamisen.Codecs.Flac.Parsing
         {
             if (Length == 0 || samples is null) return ReadResult.EndOfStream;
             if (Position is null || Length is null) throw new InvalidProgramException();
-            if ((ulong)buffer.Length <= Length)
+            var remainingFrames = Length.Value;
+            var divisor = channelsDivisor;
+            var chs = divisor.Divisor;
+            if ((ulong)buffer.Length <= remainingFrames * (uint)chs)
             {
-                samples.Span.Slice((int)Position * channelsDivisor.Divisor, buffer.Length).CopyTo(buffer);
-                Position += (ulong)(buffer.Length / channelsDivisor);
+                samples.Span.Slice((int)Position * chs, buffer.Length).CopyTo(buffer);
+                Position += (ulong)(buffer.Length / divisor);
                 return buffer.Length;
             }
             else
             {
-                samples.Span.Slice((int)Position * channelsDivisor.Divisor).CopyTo(buffer);
-                var length = (int)Length;
-                Position += Length;
-                return length * channelsDivisor.Divisor;
+                samples.Span.Slice((int)Position * chs).CopyTo(buffer);
+                var length = (int)remainingFrames;
+                Position += remainingFrames;
+                return length * chs;
             }
         }
 

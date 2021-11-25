@@ -23,7 +23,7 @@ namespace Shamisen.Data
         /// <param name="allowWaitForRead">The value which indicates whether the <see cref="PreloadDataBuffer{TSample}"/> should wait for another sample block or not.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialBlockSize"/> should be larger than or equals to 2048.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
-        public static IDataSource<T> Preload<T>(this IDataSource<T> source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
+        public static IReadableDataSource<T> Preload<T>(this IDataSource<T> source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
             where T : unmanaged
             => new PreloadDataBuffer<T>(source, initialBlockSize, internalBufferNumber, allowWaitForRead);
     }

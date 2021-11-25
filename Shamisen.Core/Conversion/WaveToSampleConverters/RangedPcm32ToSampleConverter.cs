@@ -57,7 +57,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             {
                 return rr;
             }
-            buffer = buffer.SliceWhile(rr.Length / 4);
+            buffer = buffer.SliceWhile(rr.Length);
             Process(buffer, MemoryMarshal.Cast<float, int>(buffer), Source.Format.EffectiveBitDepth);
             return buffer.Length;
         }

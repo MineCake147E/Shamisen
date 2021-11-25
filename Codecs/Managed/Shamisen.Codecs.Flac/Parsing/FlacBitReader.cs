@@ -392,6 +392,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         var res = (uint)word;
                         cb += bitsToRead;
                         value = res;
+                        cw += cb >> 6;
+                        cb &= 0x3f;
                         consumedBits = cb;
                         consumedWords = cw;
                         return true;
@@ -411,6 +413,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         cb = bitsToRead;
                     }
                     value = result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -421,6 +425,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                     var result = (uint)(word >> -bitsToRead);
                     cb = bitsToRead;
                     value = result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -432,6 +438,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                 var result = word << cb;
                 cb += bitsToRead;
                 value = (uint)(result >> -bitsToRead);
+                cw += cb >> 6;
+                cb &= 0x3f;
                 consumedBits = cb;
                 consumedWords = cw;
                 return true;
@@ -495,6 +503,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         var res = word;
                         cb += bitsToRead;
                         value = res;
+                        cw += cb >> 6;
+                        cb &= 0x3f;
                         consumedBits = cb;
                         consumedWords = cw;
                         return true;
@@ -513,6 +523,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         cb = bitsToRead;
                     }
                     value = result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -523,6 +535,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                     var result = word >> -bitsToRead;
                     cb = bitsToRead;
                     value = result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -534,6 +548,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                 var result = (v << cb) >> -bitsToRead;
                 cb += bitsToRead;
                 value = result;
+                cw += cb >> 6;
+                cb &= 0x3f;
                 consumedBits = cb;
                 consumedWords = cw;
                 return true;
