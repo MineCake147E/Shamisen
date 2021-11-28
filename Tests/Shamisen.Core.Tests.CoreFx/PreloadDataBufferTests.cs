@@ -22,6 +22,7 @@ namespace Shamisen.Core.Tests.CoreFx
     using TVectorInside = UInt64;
 
     [TestFixture]
+    [NonParallelizable]
     public class PreloadDataBufferTests
     {
         private static IEnumerable<int> Sizes => new int[] { 2048, 4096 };
@@ -34,6 +35,7 @@ namespace Shamisen.Core.Tests.CoreFx
             => Sizes.SelectMany(a => NumbersOfBuffers.SelectMany(b => Timeouts.Select(c => new TestCaseData(a, b, c))));
 
         [TestCaseSource(nameof(TestCases))]
+        [NonParallelizable]
         public void ReadsCorrectly(int initialBlockSize, int bufferCount, TimeSpan timeout)
         {
             Vector128<ulong> a;
@@ -58,13 +60,13 @@ namespace Shamisen.Core.Tests.CoreFx
             var vpb = MemoryMarshal.Cast<byte, TVector>(pb.Span);
             try
             {
-                for (int i = 0; i < 1 << 17; i++)
+                for (var i = 0; i < 1 << 15; i++)
                 {
-                    byte u = ls.ReadByte();
-                    int len = gb.Length - u;
+                    var u = ls.ReadByte();
+                    var len = gb.Length - u;
                     TestHelper.DoesNotTakeSoLong(() => ps.ReadAll(gb.Span.SliceWhile(len)), timeout);
                     ns.ReadAll(gn.Span.SliceWhile(len));
-                    for (int j = 0; j < vgn.Length; j++)
+                    for (var j = 0; j < vgn.Length; j++)
                     {
                         Assert.AreEqual(vgn[j], vgb[j], $"On the {i}th try, {j}th element: The elements aren't the same");
                     }
@@ -85,12 +87,12 @@ namespace Shamisen.Core.Tests.CoreFx
             catch (Exception)
             {
                 Console.WriteLine($"The stream: {seed}, {id}");
-                for (int i = 0; i < vgn.Length; i++)
+                for (var i = 0; i < vgn.Length; i++)
                 {
                     Console.WriteLine($"{i}: {FormatAllElementsHexadecimal(vgn[i])}, {FormatAllElementsHexadecimal(vgb[i])}");
                 }
                 Console.WriteLine("Previous:");
-                for (int i = 0; i < vpn.Length; i++)
+                for (var i = 0; i < vpn.Length; i++)
                 {
                     Console.WriteLine($"{i}: {FormatAllElementsHexadecimal(vpn[i])}, {FormatAllElementsHexadecimal(vpb[i])}");
                 }
@@ -103,12 +105,12 @@ namespace Shamisen.Core.Tests.CoreFx
         {
             var sb = new StringBuilder();
             sb.Append('<');
-            ulong[] elements = new TVectorInside[TVector.Count];
-            for (int i = 0; i < TVector.Count; i++)
+            var elements = new TVectorInside[TVector.Count];
+            for (var i = 0; i < TVector.Count; i++)
             {
                 elements[i] = vector.GetElement(i);
             }
-            string format = $"X{sizeof(TVectorInside) * 2}";
+            var format = $"X{sizeof(TVectorInside) * 2}";
             sb.AppendJoin(',', elements.Select(a => a.ToString(format)));
             sb.Append('>');
             return sb.ToString();

@@ -439,8 +439,7 @@ namespace Shamisen.Filters
                         ProcessMultipleAvx(buffer, Parameter, internalStates);
                         return;
                     }
-                    else
-                    if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
+                    else if (Sse.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse))
                     {
                         ProcessMultipleSse(buffer);
                         return;

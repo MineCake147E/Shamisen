@@ -7,6 +7,7 @@
     <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;flac</PackageTags>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
     <Description>FLAC Decoder for Shamisen.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../../../Shamisen.Core.targets" />
     <ItemGroup>
@@ -45,6 +46,10 @@
     <None Update="Parsing\FlacCrc8.table.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 

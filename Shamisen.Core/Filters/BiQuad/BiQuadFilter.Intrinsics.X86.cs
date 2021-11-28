@@ -188,7 +188,6 @@ namespace Shamisen.Filters
                         if (rch != 0)
                         {
                             var xmm0 = Avx.MaskLoad(ihead + nch, mask);
-                            var xmm1 = Avx.MaskLoad(ihead + nch + nchannels, mask);
                             var iSX = Avx.MaskLoad(iStateX + nch, mask);
                             var iSY = Avx.MaskLoad(iStateY + nch, mask);
                             var xmm2 = Sse.Multiply(fBX.GetLower(), xmm0);

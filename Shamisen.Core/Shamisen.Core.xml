@@ -12951,7 +12951,123 @@
               <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(S       Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.OptimizationUtils">
+            <summary>
+            Contains some utility for optimization.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
+            <summary>
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
+            <summary>
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Pipeline.AudioSourceProperties`2">
+            <summary>
+            Represents properties of corresponding <see cref="T:Shamisen.IAudioSource`2"/>
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+        </member>
+        <member name="P:Shamisen.Pipeline.AudioSourceProperties`2.IsDynamic">
+            <summary>
+            Gets a value indicating whether the source is dynamic.
+            </summary>
+            <value>
+              <c>true</c> if the source is dynamic; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Pipeline.AudioSourceProperties`2.PreferredLatency">
+            <summary>
+            Gets the preferred latency in seconds.<br/>
+            Only positive non-infinity values are accepted.
+            </summary>
+            <value>
+            The preferred latency.
+            </value>
+        </member>
+        <member name="M:Shamisen.Pipeline.AudioSourceProperties`2.#ctor(Shamisen.IAudioSource{`0,`1},System.Boolean,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Pipeline.AudioSourceProperties`2"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="isDynamic">The value which indicates whether the source is either synthetic or changed in real-time, or not.</param>
+            <param name="preferredLatency">The preferred latency.</param>
+            <exception cref="T:System.ArgumentNullException">source</exception>
+        </member>
+        <member name="M:Shamisen.Pipeline.AudioSourceProperties`2.GetRequiredBufferSize(Shamisen.IInterleavedAudioFormat{`0})">
+            <summary>
+            Gets the size of the required buffer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Primitives.Angle128">
+            <summary>
+            Represents an angle in 128-bit mixed-point value.<br/>
+            Can be used for some extremely-high-precision needs of angle and frequency.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Primitives.Angle128.low">
+            <summary>
+            The lower part.<br/>
+            Must be between 0 and 1.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Int32,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="frequency">The frequency.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="multiplesOfPi">The multiples of pi.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(Shamisen.Fixed64,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="high">The high part.</param>
+            <param name="low">The low part.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.High">
+            <summary>
+            Gets the higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Low">
+            <summary>
+            Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
             </summary>
             <value>
             The lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
@@ -13726,127 +13842,6 @@
             </summary>
         </member>
         <member name="F:Shamisen.Fixed16.Zero">
-            <summary>
-            Represents the number zero (0).
-            </summary>
-        </member>
-        <member name="F:Shamisen.Fixed16.Epsilon">
-            <summary>
-            Represents the smallest positive <see cref="T:Shamisen.Fixed16"/> value that is greater than zero. This field is constant and read-only.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Fixed16.#ctor(System.Int16)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Fixed16"/> struct.
-            </summary>
-            <param name="internalValue">The internal value stored in memory.</param>
-        </member>
-        <member name="P:Shamisen.Fixed16.FloatValue">
-            <summary>
-            Gets the value represented in <see cref="T:System.Single"/>.
-            </summary>
-            <value>
-            The float value.
-            </value>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Addition(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Adds two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The first value to add.</param>
-            <param name="right">The second value to add.</param>
-            <returns>
-            The result of adding <paramref name="left"/> and <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Subtraction(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Subtracts two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The minuend.</param>
-            <param name="right">The subtrahend.</param>
-            <returns>
-            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Multiply(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Multiplies two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The first value to multiply.</param>
-            <param name="right">The second value to multiply.</param>
-            <returns>
-            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Division(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Divides two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The dividend.</param>
-            <param name="right">The divisor.</param>
-            <returns>
-            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Modulus(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The dividend.</param>
-            <param name="right">The divisor.</param>
-            <returns>
-            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_UnaryPlus(Shamisen.Fixed16)">
-            <summary>
-            Returns the value of the <see cref="T:Shamisen.Fixed16"/> operand (the sign of the operand is unchanged).
-            </summary>
-            <param name="value">The operand to return.</param>
-            <returns>
-            The value of the operand, <paramref name="value"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Increment(Shamisen.Fixed16)">
-            <summary>
-            Increments the <see cref="T:Shamisen.Fixed16"/> operand by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>
-            The value of <paramref name="value"/> incremented by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_UnaryNegation(Shamisen.Fixed16)">
-            <summary>
-            Negates the value of the specified <see cref="T:Shamisen.Fixed16"/> operand.
-            </summary>
-            <param name="value">The value to negate.</param>
-            <returns>
-            The result of <paramref name="value"/> multiplied by negative one (-1).
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Decrement(Shamisen.Fixed16)">
-            <summary>
-            Decrements the <see cref="T:Shamisen.Fixed16"/> operand by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
-            </summary>
-            <param name="value">The value to decrement.</param>
-            <returns>
-            The value of <paramref name="value"/> decremented by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Implicit(Shamisen.Fixed16)~System.Single">
-            <summary>
-            Performs an implicit conversion from <see cref="T:Shamisen.Fixed16"/> to <see cref="T:System.Single"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Explicit(Shamisen.Fixed16)~System.Double">
-            <summary>
-            Performs an explicit conversion from <see cref=o">
             <summary>
             Represents the number zero (0).
             </summary>

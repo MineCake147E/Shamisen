@@ -1076,6 +1076,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         var res = MathI.ZeroIfFalse(shift < BitsPerWord, (uint)word);
                         cb += bitsToRead;
                         value = (byte)res;
+                        cw += cb >> 6;
+                        cb &= 0x3f;
                         consumedBits = cb;
                         consumedWords = cw;
                         return true;
@@ -1094,6 +1096,8 @@ namespace Shamisen.Codecs.Flac.Parsing
                         cb = bitsToRead;
                     }
                     value = (byte)result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -1101,17 +1105,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 else
                 {
                     var word = Unsafe.Add(ref bufHead, cw);
-                    if (bitsToRead < BitsPerWord)
-                    {
-                        var result = (uint)(word >> (BitsPerWord - bitsToRead));
-                        cb = bitsToRead;
-                        value = (byte)result;
-                        consumedBits = cb;
-                        consumedWords = cw;
-                        return true;
-                    }
-                    cw++;
-                    value = (byte)word;
+                    var result = (uint)(word >> (BitsPerWord - bitsToRead));
+                    cb = bitsToRead;
+                    value = (byte)result;
+                    cw += cb >> 6;
+                    cb &= 0x3f;
                     consumedBits = cb;
                     consumedWords = cw;
                     return true;
@@ -1119,25 +1117,15 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
             else
             {
-                if (cb > 0)
-                {
-                    if (cb + bitsToRead > bytesOfIncompleteWord * 8) throw new FlacException("This is a bug!", this);
-                    var result = (uint)((Unsafe.Add(ref bufHead, cw) & (~0ul >> cb)) >> (BitsPerWord - cb - bitsToRead));
-                    cb += bitsToRead;
-                    value = (byte)result;
-                    consumedBits = cb;
-                    consumedWords = cw;
-                    return true;
-                }
-                else
-                {
-                    var result = (uint)(Unsafe.Add(ref bufHead, cw) >> (BitsPerWord - bitsToRead));
-                    cb += bitsToRead;
-                    value = (byte)result;
-                    consumedBits = cb;
-                    consumedWords = cw;
-                    return true;
-                }
+                if (cb + bitsToRead > bytesOfIncompleteWord * 8) throw new FlacException("This is a bug!", this);
+                var result = (uint)((Unsafe.Add(ref bufHead, cw) & (~0ul >> cb)) >> (BitsPerWord - cb - bitsToRead));
+                cb += bitsToRead;
+                value = (byte)result;
+                cw += cb >> 6;
+                cb &= 0x3f;
+                consumedBits = cb;
+                consumedWords = cw;
+                return true;
             }
         }
 
