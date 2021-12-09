@@ -38,48 +38,22 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
         }
 
         [Benchmark]
-        public void Avx2M2()
-        {
-            var span = buffer.AsSpan();
-            var byteSpan = MemoryMarshal.AsBytes(span);
-            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2M2(byteSpan, span);
-        }
-        [Benchmark]
-        public void Avx2M3()
-        {
-            var span = buffer.AsSpan();
-            var byteSpan = MemoryMarshal.AsBytes(span);
-            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2M3(byteSpan, span);
-        }
-        [Benchmark]
-        public void Avx2M4()
-        {
-            var span = buffer.AsSpan();
-            var byteSpan = MemoryMarshal.AsBytes(span);
-            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2M4(byteSpan, span);
-        }
-
-        //[Benchmark]
-        //public void Avx2FP()
-        //{
-        //    var span = buffer.AsSpan();
-        //    var byteSpan = MemoryMarshal.AsBytes(span);
-        //    byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-        //    ALawToSampleConverter.ProcessAvx2FP(byteSpan, span);
-        //}
-        /*[Benchmark]
         public void Avx2()
         {
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-#pragma warning disable CS0618
             ALawToSampleConverter.ProcessAvx2(byteSpan, span);
-#pragma warning restore CS0618
-        }*/
+        }
+
+        [Benchmark]
+        public void Sse41()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            ALawToSampleConverter.ProcessSse41(byteSpan, span);
+        }
 
         [GlobalCleanup]
         public void Cleanup() => buffer = null;

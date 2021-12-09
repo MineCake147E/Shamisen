@@ -109,7 +109,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #if NETCOREAPP3_1_OR_GREATER
                     if (rb.Length >= 16 && Avx2.IsSupported)
                     {
-                        ProcessAvx2M4(rb, wb);
+                        ProcessAvx2(rb, wb);
                         return wb.Length;
                     }
 #endif
@@ -143,406 +143,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [Obsolete("Remaining for benchmark purposes!")]
         internal static void ProcessAvx2(Span<byte> rb, Span<float> wb)
-        {
-            unchecked
-            {
-                nint length = MathI.Min(rb.Length, wb.Length);
-                nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
-                var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
-                var ymm1 = Vector256.Create(1u);
-                var xmm2 = Vector128.Create(0x7070_7070u);
-                var xmm3 = Vector128.Create(0u);
-                var ymm4 = Vector256.Create(0x1fu);
-                var ymm5 = Vector256.Create(0xffu);
-                var ymm6 = Vector256.Create(0x84u);
-                var ymm7 = Vector256.Create(0x3b80_0000u);
-                var ymm8 = Vector256.Create(0x83fc_0000u);
-                for (i = 0; i < length - 15; i += 16)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    var ymm11 = Avx2.And(ymm10, ymm4);
-                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
-                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
-                    ymm11 = Avx2.And(ymm11, ymm5);
-                    ymm11 = Avx2.Subtract(ymm6, ymm11);
-                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
-
-                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm11 = Avx2.And(ymm10, ymm4);
-                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
-                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
-                    ymm11 = Avx2.And(ymm11, ymm5);
-                    ymm11 = Avx2.Subtract(ymm6, ymm11);
-                    ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm0.AsSingle();
-                }
-                for (; i < length - 7; i += 8)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    var ymm11 = Avx2.And(ymm10, ymm4);
-                    ymm11 = Avx.ConvertToVector256Single(ymm11.AsInt32()).AsUInt32();
-                    ymm11 = Avx2.ShiftRightLogical(ymm11, 23);
-                    ymm11 = Avx2.And(ymm11, ymm5);
-                    ymm11 = Avx2.Subtract(ymm6, ymm11);
-                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
-                }
-                for (; i < length; i++)
-                {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
-                }
-            }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2M2(Span<byte> rb, Span<float> wb)
-        {
-            unchecked
-            {
-                nint length = MathI.Min(rb.Length, wb.Length);
-                nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
-                var xmm9 = Vector128.Create((byte)0xd5).AsUInt32();
-                var ymm1 = Vector256.Create(1u);
-                var xmm2 = Vector128.Create(0x7070_7070u);
-                var xmm3 = Vector128.Create(0u);
-                var ymm4 = Vector256.Create(0x0fu);
-                var ymm7 = Vector256.Create(0x3b80_0000u);
-                var ymm8 = Vector256.Create(0x83fc_0000u);
-                var ymm15 = Vector256.Create(5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1);
-                for (i = 0; i < length - 15; i += 16)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    var ymm11 = ymm10;
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
-
-                    xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm11 = ymm10;
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm0.AsSingle();
-                }
-                for (; i < length - 7; i += 8)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm0 = Sse2.Xor(xmm0, xmm9);
-                    var ymm10 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    var ymm11 = ymm10;
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    xmm0 = Sse2.And(xmm0, xmm2);
-                    xmm0 = Sse2.CompareEqual(xmm0.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte()).AsUInt32();
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    ymm11 = Avx2.Shuffle(ymm15.AsByte(), ymm11.AsByte()).AsUInt32();    //lzcnt and add in one go with lookup table
-                    ymm11 = Avx2.And(ymm11, ymm4);
-                    var ymm12 = Avx2.ShiftLeftLogical(ymm11, 23);
-                    ymm12 = Avx2.Subtract(ymm7, ymm12);
-                    ymm11 = Avx2.And(ymm11, ymm0);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm11);
-                    ymm0 = Avx.BlendVariable(ymm7.AsSingle(), ymm12.AsSingle(), ymm0.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm0 = Avx2.Add(ymm10, ymm0);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm0.AsSingle();
-                }
-                for (; i < length; i++)
-                {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
-                }
-            }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2FP(Span<byte> rb, Span<float> wb)
-        {
-            unchecked
-            {
-                nint length = MathI.Min(rb.Length, wb.Length);
-                nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
-                var xmm0 = Vector128.CreateScalarUnsafe(0xd5_d5_d5_d5_d5_d5_d5_d5).AsUInt32();
-                var ymm1 = Vector256.Create(0x83F80000u).AsInt32();
-                var ymm2 = Vector256.Create(262144);
-                var ymm3 = Vector256.Create(6.64613997E+35f);
-                for (i = 0; i < length - 31; i += 32)
-                {
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    var xmm5 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 16))).AsUInt32();
-                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 24))).AsUInt32();
-                    xmm4 = Sse2.Xor(xmm0, xmm4);
-                    xmm5 = Sse2.Xor(xmm0, xmm5);
-                    xmm6 = Sse2.Xor(xmm0, xmm6);
-                    xmm7 = Sse2.Xor(xmm0, xmm7);
-                    var ymm4 = Avx2.ConvertToVector256Int32(xmm4.AsSByte()).AsSingle();
-                    var ymm5 = Avx2.ConvertToVector256Int32(xmm5.AsSByte()).AsSingle();
-                    var ymm6 = Avx2.ConvertToVector256Int32(xmm6.AsSByte()).AsSingle();
-                    var ymm7 = Avx2.ConvertToVector256Int32(xmm7.AsSByte()).AsSingle();
-                    ymm4 = Avx2.ShiftLeftLogical(ymm4.AsInt32(), 19).AsSingle();
-                    ymm5 = Avx2.ShiftLeftLogical(ymm5.AsInt32(), 19).AsSingle();
-                    ymm6 = Avx2.ShiftLeftLogical(ymm6.AsInt32(), 19).AsSingle();
-                    ymm7 = Avx2.ShiftLeftLogical(ymm7.AsInt32(), 19).AsSingle();
-                    ymm4 = Avx2.And(ymm1, ymm4.AsInt32()).AsSingle();
-                    ymm5 = Avx2.And(ymm1, ymm5.AsInt32()).AsSingle();
-                    ymm6 = Avx2.And(ymm1, ymm6.AsInt32()).AsSingle();
-                    ymm7 = Avx2.And(ymm1, ymm7.AsInt32()).AsSingle();
-                    ymm4 = Avx2.Or(ymm2, ymm4.AsInt32()).AsSingle();
-                    ymm4 = Avx.Multiply(ymm3, ymm4);
-                    ymm5 = Avx2.Or(ymm2, ymm5.AsInt32()).AsSingle();
-                    ymm5 = Avx.Multiply(ymm3, ymm5);
-                    ymm6 = Avx2.Or(ymm2, ymm6.AsInt32()).AsSingle();
-                    ymm6 = Avx.Multiply(ymm3, ymm6);
-                    ymm7 = Avx2.Or(ymm2, ymm7.AsInt32()).AsSingle();
-                    ymm7 = Avx.Multiply(ymm3, ymm7);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm4;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm5;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm6;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm7;
-                }
-                for (; i < length - 7; i += 8)
-                {
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm4 = Sse2.Xor(xmm4, xmm0);
-                    var ymm4 = Avx2.ConvertToVector256Int32(xmm4.AsSByte()).AsSingle();
-                    ymm4 = Avx2.ShiftLeftLogical(ymm4.AsInt32(), 19).AsSingle();
-                    ymm4 = Avx2.And(ymm1, ymm4.AsInt32()).AsSingle();
-                    ymm4 = Avx2.Or(ymm2, ymm4.AsInt32()).AsSingle();
-                    ymm4 = Avx.Multiply(ymm3, ymm4);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm4;
-                }
-                for (; i < length; i++)
-                {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
-                }
-            }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2M3(Span<byte> rb, Span<float> wb)
-        {
-            unchecked
-            {
-                nint length = MathI.Min(rb.Length, wb.Length);
-                nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
-                var xmm0 = Vector128.Create((byte)0xd5).AsUInt32();
-                var ymm1 = Vector256.Create(1u);
-                var xmm2 = Vector128.Create(0x7070_7070u);
-                var xmm3 = Vector128.Create(0u);
-                var ymm4 = Vector256.Create(0x0fu);
-                var ymm5 = Vector256.Create(0x3b80_0000u);
-                var ymm6 = Vector256.Create(0x83fc_0000u);
-                var ymm7 = Vector256.Create(5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1);
-                for (i = 0; i < length - 31; i += 32)
-                {
-                    var xmm8 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    var xmm9 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    xmm8 = Sse2.Xor(xmm8, xmm0);
-                    xmm9 = Sse2.Xor(xmm9, xmm0);
-                    var ymm10 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    var ymm11 = Avx2.ConvertToVector256Int32(xmm9.AsSByte()).AsUInt32();
-                    var ymm12 = ymm10;
-                    var ymm13 = ymm11;
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm11 = Avx2.Add(ymm11, ymm11);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    ymm11 = Avx2.Or(ymm11, ymm1);
-                    xmm8 = Sse2.And(xmm8, xmm2);
-                    xmm9 = Sse2.And(xmm9, xmm2);
-                    xmm8 = Sse2.CompareEqual(xmm8.AsByte(), xmm3.AsByte()).AsUInt32();
-                    xmm9 = Sse2.CompareEqual(xmm9.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm8 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    var ymm9 = Avx2.ConvertToVector256Int32(xmm9.AsSByte()).AsUInt32();
-                    ymm12 = Avx2.And(ymm12, ymm4);
-                    ymm13 = Avx2.And(ymm13, ymm4);
-                    ymm12 = Avx2.Shuffle(ymm7.AsByte(), ymm12.AsByte()).AsUInt32();
-                    ymm13 = Avx2.Shuffle(ymm7.AsByte(), ymm13.AsByte()).AsUInt32();
-                    ymm12 = Avx2.And(ymm12, ymm4);
-                    ymm13 = Avx2.And(ymm13, ymm4);
-                    var ymm14 = Avx2.ShiftLeftLogical(ymm12, 23);
-                    var ymm15 = Avx2.ShiftLeftLogical(ymm13, 23);
-                    ymm14 = Avx2.Subtract(ymm5, ymm14);
-                    ymm15 = Avx2.Subtract(ymm5, ymm15);
-                    ymm12 = Avx2.And(ymm12, ymm8);
-                    ymm13 = Avx2.And(ymm13, ymm9);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm12);
-                    ymm11 = Avx2.ShiftLeftLogicalVariable(ymm11, ymm13);
-                    ymm8 = Avx.BlendVariable(ymm5.AsSingle(), ymm14.AsSingle(), ymm8.AsSingle()).AsUInt32();
-                    ymm9 = Avx.BlendVariable(ymm5.AsSingle(), ymm15.AsSingle(), ymm9.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm11 = Avx2.ShiftLeftLogical(ymm11, 18);
-                    ymm10 = Avx2.And(ymm10, ymm6);
-                    ymm11 = Avx2.And(ymm11, ymm6);
-                    ymm8 = Avx2.Add(ymm10, ymm8);
-                    ymm9 = Avx2.Add(ymm11, ymm9);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm8.AsSingle();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm9.AsSingle();
-
-                    xmm8 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 16))).AsUInt32();
-                    xmm9 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 24))).AsUInt32();
-                    xmm8 = Sse2.Xor(xmm8, xmm0);
-                    xmm9 = Sse2.Xor(xmm9, xmm0);
-                    ymm10 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    ymm11 = Avx2.ConvertToVector256Int32(xmm9.AsSByte()).AsUInt32();
-                    ymm12 = ymm10;
-                    ymm13 = ymm11;
-                    ymm10 = Avx2.Add(ymm10, ymm10);
-                    ymm11 = Avx2.Add(ymm11, ymm11);
-                    ymm10 = Avx2.Or(ymm10, ymm1);
-                    ymm11 = Avx2.Or(ymm11, ymm1);
-                    xmm8 = Sse2.And(xmm8, xmm2);
-                    xmm9 = Sse2.And(xmm9, xmm2);
-                    xmm8 = Sse2.CompareEqual(xmm8.AsByte(), xmm3.AsByte()).AsUInt32();
-                    xmm9 = Sse2.CompareEqual(xmm9.AsByte(), xmm3.AsByte()).AsUInt32();
-                    ymm8 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    ymm9 = Avx2.ConvertToVector256Int32(xmm9.AsSByte()).AsUInt32();
-                    ymm12 = Avx2.And(ymm12, ymm4);
-                    ymm13 = Avx2.And(ymm13, ymm4);
-                    ymm12 = Avx2.Shuffle(ymm7.AsByte(), ymm12.AsByte()).AsUInt32();
-                    ymm13 = Avx2.Shuffle(ymm7.AsByte(), ymm13.AsByte()).AsUInt32();
-                    ymm12 = Avx2.And(ymm12, ymm4);
-                    ymm13 = Avx2.And(ymm13, ymm4);
-                    ymm14 = Avx2.ShiftLeftLogical(ymm12, 23);
-                    ymm15 = Avx2.ShiftLeftLogical(ymm13, 23);
-                    ymm14 = Avx2.Subtract(ymm5, ymm14);
-                    ymm15 = Avx2.Subtract(ymm5, ymm15);
-                    ymm12 = Avx2.And(ymm12, ymm8);
-                    ymm13 = Avx2.And(ymm13, ymm9);
-                    ymm10 = Avx2.ShiftLeftLogicalVariable(ymm10, ymm12);
-                    ymm11 = Avx2.ShiftLeftLogicalVariable(ymm11, ymm13);
-                    ymm8 = Avx.BlendVariable(ymm5.AsSingle(), ymm14.AsSingle(), ymm8.AsSingle()).AsUInt32();
-                    ymm9 = Avx.BlendVariable(ymm5.AsSingle(), ymm15.AsSingle(), ymm9.AsSingle()).AsUInt32();
-                    ymm10 = Avx2.ShiftLeftLogical(ymm10, 18);
-                    ymm11 = Avx2.ShiftLeftLogical(ymm11, 18);
-                    ymm10 = Avx2.And(ymm10, ymm6);
-                    ymm11 = Avx2.And(ymm11, ymm6);
-                    ymm8 = Avx2.Add(ymm10, ymm8);
-                    ymm9 = Avx2.Add(ymm11, ymm9);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm8.AsSingle();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm9.AsSingle();
-                }
-                for (; i < length - 7; i += 8)
-                {
-                    var xmm8 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    xmm8 = Sse2.Xor(xmm8, xmm0);
-                    var ymm9 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    var ymm10 = ymm9;
-                    ymm9 = Avx2.Add(ymm9, ymm9);
-                    ymm9 = Avx2.Or(ymm9, ymm1);
-                    xmm8 = Sse2.And(xmm8, xmm2);
-                    xmm8 = Sse2.CompareEqual(xmm8.AsByte(), xmm3.AsByte()).AsUInt32();
-                    var ymm8 = Avx2.ConvertToVector256Int32(xmm8.AsSByte()).AsUInt32();
-                    ymm10 = Avx2.And(ymm10, ymm4);
-                    ymm10 = Avx2.Shuffle(ymm7.AsByte(), ymm10.AsByte()).AsUInt32();
-                    ymm10 = Avx2.And(ymm10, ymm4);
-                    var ymm11 = Avx2.ShiftLeftLogical(ymm10, 23);
-                    ymm11 = Avx2.Subtract(ymm5, ymm11);
-                    ymm10 = Avx2.And(ymm10, ymm8);
-                    ymm9 = Avx2.ShiftLeftLogicalVariable(ymm9, ymm10);
-                    ymm8 = Avx.BlendVariable(ymm5.AsSingle(), ymm11.AsSingle(), ymm8.AsSingle()).AsUInt32();
-                    ymm9 = Avx2.ShiftLeftLogical(ymm9, 18);
-                    ymm9 = Avx2.And(ymm9, ymm6);
-                    ymm8 = Avx2.Add(ymm9, ymm8);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i)) = ymm8.AsSingle();
-                }
-                for (; i < length; i++)
-                {
-                    var g = Unsafe.Add(ref rsi, i);
-                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
-                }
-            }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2M4(Span<byte> rb, Span<float> wb)
         {
             unchecked
             {
@@ -653,109 +254,39 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
-                var xmm0 = Vector128.Create((byte)0xd5).AsUInt32();
-                var xmm1 = Vector128.Create(1u);
-                var xmm2 = Vector128.Create(0x0000_0070u);
-                var xmm3 = Vector128.Create(0x3f80_0000u);
-                var xmm4 = Vector128.Create(0x0fu);
-                var xmm5 = Vector128.Create(0x3b80_0000u);
-                var xmm6 = Vector128.Create(0x83fc_0000u);
-                var xmm7 = Vector128.Create(5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1);
-                for (i = 0; i < length - 15; i += 16)
+                var xmm8 = Vector128.CreateScalarUnsafe(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
+                var xmm9 = Vector128.Create(0x83F8_0000u).AsInt32();
+                var xmm2 = Vector128.Create(0x0004_0000);
+                var xmm3 = Vector128.Create(0x0080_0000);
+                var xmm4 = Vector128.Create(0x3C00_0000);
+                var xmm5 = Vector128.Create(0x3B80_0000);
+                var olen = length - 7;
+                for (i = 0; i < olen; i += 8)
                 {
-                    var xmm8 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i))).AsUInt32();
-                    var xmm9 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 4))).AsUInt32();
-                    xmm8 = Sse2.Xor(xmm8, xmm0);
-                    xmm9 = Sse2.Xor(xmm9, xmm0);
-                    var xmm10 = Sse41.ConvertToVector128Int32(xmm8.AsSByte()).AsUInt32();
-                    var xmm11 = Sse41.ConvertToVector128Int32(xmm9.AsSByte()).AsUInt32();
-                    var xmm12 = xmm10;
-                    var xmm13 = xmm11;
-                    xmm8 = Sse2.And(xmm12, xmm2);
-                    xmm9 = Sse2.And(xmm13, xmm2);
-                    xmm12 = Sse2.And(xmm12, xmm4);
-                    xmm13 = Sse2.And(xmm13, xmm4);
-                    xmm8 = Sse2.CompareLessThan(xmm8.AsInt32(), xmm1.AsInt32()).AsUInt32();    //(a == 0) == (a < 1) if a is known to be unsigned
-                    xmm9 = Sse2.CompareLessThan(xmm9.AsInt32(), xmm1.AsInt32()).AsUInt32();
-                    xmm12 = Ssse3.Shuffle(xmm7.AsByte(), xmm12.AsByte()).AsUInt32();
-                    xmm13 = Ssse3.Shuffle(xmm7.AsByte(), xmm13.AsByte()).AsUInt32();
-                    xmm12 = Sse2.And(xmm12, xmm4);
-                    xmm13 = Sse2.And(xmm13, xmm4);
-                    xmm10 = Sse2.Add(xmm10, xmm10);
-                    xmm11 = Sse2.Add(xmm11, xmm11);
-                    xmm12 = Sse2.ShiftLeftLogical(xmm12, 23);
-                    xmm13 = Sse2.ShiftLeftLogical(xmm13, 23);
-                    var xmm14 = xmm12;
-                    var xmm15 = xmm13;
-                    xmm12 = Sse2.And(xmm12, xmm8);
-                    xmm13 = Sse2.And(xmm13, xmm9);
-                    xmm10 = Sse2.Or(xmm10, xmm1);
-                    xmm11 = Sse2.Or(xmm11, xmm1);
-                    xmm12 = Sse2.Add(xmm12, xmm3);
-                    xmm13 = Sse2.Add(xmm13, xmm3);
-                    xmm12 = Sse2.ConvertToVector128Int32(xmm12.AsSingle()).AsUInt32();
-                    xmm13 = Sse2.ConvertToVector128Int32(xmm13.AsSingle()).AsUInt32();
-                    xmm14 = Sse2.Subtract(xmm5, xmm14);
-                    xmm15 = Sse2.Subtract(xmm5, xmm15);
-                    xmm10 = Sse41.MultiplyLow(xmm10, xmm12);
-                    xmm11 = Sse41.MultiplyLow(xmm11, xmm13);
-                    xmm8 = Sse41.BlendVariable(xmm5.AsSingle(), xmm14.AsSingle(), xmm8.AsSingle()).AsUInt32();
-                    xmm9 = Sse41.BlendVariable(xmm5.AsSingle(), xmm15.AsSingle(), xmm9.AsSingle()).AsUInt32();
-                    xmm10 = Sse2.ShiftLeftLogical(xmm10, 18);
-                    xmm11 = Sse2.ShiftLeftLogical(xmm11, 18);
-                    xmm10 = Sse2.And(xmm10, xmm6);
-                    xmm11 = Sse2.And(xmm11, xmm6);
-                    xmm8 = Sse2.Add(xmm10, xmm8);
-                    xmm9 = Sse2.Add(xmm11, xmm9);
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i)) = xmm8.AsSingle();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm9.AsSingle();
-
-                    xmm8 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 8))).AsUInt32();
-                    xmm9 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 12))).AsUInt32();
-                    xmm8 = Sse2.Xor(xmm8, xmm0);
-                    xmm9 = Sse2.Xor(xmm9, xmm0);
-                    xmm10 = Sse41.ConvertToVector128Int32(xmm8.AsSByte()).AsUInt32();
-                    xmm11 = Sse41.ConvertToVector128Int32(xmm9.AsSByte()).AsUInt32();
-                    xmm12 = xmm10;
-                    xmm13 = xmm11;
-                    xmm8 = Sse2.And(xmm12, xmm2);
-                    xmm9 = Sse2.And(xmm13, xmm2);
-                    xmm12 = Sse2.And(xmm12, xmm4);
-                    xmm13 = Sse2.And(xmm13, xmm4);
-                    xmm8 = Sse2.CompareLessThan(xmm8.AsInt32(), xmm1.AsInt32()).AsUInt32();    //(a == 0) == (a < 1) if a is known to be unsigned
-                    xmm9 = Sse2.CompareLessThan(xmm9.AsInt32(), xmm1.AsInt32()).AsUInt32();
-                    xmm12 = Ssse3.Shuffle(xmm7.AsByte(), xmm12.AsByte()).AsUInt32();
-                    xmm13 = Ssse3.Shuffle(xmm7.AsByte(), xmm13.AsByte()).AsUInt32();
-                    xmm12 = Sse2.And(xmm12, xmm4);
-                    xmm13 = Sse2.And(xmm13, xmm4);
-                    xmm10 = Sse2.Add(xmm10, xmm10);
-                    xmm11 = Sse2.Add(xmm11, xmm11);
-                    xmm12 = Sse2.ShiftLeftLogical(xmm12, 23);
-                    xmm13 = Sse2.ShiftLeftLogical(xmm13, 23);
-                    xmm14 = xmm12;
-                    xmm15 = xmm13;
-                    xmm12 = Sse2.And(xmm12, xmm8);
-                    xmm13 = Sse2.And(xmm13, xmm9);
-                    xmm10 = Sse2.Or(xmm10, xmm1);
-                    xmm11 = Sse2.Or(xmm11, xmm1);
-                    xmm12 = Sse2.Add(xmm12, xmm3);
-                    xmm13 = Sse2.Add(xmm13, xmm3);
-                    xmm12 = Sse2.ConvertToVector128Int32(xmm12.AsSingle()).AsUInt32();
-                    xmm13 = Sse2.ConvertToVector128Int32(xmm13.AsSingle()).AsUInt32();
-                    xmm14 = Sse2.Subtract(xmm5, xmm14);
-                    xmm15 = Sse2.Subtract(xmm5, xmm15);
-                    xmm10 = Sse41.MultiplyLow(xmm10, xmm12);
-                    xmm11 = Sse41.MultiplyLow(xmm11, xmm13);
-                    xmm8 = Sse41.BlendVariable(xmm5.AsSingle(), xmm14.AsSingle(), xmm8.AsSingle()).AsUInt32();
-                    xmm9 = Sse41.BlendVariable(xmm5.AsSingle(), xmm15.AsSingle(), xmm9.AsSingle()).AsUInt32();
-                    xmm10 = Sse2.ShiftLeftLogical(xmm10, 18);
-                    xmm11 = Sse2.ShiftLeftLogical(xmm11, 18);
-                    xmm10 = Sse2.And(xmm10, xmm6);
-                    xmm11 = Sse2.And(xmm11, xmm6);
-                    xmm8 = Sse2.Add(xmm10, xmm8);
-                    xmm9 = Sse2.Add(xmm11, xmm9);
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 8)) = xmm8.AsSingle();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 12)) = xmm9.AsSingle();
+                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i))).AsInt32();
+                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 4))).AsInt32();
+                    xmm6 = Sse2.Xor(xmm8, xmm6);
+                    xmm7 = Sse2.Xor(xmm8, xmm7);
+                    xmm6 = Sse41.ConvertToVector128Int32(xmm6.AsSByte());
+                    xmm7 = Sse41.ConvertToVector128Int32(xmm7.AsSByte());
+                    xmm6 = Sse2.ShiftLeftLogical(xmm6, 19);
+                    xmm7 = Sse2.ShiftLeftLogical(xmm7, 19);
+                    xmm6 = Sse2.And(xmm9, xmm6);
+                    xmm7 = Sse2.And(xmm9, xmm7);
+                    var xmm10 = Sse2.Or(xmm6, xmm2);
+                    var xmm11 = Sse2.Or(xmm7, xmm2);
+                    var xmm14 = Sse2.Add(xmm6, xmm3);
+                    xmm10 = Sse.Add(xmm10.AsSingle(), xmm14.AsSingle()).AsInt32();
+                    var xmm15 = Sse2.Add(xmm7, xmm3);
+                    xmm11 = Sse.Add(xmm11.AsSingle(), xmm15.AsSingle()).AsInt32();
+                    xmm6 = Sse2.Or(xmm6, xmm4);
+                    xmm7 = Sse2.Or(xmm7, xmm4);
+                    xmm10 = Sse2.Add(xmm10, xmm5);
+                    xmm6 = Sse.Subtract(xmm10.AsSingle(), xmm6.AsSingle()).AsInt32();
+                    xmm15 = Sse2.Add(xmm11, xmm5);
+                    xmm7 = Sse.Subtract(xmm15.AsSingle(), xmm7.AsSingle()).AsInt32();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = xmm6.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 16)) = xmm7.AsSingle();
                 }
                 for (; i < length; i++)
                 {

@@ -39,7 +39,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             AssertBlock(buffer);
         }
         [Test]
-        public void BlockConvertsCorrectlyAvx2M2()
+        public void BlockConvertsCorrectlyAvx2()
         {
             if (!Avx2.IsSupported)
             {
@@ -47,31 +47,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2M2(bb, buffer);
-            AssertBlock(buffer);
-        }
-        [Test]
-        public void BlockConvertsCorrectlyAvx2M3()
-        {
-            if (!Avx2.IsSupported)
-            {
-                Assert.Warn("Avx2 is not supported!");
-                return;
-            }
-            PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2M3(bb, buffer);
-            AssertBlock(buffer);
-        }
-        [Test]
-        public void BlockConvertsCorrectlyAvx2M4()
-        {
-            if (!Avx2.IsSupported)
-            {
-                Assert.Warn("Avx2 is not supported!");
-                return;
-            }
-            PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2M4(bb, buffer);
+            ALawToSampleConverter.ProcessAvx2(bb, buffer);
             AssertBlock(buffer);
         }
         [Test]
