@@ -1,9 +1,12 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+using Shamisen.Utils.Numerics;
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using System;
 #endif
 #if NET5_0_OR_GREATER
 using System.Runtime.Intrinsics.Arm;
@@ -853,6 +856,234 @@ namespace Shamisen.Utils
             }
         }
         #endregion
+        #region ShiftLeft
+        /// <summary>
+        /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift left.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> ShiftLeftVariable(Vector<int> value, Vector<uint> shift)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return AdvSimd.ShiftLogical(value.AsVector128(), shift.AsVector128().AsInt32()).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported && Vector<int>.Count == Vector256<int>.Count)
+                {
+                    return Avx2.ShiftLeftLogicalVariable(value.AsVector256(), shift.AsVector256()).AsVector();
+                }
+                if (Avx2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return Avx2.ShiftLeftLogicalVariable(value.AsVector128(), shift.AsVector128()).AsVector();
+                }
+                if (Sse41.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    var t = Vector128.Create(0x3f800000);
+                    var xmm0 = value.AsVector128();
+                    var xmm1 = Sse2.ShiftLeftLogical(shift.AsVector128().AsInt32(), 23);
+                    xmm1 = Sse2.Add(t, xmm1);
+                    xmm1 = Sse2.ConvertToVector128Int32(xmm1.AsSingle());
+                    xmm0 = Sse41.MultiplyLow(xmm0, xmm1);
+                    return xmm0.AsVector();
+                }
+                if (Sse2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    var t = Vector128.Create(0x3f800000);
+                    var xmm0 = value.AsVector128();
+                    var xmm1 = Sse2.ShiftLeftLogical(shift.AsVector128().AsInt32(), 23);
+                    xmm1 = Sse2.Add(t, xmm1);
+                    xmm1 = Sse2.ConvertToVector128Int32(xmm1.AsSingle());
+                    var xmm2 = Sse2.Shuffle(xmm0, 0xf5);
+                    xmm0 = Sse2.Multiply(xmm0.AsUInt32(), xmm1.AsUInt32()).AsInt32();
+                    xmm0 = Sse2.Shuffle(xmm0, 0xe8);
+                    xmm1 = Sse2.Shuffle(xmm1, 0xf5);
+                    xmm1 = Sse2.Multiply(xmm1.AsUInt32(), xmm2.AsUInt32()).AsInt32();
+                    xmm1 = Sse2.Shuffle(xmm1, 0xe8);
+                    return Sse2.UnpackLow(xmm0, xmm1).AsVector();
+                }
+#endif
+                unsafe
+                {
+                    var v0_ns = new Vector<int>(0x3f800000);
+                    v0_ns += Vector.AsVectorInt32(shift) * (1 << 23);
+                    v0_ns = Vector.ConvertToInt32(Vector.AsVectorSingle(v0_ns));
+                    v0_ns *= value;
+                    return v0_ns;
+                }
+            }
+        }
+        #endregion
+        #region ShiftRight
+        /// <summary>
+        /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift left.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> ShiftRightLogicalVariable(Vector<int> value, Vector<uint> shift)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return AdvSimd.ShiftLogical(value.AsVector128(), AdvSimd.Negate(shift.AsVector128().AsInt32())).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported && Vector<int>.Count == Vector256<int>.Count)
+                {
+                    return Avx2.ShiftRightLogicalVariable(value.AsVector256(), shift.AsVector256()).AsVector();
+                }
+                if (Avx2.IsSupported && Vector<int>.Count == Vector128<int>.Count)//Some runtime can come here
+                {
+                    return Avx2.ShiftRightLogicalVariable(value.AsVector128(), shift.AsVector128()).AsVector();
+                }
+                if (Avx.IsSupported && Vector<int>.Count == Vector256<int>.Count)//Maybe SandyBridge or something?
+                {
+                    var ymm0 = value.AsVector256();
+                    var ymm1 = shift.AsVector256().AsInt32();
+                    var xmm2 = ShiftRightLogicalVariableSse41(ymm0.GetLower(), ymm1.GetLower());
+                    var xmm0 = ShiftRightLogicalVariableSse41(ymm0.GetUpper(), ymm1.GetUpper());
+                    return xmm2.ToVector256().WithUpper(xmm0).AsVector();
+                }
+                if (Sse41.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    var xmm0 = value.AsVector128();
+                    var xmm1 = shift.AsVector128().AsInt32();
+                    var xmm2 = Sse2.ShiftRightLogical128BitLane(xmm1, 12);
+                    xmm2 = Sse2.ShiftRightLogical(xmm0, xmm2);
+                    var xmm3 = Sse2.ShiftRightLogical(xmm1.AsInt64(), 32).AsInt32();
+                    xmm3 = Sse2.ShiftRightLogical(xmm0, xmm3);
+                    xmm2 = Sse41.Blend(xmm3.AsInt16(), xmm2.AsInt16(), 0xf0).AsInt32();
+                    xmm3 = Sse2.Xor(xmm3, xmm3);
+                    xmm3 = Sse2.UnpackHigh(xmm1, xmm3);
+                    xmm3 = Sse2.ShiftRightLogical(xmm0, xmm3);
+                    xmm1 = Sse41.ConvertToVector128Int64(xmm1.AsUInt32()).AsInt32();
+                    xmm0 = Sse2.ShiftRightLogical(xmm0, xmm1);
+                    xmm0 = Sse41.Blend(xmm0.AsInt16(), xmm3.AsInt16(), 0xf0).AsInt32();
+                    xmm0 = Sse41.Blend(xmm0.AsInt16(), xmm2.AsInt16(), 0xcc).AsInt32();
+                    return xmm0.AsVector();
+                }
+                if (Sse2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    var xmm0 = value.AsVector128();
+                    var xmm1 = shift.AsVector128().AsInt32();
+                    var xmm2 = Sse2.ShuffleLow(xmm1.AsInt16(), 0xfe).AsInt32();
+                    var xmm3 = xmm0;
+                    xmm3 = Sse2.ShiftRightLogical(xmm3, xmm2);
+                    var xmm4 = Sse2.ShuffleLow(xmm1.AsInt16(), 0x54).AsInt32();
+                    xmm2 = xmm0;
+                    xmm2 = Sse2.ShiftRightLogical(xmm2, xmm4);
+                    xmm2 = Sse2.UnpackLow(xmm2.AsInt64(), xmm3.AsInt64()).AsInt32();
+                    xmm1 = Sse2.Shuffle(xmm1, 0xee);
+                    xmm3 = Sse2.ShuffleLow(xmm1.AsInt16(), 0xfe).AsInt32();
+                    xmm4 = xmm0;
+                    xmm4 = Sse2.ShiftRightLogical(xmm4, xmm3);
+                    xmm1 = Sse2.ShuffleLow(xmm1.AsInt16(), 0xfe).AsInt32();
+                    xmm0 = Sse2.ShiftRightLogical(xmm0, xmm1);
+                    xmm0 = Sse2.UnpackLow(xmm0.AsInt64(), xmm4.AsInt64()).AsInt32();
+                    xmm2 = Sse.Shuffle(xmm2.AsSingle(), xmm0.AsSingle(), 0xcc).AsInt32();
+                    return xmm2.AsVector();
+                }
+#endif
+                unsafe
+                {
+                    switch (Vector<int>.Count)
+                    {
+                        case 4:
+                            {
+                                var x0 = value[0];
+                                var x1 = value[1];
+                                var x2 = value[2];
+                                var x3 = value[3];
+                                var x4 = shift[0];
+                                var x5 = shift[0];
+                                var x6 = shift[0];
+                                var x7 = shift[0];
+                                x0 <<= (int)x4;
+                                x1 <<= (int)x5;
+                                x2 <<= (int)x6;
+                                x3 <<= (int)x7;
+                                var v0_4s = new Vector4Int32(x0, x1, x2, x3);
+                                return Unsafe.As<Vector4Int32, Vector<int>>(ref v0_4s);
+                            }
+                        case 8:
+                            {
+                                var x0 = value[0];
+                                var x1 = value[1];
+                                var x2 = value[2];
+                                var x3 = value[3];
+                                var x4 = shift[0];
+                                var x5 = shift[1];
+                                var x6 = shift[2];
+                                var x7 = shift[3];
+                                x0 <<= (int)x4;
+                                x1 <<= (int)x5;
+                                x2 <<= (int)x6;
+                                x3 <<= (int)x7;
+                                var v0_4s = new Vector4Int32(x0, x1, x2, x3);
+                                x0 = value[4];
+                                x1 = value[5];
+                                x2 = value[6];
+                                x3 = value[7];
+                                x4 = shift[4];
+                                x5 = shift[5];
+                                x6 = shift[6];
+                                x7 = shift[7];
+                                x0 <<= (int)x4;
+                                x1 <<= (int)x5;
+                                x2 <<= (int)x6;
+                                x3 <<= (int)x7;
+                                var v1_4s = new Vector4Int32(x0, x1, x2, x3);
+                                Span<int> y = stackalloc int[8];
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref v0_4s);
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y.Slice(4)), ref v1_4s);
+                                return MemoryMarshal.Read<Vector<int>>(MemoryMarshal.AsBytes(y));
+                            }
+                        default:
+                            {
+                                Span<int> y = stackalloc int[Vector<int>.Count];
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref value);
+                                for (var i = 0; i < y.Length; i++)
+                                {
+                                    y[i] <<= (int)shift[i];
+                                }
+                                return MemoryMarshal.Read<Vector<int>>(MemoryMarshal.AsBytes(y));
+                            }
+                    }
+                }
+            }
+        }
+#if NETCOREAPP3_1_OR_GREATER
+        private static Vector128<int> ShiftRightLogicalVariableSse41(Vector128<int> xmm0, Vector128<int> xmm1)
+        {
+            unchecked
+            {
+                var xmm2 = Sse2.ShiftRightLogical128BitLane(xmm1, 12);
+                xmm2 = Sse2.ShiftRightLogical(xmm0, xmm2);
+                var xmm3 = Sse2.ShiftRightLogical(xmm1.AsInt64(), 32).AsInt32();
+                xmm3 = Sse2.ShiftRightLogical(xmm0, xmm3);
+                xmm2 = Sse41.Blend(xmm3.AsInt16(), xmm2.AsInt16(), 0xf0).AsInt32();
+                xmm3 = Sse2.Xor(xmm3, xmm3);
+                xmm3 = Sse2.UnpackHigh(xmm1, xmm3);
+                xmm3 = Sse2.ShiftRightLogical(xmm0, xmm3);
+                xmm1 = Sse41.ConvertToVector128Int64(xmm1.AsUInt32()).AsInt32();
+                xmm0 = Sse2.ShiftRightLogical(xmm0, xmm1);
+                xmm0 = Sse41.Blend(xmm0.AsInt16(), xmm3.AsInt16(), 0xf0).AsInt32();
+                return Sse41.Blend(xmm0.AsInt16(), xmm2.AsInt16(), 0xcc).AsInt32();
+            }
+        }
+#endif
+        #endregion
         #region AddAsInt32
         /// <summary>
         /// Adds two <see cref="Vector4"/> values as if values are <see cref="int"/>.
@@ -948,6 +1179,122 @@ namespace Shamisen.Utils
                 return new Vector4(x, y, z, w);
             }
         }
+        #endregion
+
+        #region Vector???.AsVector
+#if NETCOREAPP3_1
+        /// <summary>
+        /// Reinterprets a <see cref="Vector256{T}"/> as a new <see cref="Vector{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<T> AsVector<T>(this Vector256<T> value) where T : unmanaged
+        {
+            if (Vector<byte>.Count == Vector128<byte>.Count)
+            {
+                var vlow = value.GetLower();
+                return Unsafe.As<Vector128<T>, Vector<T>>(ref vlow);
+            }
+            if (Vector<byte>.Count <= Vector256<byte>.Count)
+            {
+                return Unsafe.As<Vector256<T>, Vector<T>>(ref value);
+            }
+            else
+            {
+                Span<byte> a = stackalloc byte[Vector<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector<T>>(a);
+            }
+        }
+        /// <summary>
+        /// Reinterprets a <see cref="Vector256{T}"/> as a new <see cref="Vector{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<T> AsVector<T>(this Vector128<T> value) where T : unmanaged
+        {
+            if (Vector<byte>.Count <= Vector128<byte>.Count)
+            {
+                return Unsafe.As<Vector128<T>, Vector<T>>(ref value);
+            }
+            else if (Vector<byte>.Count == Vector256<byte>.Count)
+            {
+                return AsVector(value.ToVector256());
+            }
+            else
+            {
+                Span<byte> a = stackalloc byte[Vector<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector<T>>(a);
+            }
+        }
+#endif
+        #endregion
+        #region Vector<T>.AsVector???
+#if NETCOREAPP3_1
+        /// <summary>
+        /// Reinterprets a <see cref="Vector{T}"/> as a new <see cref="Vector256{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector256{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector256<T> AsVector256<T>(this Vector<T> value) where T : unmanaged
+        {
+            if (Vector<byte>.Count == Vector256<byte>.Count)
+            {
+                return Unsafe.As<Vector<T>, Vector256<T>>(ref value);
+            }
+            else if (Vector<byte>.Count == Vector128<byte>.Count)
+            {
+                return Unsafe.As<Vector<T>, Vector128<T>>(ref value).ToVector256();
+            }
+            else if (Vector<byte>.Count < Vector256<byte>.Count)
+            {
+                Span<byte> a = stackalloc byte[Vector256<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector256<T>>(a);
+            }
+            else
+            {
+                Span<byte> a = stackalloc byte[Vector<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector256<T>>(a);
+            }
+        }
+        /// <summary>
+        /// Reinterprets a <see cref="Vector{T}"/> as a new <see cref="Vector128{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<T> AsVector128<T>(this Vector<T> value) where T : unmanaged
+        {
+            if (Vector<byte>.Count == Vector128<byte>.Count)
+            {
+                return Unsafe.As<Vector<T>, Vector128<T>>(ref value);
+            }
+            else if (Vector<byte>.Count == Vector256<byte>.Count)
+            {
+                return Unsafe.As<Vector<T>, Vector256<T>>(ref value).GetLower();
+            }
+            else if (Vector<byte>.Count < Vector128<byte>.Count)
+            {
+                Span<byte> a = stackalloc byte[Vector128<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector128<T>>(a);
+            }
+            else
+            {
+                Span<byte> a = stackalloc byte[Vector<byte>.Count];
+                MemoryMarshal.Write(a, ref value);
+                return MemoryMarshal.Read<Vector128<T>>(a);
+            }
+        }
+#endif
         #endregion
         #region AsVector128
 #if NETCOREAPP3_1

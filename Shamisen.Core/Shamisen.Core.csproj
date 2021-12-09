@@ -105,10 +105,70 @@
       </None>
     </ItemGroup>
     <ItemGroup>
+      <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>BinaryContent.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Codecs\Waveform\InfoSubChunkId.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Codecs\Waveform\WaveformSubFormats.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
+      </Compile>
       <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.g.cs">
         <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
+      </Compile>
+      <Compile Update="Data\Binary\DataSinkUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Formats\PcmSampleFormats.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Audio\AudioUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AudioUtils.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\MathITemplate.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MathITemplate.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Memory\SpanExtensionsTemplate.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
       </Compile>
       <Compile Update="Utils\Tuples\Tuples.cs">
         <DependentUpon>Tuples.tt</DependentUpon>

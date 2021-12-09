@@ -142,7 +142,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             var dsmPrev = (float)MemoryMarshal.GetReference(loSpan);
             ref var rWrote = ref MemoryMarshal.GetReference(wrote);
             ref var rDest = ref MemoryMarshal.GetReference(dest);
-            nint nLength = dest.Length;
+            nint nLength = MathI.Min(dest.Length, wrote.Length);
             var mul = new Vector4(Multiplier);
             for (nint i = 0; i < nLength; i++)
             {
@@ -233,7 +233,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             ref var dst = ref MemoryMarshal.GetReference(dest);
             var channels = dsmAcc.Length;
             nint ch = dsmChannelPointer % channels;
-            nint i = 0, length = wrote.Length;
+            nint i = 0, length = MathI.Min(dest.Length, wrote.Length);
             const float Mul = Multiplier;
             for (; i < length; i++)
             {

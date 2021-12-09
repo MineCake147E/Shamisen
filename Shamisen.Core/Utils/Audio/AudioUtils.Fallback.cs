@@ -16,12 +16,10 @@ namespace Shamisen.Utils
             {
                 unsafe
                 {
-                    if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                    if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
                     ref var rL = ref MemoryMarshal.GetReference(left);
                     ref var rR = ref MemoryMarshal.GetReference(right);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = left.Length;
+                    nint length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                     var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
@@ -54,12 +52,10 @@ namespace Shamisen.Utils
             {
                 unsafe
                 {
-                    if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                    if (buffer.Length < left.Length * 2) throw new ArgumentException("buffer must be twice as long as left!");
                     ref var rL = ref MemoryMarshal.GetReference(left);
                     ref var rR = ref MemoryMarshal.GetReference(right);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = left.Length;
+                    nint length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                     var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;
@@ -93,18 +89,11 @@ namespace Shamisen.Utils
                 unsafe
                 {
                     const int Channels = 3;
-                    if (left.Length > right.Length) throw new ArgumentException("right must be as long as left!", nameof(right));
-                    if (left.Length > center.Length) throw new ArgumentException("center must be as long as left!", nameof(center));
-                    if (buffer.Length < left.Length * Channels) throw new ArgumentException("buffer must be three times as long as left!");
-                    //These pre-touches may avoid some range checks
-                    _ = right[left.Length - 1];
-                    _ = center[left.Length - 1];
-                    _ = buffer[left.Length * Channels - 1];
                     ref var rL = ref MemoryMarshal.GetReference(left);
                     ref var rR = ref MemoryMarshal.GetReference(right);
                     ref var rC = ref MemoryMarshal.GetReference(center);
                     ref var rB = ref MemoryMarshal.GetReference(buffer);
-                    nint length = left.Length;
+                    nint length = MathI.Min(MathI.Min(left.Length, right.Length), MathI.Min(buffer.Length / 3, center.Length));
                     var u8Length = length & ~1;
                     nint j = 0;
                     nint i = 0;

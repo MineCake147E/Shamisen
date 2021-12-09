@@ -94,7 +94,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             Vector<float> mul = new(CalculateMultiplier(effectiveBitDepth));
             ref var x10 = ref MemoryMarshal.GetReference(buffer);
             ref var x9 = ref MemoryMarshal.GetReference(source);
-            nint i, length = buffer.Length;
+            nint i, length = MathI.Min(buffer.Length, source.Length);
             var size = Vector<float>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
             {

@@ -109,7 +109,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 #if NETCOREAPP3_1_OR_GREATER
                     if (rb.Length >= 16 && Avx2.IsSupported)
                     {
-                        ProcessAvx2M2(rb, wb);
+                        ProcessAvx2M4(rb, wb);
                         return wb.Length;
                     }
 #endif
@@ -128,11 +128,14 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                if (rb.Length > wb.Length) return;
-                for (var i = 0; i < rb.Length; i++)
+                nint length = MathI.Min(rb.Length, wb.Length);
+                nint i = 0;
+                ref var x9 = ref MemoryMarshal.GetReference(rb);
+                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                for (; i < length; i++)
                 {
-                    var v = rb[i];
-                    wb[i] = ConvertALawToSingle(v);
+                    var v = Unsafe.Add(ref x9, i);
+                    Unsafe.Add(ref x10, i) = ConvertALawToSingle(v);
                 }
             }
         }
@@ -145,7 +148,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
@@ -244,7 +247,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
@@ -339,7 +342,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
@@ -406,7 +409,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
@@ -539,11 +542,114 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessAvx2M4(Span<byte> rb, Span<float> wb)
+        {
+            unchecked
+            {
+                nint length = MathI.Min(rb.Length, wb.Length);
+                nint i;
+                ref var rsi = ref MemoryMarshal.GetReference(rb);
+                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                var xmm8 = Vector128.CreateScalarUnsafe(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
+                var ymm9 = Vector256.Create(0x83F8_0000u).AsInt32();
+                var ymm2 = Vector256.Create(0x0004_0000);
+                var ymm3 = Vector256.Create(0x0080_0000);
+                var ymm4 = Vector256.Create(0x3C00_0000);
+                var ymm5 = Vector256.Create(0x3B80_0000);
+                var olen = length - 31;
+                for (i = 0; i < olen; i += 32)
+                {
+                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i))).AsInt32();
+                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 8))).AsInt32();
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 16))).AsInt32();
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ulong>(ref Unsafe.Add(ref rsi, i + 24))).AsInt32();
+                    xmm6 = Sse2.Xor(xmm8, xmm6);
+                    xmm7 = Sse2.Xor(xmm8, xmm7);
+                    xmm0 = Sse2.Xor(xmm8, xmm0);
+                    xmm1 = Sse2.Xor(xmm8, xmm1);
+                    var ymm6 = Avx2.ConvertToVector256Int32(xmm6.AsSByte());
+                    var ymm7 = Avx2.ConvertToVector256Int32(xmm7.AsSByte());
+                    var ymm0 = Avx2.ConvertToVector256Int32(xmm0.AsSByte());
+                    var ymm1 = Avx2.ConvertToVector256Int32(xmm1.AsSByte());
+                    ymm6 = Avx2.ShiftLeftLogical(ymm6, 19);
+                    ymm7 = Avx2.ShiftLeftLogical(ymm7, 19);
+                    ymm0 = Avx2.ShiftLeftLogical(ymm0, 19);
+                    ymm1 = Avx2.ShiftLeftLogical(ymm1, 19);
+                    ymm6 = Avx2.And(ymm9, ymm6);
+                    ymm7 = Avx2.And(ymm9, ymm7);
+                    ymm0 = Avx2.And(ymm9, ymm0);
+                    ymm1 = Avx2.And(ymm9, ymm1);
+                    var ymm10 = Avx2.Or(ymm6, ymm2);
+                    var ymm11 = Avx2.Or(ymm7, ymm2);
+                    var ymm12 = Avx2.Or(ymm0, ymm2);
+                    var ymm13 = Avx2.Or(ymm1, ymm2);
+                    var ymm14 = Avx2.Add(ymm6, ymm3);
+                    ymm10 = Avx.Add(ymm10.AsSingle(), ymm14.AsSingle()).AsInt32();
+                    var ymm15 = Avx2.Add(ymm7, ymm3);
+                    ymm11 = Avx.Add(ymm11.AsSingle(), ymm15.AsSingle()).AsInt32();
+                    ymm14 = Avx2.Add(ymm0, ymm3);
+                    ymm12 = Avx.Add(ymm12.AsSingle(), ymm14.AsSingle()).AsInt32();
+                    ymm15 = Avx2.Add(ymm1, ymm3);
+                    ymm13 = Avx.Add(ymm13.AsSingle(), ymm15.AsSingle()).AsInt32();
+                    ymm6 = Avx2.Or(ymm6, ymm4);
+                    ymm7 = Avx2.Or(ymm7, ymm4);
+                    ymm0 = Avx2.Or(ymm0, ymm4);
+                    ymm1 = Avx2.Or(ymm1, ymm4);
+                    ymm10 = Avx2.Add(ymm10, ymm5);
+                    ymm6 = Avx.Subtract(ymm10.AsSingle(), ymm6.AsSingle()).AsInt32();
+                    ymm15 = Avx2.Add(ymm11, ymm5);
+                    ymm7 = Avx.Subtract(ymm15.AsSingle(), ymm7.AsSingle()).AsInt32();
+                    ymm10 = Avx2.Add(ymm12, ymm5);
+                    ymm0 = Avx.Subtract(ymm10.AsSingle(), ymm0.AsSingle()).AsInt32();
+                    ymm15 = Avx2.Add(ymm13, ymm5);
+                    ymm1 = Avx.Subtract(ymm15.AsSingle(), ymm1.AsSingle()).AsInt32();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = ymm6.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 32)) = ymm7.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 64)) = ymm0.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 96)) = ymm1.AsSingle();
+                }
+                olen = length - 7;
+                for (; i < olen; i += 8)
+                {
+                    var xmm6 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i))).AsInt32();
+                    var xmm7 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref rsi, i + 4))).AsInt32();
+                    xmm6 = Sse2.Xor(xmm8, xmm6);
+                    xmm7 = Sse2.Xor(xmm8, xmm7);
+                    xmm6 = Sse41.ConvertToVector128Int32(xmm6.AsSByte());
+                    xmm7 = Sse41.ConvertToVector128Int32(xmm7.AsSByte());
+                    xmm6 = Sse2.ShiftLeftLogical(xmm6, 19);
+                    xmm7 = Sse2.ShiftLeftLogical(xmm7, 19);
+                    xmm6 = Sse2.And(ymm9.GetLower(), xmm6);
+                    xmm7 = Sse2.And(ymm9.GetLower(), xmm7);
+                    var xmm10 = Sse2.Or(xmm6, ymm2.GetLower());
+                    var xmm11 = Sse2.Or(xmm7, ymm2.GetLower());
+                    var xmm14 = Sse2.Add(xmm6, ymm3.GetLower());
+                    xmm10 = Sse.Add(xmm10.AsSingle(), xmm14.AsSingle()).AsInt32();
+                    var xmm15 = Sse2.Add(xmm7, ymm3.GetLower());
+                    xmm11 = Sse.Add(xmm11.AsSingle(), xmm15.AsSingle()).AsInt32();
+                    xmm6 = Sse2.Or(xmm6, ymm4.GetLower());
+                    xmm7 = Sse2.Or(xmm7, ymm4.GetLower());
+                    xmm10 = Sse2.Add(xmm10, ymm5.GetLower());
+                    xmm6 = Sse.Subtract(xmm10.AsSingle(), xmm6.AsSingle()).AsInt32();
+                    xmm15 = Sse2.Add(xmm11, ymm5.GetLower());
+                    xmm7 = Sse.Subtract(xmm15.AsSingle(), xmm7.AsSingle()).AsInt32();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = xmm6.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 16)) = xmm7.AsSingle();
+                }
+                for (; i < length; i++)
+                {
+                    var g = Unsafe.Add(ref rsi, i);
+                    Unsafe.Add(ref rdi, i) = ConvertALawToSingle(g);
+                }
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessSse41(Span<byte> rb, Span<float> wb)
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var rsi = ref MemoryMarshal.GetReference(rb);
                 ref var rdi = ref MemoryMarshal.GetReference(wb);
@@ -666,7 +772,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                nint length = rb.Length;
+                nint length = MathI.Min(rb.Length, wb.Length);
                 nint i;
                 ref var x11 = ref MemoryMarshal.GetReference(rb);
                 ref var x10 = ref MemoryMarshal.GetReference(wb);

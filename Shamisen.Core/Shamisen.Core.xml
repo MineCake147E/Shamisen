@@ -18746,6 +18746,22 @@
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a floating-point <see cref="T:System.Numerics.Vector3"/> instead of an integral <see cref="T:System.Numerics.Vector`1"/>.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.ShiftLeftVariable(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.UInt32})">
+            <summary>
+            Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
+            </summary>
+            <param name="value">The values to shift left.</param>
+            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.ShiftRightLogicalVariable(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.UInt32})">
+            <summary>
+            Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
+            </summary>
+            <param name="value">The values to shift left.</param>
+            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddAsInt32(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Adds two <see cref="T:System.Numerics.Vector4"/> values as if values are <see cref="T:System.Int32"/>.

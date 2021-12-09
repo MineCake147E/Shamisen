@@ -53,6 +53,14 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
             ALawToSampleConverter.ProcessAvx2M3(byteSpan, span);
         }
+        [Benchmark]
+        public void Avx2M4()
+        {
+            var span = buffer.AsSpan();
+            var byteSpan = MemoryMarshal.AsBytes(span);
+            byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
+            ALawToSampleConverter.ProcessAvx2M4(byteSpan, span);
+        }
 
         //[Benchmark]
         //public void Avx2FP()

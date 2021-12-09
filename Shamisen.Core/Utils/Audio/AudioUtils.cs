@@ -510,7 +510,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                nint i, length = destination.Length;
+                nint i, length = MathI.Min(destination.Length, MathI.Min(sourceA.Length, sourceB.Length));
                 ref var rsA = ref MemoryMarshal.GetReference(sourceA);
                 ref var rsB = ref MemoryMarshal.GetReference(sourceB);
                 ref var rD = ref MemoryMarshal.GetReference(destination);
@@ -595,7 +595,7 @@ namespace Shamisen.Utils
         private static void FastMixStandardFixed(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             nint i = 0;
-            nint length = samplesToMix.Length;
+            nint length = MathI.Min(samplesToMix.Length, buffer.Length);
             ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             var v15_4s = new Vector4(scale);
@@ -648,7 +648,7 @@ namespace Shamisen.Utils
         private static void FastMixStandardVariable(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             nint i = 0;
-            nint length = samplesToMix.Length;
+            nint length = MathI.Min(samplesToMix.Length, buffer.Length);
             ref var rsi = ref MemoryMarshal.GetReference(samplesToMix);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             var v15_ns = new Vector<float>(scale);
@@ -760,7 +760,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                nint i, length = buffer.Length;
+                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
                 var ymm14 = Vector256.Create(volumeA);
                 var ymm15 = Vector256.Create(volumeB);
                 ref var r8 = ref MemoryMarshal.GetReference(buffer);
@@ -801,7 +801,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                nint i, length = buffer.Length;
+                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
                 var xmm14 = Vector128.Create(volumeA);
                 var xmm15 = Vector128.Create(volumeB);
                 ref var r8 = ref MemoryMarshal.GetReference(buffer);
@@ -841,7 +841,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                nint i, length = buffer.Length;
+                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
                 var scaleVA = new Vector<float>(volumeA);
                 var scaleVB = new Vector<float>(volumeB);
                 ref var rsA = ref MemoryMarshal.GetReference(samplesA);
@@ -888,7 +888,7 @@ namespace Shamisen.Utils
         {
             unsafe
             {
-                nint i, length = buffer.Length;
+                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
                 var scaleVA = new Vector4(volumeA);
                 var scaleVB = new Vector4(volumeB);
                 ref var rsA = ref MemoryMarshal.GetReference(samplesA);

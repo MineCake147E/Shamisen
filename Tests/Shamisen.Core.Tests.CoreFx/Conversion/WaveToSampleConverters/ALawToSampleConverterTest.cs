@@ -63,6 +63,18 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             AssertBlock(buffer);
         }
         [Test]
+        public void BlockConvertsCorrectlyAvx2M4()
+        {
+            if (!Avx2.IsSupported)
+            {
+                Assert.Warn("Avx2 is not supported!");
+                return;
+            }
+            PrepareBlock(out var buffer, out var bb);
+            ALawToSampleConverter.ProcessAvx2M4(bb, buffer);
+            AssertBlock(buffer);
+        }
+        [Test]
         public void BlockConvertsCorrectlySse41()
         {
             if (!Sse41.IsSupported)

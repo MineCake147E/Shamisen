@@ -169,7 +169,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             Vector<float> mul = new(Multiplier);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             ref var rsi = ref MemoryMarshal.GetReference(source);
-            nint i, length = buffer.Length;
+            nint i, length = MathI.Min(buffer.Length, source.Length);
             var size = Vector<float>.Count;
             var sizeEpi16 = Vector<short>.Count;
             for (i = 0; i < length - 8 * Vector<float>.Count + 1; i += 8 * Vector<float>.Count)
@@ -217,7 +217,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             var mul = Vector256.Create(Multiplier);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             ref var rsi = ref MemoryMarshal.GetReference(source);
-            nint i, length = buffer.Length;
+            nint i, length = MathI.Min(buffer.Length, source.Length);
             //Loop for Intel CPUs in 256-bit AVX2 for better throughput
             for (i = 0; i < length - 63; i += 64)
             {
@@ -358,7 +358,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             var mul = Vector128.Create(Multiplier);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             ref var rsi = ref MemoryMarshal.GetReference(source);
-            nint i, length = buffer.Length;
+            nint i, length = MathI.Min(buffer.Length, source.Length);
             //Loop for Haswell in 128-bit AVX for better frequency behaviour
             for (i = 0; i < length - 31; i += 32)
             {
