@@ -6,6 +6,7 @@
         <AssemblyName>Shamisen.Benchmarks.Running</AssemblyName>
         <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.Benchmarks\Shamisen.Benchmarks.csproj" />

@@ -12393,136 +12393,86 @@
             </summary>
         </member>
         <member name="F:Shamisen.Optimization.X86Intrinsics.Lzcnt">
+            <summary>        <member name="M:Shamisen.Modifier.OffsetSeekSupport.#ctor(Shamisen.ISeekSupport,System.UInt64)">
             <summary>
-            LZCNT
+            Initializes a new instance of the <see cref="T:Shamisen.Modifier.OffsetSeekSupport"/> class.
+            </summary>
+            <param name="seekSupport">The seek support.</param>
+            <param name="offset">The offset.</param>
+            <exception cref="T:System.ArgumentNullException">seekSupport</exception>
+        </member>
+        <member name="P:Shamisen.Modifier.OffsetSeekSupport.Offset">
+            <summary>
+            Gets the offset.
+            </summary>
+            <value>
+            The offset.
+            </value>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> with the specified offset in frames.
+            </summary>
+            <param name="offset">The offset in frames.</param>
+            <param name="origin">The origin.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.SeekLast(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames from the end of stream.
+            </summary>
+            <param name="offset">The offset.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.SeekTo(System.UInt64)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames.
+            </summary>
+            <param name="index">The index in frames.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.Skip(System.UInt64)">
+            <summary>
+            Skips the source the specified step in frames.
+            </summary>
+            <param name="step">The number of frames to skip.</param>
+        </member>
+        <member name="M:Shamisen.Modifier.OffsetSeekSupport.StepBack(System.UInt64)">
+            <summary>
+            Steps this data source the specified step back in frames.
+            </summary>
+            <param name="step">The number of frames to step back.</param>
+        </member>
+        <member name="T:Shamisen.ModifierUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>'s modifiers.
             </summary>
         </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse">
+        <member name="M:Shamisen.ModifierUtils.WithFraction(Shamisen.ISkipSupport,System.UInt64,System.UInt64)">
             <summary>
-            SSE
+            Returns the new <see cref="T:Shamisen.ISkipSupport"/> with specified fraction.
             </summary>
+            <param name="skipSupport">The skip support.</param>
+            <param name="divisor">The divisor.</param>
+            <param name="multiplier">The multiplier.</param>
+            <returns></returns>
         </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse2">
+        <member name="M:Shamisen.ModifierUtils.WithFraction(Shamisen.ISkipSupport,DivideSharp.UInt64Divisor,System.UInt64)">
             <summary>
-            SSE2
+            Returns the new <see cref="T:Shamisen.ISkipSupport"/> with specified fraction.
             </summary>
+            <param name="skipSupport">The skip support.</param>
+            <param name="divisor">The divisor.</param>
+            <param name="multiplier">The multiplier.</param>
+            <returns></returns>
         </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Aes">
+        <member name="M:Shamisen.ModifierUtils.WithFraction(Shamisen.ISeekSupport,System.UInt64,System.UInt64)">
             <summary>
-            AES
+            Returns the new <see cref="T:Shamisen.ISeekSupport"/> with specified fraction.
             </summary>
+            <param name="seekSupport">The seek support.</param>
+            <param name="divisor">The divisor.</param>
+            <param name="multiplier">The multiplier.</param>
+            <returns></returns>
         </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Pclmulqdq">
-            <summary>
-            PCLMULQDQ
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse3">
-            <summary>
-            SSE3
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Ssse3">
-            <summary>
-            SSSE3
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse41">
-            <summary>
-            SSE4.1
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse42">
-            <summary>
-            SSE4.2
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Avx">
-            <summary>
-            AVX
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Popcnt">
-            <summary>
-            POPCNT
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Avx2">
-            <summary>
-            AVX2
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86Intrinsics.Fma">
-            <summary>
-            FMA
-            </summary>
-        </member>
-        <member name="T:Shamisen.Optimization.ArmIntrinsics">
-            <summary>
-            Defines some ARM intrinsics.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.None">
-            <summary>
-            Not ARM(e.g. x86-64) or ARM Intrinsics aren't available
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.ArmBase">
-            <summary>
-            ArmBase
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Arm64">
-            <summary>
-            Arm64 variant of each intrinsics
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.AdvSimd">
-            <summary>
-            AdvSIMD
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Aes">
-            <summary>
-            AES
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Crc32">
-            <summary>
-            CRC32
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Sha1">
-            <summary>
-            SHA1
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Sha256">
-            <summary>
-            SHA256
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Dp">
-            <summary>
-            DotProduct
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.ArmIntrinsics.Rdm">
-            <summary>
-            MultiplyRoundedDoubling
-            </summary>
-        </member>
-        <member name="T:Shamisen.Optimization.X86IntrinsicsMask">
-            <summary>
-            Defines some <see cref="T:Shamisen.Optimization.X86Intrinsics"/> masks.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.None">
-            <summary>
-            The none
-            </summary>
-        </member>
-        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.X86Base">
+        <member name="M:Shamisen.ModifierUtils.NullOrMax(System.Nullable{System.<member name="F:Shamisen.Optimization.X86IntrinsicsMask.X86Base">
             <summary>
             X86Base
             </summary>
@@ -13051,108 +13001,98 @@
             </summary>
             <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
             <param name="right">The second  <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+    ngle and frequency.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Primitives.Angle128.low">
+            <summary>
+            The lower part.<br/>
+            Must be between 0 and 1.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Int32,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="frequency">The frequency.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="multiplesOfPi">The multiples of pi.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(Shamisen.Fixed64,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="high">The high part.</param>
+            <param name="low">The low part.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.High">
+            <summary>
+            Gets the higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Low">
+            <summary>
+            Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Value">
+            <summary>
+            Gets the value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInTurns">
+            <summary>
+            Gets the value in turns.
+            </summary>
+            <value>
+            The value in turns.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInRadians">
+            <summary>
+            Gets the value in radians.
+            </summary>
+            <value>
+            The value in radians.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInDegrees">
+            <summary>
+            Gets the value in degrees.
+            </summary>
+            <value>
+            The value in degrees.
+            </value>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Addition(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Adds specified <see cref="T:Shamisen.Primitives.Angle128"/> value and <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
             <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
             </returns>
         </member>
-        <member name="M:Shamisen.Primitives.Angle128.Equals(System.Object)">
+        <member name="M:Shamisen.Primitives.Angle128.op_Subtraction(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
             <summary>
-            Indicates whether the current object is equal to another object of the same type.
+            Subtracts specified <see cref="T:Shamisen.Primitives.Angle128"/> value from <see cref="T:Shamisen.Primitives.Angle128"/> value.
             </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.Equals(Shamisen.Primitives.Angle128)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="T:Shamisen.Primitives.AngleCounter">
-            <summary>
-            Implements a extreme-precision angle counter.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.AngleCounter.Angle">
-            <summary>
-            Gets the current angle.
-            </summary>
-            <value>
-            The angle.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.AngleCounter.Omega">
-            <summary>
-            Gets the omega.
-            </summary>
-            <value>
-            The omega.
-            </value>
-        </member>
-        <member name="T:Shamisen.Primitives.ComplexF">
-            <summary>
-            <see cref="T:System.Numerics.Complex"/> like structure based on <see cref="T:System.Single"/>
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.ComplexF.Real">
-            <summary>
-            Gets the real part of this instance.
-            </summary>
-            <value>
-            The real part.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.ComplexF.Imaginary">
-            <summary>
-            Gets the imaginary part of this instance.
-            </summary>
-            <value>
-            The imaginary part.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.ComplexF.Magnitude">
-            <summary>
-            Gets the magnitude of this instance.
-            </summary>
-            <value>
-            The magnitude of this instance.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.ComplexF.Phase">
-            <summary>
-            Gets the phase of this instance.
-            </summary>
-            <value>
-            The phase of this instance.
-            </value>
-        </member>
-        <member name="M:Shamisen.Primitives.ComplexF.#ctor(System.Single,System.Single)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.ComplexF"/> struct.
-            </summary>
-            <param name="real">The real part.</param>
-            <param name="imaginary">The imaginary part.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.ComplexF.#ctor(System.Numerics.Vector2)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.ComplexF"/> struct.
-            </summary>
-            <param name="value">The value vector X=Real, Y=Imaginary.</param>
-        </member>
-        <member name="F:Shamisen.Primitives.ComplexF.InverseLog10">
+            <param nameInverseLog10">
             <summary>
             The inverse of ln(10)
             </summary>
@@ -13382,82 +13322,85 @@
             </summary>
             <param name="value">The value to negate.</param>
             <returns>
-            The result of the <see cref="P:Shamisen.Primitives.ComplexF.Real"/> and <see cref="P:Shamisen.Primitives.ComplexF.Imaginary"/> components of the value parameter multiplied by -1.
+            The result of the <se            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
             </returns>
         </member>
-        <member name="M:Shamisen.Primitives.ComplexF.FromPolarCoordinates(System.Double,System.Double)">
+        <member name="M:Shamisen.Primitives.ComplexF.ToString(System.String,System.IFormatProvider)">
             <summary>
-            Creates a complex number from a point's polar coordinates.
+            Converts this instance to string.
             </summary>
-            <param name="magnitude">The magnitude, which is the distance from the origin (the intersection of the x-axis and the y-axis) to the number.</param>
-            <param name="phase">The phase, which is the angle from the line to the horizontal axis, measured in radians.</param>
-            <returns>A complex number.</returns>
+            <param name="format">The format.</param>
+            <param name="formatProvider">The format provider.</param>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
         </member>
-        <member name="M:Shamisen.Primitives.ComplexF.FromPolarCoordinates(System.Single,System.Single)">
+        <member name="M:Shamisen.Primitives.ComplexF.op_Implicit(Shamisen.Primitives.ComplexF)~System.Numerics.Complex">
             <summary>
-            Creates a complex number from a point's polar coordinates.
+            Performs an implicit conversion from <see cref="T:Shamisen.Primitives.ComplexF"/> to <see cref="T:System.Numerics.Complex"/>.
             </summary>
-            <param name="magnitude">The magnitude, which is the distance from the origin (the intersection of the x-axis and the y-axis) to the number.</param>
-            <param name="phase">The phase, which is the angle from the line to the horizontal axis, measured in radians.</param>
-            <returns>A complex number.</returns>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
         </member>
-        <member name="M:Shamisen.Primitives.ComplexF.Sqrt(Shamisen.Primitives.ComplexF)">
+        <member name="M:Shamisen.Primitives.ComplexF.op_Implicit(System.Single)~Shamisen.Primitives.ComplexF">
             <summary>
-            Returns the square root of a specified complex number.
+            Performs an implicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Primitives.ComplexF"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.ComplexF.op_Explicit(System.Numerics.Complex)~Shamisen.Primitives.ComplexF">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Numerics.Complex"/> to <see cref="T:Shamisen.Primitives.ComplexF"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.ComplexF.Abs(Shamisen.Primitives.ComplexF)">
+            <summary>
+            Gets the absolute value (or magnitude) of a complex number.
             </summary>
             <param name="value">A complex number.</param>
-            <returns>The square root of <paramref name="value"/>.</returns>
+            <returns>The absolute value of <paramref name="value"/>.</returns>
         </member>
-        <member name="T:Shamisen.Primitives.DisposableArray`1">
+        <member name="M:Shamisen.Primitives.ComplexF.Conjugate(Shamisen.Primitives.ComplexF)">
             <summary>
-            Provides a disposable array.
+            Computes the conjugate of a complex number and returns the result.
             </summary>
+            <param name="value">A complex number.</param>
+            <returns>The conjugate of <paramref name="value"/>.</returns>
         </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
+        <member name="M:Shamisen.Primitives.ComplexF.Reciprocal(Shamisen.Primitives.ComplexF)">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            Returns the multiplicative inverse of a complex number.
             </summary>
-            <param name="length">The length.</param>
+            <param name="value">A complex number.</param>
+            <returns>The reciprocal of <paramref name="value"/>.</returns>
         </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
+        <member name="M:Shamisen.Primitives.ComplexF.Add(Shamisen.Primitives.ComplexF,Shamisen.Primitives.ComplexF)">
             <summary>
-            Gets or sets the <typeparamref name="T"/> value at the specified index.
+            Adds two complex numbers and returns the result.
             </summary>
-            <value>
-            The <typeparamref name="T"/> value.
-            </value>
-            <param name="index">The index.</param>
-            <returns></returns>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The sum of <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
         </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
+        <member name="M:Shamisen.Primitives.ComplexF.Subtract(Shamisen.Primitives.ComplexF,Shamisen.Primitives.ComplexF)">
             <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
-            <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
-            <summary>
-            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
-            <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
-            <summary>
-            Compares to.
-            </summary>
-            <param name="other">The other.</param>
-            <param name="comparer">The comparer.</param>
-            <returns></returns>
-        </member>
+            Subtracts a complex number from another complex       </member>
         <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
             <summary>
             Determines whether this instance contains the object.
@@ -13493,6 +13436,124 @@
             </returns>
         </member>
         <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="comparer">The comparer.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            <returns>
+            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.DataLength">
+            <summary>
+            Represents a length of some data.
+            </summary>
+        </member>
+        <member name="M:Shamisen.DataLength.#ctor(System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.DataLength" /> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="P:Shamisen.DataLength.Infinity">
+            <summary>
+            Represents the fact that the source stream is infinitely long.
+            </summary>
+        </member>
+        <member name="P:Shamisen.DataLength.Length">
+            <summary>
+            Gets the actual length available.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.DataLength.IsInfinity">
+            <summary>
+            Gets a value indicating whether the available length of data is infinity.
+            </summary>
+            <value>
+              <c>true</c> if this <see cref="P:Shamisen.DataLength.Length"/> is infinity; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.DataLength.Cast``2">
+            <summary>
+            Casts the size value of this instance.
+            </summary>
+            <typeparam name="TFrom">The type of from.</typeparam>
+            <typeparam name="TTo">The type of to.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Division(Shamisen.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator /.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Multiply(Shamisen.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator *.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Implicimparer)">
             <summary>
             Returns a hash code for this instance.
             </summary>
@@ -13743,92 +13804,79 @@
             Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
             </summary>
         </member>
-        <member name="F:Shamisen.Fixed16.Zero">
-            <summary>
-            Represents the number zero (0).
+        <member name="F:Shamisen.Fixed16.Zer"T:Shamisen.Fixed16"/> to <see cref="T:System.Single"/>.
             </summary>
-        </member>
-        <member name="F:Shamisen.Fixed16.Epsilon">
-            <summary>
-            Represents the smallest positive <see cref="T:Shamisen.Fixed16"/> value that is greater than zero. This field is constant and read-only.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Fixed16.#ctor(System.Int16)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Fixed16"/> struct.
-            </summary>
-            <param name="internalValue">The internal value stored in memory.</param>
-        </member>
-        <member name="P:Shamisen.Fixed16.FloatValue">
-            <summary>
-            Gets the value represented in <see cref="T:System.Single"/>.
-            </summary>
-            <value>
-            The float value.
-            </value>
-        </member>
-        <member name="M:Shamisen.Fixed16.op_Addition(Shamisen.Fixed16,Shamisen.Fixed16)">
-            <summary>
-            Adds two specified <see cref="T:Shamisen.Fixed16"/> values.
-            </summary>
-            <param name="left">The first value to add.</param>
-            <param name="right">The second value to add.</param>
+            <param name="value">The value.</param>
             <returns>
-            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            The result of the conversion.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_Subtraction(Shamisen.Fixed16,Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.op_Explicit(System.Single)~Shamisen.Fixed16">
             <summary>
-            Subtracts two specified <see cref="T:Shamisen.Fixed16"/> values.
+            Performs an explicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Fixed16"/>.
             </summary>
-            <param name="left">The minuend.</param>
-            <param name="right">The subtrahend.</param>
+            <param name="value">The value.</param>
             <returns>
-            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            The result of the conversion.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_Multiply(Shamisen.Fixed16,Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.op_Explicit(System.Double)~Shamisen.Fixed16">
             <summary>
-            Multiplies two specified <see cref="T:Shamisen.Fixed16"/> values.
+            Performs an explicit conversion from <see cref="T:System.Double"/> to <see cref="T:Shamisen.Fixed16"/>.
             </summary>
-            <param name="left">The first value to multiply.</param>
-            <param name="right">The second value to multiply.</param>
+            <param name="value">The value.</param>
             <returns>
-            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
+            The result of the conversion.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_Division(Shamisen.Fixed16,Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.CompareTo(Shamisen.Fixed16)">
             <summary>
-            Divides two specified <see cref="T:Shamisen.Fixed16"/> values.
+            Compares this instance to a specified 16-bit signed fixed-point number and returns an indication of their relative values.
             </summary>
-            <param name="left">The dividend.</param>
-            <param name="right">The divisor.</param>
+            <param name="other">An number to compare.</param>
+            <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_LessThan(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is less than another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
             <returns>
-            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_Modulus(Shamisen.Fixed16,Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.op_LessThanOrEqual(Shamisen.Fixed16,Shamisen.Fixed16)">
             <summary>
-            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed16"/> values.
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is less than or equal to another specified <see cref="T:Shamisen.Fixed16"/>.
             </summary>
-            <param name="left">The dividend.</param>
-            <param name="right">The divisor.</param>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
             <returns>
-            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_UnaryPlus(Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.op_GreaterThan(Shamisen.Fixed16,Shamisen.Fixed16)">
             <summary>
-            Returns the value of the <see cref="T:Shamisen.Fixed16"/> operand (the sign of the operand is unchanged).
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is greater than another specified <see cref="T:Shamisen.Fixed16"/>.
             </summary>
-            <param name="value">The operand to return.</param>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
             <returns>
-            The value of the operand, <paramref name="value"/>.
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.Fixed16.op_Increment(Shamisen.Fixed16)">
+        <member name="M:Shamisen.Fixed16.op_GreaterThanOrEqual(Shamisen.Fixed16,Shamisen.Fixed16)">
             <summary>
-            Increments the <see cref="T:Shamisen.Fixed16"/> operand by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is greater than or equal to another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member nameEpsilon"/>.
             </summary>
             <param name="value">The value to increment.</param>
             <returns>
@@ -16115,122 +16163,7 @@
         </member>
         <member name="P:Shamisen.Synthesis.TriangleWaveSource.Theta">
             <summary>
-            Gets or sets the current phase of this <see cref="T:Shamisen.Synthesis.TriangleWaveSource"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Format">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Length">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.TotalLength">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.Position">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.SkipSupport">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.Synthesis.TriangleWaveSource.SeekSupport">
-            <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.Synthesis.TriangleWaveSource.Read(System.Span{System.Single})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.Synthesis.TriangleWaveSource.GenerateMonauralSample(Shamisen.Fixed64)">
-            <summary>
-            Generates the monaural sample.
-            </summary>
-            <param name="theta">The theta(from -pi to pi).</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Synthesis.TriangleWaveSource.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="T:Shamisen.Transformation.FastFourierTransformation">
-            <summary>
-            Functions that performs Fast Fourier Transform.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Transformation.FastFourierTransformation.PowerRootsOfUnity">
-            <summary>
-            Contains (1 &lt;&lt; n) root of unity.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Span{System.Numerics.Complex},Shamisen.Transformation.FftMode)">
-            <summary>
-            Transforms the specified span using Cooley-Tukey algorithm.
-            </summary>
-            <param name="span">The buffer.</param>
-            <param name="mode">The FFT's Mode.</param>
-            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Span{Shamisen.Primitives.ComplexF},Shamisen.Transformation.FftMode)">
-            <summary>
-            Transforms the specified span using Cooley-Tukey algorithm.
-            </summary>
-            <param name="span">The buffer.</param>
-            <param name="mode">The FFT's Mode.</param>
-            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Numerics.Complex[],System.Int32,System.Int32)">
-            <summary>
-            Transforms the specified buffer using Cooley-Tukey algorithm.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="offset">The offset.</param>
-            <param name="count">The count.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(Shamisen.Primitives.ComplexF[],System.Int32,System.Int32)">
-            <summary>
-            Transforms the specified buffer using Cooley-Tukey algorithm.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="offset">The offset.</param>
-            <param name="count">The count.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Reverse``1(System.Span{``0})">
-            <summary>
-            Bit-Reversal
-            </summary>
-            <param name="span">The in/out span.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.CalculateCache(Shamisen.Transformation.FftMode,System.Int32,System.Span{System.Numerics.Complex})">
-            <summary>
-            Calculates the cache of the powers of root of unity.
-            </summary>
-            <param name="mode">The mode.</param>
-            <param name="index">The index.</param>
-            <param name="omegas">The omegas.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.CalculateCache(Shamisen.Transformation.FftMode,System.Int32,System.Span{Shamisen.Primitives.ComplexF})">
-            <summary>
-            Calculates the cache of the powers of root of unity.
-            </summary>
-            <param name="mode">The mode.</param>
-            <param name="index">The index.</param>
-            <param name="omegas">The omegas.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Perform(System.Span{System.Numerics.Complex},Shamisen.Transformation.FftMode)">
-            <summary>
-            Performs forward transform to the specified span.
-            </summary>
-            <param name="span">The span.</param>
-            <param name="mode">The FFT's Mode.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Perform(System.Span{Shamisen.Primitives.ComplexF},Shamisen.Transformation.FftMode)">
-            <summary>
-            Performs forward transform to the specified span.
-            </summary>
-            <param name="span">The span.</param>
-            <param name="mode">The FFT's Mode.</param>
-        </member>
-        <member name="T:Shamisen.Transformation.FftMode">
-            <summary>
-            Fast Fourier Transformation Modes
-            </summary>
+            Gets or set          </summary>
         </member>
         <member name="F:Shamisen.Transformation.FftMode.Forward">
             <summary>
@@ -16275,6 +16208,102 @@
         </member>
         <member name="M:Shamisen.AudioSourceUtils.Preload(Shamisen.IWaveSource,System.Int32,System.Int32,System.Boolean)">
             <inheritdoc cref="M:Shamisen.Filters.StreamBuffer`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.Int32,System.Int32,System.Boolean)"/>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.Loop``2(Shamisen.IReadableAudioSource{``0,``1})">
+            <summary>
+            Loops the specified source.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <typeparam name="TFormat">The type of the format.</typeparam>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ConvertToSample(Shamisen.IWaveSource)">
+            <summary>
+            Converts the <paramref name="source"/> to <see cref="T:Shamisen.ISampleSource"/>.
+            </summary>
+            <param name="source">The source.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.AudioSourceUtils.ReadAsAsync``2(Shamisen.IReadableAudioSource{``0,``1},System.Memory{``0})">
+            <summary>
+            Reads the audio to the specified buffer asynchronously if possible.
+            </summary>
+            <param name="source"></param>
+            <param name="destination">The buffer.</param>
+            <returns>The length of the data written.</returns>
+        </member>
+        <member name="T:Shamisen.Utils.AudioUtils">
+            <summary>
+            Contains some utility functions for manipulating audio data.
+            </summary>
+            <summary>
+            Contains some utility functions for manipulating audio data.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastAdd(System.ReadOnlySpan{System.Single},System.Span{System.Single})">
+            <summary>
+            Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesToAdd">The samples to add.</param>
+            <param name="buffer">The buffer.</param>
+            <exception cref="T:System.ArgumentException">samplesToAdd</exception>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastAdd(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Adds the <paramref name="samplesA"/> and <paramref name="samplesB"/>, and stores to <paramref name="buffer"/>.
+            </summary>
+            <param name="samplesA">The samples to add.</param>
+            <param name="samplesB">The samples to add.</param>
+            <param name="buffer">The destination.</param>
+            <exception cref="T:System.ArgumentException">samplesToAdd</exception>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Single},System.Single)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+            </summary>
+            <param name="span">The span to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardFixed(System.Span{System.Single},System.Single)">
+            <summary>
+            Vectorized path using <see cref="T:System.Numerics.Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
+            Impractical in Rocket Lake or later due to absence of Haswell's severe CPU clock limits.<br/>
+            </summary>
+            <param name="span"></param>
+            <param name="scale"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.Single)">
+            <summary>
+            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+            </summary>
+            <param name="span"></param>
+            <param name="scale"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Double},System.Double)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+            </summary>
+            <param name="span">The span to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Double},System.Double)">
+            <summary>
+            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+            </summary>
+            <param name="span"></param>
+            <param name="scale"></param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastMultiply(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Multiplies specified <paramref name="sourceA"/> and <paramref name="sourceB"/> and stores to <paramref name="destination"/>.
+            </summary>
+            <param name="destination"></param>
+            <param nas.StreamBuffer`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.Int32,System.Int32,System.Boolean)"/>
         </member>
         <member name="M:Shamisen.AudioSourceUtils.Loop``2(Shamisen.IReadableAudioSource{``0,``1})">
             <summary>
@@ -16513,128 +16542,7 @@
             <param name="a5">The input buffer for channel No.5.</param>
             <param name="a6">The input buffer for channel No.6.</param>
         </member>
-        <member name="M:Shamisen.Utils.AudioUtils.Interleave8Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
-            <summary>
-            Interleaves and stores audio samples with 8 channels, to <paramref name="buffer"/>.
-            </summary>
-            <param name="buffer">The output buffer.</param>
-            <param name="a0">The input buffer for channel No.0.</param>
-            <param name="a1">The input buffer for channel No.1.</param>
-            <param name="a2">The input buffer for channel No.2.</param>
-            <param name="a3">The input buffer for channel No.3.</param>
-            <param name="a4">The input buffer for channel No.4.</param>
-            <param name="a5">The input buffer for channel No.5.</param>
-            <param name="a6">The input buffer for channel No.6.</param>
-            <param name="a7">The input buffer for channel No.7.</param>
-        </member>
-        <member name="T:Shamisen.Utils.BufferInstance`1">
-            <summary>
-            Provides a simple internal buffer instancing.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <seealso cref="T:System.IDisposable" />
-        </member>
-        <member name="T:Shamisen.Utils.Buffers.PooledArrayResizer`1">
-            <summary>
-            Handles resizing of <see cref="T:System.Array"/>s.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> class.
-            </summary>
-            <param name="initialSize">The initial size.</param>
-        </member>
-        <member name="P:Shamisen.Utils.Buffers.PooledArrayResizer`1.Array">
-            <summary>
-            Gets the array.
-            </summary>
-            <value>
-            The array.
-            </value>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Resize(System.Int32)">
-            <summary>
-            Resizes this <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> to specified size.
-            </summary>
-            <param name="newSize">The new size.</param>
-            <returns>The resized array.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Utils.Buffers.PooledArrayResizer`1"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Buffers.PooledArrayResizer`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.ResizableBufferWrapper`1">
-            <summary>
-            Provides a Buffer wrapper.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Utils.ResizableBufferWrapper`1"/> class.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.CurrentSizeInBytes">
-            <summary>
-            Gets the current size in bytes.
-            </summary>
-            <value>
-            The current size in bytes.
-            </value>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.ActualBuffer">
-            <summary>
-            Gets the buffer.
-            </summary>
-            <value>
-            The buffer.
-            </value>
-        </member>
-        <member name="P:Shamisen.Utils.ResizableBufferWrapper`1.Buffer">
-            <summary>
-            Gets the buffer.
-            </summary>
-            <value>
-            The buffer.
-            </value>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Resize(System.Int32)">
-            <summary>
-            Resizes the buffer to the specified new size.
-            </summary>
-            <param name="newSize">The new size in <typeparamref name="T"/>.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.ResizeInternal(System.Int32)">
-            <summary>
-            Resizes the buffer to the specified new size.
-            </summary>
-            <param name="newSize">The new size in bytes.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.DisposeInternal(System.Boolean)">
-            <summary>
-            Releases unmanaged and - optionally - managed resources.
-            </summary>
-            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Utils.ResizableBufferWrapper`1"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.ResizableBufferWrapper`1.Dispose">
-            <summary>
+        <member name="M:Shamisen.Utils.AudioUtils.Interleave8Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpay>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
@@ -16740,6 +16648,290 @@
             <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.IntddenValue">The value initially hidden.</param>
+        </member>
+        <member name="M:Shamisen.Utils.ContentSwapper`1.Swap">
+            <summary>
+            Swaps two values of this instance.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.ContentSwapper`1.Value">
+            <summary>
+            Gets the current value.
+            </summary>
+            <value>
+            The value.
+            </value>
+        </member>
+        <member name="T:Shamisen.Utils.EndiannessExtensions">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:Shamisen.Utils.EndiannessExtensions.EnvironmentEndianness">
+            <summary>
+            Gets the environment's endianness.
+            </summary>
+            <value>
+            The environment endianness.
+            </value>
+        </member>
+        <member name="T:Shamisen.Utils.FastMath">
+            <summary>
+            Contains some mathematical functions for Floating-Point numbers.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Max(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Max(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Min(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Round(System.Single)">
+            <summary>
+            Rounds a single-precision floating-point value to the nearest integral value,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="x">A single-precision floating-point number to be rounded.</param>
+            <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
             <summary>
@@ -18509,50 +18701,6 @@
             <param name="w">The value to assign to the <see cref="F:System.Numerics.Vector4.W"/> field.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector256{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector128{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector256``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector4(System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector4"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
-        </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
             Provides some functions that helps you about binary things.
@@ -18625,22 +18773,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -19393,335 +19541,7 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ShiftRight(System.Span{System.Int32})">
-            <summary>
-            Moves the elements of specified <paramref name="span"/> right by 1 element.
-            </summary>
-            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ShiftRight``1(System.Span{``0})">
-            <summary>
-            Moves the elements of specified <paramref name="span"/> right by 1 element.
-            </summary>
-            <typeparam name="TSample"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.Skip``1(System.Span{``0},System.Int32)">
-            <summary>
-            Skips the specified step.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="step">The step.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
-            <param name="divisor">The number to divide.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
-            <summary>
-            Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The span.</param>
-            <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
-            <param name="divisor">The number to divide.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="length">The length to slice back.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed64})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int64})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Double})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed32})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt32})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Single})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int32})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Int24})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed16})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt16})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int16})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
-            <summary>
-            Fills the specified memory region faster, with the given <paramref name="value"/>.
-            </summary>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="span"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Memory{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
-            <summary>
-            Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Span`1"/></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="channels">The align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
-            <summary>
-            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
-            <summary>
-            Slices the <paramref name="memory"/> with the specified length.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="length">The length to read.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Span{``0})">
-            <summary>
-            Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
-            </summary>
-            <typeparam name="T">The type of <see cref="T:System.Memory`1"/></typeparam>
-            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
-            <param name="criterion">The criterion.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanExtensions.ShiftRight(System.Span{System.Inm.Memory{``0})">
             <summary>
             Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
             </summary>

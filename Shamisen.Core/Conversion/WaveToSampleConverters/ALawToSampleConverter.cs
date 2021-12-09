@@ -204,10 +204,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     ymm0 = Avx.Subtract(ymm10.AsSingle(), ymm0.AsSingle()).AsInt32();
                     ymm15 = Avx2.Add(ymm13, ymm5);
                     ymm1 = Avx.Subtract(ymm15.AsSingle(), ymm1.AsSingle()).AsInt32();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = ymm6.AsSingle();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 32)) = ymm7.AsSingle();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 64)) = ymm0.AsSingle();
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 96)) = ymm1.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 0)) = ymm6.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 8)) = ymm7.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 16)) = ymm0.AsSingle();
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rdi, i + 24)) = ymm1.AsSingle();
                 }
                 olen = length - 7;
                 for (; i < olen; i += 8)
@@ -234,8 +234,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     xmm6 = Sse.Subtract(xmm10.AsSingle(), xmm6.AsSingle()).AsInt32();
                     xmm15 = Sse2.Add(xmm11, ymm5.GetLower());
                     xmm7 = Sse.Subtract(xmm15.AsSingle(), xmm7.AsSingle()).AsInt32();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = xmm6.AsSingle();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 16)) = xmm7.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm6.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm7.AsSingle();
                 }
                 for (; i < length; i++)
                 {
@@ -285,8 +285,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     xmm6 = Sse.Subtract(xmm10.AsSingle(), xmm6.AsSingle()).AsInt32();
                     xmm15 = Sse2.Add(xmm11, xmm5);
                     xmm7 = Sse.Subtract(xmm15.AsSingle(), xmm7.AsSingle()).AsInt32();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 0)) = xmm6.AsSingle();
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref rdi, i), 16)) = xmm7.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 0)) = xmm6.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rdi, i + 4)) = xmm7.AsSingle();
                 }
                 for (; i < length; i++)
                 {
@@ -307,55 +307,39 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 nint i;
                 ref var x11 = ref MemoryMarshal.GetReference(rb);
                 ref var x10 = ref MemoryMarshal.GetReference(wb);
-                var v0_4h = Vector64.Create((ushort)0xd5);
-                var v1_4s = Vector128.Create(0x70u);
-                var v2_4s = Vector128.Create(~0u >> 5);
-                var v3_4s = Vector128.Create(0x3b80_0000);
-                var v4_4s = Vector128.Create(0x83fc_0000u);
-                for (i = 0; i < length - 3; i += 4)
+                var v8_16b = Vector128.Create(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
+                var v9_4s = Vector128.Create(0x83F8_0000u).AsInt32();
+                var v2_4s = Vector128.Create(0x0004_0000);
+                var v3_4s = Vector128.Create(0x0080_0000);
+                var v4_4s = Vector128.Create(0x3C00_0000);
+                var v5_4s = Vector128.Create(0x3B80_0000);
+                var olen = length - 7;
+                for (i = 0; i < olen; i += 8)
                 {
-                    //ldr     s6, [x11], #4
-                    var s6 = Vector64.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref Unsafe.Add(ref x11, i)));
-                    //ushll   v6.8h, v6.8b, #0
-                    var v6_8h = AdvSimd.ShiftLeftLogicalWideningLower(s6.AsByte(), 0);
-                    //eor v6.8b, v6.8b, v0.8b
-                    v6_8h = AdvSimd.Xor(v6_8h.GetLower(), v0_4h).ToVector128Unsafe();
-                    //ushll v6.4s, v6.4h, #0
-                    var v6_4s = AdvSimd.ShiftLeftLogicalWideningLower(v6_8h.GetLower(), 0);
-                    //shl     v7.4s, v6.4s, #24
-                    var v7_4s = AdvSimd.ShiftLeftLogical(v6_4s, 24);
-                    //sshr    v7.4s, v7.4s, #24
-                    v7_4s = AdvSimd.ShiftRightArithmetic(v7_4s.AsInt32(), 24).AsUInt32();
-                    //shl     v7.4s, v7.4s, #19
-                    v7_4s = AdvSimd.ShiftLeftLogical(v7_4s, 19);
-                    //orr     v7.4s, #4, lsl #16
-                    v7_4s = AdvSimd.Or(v7_4s, Vector128.Create(4u << 16));
-                    //and     v16.16b, v6.16b, v1.16b
-                    var v16_4s = AdvSimd.And(v6_4s, v1_4s);
-                    //cmeq    v16.4s, v16.4s, #0
-                    v16_4s = AdvSimd.CompareEqual(v16_4s, Vector128<uint>.Zero);
-                    //shl     v6.4s, v6.4s, #27
-                    v6_4s = AdvSimd.ShiftLeftLogical(v6_4s, 27);
-                    //orr     v6.16b, v6.16b, v2.16b
-                    v6_4s = AdvSimd.Or(v6_4s, v2_4s);
-                    //clz     v6.4s, v6.4s
-                    v6_4s = AdvSimd.LeadingZeroCount(v6_4s);
-                    //shl     v17.4s, v6.4s, #23
-                    var v17_4s = AdvSimd.ShiftRightLogical(v6_4s, 23).AsInt32();
-                    //sub     v17.4s, v3.4s, v17.4s
-                    v17_4s = AdvSimd.Subtract(v3_4s, v17_4s);
-                    //bif     v17.16b, v3.16b, v16.16b
-                    v17_4s = AdvSimd.BitwiseSelect(v16_4s.AsInt32(), v17_4s, v3_4s);
-                    //and     v6.16b, v6.16b, v16.16b
-                    v6_4s = AdvSimd.And(v6_4s, v16_4s);
-                    //ushl    v6.4s, v7.4s, v6.4s
-                    v6_4s = AdvSimd.ShiftLogical(v7_4s, v6_4s.AsInt32());
-                    //and     v6.16b, v6.16b, v4.16b
-                    v6_4s = AdvSimd.And(v6_4s, v4_4s);
-                    //add     v6.4s, v6.4s, v17.4s
-                    v6_4s = AdvSimd.Add(v6_4s, v17_4s.AsUInt32());
-                    //str     q6, [x10], #16
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref x10, i)) = v6_4s.AsSingle();
+                    var v6_8b = Unsafe.As<byte, Vector64<int>>(ref Unsafe.Add(ref x11, i)).ToVector128Unsafe();
+                    v6_8b = AdvSimd.Xor(v8_16b, v6_8b);
+                    var v6_4h = AdvSimd.SignExtendWideningLower(v6_8b.AsSByte().GetLower());
+                    var v7_4h = AdvSimd.SignExtendWideningUpper(v6_8b.AsSByte());
+                    var v6_4s = AdvSimd.SignExtendWideningLower(v6_4h.GetLower());
+                    var v7_4s = AdvSimd.SignExtendWideningLower(v7_4h.GetLower());
+                    v6_4s = AdvSimd.ShiftLeftLogical(v6_4s.AsUInt32(), 19).AsInt32();
+                    v7_4s = AdvSimd.ShiftLeftLogical(v7_4s.AsUInt32(), 19).AsInt32();
+                    v6_4s = AdvSimd.And(v9_4s, v6_4s);
+                    v7_4s = AdvSimd.And(v9_4s, v7_4s);
+                    var v1_4s0 = AdvSimd.Or(v6_4s, v2_4s);
+                    var v1_4s1 = AdvSimd.Or(v7_4s, v2_4s);
+                    var v1_4s4 = AdvSimd.Add(v6_4s, v3_4s);
+                    v1_4s0 = AdvSimd.Add(v1_4s0.AsSingle(), v1_4s4.AsSingle()).AsInt32();
+                    var v1_4s5 = AdvSimd.Add(v7_4s, v3_4s);
+                    v1_4s1 = AdvSimd.Add(v1_4s1.AsSingle(), v1_4s5.AsSingle()).AsInt32();
+                    v6_4s = AdvSimd.Or(v6_4s, v4_4s);
+                    v7_4s = AdvSimd.Or(v7_4s, v4_4s);
+                    v1_4s0 = AdvSimd.Add(v1_4s0, v5_4s);
+                    v6_4s = AdvSimd.Subtract(v1_4s0.AsSingle(), v6_4s.AsSingle()).AsInt32();
+                    v1_4s5 = AdvSimd.Add(v1_4s1, v5_4s);
+                    v7_4s = AdvSimd.Subtract(v1_4s5.AsSingle(), v7_4s.AsSingle()).AsInt32();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref x10, i), 0)) = v6_4s.AsSingle();
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.AddByteOffset(ref Unsafe.Add(ref x10, i), 16)) = v7_4s.AsSingle();
                 }
                 for (; i < length; i++)
                 {
