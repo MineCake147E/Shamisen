@@ -103,6 +103,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </None>
+      <None Include="Utils\VectorUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>VectorUtils.g.tt</DependentUpon>
+      </None>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
@@ -180,6 +185,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </Compile>
+      <Compile Update="Utils\VectorUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>VectorUtils.g.tt</DependentUpon>
+      </Compile>
     </ItemGroup>
     <ItemGroup>
       <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
@@ -237,6 +247,10 @@
       <None Update="Utils\Tuples\Tuples.g.tt">
         <LastGenOutput>Tuples.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\VectorUtils.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>VectorUtils.g.cs</LastGenOutput>
       </None>
     </ItemGroup>
     <ItemGroup>

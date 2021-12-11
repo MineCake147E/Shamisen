@@ -18,7 +18,7 @@ namespace Shamisen
     public static partial class SpanExtensions
     {
 #region FastFill
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -30,15 +30,15 @@ namespace Shamisen
         public static void FastFill(this Span<float> span, float value = default)
         {
             if(Vector<float>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -50,15 +50,15 @@ namespace Shamisen
         public static void FastFill(this Span<double> span, double value = default)
         {
             if(Vector<double>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -70,15 +70,15 @@ namespace Shamisen
         public static void FastFill(this Span<byte> span, byte value = default)
         {
             if(Vector<byte>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -90,15 +90,15 @@ namespace Shamisen
         public static void FastFill(this Span<ushort> span, ushort value = default)
         {
             if(Vector<ushort>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -110,15 +110,15 @@ namespace Shamisen
         public static void FastFill(this Span<uint> span, uint value = default)
         {
             if(Vector<uint>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -130,15 +130,15 @@ namespace Shamisen
         public static void FastFill(this Span<ulong> span, ulong value = default)
         {
             if(Vector<ulong>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -150,15 +150,15 @@ namespace Shamisen
         public static void FastFill(this Span<sbyte> span, sbyte value = default)
         {
             if(Vector<sbyte>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -170,15 +170,15 @@ namespace Shamisen
         public static void FastFill(this Span<short> span, short value = default)
         {
             if(Vector<short>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -190,15 +190,15 @@ namespace Shamisen
         public static void FastFill(this Span<int> span, int value = default)
         {
             if(Vector<int>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -210,13 +210,13 @@ namespace Shamisen
         public static void FastFill(this Span<long> span, long value = default)
         {
             if(Vector<long>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
 #endregion FastFill
 #region Extensions for Span<T>

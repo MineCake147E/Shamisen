@@ -32,7 +32,7 @@ namespace Shamisen
 #region FastFill
 <#
     foreach(var item in typesVectorable){#>
-		/// <summary>
+        /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">The span to fill.</param>
@@ -44,13 +44,13 @@ namespace Shamisen
         public static void FastFill(this Span<<#=item#>> span, <#=item#> value = default)
         {
             if(Vector<<#=item#>>.Count > span.Length)
-			{
-				span.Fill(value);
-			}
-			else
-			{
-				VectorFill(span, value);
-			}
+            {
+                span.Fill(value);
+            }
+            else
+            {
+                VectorFill(span, value);
+            }
         }
 <#
     }#>

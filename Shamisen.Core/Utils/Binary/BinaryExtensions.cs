@@ -258,5 +258,66 @@ namespace Shamisen
             return Unsafe.As<int, float>(ref v);  //assuming ulong and double is stored as same endianness.
         }
 #endif
+#if NET6_0_OR_GREATER
+
+        /// <summary>
+        /// Converts a single-precision floating-point value into an unsigned integer.
+        /// </summary>
+        /// <param name="value">The single-precision floating-point value to convert.</param>
+        /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint SingleToUInt32Bits(float value) => BitConverter.SingleToUInt32Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The unsigned integer to convert.</param>
+        /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float UInt32BitsToSingle(uint value) => BitConverter.UInt32BitsToSingle(value);
+
+#elif NETCOREAPP3_1_OR_GREATER
+
+        /// <summary>
+        /// Converts a single-precision floating-point value into an unsigned integer.
+        /// </summary>
+        /// <param name="value">The single-precision floating-point value to convert.</param>
+        /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint SingleToUInt32Bits(float value) => (uint)BitConverter.SingleToInt32Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The unsigned integer to convert.</param>
+        /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float UInt32BitsToSingle(uint value) => BitConverter.Int32BitsToSingle((int)value);
+
+#else
+        /// <summary>
+        /// Converts a single-precision floating-point value into an unsigned integer.
+        /// </summary>
+        /// <param name="value">The single-precision floating-point value to convert.</param>
+        /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint SingleToUInt32Bits(float value)
+        {
+            var v = value;
+            return Unsafe.As<float, uint>(ref v);  //assuming ulong and double is stored as same endianness.
+        }
+
+        /// <summary>
+        /// Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The unsigned integer to convert.</param>
+        /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float UInt32BitsToSingle(uint value)
+        {
+            var v = value;
+            return Unsafe.As<uint, float>(ref v);  //assuming ulong and double is stored as same endianness.
+        }
+#endif
     }
 }

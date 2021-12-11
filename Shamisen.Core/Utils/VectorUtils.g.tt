@@ -1,0 +1,38 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#    var typesVectorable = new []{"Single","Double","Byte","UInt16","UInt32","UInt64","SByte","Int16","Int32","Int64"};#>
+using System;
+using System.Numerics;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+using Shamisen.Utils.Numerics;
+
+#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
+#endif
+
+namespace Shamisen.Utils
+{
+    public static partial class VectorUtils
+    {
+<#
+    foreach(var item in typesVectorable){#>
+        
+        /// <inheritdoc cref="Vector.AsVector<#=item#>{T}(Vector{T})"/>
+        [DebuggerStepThrough]
+        public static Vector<<#=item#>> As<#=item#><T>(this Vector<T> value) where T : struct
+            => Vector.AsVector<#=item#>(value);
+<#
+    }#>
+    }
+}

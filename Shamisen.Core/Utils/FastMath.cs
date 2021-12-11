@@ -87,6 +87,74 @@ namespace Shamisen.Utils
         }
 
         /// <summary>
+        /// Returns the smaller of two single-precision floating-point numbers.
+        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+        /// </summary>
+        /// <returns>
+        /// Parameter x or y, whichever is larger.
+        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
+        /// the result might depend on CPUs.
+        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float MaxUnsignedInputs(float x, float y)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = Vector64.CreateScalarUnsafe(x);
+                    var s1 = Vector64.CreateScalarUnsafe(y);
+                    return AdvSimd.Max(s0.AsUInt32(), s1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse41.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    return Sse41.Max(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(MathI.Max(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
+            }
+        }
+        /// <summary>
+        /// Returns the smaller of two single-precision floating-point numbers.
+        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+        /// </summary>
+        /// <returns>
+        /// Parameter x or y, whichever is smaller.
+        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
+        /// the result might depend on CPUs.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float MinUnsignedInputs(float x, float y)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = Vector64.CreateScalarUnsafe(x);
+                    var s1 = Vector64.CreateScalarUnsafe(y);
+                    return AdvSimd.Min(s0.AsUInt32(), s1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse41.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    return Sse41.Min(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(MathI.Min(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
+            }
+        }
+
+        /// <summary>
         /// Rounds a single-precision floating-point value to the nearest integral value,
         /// and rounds midpoint values to the nearest even number.
         /// </summary>

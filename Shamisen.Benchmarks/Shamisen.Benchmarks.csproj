@@ -10,7 +10,6 @@
         <PlatformTarget>AnyCPU</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <DebugSymbols>true</DebugSymbols>
-        <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
     <ItemGroup>
       <None Remove="TestSounds\PinkNoise_24bit_Lv8.flac" />

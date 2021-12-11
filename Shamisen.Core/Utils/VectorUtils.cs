@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Shamisen.Utils.Numerics;
+
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -17,7 +18,7 @@ namespace Shamisen.Utils
     /// <summary>
     /// Contains some utility functions for manipulating <see cref="Vector"/> values.
     /// </summary>
-    public static class VectorUtils
+    public static partial class VectorUtils
     {
         #region FastDotProduct
         /// <summary>
@@ -856,6 +857,27 @@ namespace Shamisen.Utils
             }
         }
         #endregion
+        #region AndNot
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Returns a new vector by performing a bitwise And Not operation on each pair of corresponding elements in two vectors.
+        /// This variant preserves parameter order consistency with <see cref="Avx2.AndNot(Vector256{int}, Vector256{int})"/>.
+        /// </summary>
+        /// <param name="right">The second vector to be negated.</param>
+        /// <param name="left">The first vector.</param>
+        /// <inheritdoc cref="Vector.AndNot{T}(Vector{T}, Vector{T})"/>
+#else
+        /// <summary>
+        /// Returns a new vector by performing a bitwise And Not operation on each pair of corresponding elements in two vectors.
+        /// This variant preserves parameter order consistency with <c>Avx2.AndNot(Vector256{int}, Vector256{int})</c>.
+        /// </summary>
+        /// <param name="right">The second vector to be negated.</param>
+        /// <param name="left">The first vector.</param>
+        /// <inheritdoc cref="Vector.AndNot{T}(Vector{T}, Vector{T})"/>
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<T> AndNot<T>(Vector<T> right, Vector<T> left) where T : struct => Vector.AndNot(left, right);
+        #endregion
         #region ShiftLeft
         /// <summary>
         /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
@@ -919,12 +941,131 @@ namespace Shamisen.Utils
                 }
             }
         }
-        #endregion
-        #region ShiftRight
+        /// <summary>
+        /// Prepares for constant left shifts.
+        /// </summary>
+        /// <param name="shift">The amount to shift elements left.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> PrepareConstantShiftLeftInt32(byte shift)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return default;
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return default;
+                }
+#endif
+                unsafe
+                {
+                    var v0_ns = new Vector<int>(1 << shift);
+                    return v0_ns;
+                }
+            }
+        }
         /// <summary>
         /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
         /// </summary>
-        /// <param name="value">The values to shift left.</param>
+        /// <param name="value">The values to shift right.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> ShiftLeftLogical(Vector<int> value, byte shift)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return AdvSimd.ShiftLeftLogical(value.AsVector128().AsUInt32(), shift).AsInt32().AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported && Vector<int>.Count == Vector256<int>.Count)
+                {
+                    return Avx2.ShiftLeftLogical(value.AsVector256(), shift).AsVector();
+                }
+                if (Avx.IsSupported && Vector<int>.Count == Vector256<int>.Count)//Maybe SandyBridge or something?
+                {
+                    var ymm0 = value.AsVector256();
+                    var xmm0 = ymm0.GetLower();
+                    var xmm1 = ymm0.GetUpper();
+                    xmm0 = Sse2.ShiftLeftLogical(xmm0, shift);
+                    xmm1 = Sse2.ShiftLeftLogical(xmm1, shift);
+                    ymm0 = xmm0.ToVector256Unsafe().WithUpper(xmm1);
+                    return ymm0.AsVector();
+                }
+                if (Sse2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return Sse2.ShiftLeftLogical(value.AsVector128(), shift).AsVector();
+                }
+#endif
+                unsafe
+                {
+                    var v0_ns = new Vector<int>(1 << shift);
+                    v0_ns *= value;
+                    return v0_ns;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift right.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <param name="prepared">The <see cref="Vector{T}"/> value prepared with <see cref="PrepareConstantShiftLeftInt32(byte)"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> ShiftLeftLogical(Vector<int> value, byte shift, Vector<int> prepared)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return AdvSimd.ShiftLeftLogical(value.AsVector128().AsUInt32(), shift).AsInt32().AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported && Vector<int>.Count == Vector256<int>.Count)
+                {
+                    return Avx2.ShiftLeftLogical(value.AsVector256(), shift).AsVector();
+                }
+                if (Avx.IsSupported && Vector<int>.Count == Vector256<int>.Count)//Maybe SandyBridge or something?
+                {
+                    var ymm0 = value.AsVector256();
+                    var xmm0 = ymm0.GetLower();
+                    var xmm1 = ymm0.GetUpper();
+                    xmm0 = Sse2.ShiftLeftLogical(xmm0, shift);
+                    xmm1 = Sse2.ShiftLeftLogical(xmm1, shift);
+                    ymm0 = xmm0.ToVector256Unsafe().WithUpper(xmm1);
+                    return ymm0.AsVector();
+                }
+                if (Sse2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return Sse2.ShiftLeftLogical(value.AsVector128(), shift).AsVector();
+                }
+#endif
+                unsafe
+                {
+                    return value * prepared;
+                }
+            }
+        }
+        #endregion
+        #region ShiftRight
+        /// <summary>
+        /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift right.</param>
         /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1001,49 +1142,49 @@ namespace Shamisen.Utils
                     {
                         case 4:
                             {
-                                var x0 = value[0];
-                                var x1 = value[1];
-                                var x2 = value[2];
-                                var x3 = value[3];
+                                var x0 = (uint)value[0];
+                                var x1 = (uint)value[1];
+                                var x2 = (uint)value[2];
+                                var x3 = (uint)value[3];
                                 var x4 = shift[0];
                                 var x5 = shift[0];
                                 var x6 = shift[0];
                                 var x7 = shift[0];
-                                x0 <<= (int)x4;
-                                x1 <<= (int)x5;
-                                x2 <<= (int)x6;
-                                x3 <<= (int)x7;
-                                var v0_4s = new Vector4Int32(x0, x1, x2, x3);
+                                x0 >>= (int)x4;
+                                x1 >>= (int)x5;
+                                x2 >>= (int)x6;
+                                x3 >>= (int)x7;
+                                var v0_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
                                 return Unsafe.As<Vector4Int32, Vector<int>>(ref v0_4s);
                             }
                         case 8:
                             {
-                                var x0 = value[0];
-                                var x1 = value[1];
-                                var x2 = value[2];
-                                var x3 = value[3];
+                                var x0 = (uint)value[0];
+                                var x1 = (uint)value[1];
+                                var x2 = (uint)value[2];
+                                var x3 = (uint)value[3];
                                 var x4 = shift[0];
                                 var x5 = shift[1];
                                 var x6 = shift[2];
                                 var x7 = shift[3];
-                                x0 <<= (int)x4;
-                                x1 <<= (int)x5;
-                                x2 <<= (int)x6;
-                                x3 <<= (int)x7;
-                                var v0_4s = new Vector4Int32(x0, x1, x2, x3);
-                                x0 = value[4];
-                                x1 = value[5];
-                                x2 = value[6];
-                                x3 = value[7];
+                                x0 >>= (int)x4;
+                                x1 >>= (int)x5;
+                                x2 >>= (int)x6;
+                                x3 >>= (int)x7;
+                                var v0_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
+                                x0 = (uint)value[4];
+                                x1 = (uint)value[5];
+                                x2 = (uint)value[6];
+                                x3 = (uint)value[7];
                                 x4 = shift[4];
                                 x5 = shift[5];
                                 x6 = shift[6];
                                 x7 = shift[7];
-                                x0 <<= (int)x4;
-                                x1 <<= (int)x5;
-                                x2 <<= (int)x6;
-                                x3 <<= (int)x7;
-                                var v1_4s = new Vector4Int32(x0, x1, x2, x3);
+                                x0 >>= (int)x4;
+                                x1 >>= (int)x5;
+                                x2 >>= (int)x6;
+                                x3 >>= (int)x7;
+                                var v1_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
                                 Span<int> y = stackalloc int[8];
                                 MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref v0_4s);
                                 MemoryMarshal.Write(MemoryMarshal.AsBytes(y.Slice(4)), ref v1_4s);
@@ -1051,11 +1192,11 @@ namespace Shamisen.Utils
                             }
                         default:
                             {
-                                Span<int> y = stackalloc int[Vector<int>.Count];
+                                Span<uint> y = stackalloc uint[Vector<int>.Count];
                                 MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref value);
                                 for (var i = 0; i < y.Length; i++)
                                 {
-                                    y[i] <<= (int)shift[i];
+                                    y[i] >>= (int)shift[i];
                                 }
                                 return MemoryMarshal.Read<Vector<int>>(MemoryMarshal.AsBytes(y));
                             }
@@ -1064,6 +1205,7 @@ namespace Shamisen.Utils
             }
         }
 #if NETCOREAPP3_1_OR_GREATER
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Vector128<int> ShiftRightLogicalVariableSse41(Vector128<int> xmm0, Vector128<int> xmm1)
         {
             unchecked
@@ -1083,6 +1225,106 @@ namespace Shamisen.Utils
             }
         }
 #endif
+        /// <summary>
+        /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift right.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> ShiftRightLogical(Vector<int> value, byte shift)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return AdvSimd.ShiftRightLogical(value.AsVector128(), shift).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported && Vector<int>.Count == Vector256<int>.Count)
+                {
+                    return Avx2.ShiftRightLogical(value.AsVector256(), shift).AsVector();
+                }
+                if (Avx.IsSupported && Vector<int>.Count == Vector256<int>.Count)//Maybe SandyBridge or something?
+                {
+                    var ymm0 = value.AsVector256();
+                    var xmm0 = ymm0.GetLower();
+                    var xmm1 = ymm0.GetUpper();
+                    xmm0 = Sse2.ShiftRightLogical(xmm0, shift);
+                    xmm1 = Sse2.ShiftRightLogical(xmm1, shift);
+                    ymm0 = xmm0.ToVector256Unsafe().WithUpper(xmm1);
+                    return ymm0.AsVector();
+                }
+                if (Sse2.IsSupported && Vector<int>.Count == Vector128<int>.Count)
+                {
+                    return Sse2.ShiftRightLogical(value.AsVector128(), shift).AsVector();
+                }
+#endif
+                unsafe
+                {
+                    switch (Vector<int>.Count)
+                    {
+                        case 4:
+                            {
+                                var x0 = (uint)value[0];
+                                var x1 = (uint)value[1];
+                                var x2 = (uint)value[2];
+                                var x3 = (uint)value[3];
+                                x0 >>= shift;
+                                x1 >>= shift;
+                                x2 >>= shift;
+                                x3 >>= shift;
+                                var v0_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
+                                return Unsafe.As<Vector4Int32, Vector<int>>(ref v0_4s);
+                            }
+                        case 8:
+                            {
+                                var x0 = (uint)value[0];
+                                var x1 = (uint)value[1];
+                                var x2 = (uint)value[2];
+                                var x3 = (uint)value[3];
+                                x0 >>= shift;
+                                x1 >>= shift;
+                                x2 >>= shift;
+                                x3 >>= shift;
+                                var v0_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
+                                x0 = (uint)value[4];
+                                x1 = (uint)value[5];
+                                x2 = (uint)value[6];
+                                x3 = (uint)value[7];
+                                x0 >>= shift;
+                                x1 >>= shift;
+                                x2 >>= shift;
+                                x3 >>= shift;
+                                var v1_4s = new Vector4Int32((int)x0, (int)x1, (int)x2, (int)x3);
+                                Span<int> y = stackalloc int[8];
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref v0_4s);
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y.Slice(4)), ref v1_4s);
+                                return MemoryMarshal.Read<Vector<int>>(MemoryMarshal.AsBytes(y));
+                            }
+                        default:
+                            {
+                                Span<uint> y = stackalloc uint[Vector<int>.Count];
+                                MemoryMarshal.Write(MemoryMarshal.AsBytes(y), ref value);
+                                for (var i = 0; i < y.Length; i++)
+                                {
+                                    y[i] >>= shift;
+                                }
+                                return MemoryMarshal.Read<Vector<int>>(MemoryMarshal.AsBytes(y));
+                            }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
+        /// </summary>
+        /// <param name="value">The values to shift right.</param>
+        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
+        /// <returns></returns>
+        public static Vector<uint> ShiftRightLogical(Vector<uint> value, byte shift) => ShiftRightLogical(value.AsInt32(), shift).AsUInt32();
         #endregion
         #region AddAsInt32
         /// <summary>
@@ -1180,7 +1422,6 @@ namespace Shamisen.Utils
             }
         }
         #endregion
-
         #region Vector???.AsVector
 #if NETCOREAPP3_1
         /// <summary>

@@ -126,6 +126,40 @@ namespace Shamisen
             var q = AndNot(y, val1);
             return r | q;
         }
+
+        /// <inheritdoc cref="Math.Max(int, int)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+#pragma warning disable S4136 // Method overloads should be grouped together
+        public static int Max(int val1, int val2)
+#pragma warning restore S4136 // Method overloads should be grouped together
+        {
+            var g = val1 < val2;
+            int y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Max(uint, uint)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static uint Max(uint val1, uint val2)
+        {
+            var g = val1 < val2;
+            uint y = Unsafe.As<bool, byte>(ref g);
+            y = (uint)-(int)y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
         #endregion
 
         #region Fast Bit Operations

@@ -324,6 +324,9 @@ csharp_style_allow_embedded_statements_on_same_line_experimental=true:suggestion
 csharp_style_allow_blank_lines_between_consecutive_braces_experimental=false:suggestion
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental=false:suggestion
 
+# CS1734: XML コメントに paramref タグが存在しますが、その名前に相当するパラメーターはありません
+dotnet_diagnostic.CS1734.severity = error
+
 [*.{cs,vb}]
 dotnet_style_allow_multiple_blank_lines_experimental=false:suggestion
 dotnet_style_allow_statement_immediately_after_block_experimental=true:suggestion
