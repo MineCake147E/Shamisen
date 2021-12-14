@@ -53,8 +53,8 @@ A Cross-Platform Audio Library for:
 | 24bit Linear<br>PCM(Q0.23) | ✅* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | 16bit Linear<br>PCM(Q0.15) | ✅* | ☑️* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ |
 | 8bit LPCM<br>(Excess-128) | ✅* | ☑️* | ☑️* | ☑️* | ✖️ | ☑️* | ☑️* |
-| G.711 μ−Law | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ | ❎ |
-| G.711 A-Law | ❎ | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ |
+| G.711 μ−Law | ✅* | ☑️* | ☑️* | ☑️* | ☑️* | ✖️ | ☑️* |
+| G.711 A-Law | ✅* | ☑️* | ☑️* | ☑️* | ☑️* | ☑️* | ✖️ |
 
 Legends:  
 ✅: Shamisen has optimized implementation of direct conversion.  
