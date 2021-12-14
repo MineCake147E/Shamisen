@@ -7,6 +7,10 @@
         <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.Benchmarks\Shamisen.Benchmarks.csproj" />
         <ProjectReference Include="..\Shamisen\Shamisen.csproj" />

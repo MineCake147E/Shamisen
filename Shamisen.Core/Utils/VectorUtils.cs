@@ -20,6 +20,29 @@ namespace Shamisen.Utils
     /// </summary>
     public static partial class VectorUtils
     {
+        #region Hardware Capability
+
+        /// <summary>
+        /// Gets the value which indicates whether the <see cref="ShiftRightLogical(Vector{int}, byte)"/> could be hardware accelerated.
+        /// </summary>
+        public static bool IsShiftRightHardwareAccelerated
+        {
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            get
+            {
+                unchecked
+                {
+#if NET5_0_OR_GREATER
+                    if (AdvSimd.IsSupported) return true;
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                    if (Sse2.IsSupported) return true;
+#endif
+                    return false;
+                }
+            }
+        }
+        #endregion
         #region FastDotProduct
         /// <summary>
         /// Returns the dot product of two vectors.
@@ -1419,6 +1442,46 @@ namespace Shamisen.Utils
                 }
 #endif
                 return new Vector4(x, y, z, w);
+            }
+        }
+        #endregion
+        #region StoreHalf
+        /// <summary>
+        /// Stores the lower half of <paramref name="value"/> to the <paramref name="dest"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="Vector{T}"/>.</typeparam>
+        /// <param name="dest">The start position of destination.</param>
+        /// <param name="value">The values to store.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void StoreLowerHalf<T>(ref T dest, Vector<T> value) where T : struct
+        {
+            switch (Vector<int>.Count)
+            {
+                case 4:
+                    {
+                        Unsafe.As<T, ulong>(ref dest) = value.AsUInt64()[0];
+                        return;
+                    }
+                case 8:
+                    {
+                        unchecked
+                        {
+#if NETCOREAPP3_1_OR_GREATER
+                            Unsafe.As<T, Vector128<byte>>(ref dest) = value.AsByte().AsVector256().GetLower();
+                            return;
+#else
+                            Unsafe.As<T, ulong>(ref dest) = value.AsUInt64()[0];
+                            Unsafe.Add(ref Unsafe.As<T, ulong>(ref dest), 1) = value.AsUInt64()[1];
+                            return;
+#endif
+                        }
+                    }
+                default:    //Real environment rarely comes here
+                    for (var i = 0; i < Vector<byte>.Count; i++)
+                    {
+                        Unsafe.Add(ref Unsafe.As<T, byte>(ref dest), i) = value.AsByte()[i];
+                    }
+                    break;
             }
         }
         #endregion

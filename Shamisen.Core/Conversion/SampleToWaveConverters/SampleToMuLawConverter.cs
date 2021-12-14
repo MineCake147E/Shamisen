@@ -78,7 +78,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     ProcessAvx2(wrote, dest);
                 }
 #endif
-                ProcessNormalStandard(wrote, dest);
+                ProcessStandardVectorized(wrote, dest);
             }
         }
         #region X86
@@ -180,7 +180,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 #endif
         #endregion
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalStandard(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessStandardVectorized(Span<float> wrote, Span<byte> dest)
         {
             var v15_ns = new Vector<uint>(0x7fff_ffffu);
             var v14_ns = new Vector<float>(0.0040283203125f);
@@ -239,24 +239,6 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var v0_nb = Vector.Narrow(v0_nh, v2_nh);
                 v0_nb = Vector.Xor(v0_nb, v11_nb);
                 Unsafe.As<byte, Vector<byte>>(ref Unsafe.Add(ref dst, i + 0 * Vector<byte>.Count)) = v0_nb;
-            }
-            olen = length - 8 + 1;
-            for (; i < olen; i += 8)
-            {
-                var v0_ns = Unsafe.As<float, Vector<uint>>(ref Unsafe.Add(ref src, i + 0 * Vector<float>.Count));
-                var v4_ns = Vector.BitwiseAnd(v15_ns, v0_ns);
-                v4_ns = Vector.Add(v4_ns.AsSingle(), v14_ns).AsUInt32();
-                v0_ns = VectorUtils.AndNot(v15_ns, v0_ns);  //Vector.AndNot()'s parameters were reversed compared to Avx2.AndNot()!
-                v4_ns = Vector.Subtract(v4_ns, v13_ns);
-                v0_ns = VectorUtils.ShiftRightLogical(v0_ns, 24);
-                v4_ns = Vector.Min(v4_ns, v12_ns);
-                v4_ns = VectorUtils.ShiftRightLogical(v4_ns, 19);
-                v4_ns = Vector.Max(v4_ns.AsInt32(), v10_ns).AsUInt32();
-                v0_ns = Vector.Xor(v4_ns, v0_ns);
-                var v0_nh = Vector.Narrow(v0_ns, v0_ns);
-                var v0_nb = Vector.Narrow(v0_nh, v0_nh);
-                v0_nb = Vector.Xor(v0_nb, v11_nb);
-                Unsafe.As<byte, long>(ref Unsafe.Add(ref dst, i)) = v0_nb.AsInt64()[0];
             }
             for (; i < length; i++)
             {

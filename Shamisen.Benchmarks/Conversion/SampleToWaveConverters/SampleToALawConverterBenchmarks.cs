@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
@@ -12,6 +14,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Conversion.WaveToSampleConverters;
 
 namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 {
@@ -20,7 +23,7 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
     [SimpleJob(RuntimeMoniker.Mono)]*/
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: short.MaxValue)]
-    public class SampleToMuLawConverterBenchmarks
+    public class SampleToALawConverterBenchmarks
     {
         private class Config : ManualConfig
         {
@@ -51,10 +54,13 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         }
 
         [Benchmark]
-        public void ProcessStandardVectorized() => SampleToMuLawConverter.ProcessStandardVectorized(srcBuffer, dstBuffer);
+        public void Dummy() => Thread.SpinWait((int)Math.Ceiling(srcBuffer.Length / 128.0));
+
+
+        [Benchmark]
+        public void ProcessStandardVectorized() => SampleToALawConverter.ProcessStandardVectorized(srcBuffer, dstBuffer);
 
         [Benchmark(Baseline = true)]
-        public void ProcessAvx2() => SampleToMuLawConverter.ProcessAvx2(srcBuffer, dstBuffer);
-
+        public void ProcessAvx2() => SampleToALawConverter.ProcessAvx2(srcBuffer, dstBuffer);
     }
 }

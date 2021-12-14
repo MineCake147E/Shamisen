@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -223,6 +224,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static int SingleToInt32Bits(float value) => BitConverter.SingleToInt32Bits(value);
 
         /// <summary>
@@ -231,6 +233,7 @@ namespace Shamisen
         /// <param name="value">The integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static float Int32BitsToSingle(int value) => BitConverter.Int32BitsToSingle(value);
 
 #else
@@ -240,6 +243,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static int SingleToInt32Bits(float value)
         {
             var v = value;
@@ -252,6 +256,7 @@ namespace Shamisen
         /// <param name="value">The integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static float Int32BitsToSingle(int value)
         {
             var v = value;
@@ -266,6 +271,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static uint SingleToUInt32Bits(float value) => BitConverter.SingleToUInt32Bits(value);
 
         /// <summary>
@@ -274,6 +280,7 @@ namespace Shamisen
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value) => BitConverter.UInt32BitsToSingle(value);
 
 #elif NETCOREAPP3_1_OR_GREATER
@@ -284,6 +291,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static uint SingleToUInt32Bits(float value) => (uint)BitConverter.SingleToInt32Bits(value);
 
         /// <summary>
@@ -292,6 +300,7 @@ namespace Shamisen
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value) => BitConverter.Int32BitsToSingle((int)value);
 
 #else
@@ -301,6 +310,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static uint SingleToUInt32Bits(float value)
         {
             var v = value;
@@ -313,6 +323,7 @@ namespace Shamisen
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value)
         {
             var v = value;

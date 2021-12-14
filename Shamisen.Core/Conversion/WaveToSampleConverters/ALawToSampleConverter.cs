@@ -359,26 +359,17 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static float ConvertALawToSingle(byte value)
         {
-            unchecked
-            {
-                value ^= 0b1101_0101;
-                var v = ((uint)(sbyte)value << 1) | 1;
-                var m = 0x3b80_0000u;
-                if ((value & 0x70) == 0)
-                {
-                    var zs = (uint)MathI.LeadingZeroCount(v << 26);
-                    v <<= (int)zs;
-                    m -= zs << 23;
-                }
-                v <<= 18;
-                v &= 0x83fc_0000;
-                v += m;
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                return BitConverter.Int32BitsToSingle((int)v);
-#else
-                return Unsafe.As<uint, float>(ref v);
-#endif
-            }
+            var q = (uint)(sbyte)(value ^ 0xd5);
+            var s = q & 0x80000000u;
+            q <<= 19;
+            q &= 0x83f80000u;
+            var e = q | 0x00040000;
+            var r = q + 0x00800000u;
+            var f = BinaryExtensions.UInt32BitsToSingle(r) + BinaryExtensions.UInt32BitsToSingle(e);
+            r = BinaryExtensions.SingleToUInt32Bits(f);
+            e = q | 0x3C000000;
+            r += 0x3B800000;
+            return BinaryExtensions.UInt32BitsToSingle(r) - BinaryExtensions.UInt32BitsToSingle(e);
         }
 
         internal ReadResult ReadOld(Span<float> buffer)

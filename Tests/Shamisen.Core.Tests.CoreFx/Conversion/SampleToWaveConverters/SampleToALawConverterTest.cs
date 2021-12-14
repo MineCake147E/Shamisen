@@ -16,19 +16,24 @@ using Shamisen.Filters.Buffering;
 namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
 {
     [TestFixture]
-    public class SampleToMuLawConverterTest
+    public class SampleToALawConverterTest
     {
         [Test]
         public void AllValuesRoundtripsCorrectly()
         {
+            var c = 0;
             for (var i = 0; i < 256; i++)
             {
-                var u = (byte)i;
-                var e = MuLawToSampleConverter.ConvertMuLawToSingle(u); //There are two zeros in μ-law.
-                var b = SampleToMuLawConverter.ConvertSingleToMuLaw(e); //0x7f(-0.0f) is converted to 0xff(0.0f)
-                var q = MuLawToSampleConverter.ConvertMuLawToSingle(b); //so 0xff is now 0.0f which is basically the same as -0.0f.
-                Assert.AreEqual(e, q);
+                var u = (byte)(i);
+                var e = ALawToSampleConverter.ConvertALawToSingle(u);
+                var b = SampleToALawConverter.ConvertSingleToALaw(e);
+                if (b != u)
+                {
+                    c++;
+                    Console.WriteLine($"{u:X2}: {e}, {ALawToSampleConverter.ConvertALawToSingle(b)}({b:X2})");
+                }
             }
+            Assert.AreEqual(0, c);
         }
 
         [TestCase(255)]
@@ -43,17 +48,17 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToMuLawConverter.ProcessAvx2(src, dst);
+            SampleToALawConverter.ProcessAvx2(src, dst);
             AssertArrayNormal(src, exp, dst);
         }
         [TestCase(255)]
         [TestCase(256)]
         [TestCase(257)]
         [TestCase(16385)]
-        public void ProcessNormalStandardConvertsCorrectly(int length)
+        public void ProcessStandardVectorizedConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToMuLawConverter.ProcessStandardVectorized(src, dst);
+            SampleToALawConverter.ProcessStandardVectorized(src, dst);
             AssertArrayNormal(src, exp, dst);
         }
         private static void PrepareArraysNormal(int length, out float[] src, out byte[] exp, out byte[] dst)
@@ -63,7 +68,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             var temp = new float[256];
             for (var i = 0; i < temp.Length; i++)
             {
-                temp[i] = MuLawToSampleConverter.ConvertMuLawToSingle((byte)~i);
+                temp[i] = ALawToSampleConverter.ConvertALawToSingle((byte)~i);
             }
             var f = 255.0 / (length - 1);
             for (var i = 0; i < src.Length; i++)
@@ -76,7 +81,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 var ratio = a - p;
 
                 var v = src[i] = (float)(ratio * x1 + (1 - ratio) * x0);
-                exp[i] = SampleToMuLawConverter.ConvertSingleToMuLaw(v);
+                exp[i] = SampleToALawConverter.ConvertSingleToALaw(v);
             }
             dst = new byte[src.Length];
         }
@@ -86,8 +91,8 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             NeumaierAccumulator sumdiff = default;
             for (var i = 0; i < dst.Length; i++)
             {
-                var simple = MuLawToSampleConverter.ConvertMuLawToSingle(exp[i]);
-                var optimized = MuLawToSampleConverter.ConvertMuLawToSingle(dst[i]);
+                var simple = ALawToSampleConverter.ConvertALawToSingle(exp[i]);
+                var optimized = ALawToSampleConverter.ConvertALawToSingle(dst[i]);
                 var diff = (simple - optimized) * (1.0 / 128);
                 sumdiff += Math.Abs(diff);
                 if (diff != 0)

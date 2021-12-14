@@ -17,7 +17,7 @@ namespace Shamisen.Benchmarks.Running
         {
             BenchmarkSwitcher
             .FromAssembly(typeof(ResamplerBenchmarks).Assembly)
-            .Run(args, DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256)).DontOverwriteResults()
+            .Run(args, DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(256)).AddDiagnoser(new DisassemblyDiagnoser(new(int.MaxValue)))
             );
             Console.Write("Press any key to exit:");
             Console.ReadKey();
