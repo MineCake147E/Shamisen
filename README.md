@@ -25,7 +25,7 @@ A Cross-Platform Audio Library for:
 | Name (Backend)                                                                                       | Author (Backend)                          | License (Binding)                                                                      | Windows10 Desktop | Windows10 UWP | Android | Linux | iOS | Mac OSX |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- | :-------------: | :-----------: | :-----: | :---: | :-: | :-----: |
 | [OpenTK (OpenAL)](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
-| [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❓        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
+| [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❓        |      ❎       |   ❎    |  ❎   | ❎  |   ❎    |
 | [NAudio (WaveOut, ASIO, DirectSound, WASAPI)](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
 | [UWP (AudioGraph)](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ✅       |   ❎    |  ❎   | ❎  |   ❎    |
 | [Xamarin.Android (AudioTrack)](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
@@ -53,8 +53,8 @@ A Cross-Platform Audio Library for:
 | 24bit Linear<br>PCM(Q0.23) | ✅* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | 16bit Linear<br>PCM(Q0.15) | ✅* | ☑️* | ☑️* | ✖️ | ☑️ | ☑️ | ☑️ |
 | 8bit LPCM<br>(Excess-128) | ✅* | ☑️* | ☑️* | ☑️* | ✖️ | ☑️* | ☑️* |
-| G.711 μ−Law | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ | ❎ |
-| G.711 A-Law | ❎ | ❎ | ❎ | ❎ | ❎ | ❎ | ✖️ |
+| G.711 μ−Law | ✅* | ☑️* | ☑️* | ☑️* | ☑️* | ✖️ | ☑️* |
+| G.711 A-Law | ✅* | ☑️* | ☑️* | ☑️* | ☑️* | ☑️* | ✖️ |
 
 Legends:  
 ✅: Shamisen has optimized implementation of direct conversion.  
