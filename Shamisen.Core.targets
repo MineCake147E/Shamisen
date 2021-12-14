@@ -11,7 +11,7 @@
         <RepositoryUrl>https://github.com/MineCake147E/Shamisen.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <VersionPrefix>0.1.0</VersionPrefix>
-        <VersionSuffix>alpha.0.2</VersionSuffix>
+        <VersionSuffix>alpha.0.3</VersionSuffix>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

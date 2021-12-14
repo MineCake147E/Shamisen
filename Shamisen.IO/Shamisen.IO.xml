@@ -18,12 +18,11 @@
             <b>CAUTION! REF STRUCT! IT CANNOT BE STORED ON HEAPS!</b>
             </summary>
         </member>
-        <member name="M:Shamisen.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte},Shamisen.WaveFormat)">
+        <member name="M:Shamisen.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.IO.DataAvailableEventArgs" /> struct.
             </summary>
             <param name="data">The data.</param>
-            <param name="format">The format.</param>
         </member>
         <member name="P:Shamisen.IO.DataAvailableEventArgs.Data">
             <summary>
@@ -32,34 +31,6 @@
             <value>
             The data.
             </value>
-        </member>
-        <member name="P:Shamisen.IO.DataAvailableEventArgs.Format">
-            <summary>
-            Gets the format of the available <see cref="P:Shamisen.IO.DataAvailableEventArgs.Data"/>.
-            </summary>
-            <value>
-            The format.
-            </value>
-        </member>
-        <member name="T:Shamisen.IO.DataFlow">
-            <summary>
-            Represents a flow kind of audio data.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.None">
-            <summary>
-            Invalid.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.Render">
-            <summary>
-            Output.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.Capture">
-            <summary>
-            Input.
-            </summary>
         </member>
         <member name="T:Shamisen.IO.FormatSupportStatus">
             <summary>
@@ -255,42 +226,23 @@
         </member>
         <member name="T:Shamisen.IO.ISoundIn">
             <summary>
-            Defines a base infrastructure of a sound input.<br/>
-            CAUTION! IT HAS SOME EVENT HANDLERS! IMPLEMENTERS MUST NOT FORGET TO RELEASE THEM!
+            Defines a base infrastructure of a sound input.
             </summary>
         </member>
         <member name="E:Shamisen.IO.ISoundIn.DataAvailable">
             <summary>
-            Occurs when some data are available.
+            Raised when the recording data has been available.
             </summary>
         </member>
         <member name="E:Shamisen.IO.ISoundIn.Stopped">
             <summary>
-            Occurs when the recording stopped.
+            Raised when the recording has been stopped.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.ISoundIn.Start">
+        <member name="P:Shamisen.IO.ISoundIn.Format">
             <summary>
-            Starts recording.
+            Gets the <see cref="T:Shamisen.IWaveFormat"/> of this <see cref="T:Shamisen.IO.ISoundIn"/>.
             </summary>
-        </member>
-        <member name="M:Shamisen.IO.ISoundIn.Stop">
-            <summary>
-            Stops recording.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.ISoundIn.Initialize">
-            <summary>
-            Initializes the recorder.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.ISoundIn.RecordingState">
-            <summary>
-            Gets the state of the recording.
-            </summary>
-            <value>
-            The state of the recording.
-            </value>
         </member>
         <member name="T:Shamisen.IO.ISoundOut">
             <summary>
@@ -307,21 +259,6 @@
         <member name="T:Shamisen.IO.ISoundOutputDevice">
             <summary>
             Defines a base structure of an audio output device.
-            </summary>
-        </member>
-        <member name="T:Shamisen.IO.RecordingState">
-            <summary>
-            Represents a state of recording.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.RecordingState.Stopped">
-            <summary>
-            The recording is stopped.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.RecordingState.Recording">
-            <summary>
-            The recording is in progress.
             </summary>
         </member>
         <member name="T:Shamisen.IO.RecordingStoppedEventArgs">

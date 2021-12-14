@@ -297,8 +297,7 @@ namespace Shamisen.Synthesis
 
         #region IDisposable Support
 
-        private bool disposedValue = false; //
-        private double frequency;
+        private bool disposedValue = false;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

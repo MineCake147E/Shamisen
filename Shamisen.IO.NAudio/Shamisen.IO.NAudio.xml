@@ -36,6 +36,52 @@
             The converted <see cref="T:Shamisen.WaveFormat"/> instance.
             </returns>
         </member>
+        <member name="T:Shamisen.IO.NAudioSoundInput">
+            <summary>
+            Provides a functionality of recording audio data from <see cref="T:NAudio.Wave.IWaveIn"/>.
+            </summary>
+        </member>
+        <member name="E:Shamisen.IO.NAudioSoundInput.Stopped">
+            <inheritdoc/>
+        </member>
+        <member name="E:Shamisen.IO.NAudioSoundInput.DataAvailable">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.NAudioSoundInput.#ctor(NAudio.Wave.IWaveIn)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.NAudioSoundInput"/>.
+            </summary>
+            <param name="waveIn"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="F:Shamisen.IO.NAudioSoundInput.suppressStopped">
+            <summary>
+            The value which indicates whether to suppress raising <see cref="E:Shamisen.IO.NAudioSoundInput.Stopped"/> when <see cref="M:Shamisen.IO.NAudioSoundInput.WaveIn_RecordingStopped(System.Object,NAudio.Wave.StoppedEventArgs)"/> is called.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.NAudioSoundInput.RecordingState">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.NAudioSoundInput.WaveIn">
+            <summary>
+            Gets the internal <see cref="T:NAudio.Wave.IWaveIn"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.NAudioSoundInput.Format">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.NAudioSoundInput.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.NAudioSoundInput.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.NAudioSoundInput.Finalize">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.NAudioSoundInput.Dispose">
+            <inheritdoc/>
+        </member>
         <member name="T:Shamisen.IO.NAudioSoundOutput">
             <summary>
             Provides a functionality for playing sound using NAudio.

@@ -11,6 +11,7 @@ using ReactiveUI;
 
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Conversion.WaveToSampleConverters;
 using Shamisen.Filters;
 using Shamisen.Filters.Mixing;
 using Shamisen.IO;
@@ -71,16 +72,18 @@ namespace Shamisen.Tests.IO.OpenTK
             foreach (var item in Devices.Where(a => a.Checked).Select(a => a.Device))
             {
                 var t = item.CreateSoundOut();
-                var source = new TriangleWaveSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
+                var source = new SinusoidSource(new SampleFormat(1, 192000)) { Frequency = 440 * y++ };
                 //var resampler = new SplineResampler(source, 192000);
                 //var biquad = new BiQuadFilter(resampler, BiQuadParameter.CreateNotchFilterParameterFromQuality(192000, 440, 3.0));
+                var f2a = new SampleToFloat32Converter(source);
+                var a2f = new Float32ToSampleConverter(f2a);
                 if (item.CheckSupportStatus(new WaveFormat(192000, 32, 1, AudioEncoding.IeeeFloat)).IsSupported)
                 {
-                    t.Initialize(new SampleToFloat32Converter(source));
+                    t.Initialize(new SampleToFloat32Converter(a2f));
                 }
                 else
                 {
-                    t.Initialize(new SampleToPcm8Converter(source, false));
+                    t.Initialize(new SampleToPcm16Converter(a2f, false));
                 }
                 outputs.Add(t);
                 sinusoidSources.Add(source);

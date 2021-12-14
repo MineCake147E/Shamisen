@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Shamisen.IO;
+
 namespace Shamisen
 {
     /// <summary>
@@ -38,7 +40,7 @@ namespace Shamisen
         /// Gets a value indicating whether this instance has error.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance has error; otherwise, <c>false</c>.
+        ///   <c>true</c> if this instance has error; otherwise, <c>false</c> meaning recording was stopped manually by <see cref="IRecordingController.Stop"/>.
         /// </value>
         public bool HasError => Exception is not null;
     }

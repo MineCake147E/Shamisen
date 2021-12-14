@@ -7,42 +7,23 @@ using Shamisen.Formats;
 namespace Shamisen.IO
 {
     /// <summary>
-    /// Defines a base infrastructure of a sound input.<br/>
-    /// CAUTION! IT HAS SOME EVENT HANDLERS! IMPLEMENTERS MUST NOT FORGET TO RELEASE THEM!
+    /// Defines a base infrastructure of a sound input.
     /// </summary>
-    public interface ISoundIn : IDisposable
+    public interface ISoundIn : IRecordingController, IDisposable
     {
         /// <summary>
-        /// Occurs when some data are available.
+        /// Raised when the recording data has been available.
         /// </summary>
-        event DataAvailableEventHandler DataAvailable;
+        event DataAvailableEventHandler? DataAvailable;
 
         /// <summary>
-        /// Occurs when the recording stopped.
+        /// Raised when the recording has been stopped.
         /// </summary>
-        event EventHandler<RecordingStoppedEventArgs> Stopped;
+        event EventHandler<StoppedEventArgs>? Stopped;
 
         /// <summary>
-        /// Starts recording.
+        /// Gets the <see cref="IWaveFormat"/> of this <see cref="ISoundIn"/>.
         /// </summary>
-        void Start();
-
-        /// <summary>
-        /// Stops recording.
-        /// </summary>
-        void Stop();
-
-        /// <summary>
-        /// Initializes the recorder.
-        /// </summary>
-        void Initialize();
-
-        /// <summary>
-        /// Gets the state of the recording.
-        /// </summary>
-        /// <value>
-        /// The state of the recording.
-        /// </value>
-        RecordingState RecordingState { get; }
+        IWaveFormat Format { get; }
     }
 }

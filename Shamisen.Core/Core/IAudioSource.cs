@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-#pragma warning disable CS8701
-
 namespace Shamisen
 {
     /// <summary>

@@ -6,6 +6,8 @@
       <SonarQubeTestProject>False</SonarQubeTestProject>
       <Description>Brand New Audio Library for .NET 5 and later. </Description>
       <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+      <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library</PackageTags>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>
@@ -39,10 +41,10 @@
       <Folder Include="Utils\Samples\" />
     </ItemGroup>
     <ItemGroup>
-      <None Include="..\Shamisen-NuGetIcon.png">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    <ItemGroup>
       <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
         <DependentUpon>BinaryContent.g.tt</DependentUpon>
         <DesignTime>True</DesignTime>

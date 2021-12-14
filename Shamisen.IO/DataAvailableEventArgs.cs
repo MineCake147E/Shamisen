@@ -22,11 +22,9 @@ namespace Shamisen.IO
         /// Initializes a new instance of the <see cref="DataAvailableEventArgs" /> struct.
         /// </summary>
         /// <param name="data">The data.</param>
-        /// <param name="format">The format.</param>
-        public DataAvailableEventArgs(Span<byte> data, WaveFormat format)
+        public DataAvailableEventArgs(Span<byte> data)
         {
             Data = data;
-            Format = format;
         }
 
         /// <summary>
@@ -36,13 +34,5 @@ namespace Shamisen.IO
         /// The data.
         /// </value>
         public Span<byte> Data { get; }
-
-        /// <summary>
-        /// Gets the format of the available <see cref="Data"/>.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
-        public WaveFormat Format { get; }
     }
 }

@@ -5799,22 +5799,6 @@
              <param name="rateMul"></param>
              <param name="acc"></param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            SSE2 vectorized path
-            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            FMA vectorized path
-            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -5840,31 +5824,6 @@
             <param name="acc"></param>
             <param name="facc"></param>
             <param name="rmi"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
-            <summary>
-            For arbitrary sampling frequency ratio larger than 1
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
-            <param name="rci"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
-            <summary>
-            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
-            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
-            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
             <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
@@ -6684,14 +6643,6 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one can be slightly faster than simple approach.
-            </summary>
-            <param name="dest"></param>
-            <param name="wrote"></param>
-        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -6944,21 +6895,6 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2M(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Straightforward convert-and-multiply approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2A(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one is slightly faster than simple approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
-        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -7112,6 +7048,137 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
+        <member name="T:Shamisen.IO.DataFlow">
+            <summary>
+            Represents a flow kind of audio data.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.None">
+            <summary>
+            Invalid.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Render">
+            <summary>
+            Output.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Capture">
+            <summary>
+            Input.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.IPlaybackController">
+            <summary>
+            Defines a base infrastructure of playback controller.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Play">
+            <summary>
+            Starts the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Pause">
+            <summary>
+            Pauses the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Resume">
+            <summary>
+            Resumes the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Stop">
+            <summary>
+            Stops the audio playback.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IPlaybackController.PlaybackState">
+            <summary>
+            Gets the state of the playback.
+            </summary>
+            <value>
+            The state of the playback.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.IRecordingController">
+            <summary>
+            Defines a base infrastructure of a sound recording controller.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IRecordingController.Start">
+            <summary>
+            Starts recording.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IRecordingController.Stop">
+            <summary>
+            Stops recording.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IRecordingController.RecordingState">
+            <summary>
+            Gets the state of the recording.
+            </summary>
+            <value>
+            The state of the recording.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.PlaybackState">
+            <summary>
+            Represents a state of playback.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.NotInitialized">
+            <summary>
+            The output is not initialized
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Stopped">
+            <summary>
+            The playback is stopped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Playing">
+            <summary>
+            The playback is running.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Paused">
+            <summary>
+            The playback is paused.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.RecordingState">
+            <summary>
+            Represents a state of recording.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Stopped">
+            <summary>
+            The recording is stopped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Recording">
+            <summary>
+            The recording is in progress.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IAudioSink`2">
+            <summary>
+            Defines a base infrastructure for writing audio data.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+            <typeparam name="TFormat">The type of audio format.</typeparam>
+        </member>
+        <member name="P:Shamisen.IAudioSink`2.Format">
+            <summary>
+            Gets the format of the audio data.
+            </summary>
+            <value>
+            The format of the audio data.
+            </value>
+        </member>
         <member name="T:Shamisen.IAudioSource`2">
             <summary>
             Defines a base infrastructure for all audio sources.
@@ -7165,6 +7232,70 @@
         <member name="P:Shamisen.IAudioSource`2.SeekSupport">
             <summary>
             Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
+            </summary>
+            <value>
+            The seek support.
+            </value>
+        </member>
+        <member name="T:Shamisen.IDataSink`1">
+            <summary>
+            Defines a base infrastructure for writing data.
+            </summary>
+            <typeparam name="TSample">The type of writing data.</typeparam>
+            <seealso cref="T:System.IDisposable" />
+        </member>
+        <member name="P:Shamisen.IDataSink`1.AsyncWriteSupport">
+            <summary>
+            Gets the asynchronous write support.
+            </summary>
+            <value>
+            The asynchronous write support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.CurrentSize">
+            <summary>
+            Gets the current size of written data.
+            </summary>
+            <value>
+            The current size of written data.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.RemainingSpace">
+            <summary>
+            Gets the remaining space of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The remaining space.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.MaxSize">
+            <summary>
+            Gets the maximum size of this <see cref="T:Shamisen.IDataSink`1"/>.<br/>
+            The <see langword="null"/> means that maximum size is either not available, beyond <see cref="F:System.UInt64.MaxValue"/>, or infinity.
+            </summary>
+            <value>
+            The maximum size.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.Position">
+            <summary>
+            Gets the current position of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.SkipSupport">
+            <summary>
+            Gets the skip support of this <see cref="T:Shamisen.IDataSink`1"/>.
+            </summary>
+            <value>
+            The skip support.
+            </value>
+        </member>
+        <member name="P:Shamisen.IDataSink`1.SeekSupport">
+            <summary>
+            Gets the seek support of this <see cref="T:Shamisen.IDataSink`1"/>.
             </summary>
             <value>
             The seek support.
@@ -7240,64 +7371,6 @@
             Defines a base infrastructure of a source of binary data, which supports seeking.
             </summary>
             <seealso cref="T:Shamisen.IDataSource`1" />
-        </member>
-        <member name="T:Shamisen.IO.IPlaybackController">
-            <summary>
-            Defines a base infrastructure of playback controller.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Play">
-            <summary>
-            Starts the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Pause">
-            <summary>
-            Pauses the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Resume">
-            <summary>
-            Resumes the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Stop">
-            <summary>
-            Stops the audio playback.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IPlaybackController.PlaybackState">
-            <summary>
-            Gets the state of the playback.
-            </summary>
-            <value>
-            The state of the playback.
-            </value>
-        </member>
-        <member name="T:Shamisen.IO.PlaybackState">
-            <summary>
-            Represents a state of playback.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.NotInitialized">
-            <summary>
-            The output is not initialized
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Stopped">
-            <summary>
-            The playback is stopped.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Playing">
-            <summary>
-            The playback is running.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Paused">
-            <summary>
-            The playback is paused.
-            </summary>
         </member>
         <member name="T:Shamisen.IReadableAudioSource`2">
             <summary>
@@ -9065,70 +9138,6 @@
             <param name="data">The data.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.IDataSink`1">
-            <summary>
-            Defines a base infrastructure for writing data.
-            </summary>
-            <typeparam name="TSample">The type of writing data.</typeparam>
-            <seealso cref="T:System.IDisposable" />
-        </member>
-        <member name="P:Shamisen.IDataSink`1.AsyncWriteSupport">
-            <summary>
-            Gets the asynchronous write support.
-            </summary>
-            <value>
-            The asynchronous write support.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.CurrentSize">
-            <summary>
-            Gets the current size of written data.
-            </summary>
-            <value>
-            The current size of written data.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.RemainingSpace">
-            <summary>
-            Gets the remaining space of this <see cref="T:Shamisen.IDataSink`1"/>.
-            </summary>
-            <value>
-            The remaining space.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.MaxSize">
-            <summary>
-            Gets the maximum size of this <see cref="T:Shamisen.IDataSink`1"/>.<br/>
-            The <see langword="null"/> means that maximum size is either not available, beyond <see cref="F:System.UInt64.MaxValue"/>, or infinity.
-            </summary>
-            <value>
-            The maximum size.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.Position">
-            <summary>
-            Gets the current position of this <see cref="T:Shamisen.IDataSink`1"/>.
-            </summary>
-            <value>
-            The position.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.SkipSupport">
-            <summary>
-            Gets the skip support of this <see cref="T:Shamisen.IDataSink`1"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
-        </member>
-        <member name="P:Shamisen.IDataSink`1.SeekSupport">
-            <summary>
-            Gets the seek support of this <see cref="T:Shamisen.IDataSink`1"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
-        </member>
         <member name="T:Shamisen.IWriteSupport`1">
             <summary>
             Defines a base infrastructure of a write support of <see cref="T:Shamisen.IDataSink`1"/>.
@@ -9611,28 +9620,6 @@
         </member>
         <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
             <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
-            The orders more than 8 should be processed with serially cascaded function calls.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
-        </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
         </member>
         <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
             <summary>
@@ -12926,12 +12913,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="T:Shamisen.Pipeline.AudioSourceProperties`2">
@@ -15572,7 +15559,7 @@
             Gets a value indicating whether this instance has error.
             </summary>
             <value>
-              <c>true</c> if this instance has error; otherwise, <c>false</c>.
+              <c>true</c> if this instance has error; otherwise, <c>false</c> meaning recording was stopped manually by <see cref="M:Shamisen.IO.IRecordingController.Stop"/>.
             </value>
         </member>
         <member name="T:Shamisen.Synthesis.DummySource`2">
@@ -16444,18 +16431,6 @@
             samplesA must be as long as samplesB! - samplesA
             </exception>
         </member>
-        <member name="M:Shamisen.Utils.AudioUtils.FastMixAvx(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
-            <summary>
-            Only usable in Rocket Lake or later due to CPU clock limits
-            (but Clang suggests it and actually performs approximately 1.34 times better than
-            <see cref="M:Shamisen.Utils.AudioUtils.FastMixSse(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)"/>, even in Haswell)
-            </summary>
-            <param name="buffer"></param>
-            <param name="samplesA"></param>
-            <param name="volumeA"></param>
-            <param name="samplesB"></param>
-            <param name="volumeB"></param>
-        </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
             Interleaves and stores Stereo samples to <paramref name="buffer"/>.
@@ -16809,58 +16784,6 @@
             <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
         </member>
         <member name="T:Shamisen.Utils.Numerics.Vector2Int16">
             <summary>
@@ -18436,14 +18359,6 @@
             <param name="vector1">The value to multiply.</param>
             <returns>The dot product of two vectors.</returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Returns the dot product of two vectors.
-            </summary>
-            <param name="vector0">The value to multiply.</param>
-            <param name="vector1">The value to multiply.</param>
-            <returns>The dot product of two vectors.</returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.ReverseElements(System.Numerics.Vector4)">
             <summary>
             Returns a new <see cref="T:System.Numerics.Vector4"/> value with reversed elements of <paramref name="value"/>.
@@ -18549,7 +18464,7 @@
         <member name="M:Shamisen.Utils.VectorUtils.AndNot``1(System.Numerics.Vector{``0},System.Numerics.Vector{``0})">
             <summary>
             Returns a new vector by performing a bitwise And Not operation on each pair of corresponding elements in two vectors.
-            This variant preserves parameter order consistency with <see cref="M:System.Runtime.Intrinsics.X86.Avx2.AndNot(System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32})"/>.
+            This variant preserves parameter order consistency with <c>Avx2.AndNot(Vector256{int}, Vector256{int})</c>.
             </summary>
             <param name="right">The second vector to be negated.</param>
             <param name="left">The first vector.</param>
@@ -18639,50 +18554,6 @@
             <typeparam name="T">The type of <see cref="T:System.Numerics.Vector`1"/>.</typeparam>
             <param name="dest">The start position of destination.</param>
             <param name="value">The values to store.</param>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector256{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector128{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector256``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector4(System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector4"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
         </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsSingle``1(System.Numerics.Vector{``0})">
             <inheritdoc cref="M:System.Numerics.Vector.AsVectorSingle``1(System.Numerics.Vector{``0})"/>
@@ -20132,16 +20003,6 @@
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
             </summary>
         </member>
-        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
-             <summary>
-            
-             </summary>
-             <param name="vector"></param>
-             <param name="v0"></param>
-             <param name="v1"></param>
-             <param name="v2"></param>
-             <param name="v3"></param>
-        </member>
         <member name="T:System.ThrowHelper">
             <summary>
             Helps throwing exceptions while in-lining aggressively.
@@ -20797,12 +20658,6 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
@@ -20969,7 +20824,308 @@
         </member>
     </members>
 </doc>
-<summary>
+aram name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.op_Multiply(System.Numerics.Vector5,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.op_Multiply(System.Single,System.Numerics.Vector5)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.op_Division(System.Numerics.Vector5,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.op_Equality(System.Numerics.Vector5,System.Numerics.Vector5)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector5"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector5"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.op_Inequality(System.Numerics.Vector5,System.Numerics.Vector5)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector5"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector5"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.Equals(System.Numerics.Vector5)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector5.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector6">
+            <summary>
+            Represents a vector that has 6 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector6.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector6.front">
+            <summary>
+            The front 3 values
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector6.back">
+            <summary>
+            The back 3 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector6.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.#ctor(System.Numerics.Vector4,System.Numerics.Vector2)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back two values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_UnaryNegation(System.Numerics.Vector6)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Addition(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Subtraction(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Division(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Numerics.Vector6,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Single,System.Numerics.Vector6)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Division(System.Numerics.Vector6,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Equality(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Inequality(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.Equals(System.Numerics.Vector6)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector7">
+            <summary>
+            Represents a vector that has 7 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value5">
+            <summary>
             The fifth value
             </summary>
         </member>
