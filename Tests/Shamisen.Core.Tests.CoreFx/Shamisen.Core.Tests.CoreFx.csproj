@@ -48,9 +48,9 @@
         </PackageReference>
         <PackageReference Include="FastEnum" Version="1.7.0" />
         <PackageReference Include="nunit" Version="3.13.2" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-        <PackageReference Include="ReportGenerator" Version="5.0.0" />
+        <PackageReference Include="ReportGenerator" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>
