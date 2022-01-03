@@ -157,6 +157,12 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
                 Unsafe.Add(ref rdi, i) = u;
             }
         }
+        public static void GenerateRandomRealNumbers(Span<float> src)
+        {
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(src));
+            RangedPcm32ToSampleConverter.ProcessEMoreThan24Standard(src, MemoryMarshal.Cast<float, int>(src), 30);
+        }
+
         public static void AssertArrays(ComplexF[] exp, ComplexF[] dst)
         {
             NeumaierAccumulator sumdiff = default;
@@ -189,6 +195,26 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
                 var diff = opt - sim;
                 sumdiff += Math.Abs(diff.Real);
                 sumdiff += Math.Abs(diff.Imaginary);
+                if (diff != 0)
+                {
+                    Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
+                }
+            }
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            var avgDiff = sumdiff.Sum / dst.Length;
+            Console.WriteLine($"Average difference: {avgDiff}");
+            Assert.AreEqual(0.0, sumdiff.Sum);
+        }
+        public static void AssertArrays(float[] exp, float[] dst)
+        {
+            NeumaierAccumulator sumdiff = default;
+            Assert.AreEqual(exp.Length, dst.Length);
+            for (var i = 0; i < dst.Length; i++)
+            {
+                double opt = dst[i];
+                double sim = exp[i];
+                var diff = opt - sim;
+                sumdiff += Math.Abs(diff);
                 if (diff != 0)
                 {
                     Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");

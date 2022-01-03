@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using Shamisen.Numerics;
 using Shamisen.Utils;
 using Shamisen.Utils.Numerics;
 

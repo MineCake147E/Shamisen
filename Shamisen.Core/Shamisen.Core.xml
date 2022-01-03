@@ -5799,22 +5799,6 @@
              <param name="rateMul"></param>
              <param name="acc"></param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            SSE2 vectorized path
-            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            FMA vectorized path
-            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -5840,31 +5824,6 @@
             <param name="acc"></param>
             <param name="facc"></param>
             <param name="rmi"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
-            <summary>
-            For arbitrary sampling frequency ratio larger than 1
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
-            <param name="rci"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
-            <summary>
-            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
-            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
-            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
             <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
@@ -6684,14 +6643,6 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one can be slightly faster than simple approach.
-            </summary>
-            <param name="dest"></param>
-            <param name="wrote"></param>
-        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -6943,21 +6894,6 @@
             <returns>
             The length of the data written.
             </returns>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2M(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Straightforward convert-and-multiply approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2A(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one is slightly faster than simple approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.Dispose(System.Boolean)">
             <summary>
@@ -9685,28 +9621,6 @@
         <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
-            The orders more than 8 should be processed with serially cascaded function calls.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
-        </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
-        </member>
         <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
             <summary>
             Contains states of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/>.
@@ -10993,103 +10907,41 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
+        <member name="T:Shamisen.IAudioFormat`1">
             <summary>
-            Represents a format of a half-precision sample source.
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
             </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
-            </summary>
-            <param name="channels">The channels.</param>
-            <param name="sampleRate">The sample rate.</param>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
-            <summary>
-            Gets the number of channels.
-            It does not describe how these loudspeakers of each channels are placed in the room.
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
-            <summary>
-            Gets the number indicates how many times the audio signal is sampled.
-            </summary>
-            <value>
-            The sample rate.
-            </value>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
         </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
             </summary>
             <value>
             The bit depth.
             </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
-            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <value>
-            The size of block.
-            </value>
-        </member>
-        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
-            <summary>
-            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
-            </summary>
-            <value>
-            The size of a frame in <see cref="T:System.Half"/>s.
-            </value>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
-            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
-            <summary>Returns a hash code for this instance.</summary>
-            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
-            <returns>
-              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
-            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -11252,42 +11104,6 @@
             <returns>
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
-        </member>
-        <member name="T:Shamisen.IAudioFormat`1">
-            <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
-            </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
-            <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
-            </summary>
-            <value>
-            The number of channels.
-            </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
-            <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
-            </summary>
-            <value>
-            The bit depth.
-            </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
             <summary>
@@ -12595,12 +12411,6 @@
             </summary>
             <param name="value">The value.</param>
         </member>
-        <member name="M:Shamisen.ComplexD.#ctor(System.Runtime.Intrinsics.Vector128{System.Double})">
-            <summary>
-            Initializes a new instance of <see cref="T:Shamisen.ComplexD"/>.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
         <member name="T:Shamisen.ComplexF">
             <summary>
             <see cref="T:System.Numerics.Complex"/> like structure based on <see cref="T:System.Single"/>.<br/>
@@ -12893,13 +12703,6 @@
             <param name="value">A complex number.</param>
             <returns>The square root of <paramref name="value"/>.</returns>
         </member>
-        <member name="M:Shamisen.ComplexF.AsComplexF(System.Runtime.Intrinsics.Vector128{System.Single}@)">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:Shamisen.ComplexF"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
-        </member>
         <member name="M:Shamisen.ComplexF.AsComplexF(System.Numerics.Vector2@)">
             <summary>
             Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:Shamisen.ComplexF"/>.
@@ -12907,12 +12710,12 @@
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:Shamisen.ComplexF"/>.</returns>
         </member>
-        <member name="T:Shamisen.Utils.Numerics.ComplexUtils">
+        <member name="T:Shamisen.Numerics.ComplexUtils">
             <summary>
             Contains some utility functions to deal with <see cref="T:System.Numerics.Complex"/>, <see cref="T:Shamisen.ComplexF"/>, and <see cref="T:Shamisen.ComplexD"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.Utils.Numerics.ComplexUtils.MultiplyAll(System.Span{Shamisen.ComplexF},System.ReadOnlySpan{Shamisen.ComplexF},Shamisen.ComplexF)">
+        <member name="M:Shamisen.Numerics.ComplexUtils.MultiplyAll(System.Span{Shamisen.ComplexF},System.ReadOnlySpan{Shamisen.ComplexF},Shamisen.ComplexF)">
             <summary>
             Multiplies all the contents of <paramref name="source"/> with <paramref name="value"/>, and stores to <paramref name="destination"/>.
             </summary>
@@ -12920,13 +12723,27 @@
             <param name="source">The multiplying values.</param>
             <param name="value">The multiplying constant value.</param>
         </member>
-        <member name="M:Shamisen.Utils.Numerics.ComplexUtils.MultiplyAll(System.Span{System.Numerics.Complex},System.ReadOnlySpan{System.Numerics.Complex},System.Numerics.Complex)">
+        <member name="M:Shamisen.Numerics.ComplexUtils.MultiplyAll(System.Span{System.Numerics.Complex},System.ReadOnlySpan{System.Numerics.Complex},System.Numerics.Complex)">
             <summary>
             Multiplies all the contents of <paramref name="source"/> with <paramref name="value"/>, and stores to <paramref name="destination"/>.
             </summary>
             <param name="destination">The place to store.</param>
             <param name="source">The multiplying values.</param>
             <param name="value">The multiplying constant value.</param>
+        </member>
+        <member name="M:Shamisen.Numerics.ComplexUtils.ConvertRealToComplex(System.Span{Shamisen.ComplexF},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Converts each elements of <paramref name="source"/> to <see cref="T:Shamisen.ComplexF"/>, and stores to <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The destination to store converted numbers.</param>
+            <param name="source">The source.</param>
+        </member>
+        <member name="M:Shamisen.Numerics.ComplexUtils.ExtractMagnitudeSquared(System.Span{System.Single},System.ReadOnlySpan{Shamisen.ComplexF})">
+            <summary>
+            Calculates magnitude squared for elements of <paramref name="source"/> and stores to <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The place to store values.</param>
+            <param name="source">The source.</param>
         </member>
         <member name="T:Shamisen.Utils.Numerics.Vector2Int16">
             <summary>
@@ -13104,18 +12921,6 @@
             samplesA must be as long as samplesB! - samplesA
             </exception>
         </member>
-        <member name="M:Shamisen.Utils.AudioUtils.FastMixAvx(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)">
-            <summary>
-            Only usable in Rocket Lake or later due to CPU clock limits
-            (but Clang suggests it and actually performs approximately 1.34 times better than
-            <see cref="M:Shamisen.Utils.AudioUtils.FastMixSse(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single,System.ReadOnlySpan{System.Single},System.Single)"/>, even in Haswell)
-            </summary>
-            <param name="buffer"></param>
-            <param name="samplesA"></param>
-            <param name="volumeA"></param>
-            <param name="samplesB"></param>
-            <param name="volumeB"></param>
-        </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
             Interleaves and stores Stereo samples to <paramref name="buffer"/>.
@@ -13190,13 +12995,6 @@
             <param name="buffer">The source.</param>
             <param name="left">The destination to store even-indexed samples.</param>
             <param name="right">The destination to store odd-indexed samples.</param>
-        </member>
-        <member name="M:Shamisen.Utils.AudioUtils.ConvertRealSingleToComplexF(System.Span{Shamisen.ComplexF},System.ReadOnlySpan{System.Single})">
-            <summary>
-            Converts <see cref="T:System.Single"/> values of <paramref name="src"/> as real part of <see cref="T:Shamisen.ComplexF"/> values in <paramref name="dst"/>.
-            </summary>
-            <param name="dst"></param>
-            <param name="src"></param>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.Interleave5Channels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
             <summary>
@@ -13484,237 +13282,6 @@
             <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
-            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
-            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
-            <summary>
-            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
-            </summary>
-            <param name="address">The target address.</param>
-            <param name="value1">The first value to write.</param>
-            <param name="value2">The second value to write.</param>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse3.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})"/>
-        </member>
-        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
-            <summary>
-            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
-            <summary>
-            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
-            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
         </member>
         <member name="T:Shamisen.Utils.MathV">
             <summary>
@@ -15210,14 +14777,6 @@
             <param name="vector1">The value to multiply.</param>
             <returns>The dot product of two vectors.</returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Returns the dot product of two vectors.
-            </summary>
-            <param name="vector0">The value to multiply.</param>
-            <param name="vector1">The value to multiply.</param>
-            <returns>The dot product of two vectors.</returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AddSubtract(System.Numerics.Vector2,System.Numerics.Vector2)">
             <summary>
             Adds <paramref name="right"/> from <paramref name="left"/> while negating <see cref="F:System.Numerics.Vector2.X"/> of <paramref name="right"/>.
@@ -15338,7 +14897,7 @@
         <member name="M:Shamisen.Utils.VectorUtils.AndNot``1(System.Numerics.Vector{``0},System.Numerics.Vector{``0})">
             <summary>
             Returns a new vector by performing a bitwise And Not operation on each pair of corresponding elements in two vectors.
-            This variant preserves parameter order consistency with <see cref="M:System.Runtime.Intrinsics.X86.Avx2.AndNot(System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32})"/>.
+            This variant preserves parameter order consistency with <c>Avx2.AndNot(Vector256{int}, Vector256{int})</c>.
             </summary>
             <param name="right">The second vector to be negated.</param>
             <param name="left">The first vector.</param>
@@ -15429,41 +14988,6 @@
             <param name="dest">The start position of destination.</param>
             <param name="value">The values to store.</param>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128Unsafe(System.Numerics.Vector2)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
-            <summary>
-            Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector64(System.Numerics.Vector2)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector64`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector64`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsComplexF(System.Runtime.Intrinsics.Vector128{System.Single}@)">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:Shamisen.ComplexF"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:Shamisen.ComplexF"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector64{System.Single})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector64`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsSingle``1(System.Numerics.Vector{``0})">
             <inheritdoc cref="M:System.Numerics.Vector.AsVectorSingle``1(System.Numerics.Vector{``0})"/>
         </member>
@@ -15498,16 +15022,6 @@
             <summary>
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
             </summary>
-        </member>
-        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
-             <summary>
-            
-             </summary>
-             <param name="vector"></param>
-             <param name="v0"></param>
-             <param name="v1"></param>
-             <param name="v2"></param>
-             <param name="v3"></param>
         </member>
         <member name="T:Shamisen.Optimization.X86Intrinsics">
             <summary>
@@ -16027,12 +15541,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
             </summary>
         </member>
         <member name="T:Shamisen.Pipeline.AudioSourceProperties`2">
@@ -19083,6 +18597,23 @@
             The backward transform.
             </summary>
         </member>
+        <member name="T:Shamisen.Transformation.IWindowFunction">
+            <summary>
+            Defines a base infrastructure of a Window function for FFT.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Transformation.IWindowFunction.Generate(System.Span{System.Single})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Transformation.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:Shamisen.Transformation.IWindowFunction.Generate(System.Span{System.Double})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Transformation.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
         <member name="T:Shamisen.AudioSourceUtils">
             <summary>
             Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>.
@@ -19213,22 +18744,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -20181,12 +19712,6 @@
             <param name="span">The span.</param>
         </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt16})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Half})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
@@ -21246,12 +20771,6 @@
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
             </summary>
             <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
         </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>

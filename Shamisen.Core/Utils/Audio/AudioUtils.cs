@@ -1168,19 +1168,5 @@ namespace Shamisen.Utils
             }
         }
         #endregion
-
-        #region FFT Utils
-        #region ConvertRealSingleToComplexF
-        /// <summary>
-        /// Converts <see cref="float"/> values of <paramref name="src"/> as real part of <see cref="ComplexF"/> values in <paramref name="dst"/>.
-        /// </summary>
-        /// <param name="dst"></param>
-        /// <param name="src"></param>
-        public static void ConvertRealSingleToComplexF(Span<ComplexF> dst, ReadOnlySpan<float> src)
-        {
-
-        }
-        #endregion
-        #endregion
     }
 }

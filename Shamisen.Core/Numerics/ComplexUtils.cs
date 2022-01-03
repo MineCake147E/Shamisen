@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Shamisen.Utils.Numerics
+namespace Shamisen.Numerics
 {
     /// <summary>
     /// Contains some utility functions to deal with <see cref="Complex"/>, <see cref="ComplexF"/>, and <see cref="ComplexD"/>.
@@ -65,6 +65,50 @@ namespace Shamisen.Utils.Numerics
                 }
 #endif
                 Fallback.MultiplyAllFallback(destination, source, value);
+            }
+        }
+        #endregion
+        #region ConvertRealToComplex
+        /// <summary>
+        /// Converts each elements of <paramref name="source"/> to <see cref="ComplexF"/>, and stores to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The destination to store converted numbers.</param>
+        /// <param name="source">The source.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ConvertRealToComplex(Span<ComplexF> destination, ReadOnlySpan<float> source)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.ConvertRealToComplexX86(destination, source);
+                    return;
+                }
+#endif
+                Fallback.ConvertRealToComplexFallback(destination, source);
+            }
+        }
+        #endregion
+        #region ExtractMagnitudeSquared
+        /// <summary>
+        /// Calculates magnitude squared for elements of <paramref name="source"/> and stores to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The place to store values.</param>
+        /// <param name="source">The source.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ExtractMagnitudeSquared(Span<float> destination, ReadOnlySpan<ComplexF> source)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.ExtractMagnitudeSquaredX86(destination, source);
+                    return;
+                }
+#endif
+                Fallback.ExtractMagnitudeSquaredFallback(destination, source);
             }
         }
         #endregion

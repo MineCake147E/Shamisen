@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +15,8 @@ namespace Shamisen.Benchmarks.Numerics.ComplexUtilsBenchmarks
     [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
-    public class MultiplyAllSingleBenchmarks
+
+    public class ExtractMagnitudeSquaredSingleBenchmarks
     {
         private class Config : ManualConfig
         {
@@ -31,18 +31,17 @@ namespace Shamisen.Benchmarks.Numerics.ComplexUtilsBenchmarks
         [Params(4095)]
         public int Frames { get; set; }
 
-        private ComplexF[] x, y;
+        private ComplexF[] src;
+        private float[] dst;
         [GlobalSetup]
         public void Setup()
         {
-            x = new ComplexF[Frames];
-            y = new ComplexF[Frames];
+            src = new ComplexF[Frames];
+            dst = new float[Frames];
         }
-
         [Benchmark]
-        public void MultiplyAllFallback() => ComplexUtils.Fallback.MultiplyAllFallback(y, x, new ComplexF(0.28f, 1.45f));
+        public void ExtractMagnitudeSquaredFallback() => ComplexUtils.Fallback.ExtractMagnitudeSquaredFallback(dst, src);
         [Benchmark]
-        public void MultiplyAllAvx() => ComplexUtils.X86.MultiplyAllAvx(y, x, new ComplexF(0.28f, 1.45f));
-
+        public void ExtractMagnitudeSquaredAvx2() => ComplexUtils.X86.ExtractMagnitudeSquaredAvx2(dst, src);
     }
 }

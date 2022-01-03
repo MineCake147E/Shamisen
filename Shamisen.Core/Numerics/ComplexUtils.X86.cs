@@ -11,13 +11,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shamisen.Utils.Numerics
+using Shamisen.Utils;
+
+namespace Shamisen.Numerics
 {
     public static partial class ComplexUtils
     {
         internal static class X86
         {
             internal static bool IsSupported => AudioUtils.X86.IsSupported;
+            #region MultiplyAll
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void MultiplyAllX86(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
@@ -251,6 +254,191 @@ namespace Shamisen.Utils.Numerics
                     Unsafe.As<double, Vector128<double>>(ref Unsafe.Add(ref rdi, i)) = xmm0;
                 }
             }
+            #endregion
+
+            #region ConvertRealToComplex
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ConvertRealToComplexX86(Span<ComplexF> destination, ReadOnlySpan<float> source)
+            {
+                if (Avx2.IsSupported)
+                {
+                    ConvertRealToComplexAvx2(destination, source);
+                    return;
+                }
+                Fallback.ConvertRealToComplexFallback(destination, source);
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ConvertRealToComplexAvx2(Span<ComplexF> destination, ReadOnlySpan<float> source)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                var ymm0 = Vector256.Create(0, 0, 1, 0, 2, 0, 3, 0);
+                var ymm1 = Vector256.Create(4, 0, 5, 0, 6, 0, 7, 0);
+                Unsafe.SkipInit(out Vector256<float> ymm2);
+                ymm2 = Avx.Xor(ymm2, ymm2);
+                var olen = length - 63;
+                for (; i < olen; i += 64)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    var ymm4 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count));
+                    var ymm5 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<float>.Count));
+                    var ymm6 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector256<float>.Count));
+                    var ymm7 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector256<float>.Count));
+                    var ymm3 = Avx2.PermuteVar8x32(ymm4, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm4, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 0 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 1 * Vector256<double>.Count)) = ymm4;
+                    ymm3 = Avx2.PermuteVar8x32(ymm5, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm5, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 2 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 3 * Vector256<double>.Count)) = ymm4;
+                    ymm3 = Avx2.PermuteVar8x32(ymm6, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm6, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    ymm5 = Avx2.PermuteVar8x32(ymm7, ymm0);
+                    ymm5 = Avx.Blend(ymm5, ymm2, 0b1010_1010);
+                    ymm6 = Avx2.PermuteVar8x32(ymm7, ymm1);
+                    ymm6 = Avx.Blend(ymm6, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 4 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 5 * Vector256<double>.Count)) = ymm4;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 6 * Vector256<double>.Count)) = ymm5;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 7 * Vector256<double>.Count)) = ymm6;
+                    ymm4 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 4 * Vector256<float>.Count));
+                    ymm5 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 5 * Vector256<float>.Count));
+                    ymm6 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 6 * Vector256<float>.Count));
+                    ymm7 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 7 * Vector256<float>.Count));
+                    ymm3 = Avx2.PermuteVar8x32(ymm4, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm4, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 8 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 9 * Vector256<double>.Count)) = ymm4;
+                    ymm3 = Avx2.PermuteVar8x32(ymm5, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm5, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 10 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 11 * Vector256<double>.Count)) = ymm4;
+                    ymm3 = Avx2.PermuteVar8x32(ymm6, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm6, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    ymm5 = Avx2.PermuteVar8x32(ymm7, ymm0);
+                    ymm5 = Avx.Blend(ymm5, ymm2, 0b1010_1010);
+                    ymm6 = Avx2.PermuteVar8x32(ymm7, ymm1);
+                    ymm6 = Avx.Blend(ymm6, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 12 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 13 * Vector256<double>.Count)) = ymm4;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 14 * Vector256<double>.Count)) = ymm5;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 15 * Vector256<double>.Count)) = ymm6;
+                }
+                olen = length - 15;
+                for (; i < olen; i += 16)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    var ymm4 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count));
+                    var ymm5 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<float>.Count));
+                    var ymm3 = Avx2.PermuteVar8x32(ymm4, ymm0);
+                    ymm3 = Avx.Blend(ymm3, ymm2, 0b1010_1010);
+                    ymm4 = Avx2.PermuteVar8x32(ymm4, ymm1);
+                    ymm4 = Avx.Blend(ymm4, ymm2, 0b1010_1010);
+                    var ymm6 = Avx2.PermuteVar8x32(ymm5, ymm0);
+                    ymm6 = Avx.Blend(ymm6, ymm2, 0b1010_1010);
+                    var ymm7 = Avx2.PermuteVar8x32(ymm5, ymm1);
+                    ymm7 = Avx.Blend(ymm7, ymm2, 0b1010_1010);
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 0 * Vector256<double>.Count)) = ymm3;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 1 * Vector256<double>.Count)) = ymm4;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 2 * Vector256<double>.Count)) = ymm6;
+                    Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r8, 3 * Vector256<double>.Count)) = ymm7;
+                }
+                for (; i < length; i++)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    Unsafe.As<ComplexF, float>(ref r8) = Unsafe.Add(ref rsi, i);
+                    Unsafe.As<ComplexF, int>(ref Unsafe.AddByteOffset(ref r8, 4)) = 0;
+                }
+            }
+            #endregion
+
+            #region ExtractMagnitudeSquared
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void ExtractMagnitudeSquaredX86(Span<float> destination, ReadOnlySpan<ComplexF> source)
+            {
+                if (Avx2.IsSupported)
+                {
+                    ExtractMagnitudeSquaredAvx2(destination, source);
+                    return;
+                }
+                Fallback.ExtractMagnitudeSquaredFallback(destination, source);
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ExtractMagnitudeSquaredAvx2(Span<float> destination, ReadOnlySpan<ComplexF> source)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                var olen = length - 31;
+                for (; i < olen; i += 32)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    var ymm0 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0));
+                    var ymm1 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 4));
+                    var ymm2 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 8));
+                    var ymm3 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 12));
+                    var ymm4 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 16));
+                    var ymm5 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 20));
+                    var ymm6 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 24));
+                    var ymm7 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 28));
+                    var ymm8 = Avx.Shuffle(ymm0, ymm1, 136);
+                    ymm8 = Avx2.Permute4x64(ymm8.AsDouble(), 216).AsSingle();
+                    ymm8 = Avx.Multiply(ymm8, ymm8);
+                    var ymm9 = Avx.Shuffle(ymm2, ymm3, 136);
+                    ymm9 = Avx2.Permute4x64(ymm9.AsDouble(), 216).AsSingle();
+                    ymm9 = Avx.Multiply(ymm9, ymm9);
+                    var ymm10 = Avx.Shuffle(ymm4, ymm5, 136);
+                    ymm10 = Avx2.Permute4x64(ymm10.AsDouble(), 216).AsSingle();
+                    ymm10 = Avx.Multiply(ymm10, ymm10);
+                    var ymm11 = Avx.Shuffle(ymm6, ymm7, 136);
+                    ymm11 = Avx2.Permute4x64(ymm11.AsDouble(), 216).AsSingle();
+                    ymm11 = Avx.Multiply(ymm11, ymm11);
+                    ymm0 = Avx.Shuffle(ymm0, ymm1, 221);
+                    ymm0 = Avx2.Permute4x64(ymm0.AsDouble(), 216).AsSingle();
+                    ymm0 = Avx.Multiply(ymm0, ymm0);
+                    ymm0 = Avx.Add(ymm8, ymm0);
+                    ymm1 = Avx.Shuffle(ymm2, ymm3, 221);
+                    ymm1 = Avx2.Permute4x64(ymm1.AsDouble(), 216).AsSingle();
+                    ymm1 = Avx.Multiply(ymm1, ymm1);
+                    ymm1 = Avx.Add(ymm9, ymm1);
+                    ymm2 = Avx.Shuffle(ymm4, ymm5, 221);
+                    ymm2 = Avx2.Permute4x64(ymm2.AsDouble(), 216).AsSingle();
+                    ymm2 = Avx.Multiply(ymm2, ymm2);
+                    ymm2 = Avx.Add(ymm10, ymm2);
+                    ymm3 = Avx.Shuffle(ymm6, ymm7, 221);
+                    ymm3 = Avx2.Permute4x64(ymm3.AsDouble(), 216).AsSingle();
+                    ymm3 = Avx.Multiply(ymm3, ymm3);
+                    ymm3 = Avx.Add(ymm11, ymm3);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 0)) = ymm0;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 8)) = ymm1;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 16)) = ymm2;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 24)) = ymm3;
+                }
+                for (; i < length; i++)
+                {
+                    var xmm0 = Unsafe.Add(ref rsi, i).AsVector128();
+                    xmm0 = Sse41.DotProduct(xmm0, xmm0, 0x31);
+                    Unsafe.Add(ref rdi, i) = xmm0.GetElement(0);
+                }
+            }
+            #endregion
         }
     }
 }
