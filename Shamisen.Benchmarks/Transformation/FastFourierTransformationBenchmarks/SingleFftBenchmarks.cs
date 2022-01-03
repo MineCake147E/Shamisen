@@ -25,12 +25,12 @@ namespace Shamisen.Benchmarks.Transformation
         {
             public Config()
             {
-                static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a)
-                {
-                    var n = (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
-                    return 5 * n * MathI.LogBase2((uint)n);
-                }
-                _ = AddColumn(new FrameThroughputColumn(FrameSelector) { ColumnName = "FFT Throughput [MFLOPS]", Legend = "FFTs processed per second" });
+                //static int FrameSelector(BenchmarkDotNet.Running.BenchmarkCase a)
+                //{
+                //    var n = (int)a.Parameters.Items.FirstOrDefault(a => string.Equals(a.Name, "Frames")).Value;
+                //    return 5 * n * MathI.LogBase2((uint)n);
+                //}
+                //_ = AddColumn(new FrameThroughputColumn(FrameSelector) { ColumnName = "FFT Throughput [MFLOPS]", Legend = "FLOPs processed per second" });
                 _ = AddColumn(new FrameThroughputColumn(a => 1) { ColumnName = "FFT Throughput [FFTs/s]", Legend = "FFTs processed per second" });
             }
         }
