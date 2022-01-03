@@ -9,7 +9,7 @@ namespace Shamisen.IO
     /// <summary>
     /// Defines a base structure of audio output device.
     /// </summary>
-    public interface IAudioOutputDevice<TSoundOut> : IAudioDevice where TSoundOut : ISoundOut
+    public interface IAudioOutputDevice<out TSoundOut> : IAudioDevice where TSoundOut : ISoundOut
     {
         /// <summary>
         /// Indicates whether the audio output device supports a particular stream format.

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,9 +15,11 @@ using NUnit.Framework;
 
 using Shamisen.Codecs.Waveform.Composing;
 using Shamisen.Conversion.SampleToWaveConverters;
+using Shamisen.Conversion.WaveToSampleConverters;
 using Shamisen.Data;
 using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
+using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.TestUtils
 {
@@ -119,6 +125,79 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
                 Assert.DoesNotThrow(() =>
                 SimpleWaveEncoder.Instance.Encode(new SampleToFloat32Converter(trunc), ssink));
             }
+        }
+        public static void GenerateRandomComplexNumbers(Span<ComplexF> src)
+        {
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(src));
+            RangedPcm32ToSampleConverter.ProcessEMoreThan24Standard(MemoryMarshal.Cast<ComplexF, float>(src), MemoryMarshal.Cast<ComplexF, int>(src), 30);
+        }
+
+        public static void GenerateRandomComplexNumbers(Span<Complex> src)
+        {
+            RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(src));
+            var a = new Vector<double>(0xBFFF_FFFF_FFFF_FFFFul).AsDouble();
+            ref var rdi = ref Unsafe.As<Complex, double>(ref MemoryMarshal.GetReference(src));
+            nint i, length = src.Length * 2;
+            var olen = length - 4 * Vector<double>.Count + 1;
+            for (i = 0; i < olen; i += 4 * Vector<double>.Count)
+            {
+                var ymm0 = Vector.BitwiseAnd(Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<double>.Count)), a);
+                var ymm1 = Vector.BitwiseAnd(Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<double>.Count)), a);
+                var ymm2 = Vector.BitwiseAnd(Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<double>.Count)), a);
+                var ymm3 = Vector.BitwiseAnd(Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<double>.Count)), a);
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<double>.Count)) = ymm0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<double>.Count)) = ymm1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<double>.Count)) = ymm2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<double>.Count)) = ymm3;
+            }
+            for (; i < length; i++)
+            {
+                var u = BitConverter.DoubleToUInt64Bits(Unsafe.Add(ref rdi, i));
+                u &= 0xBFFF_FFFF_FFFF_FFFFul;
+                Unsafe.Add(ref rdi, i) = u;
+            }
+        }
+        public static void AssertArrays(ComplexF[] exp, ComplexF[] dst)
+        {
+            NeumaierAccumulator sumdiff = default;
+            Assert.AreEqual(exp.Length, dst.Length);
+            for (var i = 0; i < dst.Length; i++)
+            {
+                Complex opt = dst[i];
+                Complex sim = exp[i];
+                var diff = opt - sim;
+                sumdiff += Math.Abs(diff.Real);
+                sumdiff += Math.Abs(diff.Imaginary);
+                if (diff != 0)
+                {
+                    Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
+                }
+            }
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            var avgDiff = sumdiff.Sum / dst.Length;
+            Console.WriteLine($"Average difference: {avgDiff}");
+            Assert.AreEqual(0.0, sumdiff.Sum);
+        }
+        public static void AssertArrays(Complex[] exp, Complex[] dst)
+        {
+            NeumaierAccumulator sumdiff = default;
+            Assert.AreEqual(exp.Length, dst.Length);
+            for (var i = 0; i < dst.Length; i++)
+            {
+                var opt = dst[i];
+                var sim = exp[i];
+                var diff = opt - sim;
+                sumdiff += Math.Abs(diff.Real);
+                sumdiff += Math.Abs(diff.Imaginary);
+                if (diff != 0)
+                {
+                    Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
+                }
+            }
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
+            var avgDiff = sumdiff.Sum / dst.Length;
+            Console.WriteLine($"Average difference: {avgDiff}");
+            Assert.AreEqual(0.0, sumdiff.Sum);
         }
     }
 }

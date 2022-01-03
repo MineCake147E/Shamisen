@@ -2,6 +2,10 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+using Shamisen.Optimization;
+using Shamisen.Primitives;
+using Shamisen;
 #if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
@@ -13,7 +17,6 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 using Shamisen.Utils.Intrinsics;
-using Shamisen.Optimization;
 
 #endif
 namespace Shamisen.Utils
@@ -259,150 +262,7 @@ namespace Shamisen.Utils
         /// <param name="span">The span to multiply.</param>
         /// <param name="scale">The value to be multiplied.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void FastScalarMultiply(this Span<float> span, float scale = default)
-        {
-            if (Vector<float>.Count > span.Length)
-            {
-                ref var rdi = ref MemoryMarshal.GetReference(span);
-                nint i, length = span.Length;
-                for (i = 0; i < length; i++)
-                {
-                    var v = Unsafe.Add(ref rdi, i) * scale;
-                    Unsafe.Add(ref rdi, i) = v;
-                }
-            }
-            else
-            {
-                FastScalarMultiplyStandardVariable(span, scale);
-            }
-        }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [Obsolete("Remains only for benchmark comparison!")]
-        internal static void FastScalarMultiplyStandardVariableOld(Span<float> span, float scale = default)
-        {
-            if (Vector<float>.Count > span.Length)
-            {
-                for (var i = 0; i < span.Length; i++)
-                {
-                    span[i] *= scale;
-                }
-            }
-            else
-            {
-                var spanV = MemoryMarshal.Cast<float, Vector<float>>(span);
-                var scaleV = new Vector<float>(scale);
-                for (var i = 0; i < spanV.Length; i++)
-                {
-                    spanV[i] *= scaleV;
-                }
-                var spanR = span.Slice(spanV.Length * Vector<float>.Count);
-                for (var i = 0; i < spanR.Length; i++)
-                {
-                    spanR[i] *= scale;
-                }
-            }
-        }
-        /// <summary>
-        /// Vectorized path using <see cref="Vector4"/> which uses 128bits vectors like xmmN(x86) or vN.4f(ARMv8).<br/>
-        /// Impractical in Rocket Lake or later due to absence of Haswell's severe CPU clock limits.<br/>
-        /// </summary>
-        /// <param name="span"></param>
-        /// <param name="scale"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastScalarMultiplyStandardFixed(Span<float> span, float scale)
-        {
-            var scaleV = new Vector4(scale);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
-            nint i, length = span.Length;
-            for (i = 0; i < length - (4 * 8 - 1); i += 4 * 8)
-            {
-                var v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) * scaleV;
-                var v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) * scaleV;
-                var v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) * scaleV;
-                var v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) * scaleV;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) = v0;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) = v1;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) = v2;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) = v3;
-                v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4 * 4)) * scaleV;
-                v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 5 * 4)) * scaleV;
-                v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 6 * 4)) * scaleV;
-                v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 7 * 4)) * scaleV;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 4 * 4)) = v0;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 5 * 4)) = v1;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 6 * 4)) = v2;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 7 * 4)) = v3;
-            }
-            if (i < length - (4 * 4 - 1))
-            {
-                var v0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) * scaleV;
-                var v1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) * scaleV;
-                var v2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) * scaleV;
-                var v3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) * scaleV;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 0 * 4)) = v0;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 1 * 4)) = v1;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 2 * 4)) = v2;
-                Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rdi, i + 3 * 4)) = v3;
-                i += 4 * 4;
-            }
-            for (; i < length; i++)
-            {
-                var v = Unsafe.Add(ref rdi, i) * scaleV.X;
-                Unsafe.Add(ref rdi, i) = v;
-            }
-        }
-
-        /// <summary>
-        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
-        /// Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
-        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
-        /// </summary>
-        /// <param name="span"></param>
-        /// <param name="scale"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastScalarMultiplyStandardVariable(Span<float> span, float scale)
-        {
-            var scaleV = new Vector<float>(scale);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
-            nint i, length = span.Length;
-            nint width = Vector<float>.Count;
-            for (i = 0; i < length - (width * 8 - 1); i += width * 8)
-            {
-                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
-                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
-                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
-                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
-                v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 4 * width)) * scaleV;
-                v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 5 * width)) * scaleV;
-                v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 6 * width)) * scaleV;
-                v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 7 * width)) * scaleV;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 4 * width)) = v0;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 5 * width)) = v1;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 6 * width)) = v2;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 7 * width)) = v3;
-            }
-            if (i < length - (width * 4 - 1))
-            {
-                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
-                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
-                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
-                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
-                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
-                i += width * 4;
-            }
-            for (; i < length; i++)
-            {
-                var v = Unsafe.Add(ref rdi, i) * scaleV[0];
-                Unsafe.Add(ref rdi, i) = v;
-            }
-        }
+        public static void FastScalarMultiply(this Span<float> span, float scale = default) => FastScalarMultiplyStandardVariable(span, span, scale);
 
         /// <summary>
         /// Multiplies the specified samples faster, with the given <paramref name="scale"/>.
@@ -424,7 +284,7 @@ namespace Shamisen.Utils
             }
             else
             {
-                FastScalarMultiplyStandardVariable(span, scale);
+                FastScalarMultiplyStandardVariable(span, span, scale);
             }
         }
 
@@ -433,49 +293,106 @@ namespace Shamisen.Utils
         /// Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
         /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
         /// </summary>
-        /// <param name="span"></param>
+        /// <param name="destination"></param>
+        /// <param name="source"></param>
         /// <param name="scale"></param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastScalarMultiplyStandardVariable(Span<double> span, double scale)
+        internal static void FastScalarMultiplyStandardVariable(Span<float> destination, ReadOnlySpan<float> source, float scale)
         {
-            var scaleV = new Vector<double>(scale);
-            ref var rdi = ref MemoryMarshal.GetReference(span);
-            nint i, length = span.Length;
-            nint width = Vector<double>.Count;
-            for (i = 0; i < length - (width * 8 - 1); i += width * 8)
+            var scaleV = new Vector<float>(scale);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(destination);
+            nint i, length = MathI.Min(source.Length, destination.Length);
+            for (i = 0; i < length - (Vector<float>.Count * 8 - 1); i += Vector<float>.Count * 8)
             {
-                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
-                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
-                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
-                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
-                v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 4 * width)) * scaleV;
-                v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 5 * width)) * scaleV;
-                v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 6 * width)) * scaleV;
-                v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 7 * width)) * scaleV;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 4 * width)) = v0;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 5 * width)) = v1;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 6 * width)) = v2;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 7 * width)) = v3;
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<float>.Count)) * scaleV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<float>.Count)) * scaleV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<float>.Count)) * scaleV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<float>.Count)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 0 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 1 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 2 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 3 * Vector<float>.Count)) = v3;
+                v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 4 * Vector<float>.Count)) * scaleV;
+                v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 5 * Vector<float>.Count)) * scaleV;
+                v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 6 * Vector<float>.Count)) * scaleV;
+                v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 7 * Vector<float>.Count)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 4 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 5 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 6 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 7 * Vector<float>.Count)) = v3;
             }
-            if (i < length - (width * 4 - 1))
+            if (i < length - (Vector<float>.Count * 4 - 1))
             {
-                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) * scaleV;
-                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) * scaleV;
-                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) * scaleV;
-                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) * scaleV;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 0 * width)) = v0;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 1 * width)) = v1;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 2 * width)) = v2;
-                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rdi, i + 3 * width)) = v3;
-                i += width * 4;
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<float>.Count)) * scaleV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<float>.Count)) * scaleV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<float>.Count)) * scaleV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<float>.Count)) * scaleV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 0 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 1 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 2 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 3 * Vector<float>.Count)) = v3;
+                i += Vector<float>.Count * 4;
             }
             for (; i < length; i++)
             {
-                var v = Unsafe.Add(ref rdi, i) * scaleV[0];
+                var v = Unsafe.Add(ref rsi, i) * scaleV[0];
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
+
+        /// <summary>
+        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <param name="source"></param>
+        /// <param name="scale"></param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void FastScalarMultiplyStandardVariable(Span<double> destination, ReadOnlySpan<double> source, double scale)
+        {
+            var scaleV = new Vector<double>(scale);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(destination);
+            nint i, length = MathI.Min(source.Length, destination.Length);
+            for (i = 0; i < length - (Vector<double>.Count * 8 - 1); i += Vector<double>.Count * 8)
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<double>.Count)) * scaleV;
+                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<double>.Count)) * scaleV;
+                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<double>.Count)) * scaleV;
+                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<double>.Count)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 0 * Vector<double>.Count)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 1 * Vector<double>.Count)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 2 * Vector<double>.Count)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 3 * Vector<double>.Count)) = v3;
+                v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 4 * Vector<double>.Count)) * scaleV;
+                v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 5 * Vector<double>.Count)) * scaleV;
+                v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 6 * Vector<double>.Count)) * scaleV;
+                v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 7 * Vector<double>.Count)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 4 * Vector<double>.Count)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 5 * Vector<double>.Count)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 6 * Vector<double>.Count)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 7 * Vector<double>.Count)) = v3;
+            }
+            if (i < length - (Vector<double>.Count * 4 - 1))
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<double>.Count)) * scaleV;
+                var v1 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<double>.Count)) * scaleV;
+                var v2 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<double>.Count)) * scaleV;
+                var v3 = Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<double>.Count)) * scaleV;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 0 * Vector<double>.Count)) = v0;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 1 * Vector<double>.Count)) = v1;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 2 * Vector<double>.Count)) = v2;
+                Unsafe.As<double, Vector<double>>(ref Unsafe.Add(ref r11, 3 * Vector<double>.Count)) = v3;
+                i += Vector<double>.Count * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rsi, i) * scaleV[0];
                 Unsafe.Add(ref rdi, i) = v;
             }
         }
@@ -511,57 +428,64 @@ namespace Shamisen.Utils
             unsafe
             {
                 nint i, length = MathI.Min(destination.Length, MathI.Min(sourceA.Length, sourceB.Length));
-                ref var rsA = ref MemoryMarshal.GetReference(sourceA);
-                ref var rsB = ref MemoryMarshal.GetReference(sourceB);
-                ref var rD = ref MemoryMarshal.GetReference(destination);
+                ref var x10 = ref MemoryMarshal.GetReference(sourceA);
+                ref var x11 = ref MemoryMarshal.GetReference(sourceB);
+                ref var x12 = ref MemoryMarshal.GetReference(destination);
                 var olen = length - 8 * Vector<float>.Count + 1;
                 for (i = 0; i < olen; i += 8 * Vector<float>.Count)
                 {
-                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
-                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count));
-                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count));
-                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count));
-                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count));
-                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count));
-                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count));
-                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count));
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
-                    sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 4 * Vector<float>.Count));
-                    sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 5 * Vector<float>.Count));
-                    sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 6 * Vector<float>.Count));
-                    sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 7 * Vector<float>.Count));
-                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 4 * Vector<float>.Count));
-                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 5 * Vector<float>.Count));
-                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 6 * Vector<float>.Count));
-                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 7 * Vector<float>.Count));
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 4 * Vector<float>.Count)) = sA0;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 5 * Vector<float>.Count)) = sA1;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 6 * Vector<float>.Count)) = sA2;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 7 * Vector<float>.Count)) = sA3;
+                    //Getting rid of LEA-hell.
+                    ref var x13 = ref Unsafe.Add(ref x10, i);
+                    ref var x14 = ref Unsafe.Add(ref x11, i);
+                    ref var x15 = ref Unsafe.Add(ref x12, i);
+                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 0 * Vector<float>.Count));
+                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 1 * Vector<float>.Count));
+                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 2 * Vector<float>.Count));
+                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 3 * Vector<float>.Count));
+                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 0 * Vector<float>.Count));
+                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 1 * Vector<float>.Count));
+                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 2 * Vector<float>.Count));
+                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 3 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 3 * Vector<float>.Count)) = sA3;
+                    sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 4 * Vector<float>.Count));
+                    sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 5 * Vector<float>.Count));
+                    sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 6 * Vector<float>.Count));
+                    sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 7 * Vector<float>.Count));
+                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 4 * Vector<float>.Count));
+                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 5 * Vector<float>.Count));
+                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 6 * Vector<float>.Count));
+                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 7 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 4 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 5 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 6 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 7 * Vector<float>.Count)) = sA3;
                 }
                 olen = length - 4 * Vector<float>.Count + 1;
                 for (; i < olen; i += 4 * Vector<float>.Count)
                 {
-                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count));
-                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count));
-                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count));
-                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count));
-                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count));
-                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count));
-                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count));
-                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count));
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
+                    ref var x13 = ref Unsafe.Add(ref x10, i);
+                    ref var x14 = ref Unsafe.Add(ref x11, i);
+                    ref var x15 = ref Unsafe.Add(ref x12, i);
+                    var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 0 * Vector<float>.Count));
+                    var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 1 * Vector<float>.Count));
+                    var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 2 * Vector<float>.Count));
+                    var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x13, 3 * Vector<float>.Count));
+                    sA0 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 0 * Vector<float>.Count));
+                    sA1 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 1 * Vector<float>.Count));
+                    sA2 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 2 * Vector<float>.Count));
+                    sA3 *= Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x14, 3 * Vector<float>.Count));
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x15, 3 * Vector<float>.Count)) = sA3;
                 }
                 for (; i < length; i++)
                 {
-                    var sA = Unsafe.Add(ref rsA, i);
-                    Unsafe.Add(ref rD, i) = sA * Unsafe.Add(ref rsB, i);
+                    var sA = Unsafe.Add(ref x10, i);
+                    Unsafe.Add(ref x12, i) = sA * Unsafe.Add(ref x11, i);
                 }
             }
         }
@@ -1220,6 +1144,43 @@ namespace Shamisen.Utils
                 Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h + 4)) = v4v;
             }
         }
+        #endregion
+
+        #region Deinterleave
+        /// <summary>
+        /// Deinterleaves <paramref name="buffer"/> to <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="buffer">The source.</param>
+        /// <param name="left">The destination to store even-indexed samples.</param>
+        /// <param name="right">The destination to store odd-indexed samples.</param>
+        public static void DeinterleaveStereoSingle(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.DeinterleaveStereoSingleX86(buffer, left, right);
+                    return;
+                }
+#endif
+                Fallback.DeinterleaveStereoSingle(buffer, left, right);
+            }
+        }
+        #endregion
+
+        #region FFT Utils
+        #region ConvertRealSingleToComplexF
+        /// <summary>
+        /// Converts <see cref="float"/> values of <paramref name="src"/> as real part of <see cref="ComplexF"/> values in <paramref name="dst"/>.
+        /// </summary>
+        /// <param name="dst"></param>
+        /// <param name="src"></param>
+        public static void ConvertRealSingleToComplexF(Span<ComplexF> dst, ReadOnlySpan<float> src)
+        {
+
+        }
+        #endregion
         #endregion
     }
 }

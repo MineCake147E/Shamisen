@@ -904,10 +904,56 @@ namespace Shamisen
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int ZeroIfFalse(bool condition, int value) => (int)ZeroIfFalse(condition, (uint)value);
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong ZeroIfFalse(bool condition, ulong value)
         {
             var c = condition;
             var q = (ulong)-(long)Unsafe.As<bool, byte>(ref c);
+            return q & value;
+        }
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static long ZeroIfFalse(bool condition, long value) => (long)ZeroIfFalse(condition, (ulong)value);
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nint ZeroIfFalse(bool condition, nint value)
+        {
+            var c = condition;
+            var q = -(nint)Unsafe.As<bool, byte>(ref c);
+            return q & value;
+        }
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+        /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nuint ZeroIfFalse(bool condition, nuint value)
+        {
+            var c = condition;
+            var q = (nuint)(-(nint)Unsafe.As<bool, byte>(ref c));
             return q & value;
         }
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+      <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
       <RootNamespace>Shamisen</RootNamespace>
       <SonarQubeTestProject>False</SonarQubeTestProject>
       <Description>Brand New Audio Library for .NET 5 and later. </Description>
@@ -10,6 +10,9 @@
       <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library</PackageTags>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0'">
+        <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    </PropertyGroup>
     <ItemGroup>
       <Compile Remove="Data\AsyncStreamSynchronizer.cs" />
       <Compile Remove="Data\DataReader.cs" />

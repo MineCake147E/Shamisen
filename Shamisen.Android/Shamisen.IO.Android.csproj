@@ -73,6 +73,14 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj">
+      <Project>{1b242bb7-6d5e-4871-be00-31a506b4f698}</Project>
+      <Name>Shamisen.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj">
+      <Project>{9b0b588e-4459-4d7b-866f-0965434e4677}</Project>
+      <Name>Shamisen.IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shamisen\Shamisen.csproj">
       <Project>{3194b68f-7fda-402c-b9fa-3de897cd4f4c}</Project>
       <Name>Shamisen</Name>

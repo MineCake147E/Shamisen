@@ -25,6 +25,10 @@ namespace Shamisen.Utils.Intrinsics
         /// <inheritdoc cref="Sse2.ShiftLeftLogical128BitLane(Vector128{byte}, byte)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector128<float> ShiftLeftLogical128BitLane(Vector128<float> value, byte numBytes) => Sse2.ShiftLeftLogical128BitLane(value.AsByte(), numBytes).AsSingle();
+
+        /// <inheritdoc cref="Sse3.MoveAndDuplicate(Vector128{double})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<double> MoveAndDuplicate(Vector128<double> source) => Sse3.IsSupported ? Sse3.MoveAndDuplicate(source) : Sse2.Shuffle(source, source, 0);
     }
 }
 

@@ -19,13 +19,7 @@ namespace Shamisen.Utils
     {
         internal static partial class X86
         {
-            internal static bool IsSupported =>
-#if NET5_0_OR_GREATER
-                X86Base.IsSupported;
-
-#else
-                Sse.IsSupported;
-#endif
+            internal static bool IsSupported => Sse.IsSupported;
 
             #region Interleave
 
@@ -1014,6 +1008,132 @@ namespace Shamisen.Utils
             #endregion Quad
 
             #endregion DuplicateMonauralToChannels
+
+            #region Deinterleave
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DeinterleaveStereoSingleX86(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+            {
+                if (Avx2.IsSupported)
+                {
+                    DeinterleaveStereoSingleAvx2(buffer, left, right);
+                    return;
+                }
+                if (Sse.IsSupported)
+                {
+                    DeinterleaveStereoSingleSse(buffer, left, right);
+                    return;
+                }
+                Fallback.DeinterleaveStereoSingle(buffer, left, right);
+            }
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DeinterleaveStereoSingleAvx2(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+            {
+                if (Avx2.IsSupported)
+                {
+                    nint i, length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                    ref var rsi = ref MemoryMarshal.GetReference(buffer);
+                    ref var r8 = ref MemoryMarshal.GetReference(left);
+                    ref var r9 = ref MemoryMarshal.GetReference(right);
+                    var olen = length - 31;
+                    for (i = 0; i < olen; i += 32)
+                    {
+                        var ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 0 * Vector256<float>.Count));
+                        var ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 1 * Vector256<float>.Count));
+                        var ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 2 * Vector256<float>.Count));
+                        var ymm3 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 3 * Vector256<float>.Count));
+                        var ymm4 = Avx.Shuffle(ymm0, ymm1, 0x88);
+                        ymm4 = Avx2.Permute4x64(ymm4.AsDouble(), 0xd8).AsSingle();
+                        var ymm5 = Avx.Shuffle(ymm2, ymm3, 0x88);
+                        ymm5 = Avx2.Permute4x64(ymm5.AsDouble(), 0xd8).AsSingle();
+                        ymm0 = Avx.Shuffle(ymm0, ymm1, 0xdd);
+                        ymm0 = Avx2.Permute4x64(ymm0.AsDouble(), 0xd8).AsSingle();
+                        ymm1 = Avx.Shuffle(ymm2, ymm3, 0xdd);
+                        ymm1 = Avx2.Permute4x64(ymm1.AsDouble(), 0xd8).AsSingle();
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 0 * Vector256<float>.Count)) = ymm4;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 1 * Vector256<float>.Count)) = ymm5;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 0 * Vector256<float>.Count)) = ymm0;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 1 * Vector256<float>.Count)) = ymm1;
+                        ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 4 * Vector256<float>.Count));
+                        ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 5 * Vector256<float>.Count));
+                        ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 6 * Vector256<float>.Count));
+                        ymm3 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 7 * Vector256<float>.Count));
+                        ymm4 = Avx.Shuffle(ymm0, ymm1, 0x88);
+                        ymm4 = Avx2.Permute4x64(ymm4.AsDouble(), 0xd8).AsSingle();
+                        ymm5 = Avx.Shuffle(ymm2, ymm3, 0x88);
+                        ymm5 = Avx2.Permute4x64(ymm5.AsDouble(), 0xd8).AsSingle();
+                        ymm0 = Avx.Shuffle(ymm0, ymm1, 0xdd);
+                        ymm0 = Avx2.Permute4x64(ymm0.AsDouble(), 0xd8).AsSingle();
+                        ymm1 = Avx.Shuffle(ymm2, ymm3, 0xdd);
+                        ymm1 = Avx2.Permute4x64(ymm1.AsDouble(), 0xd8).AsSingle();
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 2 * Vector256<float>.Count)) = ymm4;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 3 * Vector256<float>.Count)) = ymm5;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 2 * Vector256<float>.Count)) = ymm0;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 3 * Vector256<float>.Count)) = ymm1;
+                    }
+                    olen = length - 15;
+                    for (i = 0; i < olen; i += 16)
+                    {
+                        var ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 0 * Vector256<float>.Count));
+                        var ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 1 * Vector256<float>.Count));
+                        var ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 2 * Vector256<float>.Count));
+                        var ymm3 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, 2 * i + 3 * Vector256<float>.Count));
+                        var ymm4 = Avx.Shuffle(ymm0, ymm1, 0x88);
+                        ymm4 = Avx2.Permute4x64(ymm4.AsDouble(), 0xd8).AsSingle();
+                        var ymm5 = Avx.Shuffle(ymm2, ymm3, 0x88);
+                        ymm5 = Avx2.Permute4x64(ymm5.AsDouble(), 0xd8).AsSingle();
+                        ymm0 = Avx.Shuffle(ymm0, ymm1, 0xdd);
+                        ymm0 = Avx2.Permute4x64(ymm0.AsDouble(), 0xd8).AsSingle();
+                        ymm1 = Avx.Shuffle(ymm2, ymm3, 0xdd);
+                        ymm1 = Avx2.Permute4x64(ymm1.AsDouble(), 0xd8).AsSingle();
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 0 * Vector256<float>.Count)) = ymm4;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 1 * Vector256<float>.Count)) = ymm5;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 0 * Vector256<float>.Count)) = ymm0;
+                        Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r9, i + 1 * Vector256<float>.Count)) = ymm1;
+                    }
+                    for (; i < length; i++)
+                    {
+                        var l = Unsafe.Add(ref rsi, 2 * i);
+                        var r = Unsafe.Add(ref rsi, 2 * i + 1);
+                        Unsafe.Add(ref r8, i) = l;
+                        Unsafe.Add(ref r9, i) = r;
+                    }
+                }
+            }
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DeinterleaveStereoSingleSse(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+            {
+                if (Sse.IsSupported)
+                {
+                    nint i, length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                    ref var rsi = ref MemoryMarshal.GetReference(buffer);
+                    ref var r8 = ref MemoryMarshal.GetReference(left);
+                    ref var r9 = ref MemoryMarshal.GetReference(right);
+                    var olen = length - 15;
+                    for (i = 0; i < olen; i += 16)
+                    {
+                        var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, 2 * i + 0 * Vector128<float>.Count));
+                        var xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, 2 * i + 1 * Vector128<float>.Count));
+                        var xmm2 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, 2 * i + 2 * Vector128<float>.Count));
+                        var xmm3 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, 2 * i + 3 * Vector128<float>.Count));
+                        var xmm4 = Sse.Shuffle(xmm0, xmm1, 0x88);
+                        var xmm5 = Sse.Shuffle(xmm2, xmm3, 0x88);
+                        xmm0 = Sse.Shuffle(xmm0, xmm1, 0xdd);
+                        xmm1 = Sse.Shuffle(xmm2, xmm3, 0xdd);
+                        Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 0 * Vector128<float>.Count)) = xmm4;
+                        Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 1 * Vector128<float>.Count)) = xmm5;
+                        Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r9, i + 0 * Vector128<float>.Count)) = xmm0;
+                        Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r9, i + 1 * Vector128<float>.Count)) = xmm1;
+                    }
+                    for (; i < length; i++)
+                    {
+                        var l = Unsafe.Add(ref rsi, 2 * i);
+                        var r = Unsafe.Add(ref rsi, 2 * i + 1);
+                        Unsafe.Add(ref r8, i) = l;
+                        Unsafe.Add(ref r9, i) = r;
+                    }
+                }
+            }
+            #endregion
         }
     }
 }

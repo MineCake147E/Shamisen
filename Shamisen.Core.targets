@@ -15,6 +15,7 @@
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageOutputPath>$(SolutionDir)Packages</PackageOutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>

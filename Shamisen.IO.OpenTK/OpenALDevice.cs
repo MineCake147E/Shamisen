@@ -129,6 +129,8 @@ namespace Shamisen.IO
         /// Gets the name of this <see cref="OpenALDevice"/>.
         /// </summary>
         public string Name { get; }
+        /// <inheritdoc/>
+        public DataFlow DataFlow => DataFlow.Render;
 
         /// <summary>
         /// Indicates whether the audio output device supports a particular stream format.

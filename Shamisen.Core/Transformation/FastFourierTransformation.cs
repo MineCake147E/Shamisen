@@ -8,17 +8,21 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using Shamisen.Primitives;
 using Shamisen.Utils;
+using Shamisen.Utils.Numerics;
 
 namespace Shamisen.Transformation
 {
     /// <summary>
-    /// Functions that performs Fast Fourier Transform.
+    /// Contains functionality of Fast Fourier Transform.
     /// </summary>
-    public static class FastFourierTransformation
+    public static partial class FastFourierTransformation
     {
         private const double Sqrt2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702492483605585073721264412149709993583141322266592750559275579995050115278206057147010955997160597027453459686;
+        private const double SqrtHalf = 0.5 * Sqrt2;
+        private const float Sqrt2F = (float)Sqrt2;
+        private const float SqrtHalfF = (float)SqrtHalf;
+
         internal const double Tau = 2 * Math.PI;
 
         /// <summary>
@@ -50,6 +54,13 @@ namespace Shamisen.Transformation
             /*2097152 */new Complex(0.999999999998878, 1.4980281131690111E-06)
         };
 
+        #region Common Caches
+        private static ReadOnlySpan<byte> OmegasForwardOrder8Internal => new byte[] { 0, 0, 128, 63, 0, 0, 0, 0, 243, 4, 53, 63, 243, 4, 53, 191, 0, 0, 0, 0, 0, 0, 128, 191, 243, 4, 53, 191, 243, 4, 53, 191 };
+        private static ReadOnlySpan<ComplexF> OmegasForwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasForwardOrder8Internal);
+        private static ReadOnlySpan<byte> OmegasBackwardOrder8Internal => new byte[] { 0, 0, 128, 63, 0, 0, 0, 0, 243, 4, 53, 63, 243, 4, 53, 63, 0, 0, 0, 0, 0, 0, 128, 63, 243, 4, 53, 191, 243, 4, 53, 63 };
+        private static ReadOnlySpan<ComplexF> OmegasBackwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasBackwardOrder8Internal);
+        #endregion
+
         /// <summary>
         /// Transforms the specified span using Cooley-Tukey algorithm.
         /// </summary>
@@ -58,7 +69,14 @@ namespace Shamisen.Transformation
         /// <exception cref="ArgumentException">The length of span must be power of 2! - span</exception>
         public static void FFT(Span<Complex> span, FftMode mode = FftMode.Forward)
         {
-            if (!MathI.IsPowerOfTwo(span.Length)) throw new ArgumentException("The length of span must be power of 2!", nameof(span));
+            if (!MathI.IsPowerOfTwo(span.Length))
+            {
+#if DEBUG
+                throw new ArgumentException("The length of span must be power of 2!", nameof(span));
+#else
+                span = span.SliceWhile((int)MathI.ExtractHighestSetBit((uint)span.Length));
+#endif
+            }
             ReverseInternal(span);
             Perform(span, mode);
             if (mode == FftMode.Forward)
@@ -77,12 +95,19 @@ namespace Shamisen.Transformation
         /// <exception cref="ArgumentException">The length of span must be power of 2! - span</exception>
         public static void FFT(Span<ComplexF> span, FftMode mode = FftMode.Forward)
         {
-            if (!MathI.IsPowerOfTwo(span.Length)) throw new ArgumentException("The length of span must be power of 2!", nameof(span));
+            if (!MathI.IsPowerOfTwo(span.Length))
+            {
+#if DEBUG
+                throw new ArgumentException("The length of span must be power of 2!", nameof(span));
+#else
+                span = span.SliceWhile((int)MathI.ExtractHighestSetBit((uint)span.Length));
+#endif
+            }
             ReverseInternal(span);
             Perform(span, mode);
             if (mode == FftMode.Forward)
             {
-                var scale = 1.0f / span.Length;
+                var scale = BinaryExtensions.UInt32BitsToSingle(0x30000000u + ((uint)MathI.LeadingZeroCount((uint)span.Length) << 23));
                 var ds = MemoryMarshal.Cast<ComplexF, float>(span);
                 ds.FastScalarMultiply(scale);
             }
@@ -120,6 +145,7 @@ namespace Shamisen.Transformation
         /// <param name="mode">The mode.</param>
         /// <param name="index">The index.</param>
         /// <param name="omegas">The omegas.</param>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         internal static void CalculateCache(FftMode mode, int index, Span<Complex> omegas)
         {
             //O(n*log(n))
@@ -132,11 +158,7 @@ namespace Shamisen.Transformation
                 omegaM = mode == FftMode.Forward ? Complex.Conjugate(omegaM) : omegaM;
                 var prev = omegas.Slice(0, mask);
                 var newRegion = omegas.Slice(mask, mask);
-                prev.CopyTo(newRegion);
-                for (var i = 0; i < newRegion.Length; i++)
-                {
-                    newRegion[i] *= omegaM;
-                }
+                ComplexUtils.MultiplyAll(newRegion, prev, omegaM);
             }
         }
 
@@ -146,6 +168,7 @@ namespace Shamisen.Transformation
         /// <param name="mode">The mode.</param>
         /// <param name="index">The index.</param>
         /// <param name="omegas">The omegas.</param>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         internal static void CalculateCache(FftMode mode, int index, Span<ComplexF> omegas)
         {
             //O(n*log(n))
@@ -158,15 +181,11 @@ namespace Shamisen.Transformation
                 omegaM = mode == FftMode.Forward ? ComplexF.Conjugate(omegaM) : omegaM;
                 var prev = omegas.Slice(0, mask);
                 var newRegion = omegas.Slice(mask, mask);
-                prev.CopyTo(newRegion);
-                for (var i = 0; i < newRegion.Length; i++)
-                {
-                    newRegion[i] *= omegaM;
-                }
+                ComplexUtils.MultiplyAll(newRegion, prev, omegaM);
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static Complex GetValueToMultiply(int pos)
             => pos >= PowerRootsOfUnity.Length ? Complex.FromPolarCoordinates(1, Tau * 1.0 / (1 << pos))
          : Unsafe.Add(ref MemoryMarshal.GetReference(PowerRootsOfUnity.Span), pos);
@@ -176,10 +195,11 @@ namespace Shamisen.Transformation
         /// </summary>
         /// <param name="span">The span.</param>
         /// <param name="mode">The FFT's Mode.</param>
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         [SkipLocalsInit]
 #endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void Perform(Span<Complex> span, FftMode mode)
         {
             if (span.Length < 2) return;
@@ -270,59 +290,65 @@ namespace Shamisen.Transformation
         /// </summary>
         /// <param name="span">The span.</param>
         /// <param name="mode">The FFT's Mode.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static void Perform(Span<ComplexF> span, FftMode mode)
         {
-            var thetaBase = mode == FftMode.Forward ? -Tau : Tau;
             if (span.Length < 2) return;
             Perform2(span);
             if (span.Length < 4) return;
-            switch (mode)
-            {
-                case FftMode.Forward:
-                    Perform4Forward(span);
-                    break;
-                case FftMode.Backward:
-                    Perform4Backward(span);
-                    break;
-            }
-            var pool = ArrayPool<byte>.Shared;
-            var region = pool.Rent(Unsafe.SizeOf<ComplexF>() * span.Length / 2);
-            var buffer = MemoryMarshal.Cast<byte, ComplexF>(region.AsSpan());
-            var omegas = buffer.Slice(0, span.Length / 2);
-            CalculateCache(mode, MathI.LogBase2((uint)span.Length), omegas);
-            ref var omH = ref MemoryMarshal.GetReference(omegas);
-            var oMask = omegas.Length - 1;
-            var index = 3;
-            for (var m = 8; m <= span.Length; m <<= 1)
-            {
-                ComplexF t, u;
-                var mHalf = m >> 1;
-                var step = span.Length >> index;
-                var i = 0;
-                ref var rA = ref span[0];
-                ref var rB = ref Unsafe.Add(ref rA, mHalf);
-                for (var k = 0; k < span.Length; k += m)
-                {
-                    i = 0;
-                    for (var j = 0; j < mHalf; j++)
-                    {
-                        t = Unsafe.Add(ref omH, i) * rB;
-                        u = rA;
-                        rA = u + t;
-                        rB = u - t;
-                        i += step;
-                        rA = ref Unsafe.Add(ref rA, 1);
-                        rB = ref Unsafe.Add(ref rB, 1);
-                    }
-                    rA = ref Unsafe.Add(ref rA, mHalf);
-                    rB = ref Unsafe.Add(ref rB, mHalf);
-                }
-                index++;
-            }
-            pool.Return(region);
+            Perform4(span, mode);
+            if (span.Length < 8) return;
+            PerformLarge(span, mode);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ExpandCache(Span<ComplexF> span, FftMode mode)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.ExpandCacheX86(span, mode);
+                    return;
+                }
+#endif
+                Fallback.ExpandCacheFallback(span, mode);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void PerformSingleOperation(ref ComplexF pA, ref ComplexF pB, in ComplexF om)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.PerformSingleOperationX86(ref pA, ref pB, om);
+                    return;
+                }
+#endif
+                Fallback.PerformSingleOperationFallback(ref pA, ref pB, om);
+            }
+        }
+
+        private static void PerformLarge(Span<ComplexF> span, FftMode mode)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.PerformLargeX86(span, mode);
+                    return;
+                }
+#endif
+                Fallback.PerformLargeFallback(span, mode);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static void Perform2(Span<Complex> span)
         {
             var sD = MemoryMarshal.Cast<Complex, (Complex, Complex)>(span);
@@ -336,21 +362,39 @@ namespace Shamisen.Transformation
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         internal static void Perform2(Span<ComplexF> span)
         {
-            var sD = MemoryMarshal.Cast<ComplexF, (ComplexF, ComplexF)>(span);
-            for (var k = 0; k < sD.Length; k++)
+            unchecked
             {
-                ref var sA = ref sD[k];
-                var t = sA.Item2;
-                var u = sA.Item1;
-                sA.Item2 = u - t;
-                sA.Item1 = u + t;
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.Perform2X86(span);
+                    return;
+                }
+#endif
+                Fallback.Perform2Fallback(span);
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static void Perform4(Span<ComplexF> span, FftMode mode)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.Perform4X86(span, mode);
+                    return;
+                }
+#endif
+                Fallback.Perform4Fallback(span, mode);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static void Perform4Backward(Span<Complex> span)
         {
             var sQ = MemoryMarshal.Cast<Complex, (Complex s0, Complex s1, Complex s2, Complex s3)>(span);
@@ -368,25 +412,7 @@ namespace Shamisen.Transformation
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Perform4Backward(Span<ComplexF> span)
-        {
-            var sQ = MemoryMarshal.Cast<ComplexF, (ComplexF, ComplexF, ComplexF, ComplexF)>(span);
-            for (var k = 0; k < sQ.Length; k++)
-            {
-                ref var sA = ref sQ[k];
-                var v = new ComplexF(-sA.Item4.Imaginary, sA.Item4.Real);
-                var t = sA.Item3;
-                var w = sA.Item2;
-                var u = sA.Item1;
-                sA.Item1 = u + t;
-                sA.Item2 = w + v;
-                sA.Item3 = u - t;
-                sA.Item4 = w - v;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static void Perform4Forward(Span<Complex> span)
         {
             var sQ = MemoryMarshal.Cast<Complex, (Complex, Complex, Complex, Complex)>(span);
@@ -404,23 +430,6 @@ namespace Shamisen.Transformation
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Perform4Forward(Span<ComplexF> span)
-        {
-            var sQ = MemoryMarshal.Cast<ComplexF, (ComplexF, ComplexF, ComplexF, ComplexF)>(span);
-            for (var k = 0; k < sQ.Length; k++)
-            {
-                ref var sA = ref sQ[k];
-                var v = new ComplexF(sA.Item4.Imaginary, -sA.Item4.Real);
-                var t = sA.Item3;
-                var w = sA.Item2;
-                var u = sA.Item1;
-                sA.Item1 = u + t;
-                sA.Item2 = w + v;
-                sA.Item3 = u - t;
-                sA.Item4 = w - v;
-            }
-        }
         internal static void ReverseInternal<T>(Span<T> span)
         {
             var bits = MathI.LogBase2((uint)span.Length);
@@ -429,9 +438,7 @@ namespace Shamisen.Transformation
             {
                 var index = (int)MathI.ReverseBitOrder((uint)i << shift);
                 if (index >= i) continue;
-                var v = span[i];
-                span[i] = span[index];
-                span[index] = v;
+                (span[index], span[i]) = (span[i], span[index]);
             }
         }
     }

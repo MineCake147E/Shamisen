@@ -272,6 +272,35 @@ namespace Shamisen.Utils
             #endregion
 
             #endregion
+            #region Deinterleave
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void DeinterleaveStereoSingle(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+            {
+                nint i, length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
+                ref var rsi = ref MemoryMarshal.GetReference(buffer);
+                ref var r8 = ref MemoryMarshal.GetReference(left);
+                ref var r9 = ref MemoryMarshal.GetReference(right);
+                var olen = length - 3;
+                for (i = 0; i < olen; i += 4)
+                {
+                    Unsafe.Add(ref r8, i + 0) = Unsafe.Add(ref rsi, 2 * i + 0);
+                    Unsafe.Add(ref r9, i + 0) = Unsafe.Add(ref rsi, 2 * i + 1);
+                    Unsafe.Add(ref r8, i + 1) = Unsafe.Add(ref rsi, 2 * i + 2);
+                    Unsafe.Add(ref r9, i + 1) = Unsafe.Add(ref rsi, 2 * i + 3);
+                    Unsafe.Add(ref r8, i + 2) = Unsafe.Add(ref rsi, 2 * i + 4);
+                    Unsafe.Add(ref r9, i + 2) = Unsafe.Add(ref rsi, 2 * i + 5);
+                    Unsafe.Add(ref r8, i + 3) = Unsafe.Add(ref rsi, 2 * i + 6);
+                    Unsafe.Add(ref r9, i + 3) = Unsafe.Add(ref rsi, 2 * i + 7);
+                }
+                for (; i < length; i++)
+                {
+                    var l = Unsafe.Add(ref rsi, 2 * i);
+                    var r = Unsafe.Add(ref rsi, 2 * i + 1);
+                    Unsafe.Add(ref r8, i) = l;
+                    Unsafe.Add(ref r9, i) = r;
+                }
+            }
+            #endregion
         }
     }
 }

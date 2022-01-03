@@ -41,6 +41,9 @@
             Gets the name of this <see cref="T:Shamisen.IO.OpenALDevice"/>.
             </summary>
         </member>
+        <member name="P:Shamisen.IO.OpenALDevice.DataFlow">
+            <inheritdoc/>
+        </member>
         <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.IOExclusivity)">
             <summary>
             Indicates whether the audio output device supports a particular stream format.

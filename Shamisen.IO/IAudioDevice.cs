@@ -16,5 +16,13 @@ namespace Shamisen.IO
         /// The name of this audio device.
         /// </value>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the data flow of this audio device.
+        /// </summary>
+        /// <value>
+        /// The supported data flow of this audio device.
+        /// </value>
+        DataFlow DataFlow { get; }
     }
 }

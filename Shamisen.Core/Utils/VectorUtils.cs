@@ -1,17 +1,20 @@
-﻿using System;
+﻿#if NETCOREAPP3_1_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+using Shamisen.Utils.Intrinsics;
+
+#endif
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics.Arm;
+#endif
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Shamisen.Utils.Numerics;
 
-#if NETCOREAPP3_1_OR_GREATER
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.X86;
-#endif
-#if NET5_0_OR_GREATER
-using System.Runtime.Intrinsics.Arm;
-#endif
 
 namespace Shamisen.Utils
 {
@@ -182,6 +185,36 @@ namespace Shamisen.Utils
         #region FastUnrolledDotProduct
 
         #endregion
+        #region AddSubtract
+        /// <summary>
+        /// Adds <paramref name="right"/> from <paramref name="left"/> while negating <see cref="Vector2.X"/> of <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The value to be added.</param>
+        /// <param name="right">The value to be added after negating <see cref="Vector2.X"/>.</param>
+        /// <returns></returns>
+        public static Vector2 AddSubtract(Vector2 left, Vector2 right)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse3.IsSupported)
+                {
+                    return Sse3.AddSubtract(left.AsVector128(), right.AsVector128()).AsVector2();
+                }
+                if (Sse.IsSupported)
+                {
+                    var xmm1 = left.AsVector128();
+                    xmm1 = Sse.Xor(xmm1, Vector128.CreateScalar(0x8000_0000u).AsSingle());
+                    var xmm0 = left.AsVector128();
+                    xmm0 = Sse.Add(xmm0, xmm1);
+                    return xmm0.AsVector2();
+                }
+#endif
+                var r = new Vector2(-right.X, right.Y);
+                return left + r;
+            }
+        }
+        #endregion
         #region ReverseElements
         /// <summary>
         /// Returns a new <see cref="Vector4"/> value with reversed elements of <paramref name="value"/>.
@@ -230,6 +263,45 @@ namespace Shamisen.Utils
                 }
 #endif
                 return new(value.W, value.Z, value.Y, value.X);
+            }
+        }
+
+        /// <summary>
+        /// Returns a new <see cref="Vector4"/> value with reversed elements of <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value to reverse elements.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector2 ReverseElements(Vector2 value)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var v0_2s = value.AsVector64();
+                    v0_2s = AdvSimd.ReverseElement32(v0_2s.AsUInt64()).AsSingle();
+                    return v0_2s.AsVector2();
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+
+                if (Avx.IsSupported)
+                {
+                    return Avx.Permute(value.AsVector128Unsafe(), 0b11_10_00_01).AsVector2();
+                }
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Shuffle(value.AsVector128Unsafe().AsInt32(), 0b11_10_00_01).AsSingle().AsVector2();
+                }
+                if (Sse.IsSupported)
+                {
+                    var xmm0 = value.AsVector128Unsafe();
+                    xmm0 = Sse.Shuffle(xmm0, xmm0, 0b11_10_00_01);
+                    return xmm0.AsVector2();
+                }
+#endif
+                return new(value.Y, value.X);
             }
         }
         #endregion
@@ -1600,7 +1672,27 @@ namespace Shamisen.Utils
         }
 #endif
         #endregion
+        #region AsVector128Unsafe
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Reinterprets a <see cref="Vector2"/> as a new <see cref="Vector128{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<float> AsVector128Unsafe(this Vector2 value) => Vector128.CreateScalarUnsafe(value.X).WithElement(1, value.Y);
+#endif
+        #endregion
         #region AsVector128
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Reinterprets a <see cref="ComplexF"/> as a new <see cref="Vector128{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<float> AsVector128(this in ComplexF value) => ComplexF.AsVector128(value);
+#endif
 #if NETCOREAPP3_1
         /// <summary>
         /// Reinterprets a <see cref="Vector4"/> as a new <see cref="Vector128{T}"/>.
@@ -1609,9 +1701,44 @@ namespace Shamisen.Utils
         /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector128<float> AsVector128(this Vector4 value) => Unsafe.As<Vector4, Vector128<float>>(ref value);
+
+        /// <summary>
+        /// Reinterprets a <see cref="Vector2"/> as a new <see cref="Vector128{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector128{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector128<float> AsVector128(this Vector2 value) => Vector128.CreateScalar(Unsafe.As<Vector2, double>(ref value)).AsSingle();
 #endif
         #endregion
-        #region AsVector4
+        #region AsVector64
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Reinterprets a <see cref="Vector2"/> as a new <see cref="Vector64{T}"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector64{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector64<float> AsVector64(this Vector2 value) => Unsafe.As<Vector2, Vector64<float>>(ref value);
+#endif
+        #endregion
+        #region AsVectorX
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Reinterprets a <see cref="Vector128{T}"/> as a new <see cref="ComplexF"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="ComplexF"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ComplexF AsComplexF(this in Vector128<float> value) => ComplexF.AsComplexF(value);
+        /// <summary>
+        /// Reinterprets a <see cref="Vector64{T}"/> as a new <see cref="Vector2"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector2"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector2 AsVector2(this Vector64<float> value) => Unsafe.As<Vector64<float>, Vector2>(ref value);
+#endif
 #if NETCOREAPP3_1
         /// <summary>
         /// Reinterprets a <see cref="Vector128{T}"/> as a new <see cref="Vector4"/>.
@@ -1620,6 +1747,14 @@ namespace Shamisen.Utils
         /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector4"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector4 AsVector4(this Vector128<float> value) => Unsafe.As<Vector128<float>, Vector4>(ref value);
+
+        /// <summary>
+        /// Reinterprets a <see cref="Vector128{T}"/> as a new <see cref="Vector2"/>.
+        /// </summary>
+        /// <param name="value">The vector to reinterpret.</param>
+        /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector2"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector2 AsVector2(this Vector128<float> value) => Unsafe.As<Vector128<float>, Vector2>(ref value);
 #endif
         #endregion
     }

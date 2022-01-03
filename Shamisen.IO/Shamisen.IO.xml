@@ -148,6 +148,14 @@
             The name of this audio device.
             </value>
         </member>
+        <member name="P:Shamisen.IO.IAudioDevice.DataFlow">
+            <summary>
+            Gets the data flow of this audio device.
+            </summary>
+            <value>
+            The supported data flow of this audio device.
+            </value>
+        </member>
         <member name="T:Shamisen.IO.IAudioDeviceEnumerator">
             <summary>
             Defines a base infrastructure of an audio device enumerator.
@@ -167,17 +175,33 @@
             <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow"/> kind to enumerate devices of.</param>
             <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio devices.</returns>
         </member>
-        <member name="T:Shamisen.IO.IAudioInputDevice">
+        <member name="T:Shamisen.IO.IAudioInputDevice`1">
             <summary>
             Defines a base structure of audio input device.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IAudioInputDevice.IsFormatSupported(Shamisen.WaveFormat)">
+        <member name="M:Shamisen.IO.IAudioInputDevice`1.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.IOExclusivity)">
             <summary>
             Indicates whether the audio input device supports a particular stream format.
             </summary>
             <param name="format">The format to judge the availability.</param>
-            <returns><c>true</c> if succeeded and the audio device supports the specified stream format.</returns>
+            <param name="mode">The share mode.</param>
+            <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by <see cref="N:Shamisen"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioInputDevice`1.CreateSoundIn(System.TimeSpan)">
+            <summary>
+            Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that records audio to this device.
+            </summary>
+            <param name="latency">The desired latency for input.</param>
+            <returns>The <typeparamref name="TSoundIn"/> instance.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioInputDevice`1.CreateSoundIn(System.TimeSpan,Shamisen.IO.IOExclusivity)">
+            <summary>
+            Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that records audio to this device with the specified <paramref name="mode"/>.
+            </summary>
+            <param name="latency">The latency.</param>
+            <param name="mode">The share mode.</param>
+            <returns></returns>
         </member>
         <member name="T:Shamisen.IO.IAudioOutputDevice`1">
             <summary>
