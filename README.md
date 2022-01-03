@@ -44,6 +44,15 @@ A Cross-Platform Audio Library for:
 
 [Benchmarks on .Net 5, Intel Core i7 4790](Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md)
 
+#### Highly Optimized Cooley–Tukey FFT algorithm for single-precision 1D complex data.
+
+- Utilizes `System.Runtime.Intrinsics.X86.Avx` and `System.Runtime.Intrinsics.X86.Avx2` for FFT calculation.
+- Forward transformation rescales result by 1/N.
+- The memory consumption is O(N) even though the FFT is done in-place.
+- Does not need initialization for certain fixed size by default.
+  - Fixed-size variant will be added.
+- It requires that the size of the data be a power of two. Otherwise, the data will be implicitly resized to the size of the largest power of two less than the original size.
+
 #### Fast conversion between PCM sample formats
 
 | To\From | IEEE 754<br>Binary32(float) | 32bit Linear<br>PCM(Q0.31) | 24bit Linear<br>PCM(Q0.23) | 16bit Linear<br>PCM(Q0.15) | 8bit LPCM<br>(Excess-128) | G.711<br>μ−Law | G.711<br>A-Law |
