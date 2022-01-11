@@ -33,6 +33,16 @@ namespace Shamisen.Utils.Intrinsics
 #endif
             }
         }
+
+        /// <inheritdoc cref="Avx.Xor(Vector256{float}, Vector256{float})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector256<float> Xor(Vector256<float> left, Vector256<float> right)
+        {
+            unchecked
+            {
+                return Avx2.IsSupported ? Avx2.Xor(left.AsUInt64(), right.AsUInt64()).AsSingle() : Avx.Xor(left, right);
+            }
+        }
     }
 }
 #endif

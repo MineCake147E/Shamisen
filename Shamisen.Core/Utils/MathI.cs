@@ -299,7 +299,13 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        public static ulong Abs(long value) => DSUtils.Abs(value);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong Abs(long value)
+        {
+            //Copied from DivideSharp in order to aggressively inline this method.
+            var q = value >> 63;
+            return (ulong)((value + q) ^ q);
+        }
 
         /// <summary>
         /// Returns the absolute value of the specified value.
@@ -310,7 +316,13 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        public static uint Abs(int value) => DSUtils.Abs(value);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint Abs(int value)
+        {
+            //Copied from DivideSharp in order to aggressively inline this method.
+            var q = value >> 31;
+            return (uint)((value + q) ^ q);
+        }
 
         #endregion Abs
 

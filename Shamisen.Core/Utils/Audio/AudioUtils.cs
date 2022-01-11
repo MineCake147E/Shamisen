@@ -3,9 +3,9 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using Shamisen;
 using Shamisen.Optimization;
 using Shamisen.Primitives;
-using Shamisen;
 #if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
@@ -30,7 +30,10 @@ namespace Shamisen.Utils
         #region FastAdd
 
         /// <summary>
-        /// Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.
+        /// Adds the <paramref name="samplesToAdd"/> to <paramref name="buffer"/>.<br/>
+        /// The length of the <paramref name="samplesToAdd"/> and <paramref name="buffer"/> must be the same:
+        /// if the <paramref name="samplesToAdd"/> is longer, the trailing extra element will be ignored;
+        /// if the <paramref name="buffer"/> is longer, the trailing extra element will remain unchanged.
         /// </summary>
         /// <param name="samplesToAdd">The samples to add.</param>
         /// <param name="buffer">The buffer.</param>
@@ -402,11 +405,13 @@ namespace Shamisen.Utils
         #region FastMultiply
 
         /// <summary>
-        /// Multiplies specified <paramref name="sourceA"/> and <paramref name="sourceB"/> and stores to <paramref name="destination"/>.
+        /// Multiplies specified <paramref name="sourceA"/> and <paramref name="sourceB"/> and stores to <paramref name="destination"/>.<br/>
+        /// The length of <paramref name="sourceA"/>, <paramref name="sourceB"/>, and <paramref name="destination"/> must be the same.
+        /// Otherwise, only the forward elements of sourceA and sourceB will be calculated, and only the forward elements of destination will be updated, both according to the shortest length of one of them.
         /// </summary>
-        /// <param name="destination"></param>
-        /// <param name="sourceA"></param>
-        /// <param name="sourceB"></param>
+        /// <param name="destination">The place to store the product of <paramref name="sourceA"/> and <paramref name="sourceB"/>.</param>
+        /// <param name="sourceA">The values to multiply.</param>
+        /// <param name="sourceB">The values to multiply.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMultiply(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
         {
@@ -625,141 +630,23 @@ namespace Shamisen.Utils
         #region FastMixThreeOperands
         /// <summary>
         /// Mixes the <paramref name="samplesA"/> and <paramref name="samplesB"/> to <paramref name="buffer"/>.
-        /// The data inside <paramref name="buffer"/> will be destroyed.
+        /// The length of <paramref name="samplesA"/>, <paramref name="samplesB"/>, and <paramref name="buffer"/> must be the same.
+        /// Otherwise, only the forward elements of <paramref name="samplesA"/> and <paramref name="samplesB"/> will be calculated, and only the forward elements of <paramref name="buffer"/> will be updated, both according to the shortest length of one of them.
         /// </summary>
         /// <param name="buffer">The output buffer.</param>
         /// <param name="samplesA">The samples a.</param>
         /// <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
         /// <param name="samplesB">The samples b.</param>
         /// <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
-        /// <exception cref="ArgumentException">
-        /// buffer must not be shorter than samplesA or samplesB! - buffer
-        /// or
-        /// samplesA must be as long as samplesB! - samplesA
-        /// </exception>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void FastMix(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
-            // Validation
-            var min = MathI.Rectify(MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length));
-            if (buffer.Length > min)
-            {
-                buffer.Slice(min).FastFill(0);
-            }
-            if (min < 1) return;
-            buffer = buffer.SliceWhileIfLongerThan(min);
-            samplesA = samplesA.SliceWhileIfLongerThan(min);
-            samplesB = samplesB.SliceWhileIfLongerThan(min);
-#if NETCOREAPP3_1_OR_GREATER
-            if (Avx.IsSupported && min > 64)
-            {
-                FastMixAvx(buffer, samplesA, volumeA, samplesB, volumeB);
-                return;
-            }
-            if (Sse.IsSupported)
-            {
-                FastMixSse(buffer, samplesA, volumeA, samplesB, volumeB);
-                return;
-            }
-#endif
-            if (Vector<float>.Count > 0 && Vector.IsHardwareAccelerated)
+            if (Vector<float>.Count > 4 && Vector.IsHardwareAccelerated)
             {
                 FastMixStandardVariable(buffer, samplesA, volumeA, samplesB, volumeB);
             }
             FastMixStandardFixed(buffer, samplesA, volumeA, samplesB, volumeB);
         }
-#if NETCOREAPP3_1_OR_GREATER
-        /// <summary>
-        /// Only usable in Rocket Lake or later due to CPU clock limits
-        /// (but Clang suggests it and actually performs approximately 1.34 times better than
-        /// <see cref="FastMixSse(Span{float}, ReadOnlySpan{float}, float, ReadOnlySpan{float}, float)"/>, even in Haswell)
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="samplesA"></param>
-        /// <param name="volumeA"></param>
-        /// <param name="samplesB"></param>
-        /// <param name="volumeB"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastMixAvx(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
-        {
-            unsafe
-            {
-                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
-                var ymm14 = Vector256.Create(volumeA);
-                var ymm15 = Vector256.Create(volumeB);
-                ref var r8 = ref MemoryMarshal.GetReference(buffer);
-                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
-                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
-                for (i = 0; i < length - 31; i += 32)
-                {
-                    var ymm0 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i)));
-                    var ymm1 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 8)));
-                    var ymm2 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 16)));
-                    var ymm3 = Avx.Multiply(ymm14, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r10, i + 24)));
-                    var ymm4 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i)));
-                    ymm0 = Avx.Add(ymm0, ymm4);
-                    var ymm5 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 8)));
-                    ymm1 = Avx.Add(ymm1, ymm5);
-                    var ymm6 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 16)));
-                    ymm2 = Avx.Add(ymm2, ymm6);
-                    var ymm7 = Avx.Multiply(ymm15, Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, i + 24)));
-                    ymm3 = Avx.Add(ymm3, ymm7);
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i)) = ymm0;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 8)) = ymm1;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 16)) = ymm2;
-                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, i + 24)) = ymm3;
-                }
-                for (; i < length; i++)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r10, i));
-                    var xmm4 = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r11, i));
-                    xmm0 = Sse.MultiplyScalar(xmm0, ymm14.GetLower());
-                    xmm4 = Sse.MultiplyScalar(xmm4, ymm15.GetLower());
-                    xmm0 = Sse.AddScalar(xmm0, xmm4);
-                    Unsafe.Add(ref r8, i) = xmm0.GetElement(0);
-                }
-            }
-        }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastMixSse(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
-        {
-            unsafe
-            {
-                nint i, length = MathI.Min(MathI.Min(samplesA.Length, samplesB.Length), buffer.Length);
-                var xmm14 = Vector128.Create(volumeA);
-                var xmm15 = Vector128.Create(volumeB);
-                ref var r8 = ref MemoryMarshal.GetReference(buffer);
-                ref var r10 = ref MemoryMarshal.GetReference(samplesA);
-                ref var r11 = ref MemoryMarshal.GetReference(samplesB);
-                for (i = 0; i < length - 15; i += 16)
-                {
-                    var xmm0 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i)));
-                    var xmm1 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 4)));
-                    var xmm2 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 8)));
-                    var xmm3 = Sse.Multiply(xmm14, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r10, i + 12)));
-                    var xmm4 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i)));
-                    xmm0 = Sse.Add(xmm0, xmm4);
-                    var xmm5 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 4)));
-                    xmm1 = Sse.Add(xmm1, xmm5);
-                    var xmm6 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 8)));
-                    var xmm7 = Sse.Multiply(xmm15, Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, i + 12)));
-                    xmm2 = Sse.Add(xmm2, xmm6);
-                    xmm3 = Sse.Add(xmm3, xmm7);
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i)) = xmm0;
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 4)) = xmm1;
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 8)) = xmm2;
-                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, i + 12)) = xmm3;
-                }
-                for (; i < length; i++)
-                {
-                    var xmm0 = Sse.MultiplyScalar(xmm14, Vector128.CreateScalarUnsafe(Unsafe.Add(ref r10, i)));
-                    var xmm4 = Sse.MultiplyScalar(xmm15, Vector128.CreateScalarUnsafe(Unsafe.Add(ref r11, i)));
-                    xmm0 = Sse.AddScalar(xmm0, xmm4);
-                    Unsafe.Add(ref r8, i) = xmm0.GetElement(0);
-                }
-            }
-        }
-#endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void FastMixStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
@@ -774,22 +661,24 @@ namespace Shamisen.Utils
                 var olen = length - 4 * Vector<float>.Count + 1;
                 for (i = 0; i < olen; i += 4 * Vector<float>.Count)
                 {
+                    ref var r8 = ref Unsafe.Add(ref rD, i);
+                    ref var r9 = ref Unsafe.Add(ref rsB, i);
                     var sA0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 0 * Vector<float>.Count)) * scaleVA;
                     var sA1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 1 * Vector<float>.Count)) * scaleVA;
                     var sA2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 2 * Vector<float>.Count)) * scaleVA;
                     var sA3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsA, i + 3 * Vector<float>.Count)) * scaleVA;
-                    var sB0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 0 * Vector<float>.Count)) * scaleVB;
+                    var sB0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r9, 0 * Vector<float>.Count)) * scaleVB;
                     sA0 += sB0;
-                    var sB1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 1 * Vector<float>.Count)) * scaleVB;
+                    var sB1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r9, 1 * Vector<float>.Count)) * scaleVB;
                     sA1 += sB1;
-                    var sB2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 2 * Vector<float>.Count)) * scaleVB;
-                    var sB3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsB, i + 3 * Vector<float>.Count)) * scaleVB;
+                    var sB2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r9, 2 * Vector<float>.Count)) * scaleVB;
                     sA2 += sB2;
+                    var sB3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r9, 3 * Vector<float>.Count)) * scaleVB;
                     sA3 += sB3;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 0 * Vector<float>.Count)) = sA0;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 1 * Vector<float>.Count)) = sA1;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 2 * Vector<float>.Count)) = sA2;
-                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rD, i + 3 * Vector<float>.Count)) = sA3;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r8, 0 * Vector<float>.Count)) = sA0;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r8, 1 * Vector<float>.Count)) = sA1;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r8, 2 * Vector<float>.Count)) = sA2;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r8, 3 * Vector<float>.Count)) = sA3;
                 }
                 //for (; i < length - 3; i += 4)
                 //{
@@ -820,22 +709,24 @@ namespace Shamisen.Utils
                 ref var rD = ref MemoryMarshal.GetReference(buffer);
                 for (i = 0; i < length - 15; i += 16)
                 {
+                    ref var r8 = ref Unsafe.Add(ref rD, i);
+                    ref var r9 = ref Unsafe.Add(ref rsB, i);
                     var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0)) * scaleVA;
                     var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 4)) * scaleVA;
                     var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 8)) * scaleVA;
                     var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 12)) * scaleVA;
-                    var sB0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0)) * scaleVB;
+                    var sB0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r9, 0)) * scaleVB;
                     sA0 += sB0;
-                    var sB1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 4)) * scaleVB;
+                    var sB1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r9, 4)) * scaleVB;
                     sA1 += sB1;
-                    var sB2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 8)) * scaleVB;
-                    var sB3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 12)) * scaleVB;
+                    var sB2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r9, 8)) * scaleVB;
                     sA2 += sB2;
+                    var sB3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r9, 12)) * scaleVB;
                     sA3 += sB3;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0)) = sA0;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 4)) = sA1;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 8)) = sA2;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 12)) = sA3;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r8, 0)) = sA0;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r8, 4)) = sA1;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r8, 8)) = sA2;
+                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref r8, 12)) = sA3;
                 }
                 //for (; i < length - 3; i += 4)
                 //{
@@ -1167,6 +1058,39 @@ namespace Shamisen.Utils
                 Fallback.DeinterleaveStereoSingle(buffer, left, right);
             }
         }
+        #endregion
+
+        #region Unrolled Math Functions
+        #region Log2
+
+        /// <summary>
+        /// Calculates the approximation of the binary logarithm for each element of <paramref name="source"/> using a 5th order polynomial and stores it in <paramref name="destination"/>.<br/>
+        /// The length of the <paramref name="source"/> and destination must be the same:
+        /// if the <paramref name="source"/> is longer, the trailing extra element will be ignored;
+        /// if the <paramref name="destination"/> is longer, the trailing extra element will remain unchanged.
+        /// </summary>
+        /// <param name="destination">The place to store the approximation of the binary logarithm for each element of <paramref name="source"/>.</param>
+        /// <param name="source">The values to calculate the approximation of the binary logarithm.</param>
+        /// <param name="allowFma">
+        /// The value which indicates whether the <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> can utilize Fused Multiply-Adds.<br/>
+        /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the maximum error.
+        /// </param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void Log2ApproximationOrder5(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.FastLog2Order5X86(destination, source, allowFma);
+                    return;
+                }
+#endif
+                Fallback.FastLog2Order5Fallback(destination, source);
+            }
+        }
+        #endregion
         #endregion
     }
 }

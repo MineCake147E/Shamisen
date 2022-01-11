@@ -163,7 +163,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             RangedPcm32ToSampleConverter.ProcessEMoreThan24Standard(src, MemoryMarshal.Cast<float, int>(src), 30);
         }
 
-        public static void AssertArrays(ComplexF[] exp, ComplexF[] dst)
+        public static void AssertArrays(ReadOnlySpan<ComplexF> exp, ReadOnlySpan<ComplexF> dst)
         {
             NeumaierAccumulator sumdiff = default;
             Assert.AreEqual(exp.Length, dst.Length);
@@ -184,7 +184,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Average difference: {avgDiff}");
             Assert.AreEqual(0.0, sumdiff.Sum);
         }
-        public static void AssertArrays(Complex[] exp, Complex[] dst)
+        public static void AssertArrays(ReadOnlySpan<Complex> exp, ReadOnlySpan<Complex> dst)
         {
             NeumaierAccumulator sumdiff = default;
             Assert.AreEqual(exp.Length, dst.Length);
@@ -205,25 +205,29 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Average difference: {avgDiff}");
             Assert.AreEqual(0.0, sumdiff.Sum);
         }
-        public static void AssertArrays(float[] exp, float[] dst)
+        public static void AssertArrays(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
         {
             NeumaierAccumulator sumdiff = default;
             Assert.AreEqual(exp.Length, dst.Length);
+            var maxdiff = 0.0;
             for (var i = 0; i < dst.Length; i++)
             {
                 double opt = dst[i];
                 double sim = exp[i];
                 var diff = opt - sim;
-                sumdiff += Math.Abs(diff);
+                var adiff = Math.Abs(diff);
+                sumdiff += adiff;
                 if (diff != 0)
                 {
                     Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
                 }
+                maxdiff = Math.Max(maxdiff, adiff);
             }
-            Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / dst.Length;
+            Console.WriteLine($"Total difference: {sumdiff.Sum}");
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.AreEqual(0.0, sumdiff.Sum);
+            Console.WriteLine($"Maximum difference: {maxdiff}");
+            Assert.AreEqual(0.0, maxdiff, delta);
         }
     }
 }

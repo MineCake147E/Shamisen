@@ -1134,6 +1134,400 @@ namespace Shamisen.Utils
                 }
             }
             #endregion
+
+            #region Log2
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void FastLog2Order5X86(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
+            {
+                if (allowFma && Avx2.IsSupported && Fma.IsSupported)
+                {
+                    FastLog2Order5FAvx2Fma(destination, source);
+                    return;
+                }
+                if (Avx2.IsSupported)
+                {
+                    FastLog2Order5Avx2(destination, source);
+                    return;
+                }
+                if (Sse2.IsSupported)
+                {
+                    FastLog2Order5Sse2(destination, source);
+                    return;
+                }
+                Fallback.FastLog2Order5Fallback(destination, source);
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void FastLog2Order5FAvx2Fma(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                const float C0 = 4.6385368923465681e-2f;
+                const float C1 = -1.9626965970062927e-1f;
+                const float C2 = 4.1759580460198917e-1f;
+                const float C3 = -7.0966282913858282e-1f;
+                const float C4 = 1.4419656175182945f;
+                var r15 = BitConverter.SingleToInt32Bits(C0);
+                var r14 = BitConverter.SingleToInt32Bits(C1);
+                var r13 = BitConverter.SingleToInt32Bits(C2);
+                var r12 = BitConverter.SingleToInt32Bits(C3);
+                var r11 = BitConverter.SingleToInt32Bits(C4);
+                var ymm15 = Vector256.Create(0x7f00_0000u);
+                var ymm14 = Vector256.Create(0x3f80_0000u);
+                Vector256<float> ymm13, ymm12;
+                var olen = length - 31;
+                for (; i < olen; i += 32)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    ymm13 = Vector256.Create(r14).AsSingle();
+                    ymm12 = Vector256.Create(r13).AsSingle();
+                    var ymm0 = Avx2.ShiftLeftLogical(Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count)), 1).AsSingle();
+                    var ymm1 = Avx2.ShiftLeftLogical(Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<float>.Count)), 1).AsSingle();
+                    var ymm2 = Avx2.ShiftLeftLogical(Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 2 * Vector256<float>.Count)), 1).AsSingle();
+                    var ymm3 = Avx2.ShiftLeftLogical(Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 3 * Vector256<float>.Count)), 1).AsSingle();
+                    var ymm4 = Avx2.ShiftLeftLogical(ymm0.AsUInt32(), 8).AsSingle();
+                    var ymm5 = Avx2.ShiftLeftLogical(ymm1.AsUInt32(), 8).AsSingle();
+                    var ymm6 = Avx2.ShiftLeftLogical(ymm2.AsUInt32(), 8).AsSingle();
+                    var ymm7 = Avx2.ShiftLeftLogical(ymm3.AsUInt32(), 8).AsSingle();
+                    ymm0 = Avx2.Subtract(ymm0.AsUInt32(), ymm15).AsSingle();
+                    ymm1 = Avx2.Subtract(ymm1.AsUInt32(), ymm15).AsSingle();
+                    ymm2 = Avx2.Subtract(ymm2.AsUInt32(), ymm15).AsSingle();
+                    ymm3 = Avx2.Subtract(ymm3.AsUInt32(), ymm15).AsSingle();
+                    ymm4 = Avx2.ShiftRightLogical(ymm4.AsUInt32(), 9).AsSingle();
+                    ymm5 = Avx2.ShiftRightLogical(ymm5.AsUInt32(), 9).AsSingle();
+                    ymm6 = Avx2.ShiftRightLogical(ymm6.AsUInt32(), 9).AsSingle();
+                    ymm7 = Avx2.ShiftRightLogical(ymm7.AsUInt32(), 9).AsSingle();
+                    ymm0 = Avx2.ShiftRightArithmetic(ymm0.AsInt32(), 24).AsSingle();
+                    ymm0 = Avx.ConvertToVector256Single(ymm0.AsInt32());
+                    ymm1 = Avx2.ShiftRightArithmetic(ymm1.AsInt32(), 24).AsSingle();
+                    ymm1 = Avx.ConvertToVector256Single(ymm1.AsInt32());
+                    ymm2 = Avx2.ShiftRightArithmetic(ymm2.AsInt32(), 24).AsSingle();
+                    ymm2 = Avx.ConvertToVector256Single(ymm2.AsInt32());
+                    ymm3 = Avx2.ShiftRightArithmetic(ymm3.AsInt32(), 24).AsSingle();
+                    ymm3 = Avx.ConvertToVector256Single(ymm3.AsInt32());
+                    var ymm8 = Vector256.Create(r15).AsSingle();
+                    ymm4 = Avx2.Add(ymm14, ymm4.AsUInt32()).AsSingle();
+                    ymm4 = Avx.Subtract(ymm4, ymm14.AsSingle());
+                    ymm5 = Avx2.Add(ymm14, ymm5.AsUInt32()).AsSingle();
+                    ymm5 = Avx.Subtract(ymm5, ymm14.AsSingle());
+                    ymm6 = Avx2.Add(ymm14, ymm6.AsUInt32()).AsSingle();
+                    ymm6 = Avx.Subtract(ymm6, ymm14.AsSingle());
+                    ymm7 = Avx2.Add(ymm14, ymm7.AsUInt32()).AsSingle();
+                    ymm7 = Avx.Subtract(ymm7, ymm14.AsSingle());
+                    var ymm9 = ymm8;
+                    var ymm10 = ymm8;
+                    var ymm11 = ymm8;
+                    ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm13);
+                    ymm9 = Fma.MultiplyAdd(ymm5, ymm9, ymm13);
+                    ymm10 = Fma.MultiplyAdd(ymm6, ymm10, ymm13);
+                    ymm11 = Fma.MultiplyAdd(ymm7, ymm11, ymm13);
+                    ymm13 = Vector256.Create(r12).AsSingle();
+                    ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm12);
+                    ymm9 = Fma.MultiplyAdd(ymm5, ymm9, ymm12);
+                    ymm10 = Fma.MultiplyAdd(ymm6, ymm10, ymm12);
+                    ymm11 = Fma.MultiplyAdd(ymm7, ymm11, ymm12);
+                    ymm12 = Vector256.Create(r11).AsSingle();
+                    ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm13);
+                    ymm9 = Fma.MultiplyAdd(ymm5, ymm9, ymm13);
+                    ymm10 = Fma.MultiplyAdd(ymm6, ymm10, ymm13);
+                    ymm11 = Fma.MultiplyAdd(ymm7, ymm11, ymm13);
+                    ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm12);
+                    ymm9 = Fma.MultiplyAdd(ymm5, ymm9, ymm12);
+                    ymm10 = Fma.MultiplyAdd(ymm6, ymm10, ymm12);
+                    ymm11 = Fma.MultiplyAdd(ymm7, ymm11, ymm12);
+                    ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm0);
+                    ymm9 = Fma.MultiplyAdd(ymm5, ymm9, ymm1);
+                    ymm10 = Fma.MultiplyAdd(ymm6, ymm10, ymm2);
+                    ymm11 = Fma.MultiplyAdd(ymm7, ymm11, ymm3);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 0 * Vector256<float>.Count)) = ymm8;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 1 * Vector256<float>.Count)) = ymm9;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 2 * Vector256<float>.Count)) = ymm10;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, 3 * Vector256<float>.Count)) = ymm11;
+                }
+                unchecked
+                {
+                    ymm13 = Vector256.Create(C0);
+                    ymm12 = Vector256.Create(C1);
+                    var ymm11 = Vector256.Create(C2);
+                    var ymm10 = Vector256.Create(C3);
+                    var ymm9 = Vector256.Create(C4);
+                    olen = length - 7;
+                    for (; i < olen; i += 8)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var ymm0 = Avx2.ShiftLeftLogical(Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count)), 1).AsSingle();
+                        var ymm4 = Avx2.ShiftLeftLogical(ymm0.AsUInt32(), 8).AsSingle();
+                        ymm0 = Avx2.Subtract(ymm0.AsUInt32(), ymm15).AsSingle();
+                        ymm4 = Avx2.ShiftRightLogical(ymm4.AsUInt32(), 9).AsSingle();
+                        ymm0 = Avx2.ShiftRightArithmetic(ymm0.AsInt32(), 24).AsSingle();
+                        ymm0 = Avx.ConvertToVector256Single(ymm0.AsInt32());
+                        ymm4 = Avx2.Add(ymm14, ymm4.AsUInt32()).AsSingle();
+                        var ymm8 = ymm13;
+                        ymm4 = Avx.Subtract(ymm4, ymm14.AsSingle());
+                        ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm12);
+                        ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm11);
+                        ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm10);
+                        ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm9);
+                        ymm8 = Fma.MultiplyAdd(ymm4, ymm8, ymm0);
+                        Unsafe.As<float, Vector256<float>>(ref r8) = ymm8;
+                    }
+                    for (; i < length; i++)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var xmm0 = Sse2.ShiftLeftLogical(Vector128.CreateScalarUnsafe(Unsafe.Add(ref rsi, i)).AsUInt32(), 1).AsSingle();
+                        var xmm4 = Sse2.ShiftLeftLogical(xmm0.AsUInt32(), 8).AsSingle();
+                        xmm0 = Sse2.Subtract(xmm0.AsUInt32(), ymm15.GetLower()).AsSingle();
+                        xmm4 = Sse2.ShiftRightLogical(xmm4.AsUInt32(), 9).AsSingle();
+                        xmm0 = Sse2.ShiftRightArithmetic(xmm0.AsInt32(), 24).AsSingle();
+                        xmm0 = Sse2.ConvertToVector128Single(xmm0.AsInt32());
+                        xmm4 = Sse2.Add(ymm14.GetLower(), xmm4.AsUInt32()).AsSingle();
+                        var xmm8 = ymm13.GetLower();
+                        xmm4 = Sse.Subtract(xmm4, ymm14.GetLower().AsSingle());
+                        xmm8 = Fma.MultiplyAdd(xmm4, xmm8, ymm12.GetLower());
+                        xmm8 = Fma.MultiplyAdd(xmm4, xmm8, ymm11.GetLower());
+                        xmm8 = Fma.MultiplyAdd(xmm4, xmm8, ymm10.GetLower());
+                        xmm8 = Fma.MultiplyAdd(xmm4, xmm8, ymm9.GetLower());
+                        xmm8 = Fma.MultiplyAdd(xmm4, xmm8, xmm0);
+                        r8 = xmm8.GetElement(0);
+                    }
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void FastLog2Order5Avx2(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                const float C0 = 4.6385369e-2f;
+                const float C1 = -1.9626966e-1f;
+                const float C2 = 4.175958e-1f;
+                const float C3 = -7.0966283e-1f;
+                const float C4 = 1.4419656f;
+                var ymm14 = Vector256.Create(0x3f80_0000u);
+                Vector256<float> ymm13, ymm12;
+                var olen = length - 15;
+                ymm13 = Vector256.Create(C0);
+                ymm12 = Vector256.Create(C1);
+                var ymm11 = Vector256.Create(C2);
+                var ymm10 = Vector256.Create(C3);
+                var ymm9 = Vector256.Create(C4);
+                var ymm8 = Vector256.Create(0x7fff_ffffu);
+                var ymm7 = Vector256.Create(0x7f80_0000u);
+                for (; i < olen; i += 16)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    var ymm0 = Avx2.And(ymm8, Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count))).AsSingle();
+                    var ymm1 = Avx2.And(ymm8, Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<float>.Count))).AsSingle();
+                    var ymm2 = Avx2.AndNot(ymm7, ymm0.AsUInt32()).AsSingle();
+                    var ymm3 = Avx2.AndNot(ymm7, ymm1.AsUInt32()).AsSingle();
+                    ymm0 = Avx2.Subtract(ymm0.AsUInt32(), ymm14).AsSingle();
+                    ymm1 = Avx2.Subtract(ymm1.AsUInt32(), ymm14).AsSingle();
+                    ymm0 = Avx2.ShiftRightArithmetic(ymm0.AsInt32(), 23).AsSingle();
+                    ymm0 = Avx.ConvertToVector256Single(ymm0.AsInt32());
+                    ymm1 = Avx2.ShiftRightArithmetic(ymm1.AsInt32(), 23).AsSingle();
+                    ymm1 = Avx.ConvertToVector256Single(ymm1.AsInt32());
+                    ymm2 = Avx2.Add(ymm14, ymm2.AsUInt32()).AsSingle();
+                    ymm2 = Avx.Subtract(ymm2, ymm14.AsSingle());
+                    ymm3 = Avx2.Add(ymm14, ymm3.AsUInt32()).AsSingle();
+                    ymm3 = Avx.Subtract(ymm3, ymm14.AsSingle());
+                    var ymm4 = ymm13;
+                    var ymm5 = ymm13;
+                    ymm4 = Avx.Multiply(ymm4, ymm2);
+                    ymm5 = Avx.Multiply(ymm5, ymm3);
+                    ymm4 = Avx.Add(ymm4, ymm12);
+                    ymm5 = Avx.Add(ymm5, ymm12);
+                    ymm4 = Avx.Multiply(ymm4, ymm2);
+                    ymm5 = Avx.Multiply(ymm5, ymm3);
+                    ymm4 = Avx.Add(ymm4, ymm11);
+                    ymm5 = Avx.Add(ymm5, ymm11);
+                    ymm4 = Avx.Multiply(ymm4, ymm2);
+                    ymm5 = Avx.Multiply(ymm5, ymm3);
+                    ymm4 = Avx.Add(ymm4, ymm10);
+                    ymm5 = Avx.Add(ymm5, ymm10);
+                    ymm4 = Avx.Multiply(ymm4, ymm2);
+                    ymm5 = Avx.Multiply(ymm5, ymm3);
+                    ymm4 = Avx.Add(ymm4, ymm9);
+                    ymm5 = Avx.Add(ymm5, ymm9);
+                    ymm4 = Avx.Multiply(ymm4, ymm2);
+                    ymm5 = Avx.Multiply(ymm5, ymm3);
+                    ymm4 = Avx.Add(ymm4, ymm0);
+                    ymm5 = Avx.Add(ymm5, ymm1);
+                    Unsafe.As<float, Vector256<float>>(ref r8) = ymm4;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r8, Vector256<float>.Count)) = ymm5;
+                }
+                unchecked
+                {
+                    olen = length - 7;
+                    for (; i < olen; i += 8)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var ymm0 = Avx2.And(ymm8, Unsafe.As<float, Vector256<uint>>(ref Unsafe.Add(ref rsi, i))).AsSingle();
+                        var ymm2 = Avx2.AndNot(ymm7, ymm0.AsUInt32()).AsSingle();
+                        ymm0 = Avx2.Subtract(ymm0.AsUInt32(), ymm14).AsSingle();
+                        ymm0 = Avx2.ShiftRightArithmetic(ymm0.AsInt32(), 23).AsSingle();
+                        ymm0 = Avx.ConvertToVector256Single(ymm0.AsInt32());
+                        ymm2 = Avx2.Add(ymm14, ymm2.AsUInt32()).AsSingle();
+                        ymm2 = Avx.Subtract(ymm2, ymm14.AsSingle());
+                        var ymm4 = ymm13;
+                        ymm4 = Avx.Multiply(ymm4, ymm2);
+                        ymm4 = Avx.Add(ymm4, ymm12);
+                        ymm4 = Avx.Multiply(ymm4, ymm2);
+                        ymm4 = Avx.Add(ymm4, ymm11);
+                        ymm4 = Avx.Multiply(ymm4, ymm2);
+                        ymm4 = Avx.Add(ymm4, ymm10);
+                        ymm4 = Avx.Multiply(ymm4, ymm2);
+                        ymm4 = Avx.Add(ymm4, ymm9);
+                        ymm4 = Avx.Multiply(ymm4, ymm2);
+                        ymm4 = Avx.Add(ymm4, ymm0);
+                        Unsafe.As<float, Vector256<float>>(ref r8) = ymm4;
+                    }
+                    for (; i < length; i++)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var eax = Unsafe.As<float, uint>(ref Unsafe.Add(ref rsi, i)) << 1;
+                        var edx = eax << 8;
+                        eax -= 0x7f00_0000u;
+                        edx >>= 9;
+                        eax >>= 24;
+                        var xmm0 = (float)eax;
+                        edx = 0x3f80_0000u + edx;
+                        var xmm1 = BinaryExtensions.UInt32BitsToSingle(edx) - 1.0f;
+                        var xmm2 = ymm13.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += ymm12.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += ymm11.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += ymm10.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += ymm9.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm0;
+                        r8 = xmm2;
+                    }
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void FastLog2Order5Sse2(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                const float C0 = 4.6385369e-2f;
+                const float C1 = -1.9626966e-1f;
+                const float C2 = 4.175958e-1f;
+                const float C3 = -7.0966283e-1f;
+                const float C4 = 1.4419656f;
+                var xmm14 = Vector128.Create(0x3f80_0000u);
+                Vector128<float> xmm13, xmm12;
+                var olen = length - 7;
+                xmm13 = Vector128.Create(C0);
+                xmm12 = Vector128.Create(C1);
+                var xmm11 = Vector128.Create(C2);
+                var xmm10 = Vector128.Create(C3);
+                var xmm9 = Vector128.Create(C4);
+                var xmm8 = Vector128.Create(0x7fff_ffffu);
+                var xmm7 = Vector128.Create(0x7f80_0000u);
+                for (; i < olen; i += 8)
+                {
+                    ref var r8 = ref Unsafe.Add(ref rdi, i);
+                    var xmm0 = Sse2.And(xmm8, Unsafe.As<float, Vector128<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector128<float>.Count))).AsSingle();
+                    var xmm1 = Sse2.And(xmm8, Unsafe.As<float, Vector128<uint>>(ref Unsafe.Add(ref rsi, i + 1 * Vector128<float>.Count))).AsSingle();
+                    var xmm2 = Sse2.AndNot(xmm7, xmm0.AsUInt32()).AsSingle();
+                    var xmm3 = Sse2.AndNot(xmm7, xmm1.AsUInt32()).AsSingle();
+                    xmm0 = Sse2.Subtract(xmm0.AsUInt32(), xmm14).AsSingle();
+                    xmm1 = Sse2.Subtract(xmm1.AsUInt32(), xmm14).AsSingle();
+                    xmm0 = Sse2.ShiftRightArithmetic(xmm0.AsInt32(), 23).AsSingle();
+                    xmm0 = Sse2.ConvertToVector128Single(xmm0.AsInt32());
+                    xmm1 = Sse2.ShiftRightArithmetic(xmm1.AsInt32(), 23).AsSingle();
+                    xmm1 = Sse2.ConvertToVector128Single(xmm1.AsInt32());
+                    xmm2 = Sse2.Add(xmm14, xmm2.AsUInt32()).AsSingle();
+                    xmm2 = Sse.Subtract(xmm2, xmm14.AsSingle());
+                    xmm3 = Sse2.Add(xmm14, xmm3.AsUInt32()).AsSingle();
+                    xmm3 = Sse.Subtract(xmm3, xmm14.AsSingle());
+                    var xmm4 = xmm13;
+                    var xmm5 = xmm13;
+                    xmm4 = Sse.Multiply(xmm4, xmm2);
+                    xmm5 = Sse.Multiply(xmm5, xmm3);
+                    xmm4 = Sse.Add(xmm4, xmm12);
+                    xmm5 = Sse.Add(xmm5, xmm12);
+                    xmm4 = Sse.Multiply(xmm4, xmm2);
+                    xmm5 = Sse.Multiply(xmm5, xmm3);
+                    xmm4 = Sse.Add(xmm4, xmm11);
+                    xmm5 = Sse.Add(xmm5, xmm11);
+                    xmm4 = Sse.Multiply(xmm4, xmm2);
+                    xmm5 = Sse.Multiply(xmm5, xmm3);
+                    xmm4 = Sse.Add(xmm4, xmm10);
+                    xmm5 = Sse.Add(xmm5, xmm10);
+                    xmm4 = Sse.Multiply(xmm4, xmm2);
+                    xmm5 = Sse.Multiply(xmm5, xmm3);
+                    xmm4 = Sse.Add(xmm4, xmm9);
+                    xmm5 = Sse.Add(xmm5, xmm9);
+                    xmm4 = Sse.Multiply(xmm4, xmm2);
+                    xmm5 = Sse.Multiply(xmm5, xmm3);
+                    xmm4 = Sse.Add(xmm4, xmm0);
+                    xmm5 = Sse.Add(xmm5, xmm1);
+                    Unsafe.As<float, Vector128<float>>(ref r8) = xmm4;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r8, Vector128<float>.Count)) = xmm5;
+                }
+                unchecked
+                {
+                    olen = length - 3;
+                    for (; i < olen; i += 4)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var xmm0 = Sse2.And(xmm8, Unsafe.As<float, Vector128<uint>>(ref Unsafe.Add(ref rsi, i))).AsSingle();
+                        var xmm2 = Sse2.AndNot(xmm7, xmm0.AsUInt32()).AsSingle();
+                        xmm0 = Sse2.Subtract(xmm0.AsUInt32(), xmm14).AsSingle();
+                        xmm0 = Sse2.ShiftRightArithmetic(xmm0.AsInt32(), 23).AsSingle();
+                        xmm0 = Sse2.ConvertToVector128Single(xmm0.AsInt32());
+                        xmm2 = Sse2.Add(xmm14, xmm2.AsUInt32()).AsSingle();
+                        xmm2 = Sse.Subtract(xmm2, xmm14.AsSingle());
+                        var xmm4 = xmm13;
+                        xmm4 = Sse.Multiply(xmm4, xmm2);
+                        xmm4 = Sse.Add(xmm4, xmm12);
+                        xmm4 = Sse.Multiply(xmm4, xmm2);
+                        xmm4 = Sse.Add(xmm4, xmm11);
+                        xmm4 = Sse.Multiply(xmm4, xmm2);
+                        xmm4 = Sse.Add(xmm4, xmm10);
+                        xmm4 = Sse.Multiply(xmm4, xmm2);
+                        xmm4 = Sse.Add(xmm4, xmm9);
+                        xmm4 = Sse.Multiply(xmm4, xmm2);
+                        xmm4 = Sse.Add(xmm4, xmm0);
+                        Unsafe.As<float, Vector128<float>>(ref r8) = xmm4;
+                    }
+                    for (; i < length; i++)
+                    {
+                        ref var r8 = ref Unsafe.Add(ref rdi, i);
+                        var eax = Unsafe.As<float, uint>(ref Unsafe.Add(ref rsi, i)) << 1;
+                        var edx = eax << 8;
+                        eax -= 0x7f00_0000u;
+                        edx >>= 9;
+                        eax >>= 24;
+                        var xmm0 = (float)eax;
+                        edx = 0x3f80_0000u + edx;
+                        var xmm1 = BinaryExtensions.UInt32BitsToSingle(edx) - 1.0f;
+                        var xmm2 = xmm13.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm12.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm11.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm10.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm9.GetElement(0);
+                        xmm2 *= xmm1;
+                        xmm2 += xmm0;
+                        r8 = xmm2;
+                    }
+                }
+            }
+
+            #endregion
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using NUnit.Framework;
 
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
@@ -13,11 +15,11 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         public class Fallback
         {
             private static IEnumerable<int> FallbackSizeTestCaseGenerator() => SizeTestCaseGenerator();
-
+            #region Interleave
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveStereoWorksCorrectly(int size)
             {
-                PrepareStereo(size, out int[] a0, out int[] a1, out int[] b);
+                PrepareStereo(size, out var a0, out var a1, out var b);
                 AudioUtils.Fallback.InterleaveStereoInt32(b, a0, a1);
                 AssertArrayForInterleave(b);
             }
@@ -25,7 +27,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveThreeWorksCorrectly(int size)
             {
-                PrepareThree(size, out int[] a0, out int[] a1, out int[] a2, out int[] b);
+                PrepareThree(size, out var a0, out var a1, out var a2, out var b);
                 AudioUtils.Fallback.InterleaveThreeInt32(b, a0, a1, a2);
                 AssertArrayForInterleave(b);
             }
@@ -33,15 +35,19 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveQuadWorksCorrectly(int size)
             {
-                PrepareQuad(size, out int[] a0, out int[] a1, out int[] a2, out int[] a3, out int[] b);
+                PrepareQuad(size, out var a0, out var a1, out var a2, out var a3, out var b);
                 AudioUtils.Fallback.InterleaveQuadInt32(b, a0, a1, a2, a3);
                 AssertArrayForInterleave(b);
             }
 
+            #endregion
+
+            #region Duplicate
+
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void DuplicateMonauralToStereoWorksCorrectly(int size)
             {
-                PrepareDuplicate(size, 2, out int[] a, out int[] b);
+                PrepareDuplicate(size, 2, out var a, out var b);
                 var bf = MemoryMarshal.Cast<int, float>(b);
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralToStereo(bf, af);
@@ -51,7 +57,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void DuplicateMonauralTo3ChannelsWorksCorrectly(int size)
             {
-                PrepareDuplicate(size, 3, out int[] a, out int[] b);
+                PrepareDuplicate(size, 3, out var a, out var b);
                 var bf = MemoryMarshal.Cast<int, float>(b);
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralTo3Channels(bf, af);
@@ -61,12 +67,26 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void DuplicateMonauralTo4ChannelsWorksCorrectly(int size)
             {
-                PrepareDuplicate(size, 4, out int[] a, out int[] b);
+                PrepareDuplicate(size, 4, out var a, out var b);
                 var bf = MemoryMarshal.Cast<int, float>(b);
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralTo4Channels(bf, af);
                 AssertArrayForDuplicate(b, 4);
             }
+
+            #endregion
+
+            #region Log2
+            [TestCase(4095)]
+            [TestCase(128)]
+            public void FastLog2Order5FallbackCalculatesCorrectly(int size)
+            {
+
+                GenerateLog2TestArrays(size, out var src, out var exp, out var act);
+                AudioUtils.Fallback.FastLog2Order5Fallback(act, src);
+                TestHelper.AssertArrays(exp, act, 0.1);
+            }
+            #endregion
         }
     }
 }

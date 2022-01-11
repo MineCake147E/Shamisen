@@ -301,6 +301,129 @@ namespace Shamisen.Utils
                 }
             }
             #endregion
+
+            #region FastLog2
+            internal static void FastLog2Order5Fallback(Span<float> destination, ReadOnlySpan<float> source)
+            {
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                const float C0 = 4.6385369e-2f;
+                const float C1 = -1.9626966e-1f;
+                const float C2 = 4.175958e-1f;
+                const float C3 = -7.0966283e-1f;
+                const float C4 = 1.4419656f;
+                var v15_ns = new Vector<uint>(0x7f00_0000u);
+                var v14_ns = new Vector<uint>(0x3f80_0000u);
+                var v13_ns = new Vector<float>(C0);
+                var v12_ns = new Vector<float>(C1);
+                var v11_ns = new Vector<float>(C2);
+                var v10_ns = new Vector<float>(C3);
+                var v9_ns = new Vector<float>(C4);
+                var v8_ns = new Vector<uint>(0x7f80_0000u);
+                var v7_ns = new Vector<float>(5.9604645E-08f);
+                var olen = length - 2 * Vector<float>.Count + 1;
+                for (; i < olen; i += 2 * Vector<float>.Count)
+                {
+                    ref var x11 = ref Unsafe.Add(ref x10, i);
+                    var v0_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count));
+                    var v1_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count));
+                    var v2_ns = VectorUtils.AndNot(v8_ns, v0_ns.AsUInt32()).AsSingle();
+                    var v3_ns = VectorUtils.AndNot(v8_ns, v1_ns.AsUInt32()).AsSingle();
+                    v0_ns = Vector.BitwiseAnd(v0_ns.AsUInt32(), v8_ns).AsSingle();
+                    v1_ns = Vector.BitwiseAnd(v1_ns.AsUInt32(), v8_ns).AsSingle();
+                    v0_ns = (v0_ns.AsUInt32() + v0_ns.AsUInt32()).AsSingle();
+                    v1_ns = (v1_ns.AsUInt32() + v1_ns.AsUInt32()).AsSingle();
+                    v0_ns = (v0_ns.AsUInt32() - v15_ns).AsSingle();
+                    v1_ns = (v1_ns.AsUInt32() - v15_ns).AsSingle();
+                    v0_ns = Vector.ConvertToSingle(v0_ns.AsInt32());
+                    v0_ns *= v7_ns;
+                    v1_ns = Vector.ConvertToSingle(v1_ns.AsInt32());
+                    v1_ns *= v7_ns;
+                    var v4_ns = v13_ns;
+                    v2_ns = (v14_ns + v2_ns.AsUInt32()).AsSingle();
+                    v2_ns -= v14_ns.AsSingle();
+                    v3_ns = (v14_ns + v3_ns.AsUInt32()).AsSingle();
+                    v3_ns -= v14_ns.AsSingle();
+                    var v5_ns = v4_ns;
+                    v4_ns *= v2_ns;
+                    v4_ns += v12_ns;
+                    v5_ns *= v3_ns;
+                    v5_ns += v12_ns;
+                    v4_ns *= v2_ns;
+                    v4_ns += v11_ns;
+                    v5_ns *= v3_ns;
+                    v5_ns += v11_ns;
+                    v4_ns *= v2_ns;
+                    v4_ns += v10_ns;
+                    v5_ns *= v3_ns;
+                    v5_ns += v10_ns;
+                    v4_ns *= v2_ns;
+                    v4_ns += v9_ns;
+                    v5_ns *= v3_ns;
+                    v5_ns += v9_ns;
+                    v4_ns *= v2_ns;
+                    v4_ns += v0_ns;
+                    v5_ns *= v3_ns;
+                    v5_ns += v1_ns;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x11, 0 * Vector<float>.Count)) = v4_ns;
+                    Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x11, 1 * Vector<float>.Count)) = v5_ns;
+                }
+                unchecked
+                {
+                    olen = length - Vector<float>.Count + 1;
+                    for (; i < olen; i += Vector<float>.Count)
+                    {
+                        ref var x11 = ref Unsafe.Add(ref x10, i);
+                        var v0_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i));
+                        var v2_ns = VectorUtils.AndNot(v8_ns, v0_ns.AsUInt32()).AsSingle();
+                        v0_ns = Vector.BitwiseAnd(v0_ns.AsUInt32(), v8_ns).AsSingle();
+                        v0_ns = (v0_ns.AsUInt32() + v0_ns.AsUInt32()).AsSingle();
+                        v0_ns = (v0_ns.AsUInt32() - v15_ns).AsSingle();
+                        v0_ns = Vector.ConvertToSingle(v0_ns.AsInt32());
+                        v0_ns *= v7_ns;
+                        var v4_ns = v13_ns;
+                        v2_ns = (v14_ns + v2_ns.AsUInt32()).AsSingle();
+                        v2_ns -= v14_ns.AsSingle();
+                        v4_ns *= v2_ns;
+                        v4_ns += v12_ns;
+                        v4_ns *= v2_ns;
+                        v4_ns += v11_ns;
+                        v4_ns *= v2_ns;
+                        v4_ns += v10_ns;
+                        v4_ns *= v2_ns;
+                        v4_ns += v9_ns;
+                        v4_ns *= v2_ns;
+                        v4_ns += v0_ns;
+                        Unsafe.As<float, Vector<float>>(ref x11) = v4_ns;
+                    }
+                    for (; i < length; i++)
+                    {
+                        ref var x11 = ref Unsafe.Add(ref x10, i);
+                        var w0 = Unsafe.As<float, uint>(ref Unsafe.Add(ref x9, i)) << 1;
+                        var w1 = w0 << 8;
+                        w0 -= 0x7f00_0000u;
+                        w1 >>= 9;
+                        w0 >>= 24;
+                        var s0 = (float)w0;
+                        w1 = 0x3f80_0000u + w1;
+                        var s1 = BinaryExtensions.UInt32BitsToSingle(w1) - 1.0f;
+                        var s2 = v13_ns[0];
+                        s2 *= s1;
+                        s2 += v12_ns[0];
+                        s2 *= s1;
+                        s2 += v11_ns[0];
+                        s2 *= s1;
+                        s2 += v10_ns[0];
+                        s2 *= s1;
+                        s2 += v9_ns[0];
+                        s2 *= s1;
+                        s2 += s0;
+                        x11 = s2;
+                    }
+                }
+            }
+            #endregion
         }
     }
 }

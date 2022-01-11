@@ -4,6 +4,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
@@ -158,6 +159,23 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 }
             }
             Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
+        }
+        #endregion
+
+        #region Log2
+        internal static void GenerateLog2TestArrays(int size, out float[] src, out float[] exp, out float[] act)
+        {
+            src = new float[size];
+            exp = new float[size];
+            act = new float[size];
+            TestHelper.GenerateRandomRealNumbers(act);
+            var u = 4.0f / exp.Length;
+            for (var i = 0; i < exp.Length; i++)
+            {
+                var q = u * (i + 1);
+                src[i] = q;
+                exp[i] = MathF.Log2(q);
+            }
         }
         #endregion
     }

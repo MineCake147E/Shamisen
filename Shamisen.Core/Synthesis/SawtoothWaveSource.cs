@@ -58,7 +58,10 @@ namespace Shamisen.Synthesis
         /// </summary>
         public long Position { get => Theta.Value; set => Theta = new(value); }
 
-        private Fixed64 Theta { get; set; } = Fixed64.Zero;
+        /// <summary>
+        /// Gets or sets the current phase of this <see cref="SawtoothWaveSource"/>.
+        /// </summary>
+        public Fixed64 Theta { get; set; } = Fixed64.Zero;
 
         /// <summary>
         /// Gets or sets the angular velocity of this <see cref="SquareWaveSource"/>.
