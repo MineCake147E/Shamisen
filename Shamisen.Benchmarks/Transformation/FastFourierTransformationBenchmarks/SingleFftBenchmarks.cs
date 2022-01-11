@@ -11,7 +11,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
 using Shamisen.Conversion.WaveToSampleConverters;
-using Shamisen.Transformation;
+using Shamisen.Analysis;
 
 namespace Shamisen.Benchmarks.Transformation
 {
@@ -44,6 +44,6 @@ namespace Shamisen.Benchmarks.Transformation
         //[Benchmark]
         //public void PerformForward() => FastFourierTransformation.FFT(x, FftMode.Forward);
         [Benchmark]
-        public void PerformBackward() => FastFourierTransformation.FFT(x, FftMode.Backward);
+        public void PerformBackward() => CooleyTukeyFft.FFT(x, FftMode.Backward);
     }
 }

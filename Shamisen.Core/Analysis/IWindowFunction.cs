@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shamisen.Transformation
+namespace Shamisen.Analysis
 {
     /// <summary>
     /// Defines a base infrastructure of a Window function for FFT.

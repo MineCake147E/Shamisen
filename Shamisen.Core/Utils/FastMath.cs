@@ -55,6 +55,38 @@ namespace Shamisen.Utils
                 return Math.Max(x, y);
             }
         }
+
+        /// <returns>
+        /// Parameter x or y, whichever is larger.
+        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="double.NaN"/>,
+        /// the result might depend on CPUs.
+        /// </returns>
+        /// <inheritdoc cref="Math.Max(double, double)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double Max(double x, double y)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = Vector64.Create(x);
+                    var s1 = Vector64.Create(y);
+                    return AdvSimd.MaxNumberScalar(s0, s1).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    return Sse2.MaxScalar(xmm0, xmm1).GetElement(0);
+                }
+#endif
+                return Math.Max(x, y);
+            }
+        }
+
         /// <returns>
         /// Parameter x or y, whichever is smaller.
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
@@ -80,6 +112,37 @@ namespace Shamisen.Utils
                     var xmm0 = Vector128.CreateScalarUnsafe(x);
                     var xmm1 = Vector128.CreateScalarUnsafe(y);
                     return Sse.MinScalar(xmm0, xmm1).GetElement(0);
+                }
+#endif
+                return Math.Min(x, y);
+            }
+        }
+
+        /// <returns>
+        /// Parameter x or y, whichever is smaller.
+        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="double.NaN"/>,
+        /// the result might depend on CPUs.
+        /// </returns>
+        /// <inheritdoc cref="Math.Min(double, double)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double Min(double x, double y)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = Vector64.Create(x);
+                    var s1 = Vector64.Create(y);
+                    return AdvSimd.MinNumberScalar(s0, s1).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    return Sse2.MinScalar(xmm0, xmm1).GetElement(0);
                 }
 #endif
                 return Math.Min(x, y);

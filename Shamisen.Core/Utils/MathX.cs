@@ -12,7 +12,7 @@ namespace Shamisen
     /// </summary>
     public static class MathX
     {
-        private static readonly ReadOnlyMemory<Complex> PowerRootsOfUnity = new Complex[]
+        internal static readonly ReadOnlyMemory<Complex> PowerRootsOfUnity = new Complex[]
         {
             new Complex(0, 1),
             new Complex(0.7071067811865476, 0.7071067811865476),

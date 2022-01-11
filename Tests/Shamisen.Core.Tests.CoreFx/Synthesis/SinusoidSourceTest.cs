@@ -53,6 +53,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         }
 
         [TestCase(8192)]
+        [TestCase(8191)]
         public void GenerateMonauralBlockAvx2FmaMM256AccuratelyGenerates(int sampleRate, double frequency = 1.0)
         {
             if (!Avx2.IsSupported || !Fma.IsSupported)
@@ -68,6 +69,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         }
 
         [TestCase(8192)]
+        [TestCase(8191)]
         public void GenerateMonauralBlockAvx2MM256AccuratelyGenerates(int sampleRate, double frequency = 1.0)
         {
             if (!Avx2.IsSupported)
@@ -83,6 +85,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         }
 
         [TestCase(8192)]
+        [TestCase(8191)]
         public void GenerateMonauralBlockSse41AccuratelyGenerates(int sampleRate, double frequency = 1.0)
         {
             if (!Sse41.IsSupported)
@@ -98,6 +101,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         }
 
         [TestCase(8192)]
+        [TestCase(8191)]
         public void SinCalculatesAccurately(int sampleRate, double frequency = 1.0)
         {
 

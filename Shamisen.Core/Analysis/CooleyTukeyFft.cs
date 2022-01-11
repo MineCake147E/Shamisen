@@ -12,12 +12,12 @@ using Shamisen.Numerics;
 using Shamisen.Utils;
 using Shamisen.Utils.Numerics;
 
-namespace Shamisen.Transformation
+namespace Shamisen.Analysis
 {
     /// <summary>
     /// Contains functionality of Fast Fourier Transform.
     /// </summary>
-    public static partial class FastFourierTransformation
+    public static partial class CooleyTukeyFft
     {
         private const double Sqrt2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702492483605585073721264412149709993583141322266592750559275579995050115278206057147010955997160597027453459686;
         private const double SqrtHalf = 0.5 * Sqrt2;

@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 using Shamisen.Utils;
 using Shamisen.Utils.Intrinsics;
 
-namespace Shamisen.Transformation
+namespace Shamisen.Analysis
 {
-    public static partial class FastFourierTransformation
+    public static partial class CooleyTukeyFft
     {
         internal static partial class X86
         {

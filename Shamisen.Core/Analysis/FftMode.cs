@@ -1,4 +1,4 @@
-﻿namespace Shamisen.Transformation
+﻿namespace Shamisen.Analysis
 {
     /// <summary>
     /// Fast Fourier Transformation Modes

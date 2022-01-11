@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shamisen.Transformation
+namespace Shamisen.Analysis
 {
-    public static partial class FastFourierTransformation
+    public static partial class CooleyTukeyFft
     {
         internal static class Fallback
         {

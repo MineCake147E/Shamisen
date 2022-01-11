@@ -491,7 +491,6 @@ namespace Shamisen
 #endif
         public static int LogBase2(uint value)
         {
-            //https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER

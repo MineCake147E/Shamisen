@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using Shamisen.Core.Tests.CoreFx.TestUtils;
-using Shamisen.Transformation;
+using Shamisen.Analysis;
 
-namespace Shamisen.Core.Tests.CoreFx.Transformation
+namespace Shamisen.Core.Tests.CoreFx.Analysis
 {
     [TestFixture]
-    public class FastFourierTransformationTest
+    public class CooleyTukeyFftTest
     {
         private const double MachineEpsilon = 1.0 / (1ul << 52);
         #region FFTTest
@@ -32,10 +32,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
             Array.Copy(array, copy, array.Length);
             var span = new Span<Complex>(array);
 
-            FastFourierTransformation.FFT(span);
+            CooleyTukeyFft.FFT(span);
             Span<Complex> transformed = stackalloc Complex[array.Length];
             span.CopyTo(transformed);
-            FastFourierTransformation.FFT(span, FftMode.Backward);
+            CooleyTukeyFft.FFT(span, FftMode.Backward);
 
             try
             {
@@ -80,10 +80,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
             Array.Copy(array, copy, array.Length);
             var span = new Span<ComplexF>(array);
 
-            FastFourierTransformation.FFT(span);
+            CooleyTukeyFft.FFT(span);
             Span<ComplexF> transformed = stackalloc ComplexF[array.Length];
             span.CopyTo(transformed);
-            FastFourierTransformation.FFT(span, FftMode.Backward);
+            CooleyTukeyFft.FFT(span, FftMode.Backward);
 
             try
             {
@@ -120,12 +120,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         public void Perform2Avx2PerformsCorrectly(int order)
         {
             if (!Avx2.IsSupported)
-            {
                 Assert.Warn($"{nameof(Avx2)} is not supported!");
-            }
             PrepareArrays(order, out var fallback, out var optimized);
-            FastFourierTransformation.X86.Perform2Avx2(optimized);
-            FastFourierTransformation.Fallback.Perform2Fallback(fallback);
+            CooleyTukeyFft.X86.Perform2Avx2(optimized);
+            CooleyTukeyFft.Fallback.Perform2Fallback(fallback);
             TestHelper.AssertArrays(fallback, optimized);
         }
         [TestCase(1)]
@@ -135,12 +133,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         public void Perform2SsePerformsCorrectly(int order)
         {
             if (!Sse.IsSupported)
-            {
                 Assert.Warn($"{nameof(Sse)} is not supported!");
-            }
             PrepareArrays(order, out var fallback, out var optimized);
-            FastFourierTransformation.X86.Perform2Sse(optimized);
-            FastFourierTransformation.Fallback.Perform2Fallback(fallback);
+            CooleyTukeyFft.X86.Perform2Sse(optimized);
+            CooleyTukeyFft.Fallback.Perform2Fallback(fallback);
             TestHelper.AssertArrays(fallback, optimized);
         }
 
@@ -155,12 +151,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         public void Perform4Avx2PerformsCorrectly(int order, FftMode mode)
         {
             if (!Avx2.IsSupported)
-            {
                 Assert.Warn($"{nameof(Avx2)} is not supported!");
-            }
             PrepareArrays(order, out var fallback, out var optimized);
-            FastFourierTransformation.X86.Perform4Avx2(optimized, mode);
-            FastFourierTransformation.Fallback.Perform4Fallback(fallback, mode);
+            CooleyTukeyFft.X86.Perform4Avx2(optimized, mode);
+            CooleyTukeyFft.Fallback.Perform4Fallback(fallback, mode);
             TestHelper.AssertArrays(fallback, optimized);
         }
 
@@ -175,12 +169,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         public void Perform4SsePerformsCorrectly(int order, FftMode mode)
         {
             if (!Sse.IsSupported)
-            {
                 Assert.Warn($"{nameof(Sse)} is not supported!");
-            }
             PrepareArrays(order, out var fallback, out var optimized);
-            FastFourierTransformation.X86.Perform4Sse(optimized, mode);
-            FastFourierTransformation.Fallback.Perform4Fallback(fallback, mode);
+            CooleyTukeyFft.X86.Perform4Sse(optimized, mode);
+            CooleyTukeyFft.Fallback.Perform4Fallback(fallback, mode);
             TestHelper.AssertArrays(fallback, optimized);
         }
 
@@ -207,10 +199,10 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         [TestCase(11)]
         public void FFTCacheDumpDouble(int index = 5)
         {
-            Span<Complex> span = stackalloc Complex[1 << (index - 1)];
-            FastFourierTransformation.CalculateCache(FftMode.Forward, index, span);
+            Span<Complex> span = stackalloc Complex[1 << index - 1];
+            CooleyTukeyFft.CalculateCache(FftMode.Forward, index, span);
             Span<ComplexF> spanF = stackalloc ComplexF[span.Length];
-            FastFourierTransformation.CalculateCache(FftMode.Forward, index, spanF);
+            CooleyTukeyFft.CalculateCache(FftMode.Forward, index, spanF);
             try
             {
                 for (var i = 0; i < span.Length; i++)
@@ -243,8 +235,8 @@ namespace Shamisen.Core.Tests.CoreFx.Transformation
         [TestCase(5, FftMode.Backward)]
         public void FFTCacheDumpFloat(int index, FftMode mode)
         {
-            Span<ComplexF> span = stackalloc ComplexF[1 << (index - 1)];
-            FastFourierTransformation.CalculateCache(mode, index, span);
+            Span<ComplexF> span = stackalloc ComplexF[1 << index - 1];
+            CooleyTukeyFft.CalculateCache(mode, index, span);
             for (var i = 0; i < span.Length; i++)
             {
                 Console.WriteLine($"{span[i]}");
