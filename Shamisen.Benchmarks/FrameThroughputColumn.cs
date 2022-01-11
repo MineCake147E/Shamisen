@@ -15,7 +15,7 @@ namespace Shamisen.Benchmarks
             FrameSelector = frameSelector ?? throw new ArgumentNullException(nameof(frameSelector));
         }
 
-        public string Id => "FrameThroughput";
+        public string Id { get; } = $"FrameThroughput{Guid.NewGuid()}";
         public string ColumnName { get; init; } = "Frame Throughput [Frames/s]";
         public bool AlwaysShow => true;
         public ColumnCategory Category => ColumnCategory.Custom;

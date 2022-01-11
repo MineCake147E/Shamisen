@@ -4,6 +4,149 @@
         <name>Shamisen.Core</name>
     </assembly>
     <members>
+        <member name="T:Shamisen.Analysis.CooleyTukeyFft">
+            <summary>
+            Contains functionality of Fast Fourier Transform.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.CooleyTukeyFft.PowerRootsOfUnity">
+            <summary>
+            Contains (1 &lt;&lt; n) root of unity.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Span{System.Numerics.Complex},Shamisen.Analysis.FftMode)">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="span">The buffer.</param>
+            <param name="mode">The FFT's Mode.</param>
+            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Span{Shamisen.ComplexF},Shamisen.Analysis.FftMode)">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="span">The buffer.</param>
+            <param name="mode">The FFT's Mode.</param>
+            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Numerics.Complex[],System.Int32,System.Int32)">
+            <summary>
+            Transforms the specified buffer using Cooley-Tukey algorithm.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="offset">The offset.</param>
+            <param name="count">The count.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(Shamisen.ComplexF[],System.Int32,System.Int32)">
+            <summary>
+            Transforms the specified buffer using Cooley-Tukey algorithm.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="offset">The offset.</param>
+            <param name="count">The count.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Reverse``1(System.Span{``0})">
+            <summary>
+            Performs Bit-Reversal permutation of the <paramref name="span"/>.
+            </summary>
+            <param name="span">The in/out span.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.CalculateCache(Shamisen.Analysis.FftMode,System.Int32,System.Span{System.Numerics.Complex})">
+            <summary>
+            Calculates the cache of the powers of root of unity.
+            </summary>
+            <param name="mode">The mode.</param>
+            <param name="index">The index.</param>
+            <param name="omegas">The omegas.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.CalculateCache(Shamisen.Analysis.FftMode,System.Int32,System.Span{Shamisen.ComplexF})">
+            <summary>
+            Calculates the cache of the powers of root of unity.
+            </summary>
+            <param name="mode">The mode.</param>
+            <param name="index">The index.</param>
+            <param name="omegas">The omegas.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Perform(System.Span{System.Numerics.Complex},Shamisen.Analysis.FftMode)">
+            <summary>
+            Performs forward transform to the specified span.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="mode">The FFT's Mode.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Perform(System.Span{Shamisen.ComplexF},Shamisen.Analysis.FftMode)">
+            <summary>
+            Performs forward transform to the specified span.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="mode">The FFT's Mode.</param>
+        </member>
+        <member name="T:Shamisen.Analysis.FftMode">
+            <summary>
+            Fast Fourier Transformation Modes
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.FftMode.Forward">
+            <summary>
+            The forward transform.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.FftMode.Backward">
+            <summary>
+            The backward transform.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle">
+            <summary>
+            Provides a way to perform FFT with fixed size for monaural signal.
+            Useful for making real-time FFT analyzer.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Size">
+            <summary>
+            The size of FFT.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Mode">
+            <summary>
+            The FFT mode.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.#ctor(System.Int32,Shamisen.Analysis.FftMode)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle"/>.
+            </summary>
+            <param name="size">The FFT Size. Must be a power of two and be larger than 7.</param>
+            <param name="mode">The FFT Mode.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.PerformFft(System.Span{Shamisen.ComplexF})">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="destination">The buffer.</param>
+            <exception cref="T:System.ArgumentException">The length of <paramref name="destination"/> must be the same as <see cref="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Size"/>! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.Analysis.IWindowFunction">
+            <summary>
+            Defines a base infrastructure of a Window function for FFT.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.IWindowFunction.Generate(System.Span{System.Single})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Analysis.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.IWindowFunction.Generate(System.Span{System.Double})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Analysis.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
         <member name="T:Shamisen.AudioEncoding">
             <summary>
             Defines known encoding types.
@@ -13356,6 +13499,14 @@
             </returns>
             <inheritdoc cref="M:System.Math.Max(System.Single,System.Single)"/>
         </member>
+        <member name="M:Shamisen.Utils.FastMath.Max(System.Double,System.Double)">
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Max(System.Double,System.Double)"/>
+        </member>
         <member name="M:Shamisen.Utils.FastMath.Min(System.Single,System.Single)">
             <returns>
             Parameter x or y, whichever is smaller.
@@ -13363,6 +13514,14 @@
             the result might depend on CPUs.
             </returns>
             <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.Utils.FastMath.Min(System.Double,System.Double)">
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Min(System.Double,System.Double)"/>
         </member>
         <member name="M:Shamisen.Utils.FastMath.MaxUnsignedInputs(System.Single,System.Single)">
             <summary>
@@ -18815,116 +18974,6 @@
         <member name="M:Shamisen.Synthesis.TriangleWaveSource.Dispose">
             <inheritdoc/>
         </member>
-        <member name="T:Shamisen.Transformation.FastFourierTransformation">
-            <summary>
-            Contains functionality of Fast Fourier Transform.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Transformation.FastFourierTransformation.PowerRootsOfUnity">
-            <summary>
-            Contains (1 &lt;&lt; n) root of unity.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Span{System.Numerics.Complex},Shamisen.Transformation.FftMode)">
-            <summary>
-            Transforms the specified span using Cooley-Tukey algorithm.
-            </summary>
-            <param name="span">The buffer.</param>
-            <param name="mode">The FFT's Mode.</param>
-            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Span{Shamisen.ComplexF},Shamisen.Transformation.FftMode)">
-            <summary>
-            Transforms the specified span using Cooley-Tukey algorithm.
-            </summary>
-            <param name="span">The buffer.</param>
-            <param name="mode">The FFT's Mode.</param>
-            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(System.Numerics.Complex[],System.Int32,System.Int32)">
-            <summary>
-            Transforms the specified buffer using Cooley-Tukey algorithm.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="offset">The offset.</param>
-            <param name="count">The count.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.FFT(Shamisen.ComplexF[],System.Int32,System.Int32)">
-            <summary>
-            Transforms the specified buffer using Cooley-Tukey algorithm.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <param name="offset">The offset.</param>
-            <param name="count">The count.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Reverse``1(System.Span{``0})">
-            <summary>
-            Bit-Reversal
-            </summary>
-            <param name="span">The in/out span.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.CalculateCache(Shamisen.Transformation.FftMode,System.Int32,System.Span{System.Numerics.Complex})">
-            <summary>
-            Calculates the cache of the powers of root of unity.
-            </summary>
-            <param name="mode">The mode.</param>
-            <param name="index">The index.</param>
-            <param name="omegas">The omegas.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.CalculateCache(Shamisen.Transformation.FftMode,System.Int32,System.Span{Shamisen.ComplexF})">
-            <summary>
-            Calculates the cache of the powers of root of unity.
-            </summary>
-            <param name="mode">The mode.</param>
-            <param name="index">The index.</param>
-            <param name="omegas">The omegas.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Perform(System.Span{System.Numerics.Complex},Shamisen.Transformation.FftMode)">
-            <summary>
-            Performs forward transform to the specified span.
-            </summary>
-            <param name="span">The span.</param>
-            <param name="mode">The FFT's Mode.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.FastFourierTransformation.Perform(System.Span{Shamisen.ComplexF},Shamisen.Transformation.FftMode)">
-            <summary>
-            Performs forward transform to the specified span.
-            </summary>
-            <param name="span">The span.</param>
-            <param name="mode">The FFT's Mode.</param>
-        </member>
-        <member name="T:Shamisen.Transformation.FftMode">
-            <summary>
-            Fast Fourier Transformation Modes
-            </summary>
-        </member>
-        <member name="F:Shamisen.Transformation.FftMode.Forward">
-            <summary>
-            The forward transform.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Transformation.FftMode.Backward">
-            <summary>
-            The backward transform.
-            </summary>
-        </member>
-        <member name="T:Shamisen.Transformation.IWindowFunction">
-            <summary>
-            Defines a base infrastructure of a Window function for FFT.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Transformation.IWindowFunction.Generate(System.Span{System.Single})">
-            <summary>
-            Generates a cache for this <see cref="T:Shamisen.Transformation.IWindowFunction"/>.
-            </summary>
-            <param name="destination">The destination.</param>
-        </member>
-        <member name="M:Shamisen.Transformation.IWindowFunction.Generate(System.Span{System.Double})">
-            <summary>
-            Generates a cache for this <see cref="T:Shamisen.Transformation.IWindowFunction"/>.
-            </summary>
-            <param name="destination">The destination.</param>
-        </member>
         <member name="T:Shamisen.AudioSourceUtils">
             <summary>
             Contains some utility functions for <see cref="T:Shamisen.IAudioSource`2"/>.
@@ -20878,6 +20927,384 @@
             </summary>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Numerics.Vector4,System.Numerics.Vector3)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back three values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_UnaryNegation(System.Numerics.Vector7)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Addition(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Subtraction(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Single,System.Numerics.Vector7)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Equality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Inequality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Numerics.Vector7)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector8">
+            <summary>
+            Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value8">
+            <summary>
+            The eighth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Front">
+            <summary>
+            The front 4 values
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+            <param name="v8">The v8.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Numerics.Vector4,System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back four values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_UnaryNegation(System.Numerics.Vector8)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Addition(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.PointerExtensions">
+            <summary>
+            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
+            </summary>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
+        </member>
+        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
+            <summary>
+            Increments the specified <see cref="T:System.UIntPtr"/> value.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
+        </member>
+    </members>
+</doc>
+
         <member name="M:System.Numerics.Vector7.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.

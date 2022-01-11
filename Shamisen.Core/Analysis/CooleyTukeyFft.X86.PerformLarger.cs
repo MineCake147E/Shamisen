@@ -255,7 +255,7 @@ namespace Shamisen.Analysis
 
             #region PerformLargerOrder
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            private static void PerformLargerOrderX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
+            internal static void PerformLargerOrderX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 if (Avx.IsSupported)
                 {
@@ -265,7 +265,7 @@ namespace Shamisen.Analysis
                 PerformLargerOrderFallbackX86(span, omegas);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             private static void PerformLargerOrderFallbackX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 nint mHalf = omegas.Length;
@@ -297,7 +297,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void PerformLargerOrderAvx(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 nint mHalf = omegas.Length;
@@ -329,12 +329,12 @@ namespace Shamisen.Analysis
                     k &= mhMask;
                     j += u;
                     var ymm0 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r9, 0));
-                    var ymm4 = Avx.Permute(ymm0, 0b10_11_00_01);
                     var ymm1 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r9, 4));
-                    var ymm5 = Avx.Permute(ymm1, 0b10_11_00_01);
                     var ymm2 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r9, 8));
-                    var ymm6 = Avx.Permute(ymm2, 0b10_11_00_01);
                     var ymm3 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r9, 12));
+                    var ymm4 = Avx.Permute(ymm0, 0b10_11_00_01);
+                    var ymm5 = Avx.Permute(ymm1, 0b10_11_00_01);
+                    var ymm6 = Avx.Permute(ymm2, 0b10_11_00_01);
                     var ymm7 = Avx.Permute(ymm3, 0b10_11_00_01);
                     ymm0 = Avx.Multiply(ymm0, ymm8);
                     ymm8 = Unsafe.As<ComplexF, Vector256<float>>(ref Unsafe.Add(ref r10, 0));

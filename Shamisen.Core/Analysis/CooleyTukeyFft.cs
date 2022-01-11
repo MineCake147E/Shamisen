@@ -57,9 +57,9 @@ namespace Shamisen.Analysis
 
         #region Common Caches
         private static ReadOnlySpan<byte> OmegasForwardOrder8Internal => new byte[] { 0, 0, 128, 63, 0, 0, 0, 0, 243, 4, 53, 63, 243, 4, 53, 191, 0, 0, 0, 0, 0, 0, 128, 191, 243, 4, 53, 191, 243, 4, 53, 191 };
-        private static ReadOnlySpan<ComplexF> OmegasForwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasForwardOrder8Internal);
+        internal static ReadOnlySpan<ComplexF> OmegasForwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasForwardOrder8Internal);
         private static ReadOnlySpan<byte> OmegasBackwardOrder8Internal => new byte[] { 0, 0, 128, 63, 0, 0, 0, 0, 243, 4, 53, 63, 243, 4, 53, 63, 0, 0, 0, 0, 0, 0, 128, 63, 243, 4, 53, 191, 243, 4, 53, 63 };
-        private static ReadOnlySpan<ComplexF> OmegasBackwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasBackwardOrder8Internal);
+        internal static ReadOnlySpan<ComplexF> OmegasBackwardOrder8 => MemoryMarshal.Cast<byte, ComplexF>(OmegasBackwardOrder8Internal);
         #endregion
 
         /// <summary>
@@ -131,9 +131,10 @@ namespace Shamisen.Analysis
         public static void FFT(ComplexF[] buffer, int offset, int count) => FFT(new Span<ComplexF>(buffer, offset, count));
 
         /// <summary>
-        /// Bit-Reversal
+        /// Performs Bit-Reversal permutation of the <paramref name="span"/>.
         /// </summary>
         /// <param name="span">The in/out span.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void Reverse<T>(Span<T> span)
         {
             if (!MathI.IsPowerOfTwo(span.Length)) throw new ArgumentException("The length of span must be a power of 2!", nameof(span));
@@ -380,7 +381,7 @@ namespace Shamisen.Analysis
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static void Perform4(Span<ComplexF> span, FftMode mode)
+        internal static void Perform4(Span<ComplexF> span, FftMode mode)
         {
             unchecked
             {
@@ -431,15 +432,27 @@ namespace Shamisen.Analysis
             }
         }
 
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseInternal<T>(Span<T> span)
         {
-            var bits = MathI.LogBase2((uint)span.Length);
+            //O(sqrt(n)) permutation
+            var length = (int)MathI.ExtractHighestSetBit((uint)span.Length);
+            var bits = MathI.LogBase2((uint)length);
             var shift = 32 - bits;
-            for (var i = span.Length >> (bits >> 1); i < span.Length; i++)
+            ref var x9 = ref MemoryMarshal.GetReference(span);
+            for (var i = length >> (bits >> 1); i < length; i++)
             {
-                var index = (int)MathI.ReverseBitOrder((uint)i << shift);
+                var shifted = (uint)i << shift;
+                var d = MathI.TrailingZeroCount((uint)i);
+                var q = MathI.LeadingZeroCount(shifted);
+                if (q > d) continue;
+                ref var x1 = ref Unsafe.Add(ref x9, i);
+                var v = x1;
+                var index = (int)MathI.ReverseBitOrder(shifted);
+                ref var x2 = ref Unsafe.Add(ref x9, index);
                 if (index >= i) continue;
-                (span[index], span[i]) = (span[i], span[index]);
+                x1 = x2;
+                x2 = v;
             }
         }
     }
