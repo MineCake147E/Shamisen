@@ -6,6 +6,7 @@
 [![.NET](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml/badge.svg)](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml)  
 A Cross-Platform Audio Library for:
 
+- .NET 6
 - .NET 5
 - .NET Core 3.1
 - .NET Standard 2.1
@@ -13,8 +14,8 @@ A Cross-Platform Audio Library for:
 
 ## Usage of Shamisen
 
+- Fast Digital Signal Processing
 - Abstraction Layer for Audio I/O
-- Digital Signal Processing
 
 ## Currently implemented features
 
@@ -50,7 +51,7 @@ A Cross-Platform Audio Library for:
 - Forward transformation rescales result by 1/N.
 - The memory consumption is O(N) even though the FFT is done in-place.
 - Does not need initialization for certain fixed size by default.
-  - Fixed-size variant will be added.
+  - Fixed-size variant is also implemented and is slightly faster.
 - It requires that the size of the data be a power of two. Otherwise, the data will be implicitly resized to the size of the largest power of two less than the original size.
 
 #### Fast conversion between PCM sample formats
