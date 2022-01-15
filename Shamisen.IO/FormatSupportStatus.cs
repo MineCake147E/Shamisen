@@ -4,135 +4,24 @@ using System.Runtime.InteropServices;
 
 using Shamisen.Formats;
 
-using TFlags = System.Byte;
-
 namespace Shamisen.IO
 {
     /// <summary>
-    /// Indicates how the <see cref="IWaveFormat"/> is supported by the <see cref="Shamisen"/>.
+    /// Represents the support status of certain format in certain device.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = sizeof(TFlags))]
-    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly struct FormatSupportStatus : IEquatable<FormatSupportStatus>
+    public enum FormatSupportStatus : byte
     {
-        [FieldOffset(0)]
-        private readonly TFlags value;
-
-        private const TFlags FlagChecked = 0b1;
-
-        private const TFlags FlagHasSoftwareSupport = 0b10;
-
-        private const TFlags FlagNativelySupported = 0b100;
-
-        private const TFlags FlagSupported = 0b110;
-
         /// <summary>
-        /// The value which indicates the <see cref="IAudioDevice"/> has no ability to check the support status currently.
+        /// The <see cref="IWaveFormat"/> is not supported by both device and binding.
         /// </summary>
-        public static readonly FormatSupportStatus Unchecked = new(false, false, false);
-
+        NotSupported,
         /// <summary>
-        /// The value which indicates the <see cref="IWaveFormat"/> is not supported by the <see cref="IAudioDevice"/>.
+        /// The <see cref="IWaveFormat"/> is supported by the binding, but requires either down-sampling, re-quantization, or both, which may result in lower quality.
         /// </summary>
-        public static readonly FormatSupportStatus NotSupported = new(true, false, false);
-
+        SupportedByBinding,
         /// <summary>
-        /// The value which indicates the <see cref="IWaveFormat"/> is supported by the <see cref="IAudioDevice"/> and its binding, by converting the audio into some different format.
+        /// The <see cref="IWaveFormat"/> is supported by the hardware and does not require any down-sampling or re-quantization.
         /// </summary>
-        public static readonly FormatSupportStatus SupportedByBinding = new(true, true, false);
-
-        /// <summary>
-        /// The value which indicates the <see cref="IWaveFormat"/> is supported by the <see cref="IAudioDevice"/> natively, without converting the audio into some different format.
-        /// </summary>
-        public static readonly FormatSupportStatus SupportedByBackend = new(true, false, true);
-
-        private FormatSupportStatus(bool isChecked, bool hasBindingSupport, bool isNativelySupported)
-        {
-            TFlags v = 0;
-            if (isChecked) v |= FlagChecked;
-            if (hasBindingSupport) v |= FlagHasSoftwareSupport;
-            if (isNativelySupported) v |= FlagNativelySupported;
-            value = v;
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="IWaveFormat"/> has been checked the availability on the device.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is checked; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsChecked => (value & FlagChecked) > 0;
-
-        /// <summary>
-        /// Gets a value indicating whether the format is supported.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is supported; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSupported => (value & FlagSupported) > 0;
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="IWaveFormat"/> is natively supported.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is natively supported; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsNativelySupported => (value & FlagNativelySupported) > 0;
-
-        /// <summary>
-        /// Indicates whether this instance and a specified object are equal.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current instance.</param>
-        /// <returns>
-        /// true if <paramref name="obj">obj</paramref> and this instance are the same type and represent the same value; otherwise, false.
-        /// </returns>
-        public override bool Equals(object? obj) => obj is FormatSupportStatus status && Equals(status);
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
-        /// </returns>
-        public bool Equals(FormatSupportStatus other) => value == other.value;
-
-        /// <summary>
-        /// Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A 32-bit signed integer that is the hash code for this instance.
-        /// </returns>
-        public override int GetHashCode() => -1584136870 + value.GetHashCode();
-
-        /// <summary>
-        /// Indicates whether the values of two specified <see cref="FormatSupportStatus"/> objects are equal.
-        /// </summary>
-        /// <param name="left">The first <see cref="FormatSupportStatus"/> to compare.</param>
-        /// <param name="right">The second <see cref="FormatSupportStatus"/> to compare.</param>
-        /// <returns>
-        ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool operator ==(FormatSupportStatus left, FormatSupportStatus right) => left.Equals(right);
-
-        /// <summary>
-        /// Indicates whether the values of two specified <see cref="FormatSupportStatus"/> objects are not equal.
-        /// </summary>
-        /// <param name="left">The first <see cref="FormatSupportStatus"/> to compare.</param>
-        /// <param name="right">The second  <see cref="FormatSupportStatus"/> to compare.</param>
-        /// <returns>
-        ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool operator !=(FormatSupportStatus left, FormatSupportStatus right) => !(left == right);
-
-        /// <summary>
-        /// Converts to string.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string" /> that represents this instance.
-        /// </returns>
-        public override string? ToString() => $"({nameof(IsChecked)} : {IsChecked}, {nameof(IsNativelySupported)} : {IsNativelySupported}, {nameof(IsSupported)} : {IsSupported})";
-
-        private string GetDebuggerDisplay() => ToString() ?? "null";
+        SupportedByHardware
     }
 }

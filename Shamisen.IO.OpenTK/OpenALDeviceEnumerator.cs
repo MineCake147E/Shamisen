@@ -39,7 +39,7 @@ namespace Shamisen.IO
         /// </returns>
         /// <exception cref="NotSupportedException">
         /// </exception>
-        public IEnumerable<IAudioDevice> EnumerateDevices(DataFlow dataFlow)
+        public IEnumerable<IAudioDevice> EnumerateOutputDevices(DataFlow dataFlow)
         {
             switch (dataFlow)
             {
@@ -87,7 +87,7 @@ namespace Shamisen.IO
         public async IAsyncEnumerable<IAudioDevice> EnumerateDevicesAsync(DataFlow dataFlow)
 #pragma warning restore CS1998
         {
-            foreach (var item in EnumerateDevices(dataFlow))
+            foreach (var item in EnumerateOutputDevices(dataFlow))
             {
                 yield return item;
             }

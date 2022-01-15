@@ -56,7 +56,7 @@ namespace Shamisen.Tests.IO.OpenTK
               });
             _ = Task.Run(() =>
             {
-                foreach (var item in OpenALDeviceEnumerator.Instance.EnumerateDevices(DataFlow.Render))
+                foreach (var item in OpenALDeviceEnumerator.Instance.EnumerateOutputDevices(DataFlow.Render))
                 {
                     if (item is IAudioOutputDevice<OpenALOutput> device)
                     {

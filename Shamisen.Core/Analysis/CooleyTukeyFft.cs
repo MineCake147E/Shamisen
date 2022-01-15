@@ -29,31 +29,7 @@ namespace Shamisen.Analysis
         /// <summary>
         /// Contains (1 &lt;&lt; n) root of unity.
         /// </summary>
-        private static readonly ReadOnlyMemory<Complex> PowerRootsOfUnity = new Complex[]
-        {
-            /*      1 */new Complex(1, 0),
-            /*      2 */new Complex(-1, 0),
-            /*      4 */new Complex(0, 1),
-            /*      8 */new Complex(0.70710678118654757, 0.70710678118654757),
-            /*     16 */new Complex(0.92387953251128674, 0.38268343236508978),
-            /*     32 */new Complex(0.98078528040323043, 0.19509032201612828),
-            /*     64 */new Complex(0.99518472667219693, 0.0980171403295606),
-            /*    128 */new Complex(0.99879545620517241, 0.049067674327418015),
-            /*    256 */new Complex(0.99969881869620425, 0.024541228522912288),
-            /*    512 */new Complex(0.9999247018391445, 0.012271538285719925),
-            /*   1024 */new Complex(0.99998117528260111, 0.0061358846491544753),
-            /*   2048 */new Complex(0.99999529380957619, 0.0030679567629659761),
-            /*   4096 */new Complex(0.99999882345170188, 0.0015339801862847657),
-            /*   8192 */new Complex(0.99999970586288223, 0.00076699031874270449),
-            /*  16384 */new Complex(0.99999992646571789, 0.00038349518757139556),
-            /*  32768 */new Complex(0.99999998161642933, 0.00019174759731070332),
-            /*  65536 */new Complex(0.99999999540410733, 9.5873799095977345E-05),
-            /* 131072 */new Complex(0.99999999885102686, 4.7936899603066881E-05),
-            /* 262144 */new Complex(0.99999999971275666, 2.3968449808418219E-05),
-            /* 524288 */new Complex(0.99999999992818922, 1.1984224905069707E-05),
-            /*1048576 */new Complex(0.99999999999551181, 2.9960562263346608E-06),
-            /*2097152 */new Complex(0.999999999998878, 1.4980281131690111E-06)
-        };
+        private static ReadOnlyMemory<Complex> PowerRootsOfUnity => MathX.PowerRootsOfUnity;
 
         #region Common Caches
         private static ReadOnlySpan<byte> OmegasForwardOrder8Internal => new byte[] { 0, 0, 128, 63, 0, 0, 0, 0, 243, 4, 53, 63, 243, 4, 53, 191, 0, 0, 0, 0, 0, 0, 128, 191, 243, 4, 53, 191, 243, 4, 53, 191 };
@@ -447,9 +423,9 @@ namespace Shamisen.Analysis
                 var q = MathI.LeadingZeroCount(shifted);
                 if (q > d) continue;
                 ref var x1 = ref Unsafe.Add(ref x9, i);
-                var v = x1;
                 var index = (int)MathI.ReverseBitOrder(shifted);
                 ref var x2 = ref Unsafe.Add(ref x9, index);
+                var v = x1;
                 if (index >= i) continue;
                 x1 = x2;
                 x2 = v;

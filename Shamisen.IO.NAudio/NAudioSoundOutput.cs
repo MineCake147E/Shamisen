@@ -20,10 +20,12 @@ namespace Shamisen.IO
         /// Initializes a new instance of the <see cref="NAudioSoundOutput"/> class.
         /// </summary>
         /// <param name="backend">The backend.</param>
+        /// <param name="source">The <see cref="IWaveSource"/> that provides the sound to play.</param>
         /// <exception cref="ArgumentNullException">backend</exception>
-        public NAudioSoundOutput(IWavePlayer backend)
+        public NAudioSoundOutput(IWavePlayer backend, IWaveSource source)
         {
             Backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            backend.Init(new ShamisenWaveProvider(source));
         }
 
         /// <summary>
@@ -41,12 +43,6 @@ namespace Shamisen.IO
         /// The state of the playback.
         /// </value>
         public PlaybackState PlaybackState => NAudioInteroperationUtils.AsShamisenPlaybackState(Backend.PlaybackState);
-
-        /// <summary>
-        /// Initializes the <see cref="ISoundOut" /> for playing a <paramref name="source" />.
-        /// </summary>
-        /// <param name="source">The source to play.</param>
-        public void Initialize(IWaveSource source) => Backend.Init(new ShamisenWaveProvider(source));
 
         /// <summary>
         /// Pauses the audio playback.

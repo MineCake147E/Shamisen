@@ -58,7 +58,7 @@ namespace Shamisen.IO
         /// <summary>
         /// Gets the internal <see cref="IWaveIn"/>.
         /// </summary>
-        public IWaveIn? WaveIn { get; private set; }
+        private IWaveIn? WaveIn { get; set; }
 
         /// <inheritdoc/>
         public IWaveFormat Format { get; }

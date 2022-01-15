@@ -19,7 +19,6 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
         private const double MachineEpsilon = 1.0 / (1ul << 52);
         #region FFTTest
 
-
         [TestCase]
         public void FFTTestDouble()
         {

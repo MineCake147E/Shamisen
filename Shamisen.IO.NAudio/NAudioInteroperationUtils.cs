@@ -15,6 +15,7 @@ namespace Shamisen.IO
     /// </summary>
     public static class NAudioInteroperationUtils
     {
+        #region Shamisen->NAudio
         /// <summary>
         /// Converts <see cref="PlaybackState"/> instance to <see cref="NPlaybackState"/>.
         /// </summary>
@@ -32,6 +33,8 @@ namespace Shamisen.IO
                 _ => Unsafe.As<PlaybackState, NPlaybackState>(ref playbackState),
             };
 
+        #endregion
+        #region NAudio->Shamisen
         /// <summary>
         /// Converts <see cref="NPlaybackState"/> instance to <see cref="PlaybackState"/>.
         /// </summary>
@@ -59,5 +62,20 @@ namespace Shamisen.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static WaveFormat AsShamisenWaveFormat(this NWaveFormat sourceFormat) => new(sourceFormat.SampleRate, sourceFormat.BitsPerSample, sourceFormat.Channels,
                         (AudioEncoding)(short)sourceFormat.Encoding, sourceFormat.ExtraSize);
+
+        /// <summary>
+        /// Converts <see cref="NAudio.CoreAudioApi.DataFlow"/> value to <see cref="DataFlow"/>.
+        /// </summary>
+        /// <param name="sourceFlow">The <see cref="NAudio.CoreAudioApi.DataFlow"/> to convert.</param>
+        /// <returns>The converted <see cref="DataFlow"/> value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static DataFlow AsShamisenDataFlow(this NAudio.CoreAudioApi.DataFlow sourceFlow) => sourceFlow switch
+        {
+            NAudio.CoreAudioApi.DataFlow.Render => DataFlow.Render,
+            NAudio.CoreAudioApi.DataFlow.Capture => DataFlow.Capture,
+            NAudio.CoreAudioApi.DataFlow.All => DataFlow.Render | DataFlow.Capture,
+            _ => DataFlow.None,
+        };
+        #endregion
     }
 }
