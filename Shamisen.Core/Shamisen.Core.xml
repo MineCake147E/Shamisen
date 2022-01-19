@@ -9,7 +9,7 @@
             Contains functionality of Fast Fourier Transform.
             </summary>
         </member>
-        <member name="P:Shamisen.Analysis.CooleyTukeyFft.PowerRootsOfUnity">
+        <member name="F:Shamisen.Analysis.CooleyTukeyFft.PowerRootsOfUnity">
             <summary>
             Contains (1 &lt;&lt; n) root of unity.
             </summary>

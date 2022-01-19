@@ -52,100 +52,6 @@
             The <see cref="T:Shamisen.IWaveFormat"/> is supported by the hardware and does not require any down-sampling or re-quantization.
             </summary>
         </member>
-        <member name="T:Shamisen.IO.IAudioDevice">
-            <summary>
-            Defines a base structure of an audio device.<br/>
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IAudioDevice.Name">
-            <summary>
-            Gets the name of this audio device.
-            </summary>
-            <value>
-            The name of this audio device.
-            </value>
-        </member>
-        <member name="P:Shamisen.IO.IAudioDevice.DataFlow">
-            <summary>
-            Gets the data flow of this audio device.
-            </summary>
-            <value>
-            The supported data flow of this audio device.
-            </value>
-        </member>
-        <member name="T:Shamisen.IO.IAudioDeviceEnumerator">
-            <summary>
-            Defines a base infrastructure of an audio device enumerator.
-            </summary>
-        </member>
-        <member name="T:Shamisen.IO.IAudioInputDevice`1">
-            <summary>
-            Defines a base structure of audio input device.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IAudioInputDevice`1.SupportStatusQuerySupport">
-            <summary>
-            Gets the <see cref="T:Shamisen.IO.ISupportStatusQuerySupport"/> corresponds this <see cref="T:Shamisen.IO.IAudioInputDevice`1"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IAudioInputDevice`1.CreateSoundIn(Shamisen.IWaveFormat)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that records audio from this device, with specified <paramref name="format"/>.
-            </summary>
-            <param name="format">The desired recording format.</param>
-            <returns>The <typeparamref name="TSoundIn"/> instance, or <see langword="null"/> if the <paramref name="format"/> is not supported.</returns>
-        </member>
-        <member name="T:Shamisen.IO.IAudioInputDeviceEnumerator">
-            <summary>
-            Defines a base infrastructure of an audio input device enumerator.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IAudioInputDeviceEnumerator.EnumerateInputDevices">
-            <summary>
-            Enumerates all input devices.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio devices.</returns>
-        </member>
-        <member name="M:Shamisen.IO.IAudioInputDeviceEnumerator.EnumerateInputDevicesAsync">
-            <summary>
-            Enumerates all input devices asynchronously.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio devices.</returns>
-        </member>
-        <member name="T:Shamisen.IO.IAudioOutputDevice`1">
-            <summary>
-            Defines a base structure of audio output device.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IAudioOutputDevice`1.SupportStatusQuerySupport">
-            <summary>
-            Gets the <see cref="T:Shamisen.IO.ISupportStatusQuerySupport"/> corresponds this <see cref="T:Shamisen.IO.IAudioOutputDevice`1"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IAudioOutputDevice`1.CreateSoundOut(Shamisen.IWaveSource)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device from the specified <paramref name="source"/>.<br/>
-            </summary>
-            <param name="source">The source.</param>
-            <returns>An instance of <typeparamref name="TSoundOut"/> if creation was successful, otherwise <c>null</c>.</returns>
-        </member>
-        <member name="T:Shamisen.IO.IAudioOutputDeviceEnumerator">
-            <summary>
-            Defines a base infrastructure of an audio output device enumerator.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IAudioOutputDeviceEnumerator.EnumerateOutputDevices">
-            <summary>
-            Enumerates all output devices.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio devices.</returns>
-        </member>
-        <member name="M:Shamisen.IO.IAudioOutputDeviceEnumerator.EnumerateOutputDevicesAsync">
-            <summary>
-            Enumerates all output devices asynchronously.
-            </summary>
-            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio devices.</returns>
-        </member>
         <member name="T:Shamisen.IO.IOExclusivity">
             <summary>
             Represents an exclusivity of audio IO.
@@ -183,49 +89,11 @@
             Gets the <see cref="T:Shamisen.IWaveFormat"/> of this <see cref="T:Shamisen.IO.ISoundIn"/>.
             </summary>
         </member>
-        <member name="T:Shamisen.IO.ISoundInFactory`2">
-            <summary>
-            Defines a base infrastructure of <typeparamref name="TSoundIn"/> factory.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.ISoundInFactory`2.CreateSoundOut(Shamisen.IWaveFormat,`1)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that outputs audio to this device with the specified <paramref name="options"/>.
-            </summary>
-            <param name="format">The desired recording format.</param>
-            <param name="options">The options to specify.</param>
-            <returns>An instance of <typeparamref name="TSoundIn"/> if creation was successful, otherwise <see langword="null"/>.</returns>
-        </member>
         <member name="T:Shamisen.IO.ISoundOut">
             <summary>
             Defines a base infrastructure of a sound output.
             </summary>
             <seealso cref="T:System.IDisposable" />
-        </member>
-        <member name="T:Shamisen.IO.ISoundOutFactory`2">
-            <summary>
-            Defines a base infrastructure of <typeparamref name="TSoundOut"/> factory.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.ISoundOutFactory`2.CreateSoundOut(Shamisen.IWaveSource,`1)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device with the specified <paramref name="options"/>.
-            </summary>
-            <param name="source">The source.</param>
-            <param name="options">The options to specify.</param>
-            <returns>An instance of <typeparamref name="TSoundOut"/> if creation was successful, otherwise <see langword="null"/>.</returns>
-        </member>
-        <member name="T:Shamisen.IO.ISupportStatusQuerySupport">
-            <summary>
-            Defines a base infrastructure of <see cref="T:Shamisen.IO.IAudioDevice"/> that supports <see cref="M:Shamisen.IO.ISupportStatusQuerySupport.CheckSupportStatus(Shamisen.IWaveFormat)"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.ISupportStatusQuerySupport.CheckSupportStatus(Shamisen.IWaveFormat)">
-            <summary>
-            Indicates whether the audio output device supports the specified <paramref name="format"/>.
-            </summary>
-            <param name="format">The format to check the availability.</param>
-            <returns></returns>
         </member>
         <member name="T:Shamisen.IO.RecordingStoppedEventArgs">
             <summary>
