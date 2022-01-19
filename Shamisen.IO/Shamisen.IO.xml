@@ -14,11 +14,11 @@
         <member name="T:Shamisen.IO.DataAvailableEventArgs">
             <summary>
             Represents an event arguments that holds recorded audio data.<br/>
-            It is a <c>struct</c> which has <c>ref</c> and <c>readonly</c> modifier because the event occurs frequently and has a <see cref="T:System.Span`1"/> to deliver a raw buffer.<br/>
+            It is a <c>struct</c> which has <c>ref</c> and <c>readonly</c> modifier because the event occurs frequently and has a <see cref="T:System.ReadOnlySpan`1"/> to deliver a raw buffer.<br/>
             <b>CAUTION! REF STRUCT! IT CANNOT BE STORED ON HEAPS!</b>
             </summary>
         </member>
-        <member name="M:Shamisen.IO.DataAvailableEventArgs.#ctor(System.Span{System.Byte})">
+        <member name="M:Shamisen.IO.DataAvailableEventArgs.#ctor(System.ReadOnlySpan{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.IO.DataAvailableEventArgs" /> struct.
             </summary>

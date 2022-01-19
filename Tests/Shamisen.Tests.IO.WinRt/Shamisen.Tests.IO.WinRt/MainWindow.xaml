@@ -1,0 +1,14 @@
+﻿<Window
+    x:Class="Shamisen.Tests.IO.WinRt.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Shamisen.Tests.IO.WinRt"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Closed="Window_Closed"
+    mc:Ignorable="d">
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button x:Name="myButton" Click="MyButton_ClickAsync">Click Me</Button>
+    </StackPanel>
+</Window>

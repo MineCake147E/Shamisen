@@ -4,6 +4,7 @@
     <TargetFrameworks>net5.0-windows10.0.19041.0;net6.0-windows10.0.19041.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>Shamisen.IO.WinRt</RootNamespace>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>

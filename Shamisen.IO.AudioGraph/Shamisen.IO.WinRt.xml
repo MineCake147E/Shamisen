@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shamisen.IO.WinRt</name>
+    </assembly>
+    <members>
+        <member name="T:Shamisen.IO.WinRt.AudioGraphInput">
+            <summary>
+            Provides an audio input from <see cref="T:Windows.Media.Audio.AudioGraph"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphInput.#ctor(Windows.Media.Audio.AudioGraph,Windows.Media.Audio.IAudioInputNode)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.WinRt.AudioGraphInput"/> with specified <paramref name="audioGraph"/>.
+            </summary>
+            <param name="audioGraph">The audio graph.</param>
+            <param name="inputNode">The input node.</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Shamisen.IO.WinRt.AudioGraphInput.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.WinRt.AudioGraphInput.RecordingState">
+            <inheritdoc/>
+        </member>
+        <member name="E:Shamisen.IO.WinRt.AudioGraphInput.DataAvailable">
+            <inheritdoc/>
+        </member>
+        <member name="E:Shamisen.IO.WinRt.AudioGraphInput.Stopped">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphInput.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphInput.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphInput.Finalize">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphInput.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.WinRt.AudioGraphOutput">
+            <summary>
+            Provides an audio output to <see cref="T:Windows.Media.Audio.AudioGraph"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.WinRt.AudioGraphOutput.PlaybackState">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.WinRt.AudioGraphOutput.Source">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.CreateAudioGraphOutputAsync(Shamisen.IWaveSource,Windows.Media.Render.AudioRenderCategory)">
+            <summary>
+            Creates the audio graph output.<br/>
+            IMPORTANT: Only 32-bit IEEEFloat format is supported!
+            </summary>
+            <param name="source">The source.</param>
+            <param name="category">The <see cref="T:Windows.Media.Render.AudioRenderCategory"/>.</param>
+            <returns></returns>
+            <exception cref="T:System.Exception">AudioGraph creation error</exception>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.CreateAudioGraphOutputAsync(Shamisen.IWaveSource,Windows.Media.Render.AudioRenderCategory,System.Int32)">
+            <summary>
+            Creates the audio graph output.<br/>
+            IMPORTANT: Only 32-bit IEEEFloat format is supported!
+            </summary>
+            <param name="source">The source.</param>
+            <param name="category">The <see cref="T:Windows.Media.Render.AudioRenderCategory"/>.</param>
+            <param name="desiredSamplesPerQuantum">The value set to <see cref="P:Windows.Media.Audio.AudioGraphSettings.DesiredSamplesPerQuantum"/>.</param>
+            <returns></returns>
+            <exception cref="T:System.Exception">AudioGraph creation error</exception>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Pause">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Play">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Resume">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+    </members>
+</doc>

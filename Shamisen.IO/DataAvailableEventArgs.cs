@@ -13,7 +13,7 @@ namespace Shamisen.IO
 
     /// <summary>
     /// Represents an event arguments that holds recorded audio data.<br/>
-    /// It is a <c>struct</c> which has <c>ref</c> and <c>readonly</c> modifier because the event occurs frequently and has a <see cref="Span{T}"/> to deliver a raw buffer.<br/>
+    /// It is a <c>struct</c> which has <c>ref</c> and <c>readonly</c> modifier because the event occurs frequently and has a <see cref="ReadOnlySpan{T}"/> to deliver a raw buffer.<br/>
     /// <b>CAUTION! REF STRUCT! IT CANNOT BE STORED ON HEAPS!</b>
     /// </summary>
     public readonly ref struct DataAvailableEventArgs
@@ -22,7 +22,7 @@ namespace Shamisen.IO
         /// Initializes a new instance of the <see cref="DataAvailableEventArgs" /> struct.
         /// </summary>
         /// <param name="data">The data.</param>
-        public DataAvailableEventArgs(Span<byte> data)
+        public DataAvailableEventArgs(ReadOnlySpan<byte> data)
         {
             Data = data;
         }
@@ -33,6 +33,6 @@ namespace Shamisen.IO
         /// <value>
         /// The data.
         /// </value>
-        public Span<byte> Data { get; }
+        public ReadOnlySpan<byte> Data { get; }
     }
 }
