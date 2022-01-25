@@ -36,6 +36,13 @@
             The converted <see cref="T:Shamisen.WaveFormat"/> instance.
             </returns>
         </member>
+        <member name="M:Shamisen.IO.NAudioInteroperationUtils.AsShamisenDataFlow(NAudio.CoreAudioApi.DataFlow)">
+            <summary>
+            Converts <see cref="T:NAudio.CoreAudioApi.DataFlow"/> value to <see cref="T:Shamisen.IO.DataFlow"/>.
+            </summary>
+            <param name="sourceFlow">The <see cref="T:NAudio.CoreAudioApi.DataFlow"/> to convert.</param>
+            <returns>The converted <see cref="T:Shamisen.IO.DataFlow"/> value.</returns>
+        </member>
         <member name="T:Shamisen.IO.NAudioSoundInput">
             <summary>
             Provides a functionality of recording audio data from <see cref="T:NAudio.Wave.IWaveIn"/>.
@@ -88,11 +95,12 @@
             </summary>
             <seealso cref="T:Shamisen.IO.ISoundOut" />
         </member>
-        <member name="M:Shamisen.IO.NAudioSoundOutput.#ctor(NAudio.Wave.IWavePlayer)">
+        <member name="M:Shamisen.IO.NAudioSoundOutput.#ctor(NAudio.Wave.IWavePlayer,Shamisen.IWaveSource)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.IO.NAudioSoundOutput"/> class.
             </summary>
             <param name="backend">The backend.</param>
+            <param name="source">The <see cref="T:Shamisen.IWaveSource"/> that provides the sound to play.</param>
             <exception cref="T:System.ArgumentNullException">backend</exception>
         </member>
         <member name="P:Shamisen.IO.NAudioSoundOutput.Backend">
@@ -110,12 +118,6 @@
             <value>
             The state of the playback.
             </value>
-        </member>
-        <member name="M:Shamisen.IO.NAudioSoundOutput.Initialize(Shamisen.IWaveSource)">
-            <summary>
-            Initializes the <see cref="T:Shamisen.IO.ISoundOut" /> for playing a <paramref name="source" />.
-            </summary>
-            <param name="source">The source to play.</param>
         </member>
         <member name="M:Shamisen.IO.NAudioSoundOutput.Pause">
             <summary>

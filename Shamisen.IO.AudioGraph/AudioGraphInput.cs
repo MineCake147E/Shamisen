@@ -44,7 +44,7 @@ namespace Shamisen.IO.WinRt
 
         private void AudioGraph_QuantumStarted(AudioGraph sender, object args)
         {
-            var f = frameOutputNode?.GetFrame();
+            using var f = frameOutputNode?.GetFrame();
             if (f is not null) ProcessFrameOutput(f);
         }
 

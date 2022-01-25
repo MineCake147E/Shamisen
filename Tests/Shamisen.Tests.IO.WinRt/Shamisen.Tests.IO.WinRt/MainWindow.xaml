@@ -6,9 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Closed="Window_Closed"
+    Activated="Window_ActivatedAsync"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="MyButton_ClickAsync">Click Me</Button>
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="myButton" Click="MyButton_Click">Test Audio Output</Button>
+            <Button x:Name="inputTest" Click="InputTest_Click">Test Audio Input</Button>
+        </StackPanel>
+        <ProgressBar x:Name="PbLevel" Margin="5" Width="360" Height="20" Minimum="0" Maximum="120.0"/>
     </StackPanel>
 </Window>
