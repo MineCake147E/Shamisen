@@ -162,6 +162,41 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         }
         #endregion
 
+        #region Floating-Point Utils
+        internal static void GenerateReplaceNaNsWithTestArrays(int size, float value, out float[] src, out float[] exp, out float[] act)
+        {
+            src = new float[size];
+            exp = new float[size];
+            act = new float[size];
+            TestHelper.GenerateRandomNumbers(act);
+            TestHelper.GenerateRandomNumbers(src);
+            src.AsSpan().CopyTo(exp);
+            long count = 0;
+            for (int i = 0; i < exp.Length; i++)
+            {
+                var t = exp[i];
+                if (float.IsNaN(t))
+                {
+                    count++;
+                    exp[i] = value;
+                }
+            }
+            Console.WriteLine($"Number of NaNs: {count}");
+        }
+        #endregion
+
+        #region Statistics
+        [TestCase(2047)]
+        public void MaxCorrectlyFinds(int size)
+        {
+            var src = new float[size];
+            TestHelper.GenerateRandomRealNumbers(src);
+            var max = src.Max();
+            var fmax = AudioUtils.Max(src);
+            Assert.AreEqual(max, fmax);
+        }
+        #endregion
+
         #region Log2
         internal static void GenerateLog2TestArrays(int size, out float[] src, out float[] exp, out float[] act)
         {

@@ -1060,6 +1060,61 @@ namespace Shamisen.Utils
         }
         #endregion
 
+        #region Floating-Point Utils
+
+        /// <summary>
+        /// Replaces all elements in <paramref name="span"/> that satisfies <see cref="float.IsNaN(float)"/> == <see langword="true"/>, with specified <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The values to replace NaNs with <paramref name="value"/>.</param>
+        /// <param name="value">The value to replace NaNs in <paramref name="span"/> with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ReplaceNaNsWith(Span<float> span, float value)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.ReplaceNaNsWithX86(span, span, value);
+                    return;
+                }
+#endif
+                Fallback.ReplaceNaNsWithFallback(span, span, value);
+            }
+        }
+        /// <summary>
+        /// Replaces all elements in <paramref name="source"/> that satisfies <see cref="float.IsNaN(float)"/> == <see langword="true"/>, with specified <paramref name="value"/>.
+        /// </summary>
+        /// <param name="destination">The place to store value to.</param>
+        /// <param name="source">The values to replace NaNs with <paramref name="value"/>.</param>
+        /// <param name="value">The value to replace NaNs in <paramref name="source"/> with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ReplaceNaNsWith(Span<float> destination, ReadOnlySpan<float> source, float value)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (X86.IsSupported)
+                {
+                    X86.ReplaceNaNsWithX86(destination, source, value);
+                    return;
+                }
+#endif
+                Fallback.ReplaceNaNsWithFallback(destination, source, value);
+            }
+        }
+        #endregion
+
+        #region Statistics
+        /// <summary>
+        /// Returns the maximum value in <paramref name="values"/>.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>The maximum value in <paramref name="values"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Max(ReadOnlySpan<float> values) => Fallback.MaxFallback(values);
+        #endregion
+
         #region Unrolled Math Functions
         #region Log2
 

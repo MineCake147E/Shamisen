@@ -185,6 +185,128 @@ namespace Shamisen.Utils
         #region FastUnrolledDotProduct
 
         #endregion
+        #region MaxAcross
+
+        /// <summary>
+        /// Returns the largest element of the specified <paramref name="vector"/>.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float MaxAcross(Vector<float> vector)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.Arm64.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    return AdvSimd.Arm64.MaxNumberAcross(vector.AsVector128()).GetElement(0);
+                }
+                if (AdvSimd.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var v0_4s = vector.AsVector128();
+                    var v0_2s = AdvSimd.MaxNumber(v0_4s.GetLower(), v0_4s.GetUpper());
+                    var v1_2s = Vector64.CreateScalarUnsafe(v0_2s.GetElement(1));
+                    v0_2s = AdvSimd.MaxNumber(v0_2s, v1_2s);
+                    return v0_2s.GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse3.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                    xmm0 = Sse.Max(xmm0, xmm1);
+                    xmm1 = Sse3.MoveHighAndDuplicate(xmm0);
+                    xmm0 = Sse.MaxScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Sse2.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                    xmm0 = Sse.Max(xmm0, xmm1);
+                    xmm1 = Sse.Shuffle(xmm0, xmm0, 0x55);
+                    xmm0 = Sse.MaxScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Sse.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10).AsSingle();
+                    xmm0 = Sse.Max(xmm0, xmm1);
+                    xmm1 = Sse.Shuffle(xmm0, xmm0, 0x55);
+                    xmm0 = Sse.MaxScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Avx.IsSupported && Vector<float>.Count == Vector256<float>.Count)
+                {
+                    var ymm0 = vector.AsVector256();
+                    var xmm1 = ymm0.GetUpper();
+                    var xmm0 = ymm0.GetLower();
+                    xmm0 = Sse.Max(xmm0, xmm1);
+                    xmm1 = Avx.Permute(xmm0.AsDouble(), 1).AsSingle();
+                    xmm0 = Sse.Max(xmm0, xmm1);
+                    xmm1 = Sse3.MoveHighAndDuplicate(xmm0);
+                    xmm0 = Sse.MaxScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+#endif
+                return MaxAcrossFallback(vector);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float MaxAcrossFallback(Vector<float> vector)
+        {
+            unchecked
+            {
+                switch (Vector<float>.Count)
+                {
+                    case 8:
+                        {
+                            ref var g = ref Unsafe.As<Vector<float>, Vector4>(ref vector);
+                            var tu = Unsafe.Add(ref g, 1);
+                            var tl = g;
+                            tl = Vector4.Max(tl, tu);
+                            var uu = new Vector4(new Vector2(0), tl.Z, tl.W);
+                            var ul = new Vector4(new Vector2(0), tl.X, tl.Y);
+                            ul = Vector4.Max(ul, uu);
+                            uu = new Vector4(ul.W);
+                            return Vector4.Max(ul, uu).Z;
+                        }
+                    case 4:
+                        {
+                            var tl = Unsafe.As<Vector<float>, Vector4>(ref vector);
+                            var uu = new Vector4(new Vector2(0), tl.Z, tl.W);
+                            var ul = new Vector4(new Vector2(0), tl.X, tl.Y);
+                            ul = Vector4.Max(ul, uu);
+                            uu = new Vector4(ul.W);
+                            return Vector4.Max(ul, uu).Z;
+                        }
+                    default:
+                        return MaxAcrossFallback2(vector);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static float MaxAcrossFallback2(Vector<float> vector)
+        {
+            unsafe
+            {
+                var u = stackalloc float[Vector<float>.Count];
+                *(Vector<float>*)u = vector;
+                var mx = u[0];
+                for (int i = 1; i < Vector<float>.Count; i++)
+                {
+                    var f = u[i];
+                    mx = f > mx ? f : mx;
+                }
+                return mx;
+            }
+        }
+        #endregion
         #region AddSubtract
         /// <summary>
         /// Adds <paramref name="right"/> from <paramref name="left"/> while negating <see cref="Vector2.X"/> of <paramref name="right"/>.
@@ -640,8 +762,8 @@ namespace Shamisen.Utils
         ///  Creates a new single-precision vector with elements selected between two specified single-precision source vectors based on an integral mask vector.
         /// </summary>
         /// <param name="condition"></param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="left">The default value.</param>
+        /// <param name="right">The values that is used when <paramref name="condition"/> is <see cref="uint.MaxValue"/>.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector<float> Blend(Vector<int> condition, Vector<float> left, Vector<float> right)
@@ -676,7 +798,9 @@ namespace Shamisen.Utils
                     return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm3);
                 }
 #endif
-                return Vector.ConditionalSelect(condition, left, right);
+#pragma warning disable S2234 // Parameters should be passed in the correct order
+                return Vector.ConditionalSelect(condition, right, left);
+#pragma warning restore S2234 // Parameters should be passed in the correct order
             }
         }
         /// <summary>
@@ -719,7 +843,9 @@ namespace Shamisen.Utils
                     return Unsafe.As<Vector256<int>, Vector<int>>(ref ymm3);
                 }
 #endif
-                return Vector.ConditionalSelect(condition, left, right);
+#pragma warning disable S2234 // Parameters should be passed in the correct order
+                return Vector.ConditionalSelect(condition, right, left);
+#pragma warning restore S2234 // Parameters should be passed in the correct order
             }
         }
         #endregion

@@ -20,6 +20,8 @@ namespace Shamisen.Utils.Intrinsics
         /// </summary>
         public static bool IsSupported => Avx2.IsSupported;
 
+        /// <inheritdoc cref="Avx.BlendVariable(Vector256{float}, Vector256{float}, Vector256{float})"/>
+        public static Vector256<int> BlendVariable(Vector256<int> left, Vector256<int> right, Vector256<int> mask) => Avx.BlendVariable(left.AsSingle(), right.AsSingle(), mask.AsSingle()).AsInt32();
     }
 }
 #endif

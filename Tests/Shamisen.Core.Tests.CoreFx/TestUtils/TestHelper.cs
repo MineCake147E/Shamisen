@@ -163,6 +163,8 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             RangedPcm32ToSampleConverter.ProcessEMoreThan24Standard(src, MemoryMarshal.Cast<float, int>(src), 30);
         }
 
+        public static void GenerateRandomNumbers(Span<float> src) => RandomNumberGenerator.Fill(MemoryMarshal.AsBytes(src));
+
         public static void AssertArrays(ReadOnlySpan<ComplexF> exp, ReadOnlySpan<ComplexF> dst)
         {
             NeumaierAccumulator sumdiff = default;

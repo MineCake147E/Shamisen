@@ -76,12 +76,23 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
 
             #endregion
 
+            #region Floating-Point Utils
+            [TestCase(4094)]
+            [TestCase(4095)]
+            [TestCase(4096)]
+            public void ReplaceNaNsWithFallbackReplacesCorrectly(int size, float value = 0.0f)
+            {
+                GenerateReplaceNaNsWithTestArrays(size, value, out var src, out var exp, out var act);
+                AudioUtils.Fallback.ReplaceNaNsWithFallback(act, src, value);
+                TestHelper.AssertArrays(exp, act);
+            }
+            #endregion
+
             #region Log2
             [TestCase(4095)]
             [TestCase(128)]
             public void FastLog2Order5FallbackCalculatesCorrectly(int size)
             {
-
                 GenerateLog2TestArrays(size, out var src, out var exp, out var act);
                 AudioUtils.Fallback.FastLog2Order5Fallback(act, src);
                 TestHelper.AssertArrays(exp, act, 0.1);

@@ -107,6 +107,37 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             }
             #endregion
 
+            #region Floating-Point Utils
+            [TestCase(4094)]
+            [TestCase(4095)]
+            [TestCase(4096)]
+            public void ReplaceNaNsWithAvxReplacesCorrectly(int size, float value = 0.0f)
+            {
+                if (!Avx.IsSupported)
+                {
+                    Assert.Warn($"{nameof(Avx)} is not supported on this machine!");
+                    return;
+                }
+                GenerateReplaceNaNsWithTestArrays(size, value, out var src, out var exp, out var act);
+                AudioUtils.X86.ReplaceNaNsWithAvx(act, src, value);
+                TestHelper.AssertArrays(exp, act);
+            }
+            [TestCase(4094)]
+            [TestCase(4095)]
+            [TestCase(4096)]
+            public void ReplaceNaNsWithAvx2ReplacesCorrectly(int size, float value = 0.0f)
+            {
+                if (!Avx2.IsSupported)
+                {
+                    Assert.Warn($"{nameof(Avx2)} is not supported on this machine!");
+                    return;
+                }
+                GenerateReplaceNaNsWithTestArrays(size, value, out var src, out var exp, out var act);
+                AudioUtils.X86.ReplaceNaNsWithAvx2(act, src, value);
+                TestHelper.AssertArrays(exp, act);
+            }
+            #endregion
+
             #region Log2
             [TestCase(4095)]
             [TestCase(128)]

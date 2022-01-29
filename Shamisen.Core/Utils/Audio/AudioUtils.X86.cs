@@ -1135,6 +1135,179 @@ namespace Shamisen.Utils
             }
             #endregion
 
+            #region Floating-Point Utils
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void ReplaceNaNsWithX86(Span<float> destination, ReadOnlySpan<float> source, float value)
+            {
+                if (Avx2.IsSupported)
+                {
+                    ReplaceNaNsWithAvx2(destination, source, value);
+                    return;
+                }
+                if (Avx.IsSupported)   //Probably CPUs with AVX but without AVX2 are the only ones who benefits from `vcmpunordps ymm0, ymm1, ymm2, imm8`.
+                {
+                    ReplaceNaNsWithAvx(destination, source, value);
+                    return;
+                }
+                Fallback.ReplaceNaNsWithFallback(destination, source, value);
+            }
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ReplaceNaNsWithAvx(Span<float> destination, ReadOnlySpan<float> source, float value)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                var ymm15 = Vector256.Create(value);
+                var r8d = ymm15.AsInt32().GetElement(0);
+                var olen = length - 8 * Vector256<float>.Count + 1;
+                for (; i < olen; i += 8 * Vector256<float>.Count)
+                {
+                    ref var r11 = ref Unsafe.Add(ref rdi, i);
+                    var ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<float>.Count));
+                    var ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<float>.Count));
+                    var ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector256<float>.Count));
+                    var ymm3 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector256<float>.Count));
+                    var ymm4 = Avx.Compare(ymm0, ymm0, FloatComparisonMode.UnorderedNonSignaling);
+                    var ymm5 = Avx.Compare(ymm1, ymm1, FloatComparisonMode.UnorderedNonSignaling);
+                    var ymm6 = Avx.Compare(ymm2, ymm2, FloatComparisonMode.UnorderedNonSignaling);
+                    var ymm7 = Avx.Compare(ymm3, ymm3, FloatComparisonMode.UnorderedNonSignaling);
+                    ymm4 = Avx.BlendVariable(ymm0, ymm15, ymm4);
+                    ymm5 = Avx.BlendVariable(ymm1, ymm15, ymm5);
+                    ymm6 = Avx.BlendVariable(ymm2, ymm15, ymm6);
+                    ymm7 = Avx.BlendVariable(ymm3, ymm15, ymm7);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 0 * Vector256<float>.Count)) = ymm4;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 1 * Vector256<float>.Count)) = ymm5;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 2 * Vector256<float>.Count)) = ymm6;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 3 * Vector256<float>.Count)) = ymm7;
+                    ymm0 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 4 * Vector256<float>.Count));
+                    ymm1 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 5 * Vector256<float>.Count));
+                    ymm2 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 6 * Vector256<float>.Count));
+                    ymm3 = Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref rsi, i + 7 * Vector256<float>.Count));
+                    ymm4 = Avx.Compare(ymm0, ymm0, FloatComparisonMode.UnorderedNonSignaling);
+                    ymm5 = Avx.Compare(ymm1, ymm1, FloatComparisonMode.UnorderedNonSignaling);
+                    ymm6 = Avx.Compare(ymm2, ymm2, FloatComparisonMode.UnorderedNonSignaling);
+                    ymm7 = Avx.Compare(ymm3, ymm3, FloatComparisonMode.UnorderedNonSignaling);
+                    ymm4 = Avx.BlendVariable(ymm0, ymm15, ymm4);
+                    ymm5 = Avx.BlendVariable(ymm1, ymm15, ymm5);
+                    ymm6 = Avx.BlendVariable(ymm2, ymm15, ymm6);
+                    ymm7 = Avx.BlendVariable(ymm3, ymm15, ymm7);
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 4 * Vector256<float>.Count)) = ymm4;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 5 * Vector256<float>.Count)) = ymm5;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 6 * Vector256<float>.Count)) = ymm6;
+                    Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r11, 7 * Vector256<float>.Count)) = ymm7;
+                }
+                olen = length - 4 * Vector128<float>.Count + 1;
+                for (; i < olen; i += 4 * Vector128<float>.Count)
+                {
+                    ref var r11 = ref Unsafe.Add(ref rdi, i);
+                    var xmm0 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector128<float>.Count));
+                    var xmm1 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector128<float>.Count));
+                    var xmm2 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector128<float>.Count));
+                    var xmm3 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector128<float>.Count));
+                    var xmm4 = Avx.Compare(xmm0, xmm0, FloatComparisonMode.UnorderedNonSignaling);
+                    var xmm5 = Avx.Compare(xmm1, xmm1, FloatComparisonMode.UnorderedNonSignaling);
+                    var xmm6 = Avx.Compare(xmm2, xmm2, FloatComparisonMode.UnorderedNonSignaling);
+                    var xmm7 = Avx.Compare(xmm3, xmm3, FloatComparisonMode.UnorderedNonSignaling);
+                    xmm4 = Sse41.BlendVariable(xmm0, ymm15.GetLower(), xmm4);
+                    xmm5 = Sse41.BlendVariable(xmm1, ymm15.GetLower(), xmm5);
+                    xmm6 = Sse41.BlendVariable(xmm2, ymm15.GetLower(), xmm6);
+                    xmm7 = Sse41.BlendVariable(xmm3, ymm15.GetLower(), xmm7);
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, 0 * Vector128<float>.Count)) = xmm4;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, 1 * Vector128<float>.Count)) = xmm5;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, 2 * Vector128<float>.Count)) = xmm6;
+                    Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref r11, 3 * Vector128<float>.Count)) = xmm7;
+                }
+                for (; i < length; i++)
+                {
+                    ref var r11 = ref Unsafe.Add(ref rdi, i);
+                    var edx = Unsafe.As<float, int>(ref Unsafe.Add(ref rsi, i));
+                    var eax = edx & int.MaxValue;
+                    edx = eax > 0x7f80_0000 ? r8d : edx;
+                    Unsafe.As<float, int>(ref r11) = edx;
+                }
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ReplaceNaNsWithAvx2(Span<float> destination, ReadOnlySpan<float> source, float value)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                var ymm15 = Vector256.Create(int.MaxValue);
+                var ymm14 = Vector256.Create(float.PositiveInfinity).AsInt32();
+                var ymm13 = Vector256.Create(value).AsInt32();
+                var r8d = ymm13.GetElement(0);
+                var olen = length - 8 * Vector256<int>.Count + 1;
+                for (; i < olen; i += 8 * Vector256<int>.Count)
+                {
+                    ref var x11 = ref Unsafe.Add(ref rdi, i);
+                    var ymm0 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<int>.Count));
+                    var ymm1 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<int>.Count));
+                    var ymm2 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 2 * Vector256<int>.Count));
+                    var ymm3 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 3 * Vector256<int>.Count));
+                    var ymm4 = Avx2.And(ymm0, ymm15);
+                    var ymm5 = Avx2.And(ymm1, ymm15);
+                    var ymm6 = Avx2.And(ymm2, ymm15);
+                    var ymm7 = Avx2.And(ymm3, ymm15);
+                    ymm4 = Avx2.CompareGreaterThan(ymm4, ymm14);
+                    ymm5 = Avx2.CompareGreaterThan(ymm5, ymm14);
+                    ymm6 = Avx2.CompareGreaterThan(ymm6, ymm14);
+                    ymm7 = Avx2.CompareGreaterThan(ymm7, ymm14);
+                    ymm4 = Avx2Utils.BlendVariable(ymm0, ymm13, ymm4);
+                    ymm5 = Avx2Utils.BlendVariable(ymm1, ymm13, ymm5);
+                    ymm6 = Avx2Utils.BlendVariable(ymm2, ymm13, ymm6);
+                    ymm7 = Avx2Utils.BlendVariable(ymm3, ymm13, ymm7);
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 0 * Vector256<int>.Count)) = ymm4;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 1 * Vector256<int>.Count)) = ymm5;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 2 * Vector256<int>.Count)) = ymm6;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 3 * Vector256<int>.Count)) = ymm7;
+                    ymm0 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 4 * Vector256<int>.Count));
+                    ymm1 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 5 * Vector256<int>.Count));
+                    ymm2 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 6 * Vector256<int>.Count));
+                    ymm3 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 7 * Vector256<int>.Count));
+                    ymm4 = Avx2.And(ymm0, ymm15);
+                    ymm5 = Avx2.And(ymm1, ymm15);
+                    ymm6 = Avx2.And(ymm2, ymm15);
+                    ymm7 = Avx2.And(ymm3, ymm15);
+                    ymm4 = Avx2.CompareGreaterThan(ymm4, ymm14);
+                    ymm5 = Avx2.CompareGreaterThan(ymm5, ymm14);
+                    ymm6 = Avx2.CompareGreaterThan(ymm6, ymm14);
+                    ymm7 = Avx2.CompareGreaterThan(ymm7, ymm14);
+                    ymm4 = Avx2Utils.BlendVariable(ymm0, ymm13, ymm4);
+                    ymm5 = Avx2Utils.BlendVariable(ymm1, ymm13, ymm5);
+                    ymm6 = Avx2Utils.BlendVariable(ymm2, ymm13, ymm6);
+                    ymm7 = Avx2Utils.BlendVariable(ymm3, ymm13, ymm7);
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 4 * Vector256<int>.Count)) = ymm4;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 5 * Vector256<int>.Count)) = ymm5;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 6 * Vector256<int>.Count)) = ymm6;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 7 * Vector256<int>.Count)) = ymm7;
+                }
+                olen = length - 2 * Vector256<int>.Count + 1;
+                for (; i < olen; i += 2 * Vector256<int>.Count)
+                {
+                    ref var x11 = ref Unsafe.Add(ref rdi, i);
+                    var ymm0 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 0 * Vector256<int>.Count));
+                    var ymm1 = Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref rsi, i + 1 * Vector256<int>.Count));
+                    var ymm4 = Avx2.And(ymm0, ymm15);
+                    var ymm5 = Avx2.And(ymm1, ymm15);
+                    ymm4 = Avx2.CompareGreaterThan(ymm4, ymm14);
+                    ymm5 = Avx2.CompareGreaterThan(ymm5, ymm14);
+                    ymm4 = Avx2Utils.BlendVariable(ymm0, ymm13, ymm4);
+                    ymm5 = Avx2Utils.BlendVariable(ymm1, ymm13, ymm5);
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 0 * Vector256<int>.Count)) = ymm4;
+                    Unsafe.As<float, Vector256<int>>(ref Unsafe.Add(ref x11, 1 * Vector256<int>.Count)) = ymm5;
+                }
+                for (; i < length; i++)
+                {
+                    ref var x11 = ref Unsafe.Add(ref rdi, i);
+                    var w0 = Unsafe.As<float, int>(ref Unsafe.Add(ref rsi, i));
+                    var w1 = w0 & int.MaxValue;
+                    w0 = w1 > 0x7f80_0000 ? r8d : w0;
+                    Unsafe.As<float, int>(ref x11) = w0;
+                }
+            }
+            #endregion
+
             #region Log2
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

@@ -302,6 +302,143 @@ namespace Shamisen.Utils
             }
             #endregion
 
+            #region Floating-Point Utils
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static void ReplaceNaNsWithFallback(Span<float> destination, ReadOnlySpan<float> source, float value)
+            {
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
+                nint i = 0, length = MathI.Min(destination.Length, source.Length);
+                var v15_ns = new Vector<int>(int.MaxValue);
+                var v14_ns = new Vector<float>(float.PositiveInfinity).AsInt32();
+                var v13_ns = new Vector<float>(value);
+                var w8 = v13_ns.AsInt32()[0];
+                var olen = length - 8 * Vector<float>.Count + 1;
+                for (; i < olen; i += 8 * Vector<float>.Count)
+                {
+                    ref var x11 = ref Unsafe.Add(ref x10, i);
+                    var v0_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count));
+                    var v1_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count));
+                    var v2_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 2 * Vector<float>.Count));
+                    var v3_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 3 * Vector<float>.Count));
+                    var v4_ns = Vector.BitwiseAnd(v0_ns.AsInt32(), v15_ns);
+                    var v5_ns = Vector.BitwiseAnd(v1_ns.AsInt32(), v15_ns);
+                    var v6_ns = Vector.BitwiseAnd(v2_ns.AsInt32(), v15_ns);
+                    var v7_ns = Vector.BitwiseAnd(v3_ns.AsInt32(), v15_ns);
+                    v4_ns = Vector.GreaterThan(v4_ns, v14_ns);
+                    v5_ns = Vector.GreaterThan(v5_ns, v14_ns);
+                    v6_ns = Vector.GreaterThan(v6_ns, v14_ns);
+                    v7_ns = Vector.GreaterThan(v7_ns, v14_ns);
+                    v4_ns = VectorUtils.Blend(v4_ns, v0_ns, v13_ns).AsInt32();
+                    v5_ns = VectorUtils.Blend(v5_ns, v1_ns, v13_ns).AsInt32();
+                    v6_ns = VectorUtils.Blend(v6_ns, v2_ns, v13_ns).AsInt32();
+                    v7_ns = VectorUtils.Blend(v7_ns, v3_ns, v13_ns).AsInt32();
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 0 * Vector<float>.Count)) = v4_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 1 * Vector<float>.Count)) = v5_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 2 * Vector<float>.Count)) = v6_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 3 * Vector<float>.Count)) = v7_ns;
+                    v0_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 4 * Vector<float>.Count));
+                    v1_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 5 * Vector<float>.Count));
+                    v2_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 6 * Vector<float>.Count));
+                    v3_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 7 * Vector<float>.Count));
+                    v4_ns = Vector.BitwiseAnd(v0_ns.AsInt32(), v15_ns);
+                    v5_ns = Vector.BitwiseAnd(v1_ns.AsInt32(), v15_ns);
+                    v6_ns = Vector.BitwiseAnd(v2_ns.AsInt32(), v15_ns);
+                    v7_ns = Vector.BitwiseAnd(v3_ns.AsInt32(), v15_ns);
+                    v4_ns = Vector.GreaterThan(v4_ns, v14_ns);
+                    v5_ns = Vector.GreaterThan(v5_ns, v14_ns);
+                    v6_ns = Vector.GreaterThan(v6_ns, v14_ns);
+                    v7_ns = Vector.GreaterThan(v7_ns, v14_ns);
+                    v4_ns = VectorUtils.Blend(v4_ns, v0_ns, v13_ns).AsInt32();
+                    v5_ns = VectorUtils.Blend(v5_ns, v1_ns, v13_ns).AsInt32();
+                    v6_ns = VectorUtils.Blend(v6_ns, v2_ns, v13_ns).AsInt32();
+                    v7_ns = VectorUtils.Blend(v7_ns, v3_ns, v13_ns).AsInt32();
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 4 * Vector<float>.Count)) = v4_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 5 * Vector<float>.Count)) = v5_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 6 * Vector<float>.Count)) = v6_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 7 * Vector<float>.Count)) = v7_ns;
+                }
+                olen = length - 2 * Vector<float>.Count + 1;
+                for (; i < olen; i += 2 * Vector<float>.Count)
+                {
+                    ref var x11 = ref Unsafe.Add(ref x10, i);
+                    var v0_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count));
+                    var v1_ns = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count));
+                    var v4_ns = Vector.BitwiseAnd(v0_ns.AsInt32(), v15_ns);
+                    var v5_ns = Vector.BitwiseAnd(v1_ns.AsInt32(), v15_ns);
+                    v4_ns = Vector.GreaterThan(v4_ns, v14_ns);
+                    v5_ns = Vector.GreaterThan(v5_ns, v14_ns);
+                    v4_ns = VectorUtils.Blend(v4_ns, v0_ns, v13_ns).AsInt32();
+                    v5_ns = VectorUtils.Blend(v5_ns, v1_ns, v13_ns).AsInt32();
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 0 * Vector<float>.Count)) = v4_ns;
+                    Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x11, 1 * Vector<float>.Count)) = v5_ns;
+                }
+                for (; i < length; i++)
+                {
+                    ref var x11 = ref Unsafe.Add(ref x10, i);
+                    var w0 = Unsafe.As<float, int>(ref Unsafe.Add(ref x9, i));
+                    var w1 = w0 & int.MaxValue;
+                    var v = w1 > 0x7f80_0000;
+                    w0 = v ? w8 : w0;
+                    Unsafe.As<float, int>(ref x11) = w0;
+                }
+            }
+            #endregion
+
+            #region Statistics
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static float MaxFallback(ReadOnlySpan<float> values)
+            {
+                nint i = 0, length = values.Length;
+                if (length == 0) return float.NaN;
+                ref var x9 = ref MemoryMarshal.GetReference(values);
+                Vector<float> v0_ns = new(x9), v1_ns, v2_ns, v3_ns;
+                v1_ns = v2_ns = v3_ns = v0_ns;
+                var olen = length - 16 * Vector<float>.Count + 1;
+                for (; i < olen; i += 16 * Vector<float>.Count)
+                {
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count)));
+                    v1_ns = Vector.Max(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count)));
+                    v2_ns = Vector.Max(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 2 * Vector<float>.Count)));
+                    v3_ns = Vector.Max(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 3 * Vector<float>.Count)));
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 4 * Vector<float>.Count)));
+                    v1_ns = Vector.Max(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 5 * Vector<float>.Count)));
+                    v2_ns = Vector.Max(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 6 * Vector<float>.Count)));
+                    v3_ns = Vector.Max(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 7 * Vector<float>.Count)));
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 8 * Vector<float>.Count)));
+                    v1_ns = Vector.Max(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 9 * Vector<float>.Count)));
+                    v2_ns = Vector.Max(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 10 * Vector<float>.Count)));
+                    v3_ns = Vector.Max(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 11 * Vector<float>.Count)));
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 12 * Vector<float>.Count)));
+                    v1_ns = Vector.Max(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 13 * Vector<float>.Count)));
+                    v2_ns = Vector.Max(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 14 * Vector<float>.Count)));
+                    v3_ns = Vector.Max(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 15 * Vector<float>.Count)));
+                }
+                olen = length - 4 * Vector<float>.Count + 1;
+                for (; i < olen; i += 4 * Vector<float>.Count)
+                {
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count)));
+                    v1_ns = Vector.Max(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count)));
+                    v2_ns = Vector.Max(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 2 * Vector<float>.Count)));
+                    v3_ns = Vector.Max(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 3 * Vector<float>.Count)));
+                }
+                olen = length - Vector<float>.Count + 1;
+                v0_ns = Vector.Max(v0_ns, v2_ns);
+                v1_ns = Vector.Max(v1_ns, v3_ns);
+                v0_ns = Vector.Max(v0_ns, v1_ns);
+                for (; i < olen; i += Vector<float>.Count)
+                {
+                    v0_ns = Vector.Max(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i)));
+                }
+                var s0 = VectorUtils.MaxAcross(v0_ns);
+                for (; i < length; i++)
+                {
+                    s0 = FastMath.Max(s0, Unsafe.Add(ref x9, i));
+                }
+                return s0;
+            }
+            #endregion
+
             #region FastLog2
             internal static void FastLog2Order5Fallback(Span<float> destination, ReadOnlySpan<float> source)
             {
