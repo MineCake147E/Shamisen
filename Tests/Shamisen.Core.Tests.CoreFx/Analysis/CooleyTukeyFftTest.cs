@@ -43,11 +43,6 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
                     Assert.AreEqual(copy[i].Real, array[i].Real, -1.0 / int.MinValue);
                     Assert.AreEqual(copy[i].Imaginary, array[i].Imaginary, -1.0 / int.MinValue);
                 }
-                Console.WriteLine("Source,Transformed,Reverted");
-                for (var i = 0; i < array.Length; i++)
-                {
-                    Console.WriteLine($"{copy[i]}, {transformed[i]}, {array[i]}");
-                }
             }
             catch (Exception)
             {
@@ -90,11 +85,6 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
                 {
                     Assert.AreEqual(copy[i].Real, array[i].Real, -1.0 / short.MinValue);
                     Assert.AreEqual(copy[i].Imaginary, array[i].Imaginary, -1.0 / short.MinValue);
-                }
-                Console.WriteLine("Source,Transformed,Reverted");
-                for (var i = 0; i < array.Length; i++)
-                {
-                    Console.WriteLine($"{copy[i]}, {transformed[i]}, {array[i]}");
                 }
             }
             catch (Exception)
