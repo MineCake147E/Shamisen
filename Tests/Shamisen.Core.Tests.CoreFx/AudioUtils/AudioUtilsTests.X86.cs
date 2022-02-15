@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -139,6 +140,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             #endregion
 
             #region Log2
+            #region Rough assertion
             [TestCase(4095)]
             [TestCase(128)]
             public void FastLog2Order5FAvx2FmaCalculatesCorrectly(int size)
@@ -150,7 +152,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 }
                 GenerateLog2TestArrays(size, out var src, out var exp, out var act);
                 AudioUtils.X86.FastLog2Order5FAvx2Fma(act, src);
-                TestHelper.AssertArrays(exp, act, 0.1);
+                TestHelper.AssertArrays(exp, act, MaxLog2Error);
             }
 
             [TestCase(4095)]
@@ -164,7 +166,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 }
                 GenerateLog2TestArrays(size, out var src, out var exp, out var act);
                 AudioUtils.X86.FastLog2Order5Avx2(act, src);
-                TestHelper.AssertArrays(exp, act, 0.1);
+                TestHelper.AssertArrays(exp, act, MaxLog2Error);
             }
             [TestCase(4095)]
             [TestCase(128)]
@@ -177,8 +179,87 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 }
                 GenerateLog2TestArrays(size, out var src, out var exp, out var act);
                 AudioUtils.X86.FastLog2Order5Sse2(act, src);
-                TestHelper.AssertArrays(exp, act, 0.1);
+                TestHelper.AssertArrays(exp, act, MaxLog2Error);
             }
+            #endregion
+            #region Exhaustive test in parameter range [1.0f, 2.0f)
+            [Test]
+            public void FastLog2Order5FAvx2FmaCalculatesAccurately()
+            {
+                if (!Avx2.IsSupported || !Fma.IsSupported)
+                {
+                    Assert.Warn("Either AVX2 or FMA is not supported on this machine!");
+                    return;
+                }
+                var src = new float[65536];
+                var dst = new float[src.Length];
+                var maxError = double.MinValue;
+                var sumError = new NeumaierAccumulator(0.0, 0.0);
+                GenerateIndexValuedArraySingle(src, 1.0f);
+                var sSrc = src.AsSpan();
+                var sDst = dst.AsSpan();
+                    var span = MemoryMarshal.Cast<float, int>(sSrc);
+                for (int k = 0; k < 256; k++)
+                {
+                    AudioUtils.X86.FastLog2Order5FAvx2Fma(dst, src);
+                    (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
+                    AudioUtils.Offset(span, span, src.Length);
+                }
+                Console.WriteLine($"Maximum Error: {maxError}");
+                Assert.AreEqual(0.0, maxError, 1.5E-5);
+            }
+
+            [Test]
+            public void FastLog2Order5Avx2CalculatesAccurately()
+            {
+                if (!Avx2.IsSupported)
+                {
+                    Assert.Warn("Either AVX2 or FMA is not supported on this machine!");
+                    return;
+                }
+                var src = new float[65536];
+                var dst = new float[src.Length];
+                var maxError = double.MinValue;
+                var sumError = new NeumaierAccumulator(0.0, 0.0);
+                GenerateIndexValuedArraySingle(src, 1.0f);
+                var sSrc = src.AsSpan();
+                var sDst = dst.AsSpan();
+                var span = MemoryMarshal.Cast<float, int>(sSrc);
+                for (int k = 0; k < 256; k++)
+                {
+                    AudioUtils.X86.FastLog2Order5Avx2(dst, src);
+                    (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
+                    AudioUtils.Offset(span, span, src.Length);
+                }
+                Console.WriteLine($"Maximum Error: {maxError}");
+                Assert.AreEqual(0.0, maxError, 1.5E-5);
+            }
+            [Test]
+            public void FastLog2Order5Sse2CalculatesAccurately()
+            {
+                if (!Sse2.IsSupported)
+                {
+                    Assert.Warn("Either AVX2 or FMA is not supported on this machine!");
+                    return;
+                }
+                var src = new float[65536];
+                var dst = new float[src.Length];
+                var maxError = double.MinValue;
+                var sumError = new NeumaierAccumulator(0.0, 0.0);
+                GenerateIndexValuedArraySingle(src, 1.0f);
+                var sSrc = src.AsSpan();
+                var sDst = dst.AsSpan();
+                var span = MemoryMarshal.Cast<float, int>(sSrc);
+                for (int k = 0; k < 256; k++)
+                {
+                    AudioUtils.X86.FastLog2Order5Sse2(dst, src);
+                    (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
+                    AudioUtils.Offset(span, span, src.Length);
+                }
+                Console.WriteLine($"Maximum Error: {maxError}");
+                Assert.AreEqual(0.0, maxError, 1.5E-5);
+            }
+            #endregion
             #endregion
         }
     }

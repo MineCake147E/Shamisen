@@ -209,11 +209,6 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
                     Assert.AreEqual(spanF[i].Real, span[i].Real, -1.0 / short.MinValue);
                     Assert.AreEqual(spanF[i].Imaginary, span[i].Imaginary, -1.0 / short.MinValue);
                 }
-                Console.WriteLine("Expected,Actual");
-                for (var i = 0; i < span.Length; i++)
-                {
-                    Console.WriteLine($"{spanF[i]}, {span[i]}");
-                }
             }
             catch (Exception)
             {

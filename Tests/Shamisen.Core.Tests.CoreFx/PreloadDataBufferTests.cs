@@ -29,7 +29,7 @@ namespace Shamisen.Core.Tests.CoreFx
 
         private static IEnumerable<int> NumbersOfBuffers => new int[] { 64 };
 
-        private static IEnumerable<TimeSpan> Timeouts => new double[] { 100 }.Select(a => TimeSpan.FromMilliseconds(a));
+        private static IEnumerable<TimeSpan> Timeouts => new double[] { 10000 }.Select(a => TimeSpan.FromMilliseconds(a));
 
         public static IEnumerable<TestCaseData> TestCases
             => Sizes.SelectMany(a => NumbersOfBuffers.SelectMany(b => Timeouts.Select(c => new TestCaseData(a, b, c))));

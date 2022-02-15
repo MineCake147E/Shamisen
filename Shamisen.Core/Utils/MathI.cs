@@ -993,5 +993,22 @@ namespace Shamisen
         public static bool IsPowerOfTwo(int i) => i != 0 && (i & (i - 1)) == 0;
 
         #endregion IsPowerOfTwo
+
+        #region SingleToInt32BitsTwosComplement
+
+        /// <summary>
+        /// Returns the internal representation of a specified floating-point number from signed absolute value representation converted to two's complement representation.
+        /// </summary>
+        /// <param name="value">The value to convert</param>
+        /// <returns></returns>
+        public static int SingleToInt32BitsTwosComplement(float value)
+        {
+            var f = BinaryExtensions.SingleToInt32Bits(value);
+            var g = f >> 31;
+            g = (int)((uint)g >> 1);
+            f ^= g;
+            return f;
+        }
+        #endregion
     }
 }

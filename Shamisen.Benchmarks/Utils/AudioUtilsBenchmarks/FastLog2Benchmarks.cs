@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,15 +42,29 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         }
 
         [Benchmark]
-        public void Avx2Fma() => AudioUtils.X86.FastLog2Order5FAvx2Fma(bufferDst, bufferA);
+        public void FastLog2Order5FAvx2Fma() => AudioUtils.X86.FastLog2Order5FAvx2Fma(bufferDst, bufferA);
 
         [Benchmark]
-        public void Avx2() => AudioUtils.X86.FastLog2Order5Avx2(bufferDst, bufferA);
+        public void FastLog2Order5Avx2() => AudioUtils.X86.FastLog2Order5Avx2(bufferDst, bufferA);
 
         [Benchmark]
-        public void Sse2() => AudioUtils.X86.FastLog2Order5Sse2(bufferDst, bufferA);
+        public void FastLog2Order5Sse2() => AudioUtils.X86.FastLog2Order5Sse2(bufferDst, bufferA);
 
         [Benchmark]
-        public void Fallback() => AudioUtils.Fallback.FastLog2Order5Fallback(bufferDst, bufferA);
+        public void FastLog2Order5Fallback() => AudioUtils.Fallback.FastLog2Order5Fallback(bufferDst, bufferA);
+
+        [Benchmark]
+        public void MathFLog2()
+        {
+            var source = bufferA.AsSpan();
+            var destination = bufferDst.AsSpan();
+            ref var x9 = ref MemoryMarshal.GetReference(source);
+            ref var x10 = ref MemoryMarshal.GetReference(destination);
+            nint i = 0, length = MathI.Min(destination.Length, source.Length);
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref x10, i) = MathF.Log2(Unsafe.Add(ref x9, i));
+            }
+        }
     }
 }

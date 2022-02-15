@@ -209,6 +209,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
         }
         public static void AssertArrays(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
         {
+            delta = Math.Abs(delta);
             NeumaierAccumulator sumdiff = default;
             Assert.AreEqual(exp.Length, dst.Length);
             var maxdiff = 0.0;
@@ -219,7 +220,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
                 var diff = opt - sim;
                 var adiff = Math.Abs(diff);
                 sumdiff += adiff;
-                if (diff != 0)
+                if (adiff >= delta)
                 {
                     Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
                 }
@@ -230,6 +231,27 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Average difference: {avgDiff}");
             Console.WriteLine($"Maximum difference: {maxdiff}");
             Assert.AreEqual(0.0, maxdiff, delta);
+        }
+
+        public static void AssertArraysRelative(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
+        {
+            Assert.AreEqual(exp.Length, dst.Length);
+            double maxdiff = 0.0;
+            for (var i = 0; i < dst.Length; i++)
+            {
+                double opt = dst[i];
+                double sim = exp[i];
+                var diff = (opt - sim) / sim;
+                if (double.IsNaN(diff)) diff = 0.0;
+                var adiff = Math.Abs(diff);
+                if (diff != 0)
+                {
+                    Console.WriteLine($"{i:X08}: {sim}, {opt}, {diff}");
+                }
+                maxdiff = Math.Max(maxdiff, adiff);
+            }
+            Console.WriteLine($"Maximum Relative Difference: {maxdiff}");
+            Assert.AreEqual(0, maxdiff, delta);
         }
     }
 }

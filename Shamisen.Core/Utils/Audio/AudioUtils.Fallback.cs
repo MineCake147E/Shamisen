@@ -390,7 +390,7 @@ namespace Shamisen.Utils
             internal static float MaxFallback(ReadOnlySpan<float> values)
             {
                 nint i = 0, length = values.Length;
-                if (length == 0) return float.NaN;
+                if (length <= 0) return float.NaN;
                 ref var x9 = ref MemoryMarshal.GetReference(values);
                 Vector<float> v0_ns = new(x9), v1_ns, v2_ns, v3_ns;
                 v1_ns = v2_ns = v3_ns = v0_ns;
@@ -434,6 +434,58 @@ namespace Shamisen.Utils
                 for (; i < length; i++)
                 {
                     s0 = FastMath.Max(s0, Unsafe.Add(ref x9, i));
+                }
+                return s0;
+            }
+
+            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            internal static float MinFallback(ReadOnlySpan<float> values)
+            {
+                nint i = 0, length = values.Length;
+                if (length <= 0) return float.NaN;
+                ref var x9 = ref MemoryMarshal.GetReference(values);
+                Vector<float> v0_ns = new(x9), v1_ns, v2_ns, v3_ns;
+                v1_ns = v2_ns = v3_ns = v0_ns;
+                var olen = length - 16 * Vector<float>.Count + 1;
+                for (; i < olen; i += 16 * Vector<float>.Count)
+                {
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count)));
+                    v1_ns = Vector.Min(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count)));
+                    v2_ns = Vector.Min(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 2 * Vector<float>.Count)));
+                    v3_ns = Vector.Min(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 3 * Vector<float>.Count)));
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 4 * Vector<float>.Count)));
+                    v1_ns = Vector.Min(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 5 * Vector<float>.Count)));
+                    v2_ns = Vector.Min(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 6 * Vector<float>.Count)));
+                    v3_ns = Vector.Min(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 7 * Vector<float>.Count)));
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 8 * Vector<float>.Count)));
+                    v1_ns = Vector.Min(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 9 * Vector<float>.Count)));
+                    v2_ns = Vector.Min(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 10 * Vector<float>.Count)));
+                    v3_ns = Vector.Min(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 11 * Vector<float>.Count)));
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 12 * Vector<float>.Count)));
+                    v1_ns = Vector.Min(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 13 * Vector<float>.Count)));
+                    v2_ns = Vector.Min(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 14 * Vector<float>.Count)));
+                    v3_ns = Vector.Min(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 15 * Vector<float>.Count)));
+                }
+                olen = length - 4 * Vector<float>.Count + 1;
+                for (; i < olen; i += 4 * Vector<float>.Count)
+                {
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 0 * Vector<float>.Count)));
+                    v1_ns = Vector.Min(v1_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 1 * Vector<float>.Count)));
+                    v2_ns = Vector.Min(v2_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 2 * Vector<float>.Count)));
+                    v3_ns = Vector.Min(v3_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i + 3 * Vector<float>.Count)));
+                }
+                olen = length - Vector<float>.Count + 1;
+                v0_ns = Vector.Min(v0_ns, v2_ns);
+                v1_ns = Vector.Min(v1_ns, v3_ns);
+                v0_ns = Vector.Min(v0_ns, v1_ns);
+                for (; i < olen; i += Vector<float>.Count)
+                {
+                    v0_ns = Vector.Min(v0_ns, Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref x9, i)));
+                }
+                var s0 = VectorUtils.MinAcross(v0_ns);
+                for (; i < length; i++)
+                {
+                    s0 = FastMath.Min(s0, Unsafe.Add(ref x9, i));
                 }
                 return s0;
             }

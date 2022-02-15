@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 using NUnit.Framework;
 
@@ -195,22 +198,98 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             var fmax = AudioUtils.Max(src);
             Assert.AreEqual(max, fmax);
         }
+
+        [TestCase(2047)]
+        public void MinCorrectlyFinds(int size)
+        {
+            var src = new float[size];
+            TestHelper.GenerateRandomRealNumbers(src);
+            var min = src.Min();
+            var fmin = AudioUtils.Min(src);
+            Assert.AreEqual(min, fmin);
+        }
         #endregion
 
         #region Log2
+        internal const double MaxLog2Error = 1.5E-5;
+
         internal static void GenerateLog2TestArrays(int size, out float[] src, out float[] exp, out float[] act)
         {
             src = new float[size];
             exp = new float[size];
             act = new float[size];
             TestHelper.GenerateRandomRealNumbers(act);
-            var u = 4.0f / exp.Length;
+            var u = 1.5f / exp.Length;
             for (var i = 0; i < exp.Length; i++)
             {
-                var q = u * (i + 1);
+                var q = u * i + 0.5f;
                 src[i] = q;
                 exp[i] = MathF.Log2(q);
             }
+        }
+
+        internal static void GenerateIndexValuedArraySingle(Span<float> src, float start)
+        {
+            var v0_ns = new Vector<float>(start).AsInt32();
+            var v8_ns = VectorUtils.GetIndexVector();
+            v0_ns += v8_ns;
+            v8_ns = new Vector<int>(Vector<int>.Count);
+            var v1_ns = v0_ns + v8_ns;
+            v8_ns += v8_ns;
+            var v2_ns = v0_ns + v8_ns;
+            var v3_ns = v1_ns + v8_ns;
+            v8_ns += v8_ns;
+            ref var x9 = ref MemoryMarshal.GetReference(src);
+            nint i = 0, length = src.Length;
+            var olen = length - 8 * Vector<int>.Count + 1;
+            for (; i < olen; i += 8 * Vector<int>.Count)
+            {
+                var v4_ns = v0_ns + v8_ns;
+                var v5_ns = v1_ns + v8_ns;
+                var v6_ns = v2_ns + v8_ns;
+                var v7_ns = v3_ns + v8_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 0 * Vector<int>.Count)) = v0_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 1 * Vector<int>.Count)) = v1_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 2 * Vector<int>.Count)) = v2_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 3 * Vector<int>.Count)) = v3_ns;
+                v0_ns = v4_ns + v8_ns;
+                v1_ns = v5_ns + v8_ns;
+                v2_ns = v6_ns + v8_ns;
+                v3_ns = v7_ns + v8_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 4 * Vector<int>.Count)) = v4_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 5 * Vector<int>.Count)) = v5_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 6 * Vector<int>.Count)) = v6_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i + 7 * Vector<int>.Count)) = v7_ns;
+            }
+            olen = length - Vector<int>.Count + 1;
+            for (; i < olen; i += Vector<int>.Count)
+            {
+                var v4_ns = v0_ns + v8_ns;
+                Unsafe.As<float, Vector<int>>(ref Unsafe.Add(ref x9, i)) = v0_ns;
+                v0_ns = v4_ns;
+            }
+            var w0 = v0_ns.AsInt32()[0];
+            for (; i < length; i++)
+            {
+                Unsafe.As<float, int>(ref Unsafe.Add(ref x9, i)) = w0++;
+            }
+        }
+        internal static (double maxError, NeumaierAccumulator sumError) CheckLog2(double maxerror, Span<float> sSrc, Span<float> sDst, NeumaierAccumulator sumError)
+        {
+            ref var rsi = ref MemoryMarshal.GetReference(sSrc);
+            ref var rdi = ref MemoryMarshal.GetReference(sDst);
+            nint i = 0, length = sSrc.Length;
+            for (; i < length; i++)
+            {
+                var s = Unsafe.Add(ref rsi, i);
+                var d = Unsafe.Add(ref rdi, i);
+                var v = Math.Log2(s);
+                var e = Math.Abs(d - v);
+                maxerror = FastMath.Max(maxerror, e);
+                sumError += e;
+            }
+
+            return (maxerror, sumError);
         }
         #endregion
     }

@@ -95,7 +95,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             {
                 GenerateLog2TestArrays(size, out var src, out var exp, out var act);
                 AudioUtils.Fallback.FastLog2Order5Fallback(act, src);
-                TestHelper.AssertArrays(exp, act, 0.1);
+                TestHelper.AssertArrays(exp, act, MaxLog2Error);
             }
             #endregion
         }

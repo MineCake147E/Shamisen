@@ -745,6 +745,60 @@ namespace Shamisen.Utils
 
         #endregion
 
+        #region Offset
+        /// <summary>
+        /// Adds <paramref name="offset"/> to each elements in <paramref name="source"/> and stores to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The place to put sum in.</param>
+        /// <param name="source">The values to add <paramref name="offset"/>.</param>
+        /// <param name="offset">The value to add.</param>
+        public static void Offset(Span<int> destination, ReadOnlySpan<int> source, int offset)
+        {
+            var offsetV = new Vector<int>(offset);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(destination);
+            nint i, length = MathI.Min(source.Length, destination.Length);
+            for (i = 0; i < length - (Vector<int>.Count * 8 - 1); i += Vector<int>.Count * 8)
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<int>.Count)) + offsetV;
+                var v1 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<int>.Count)) + offsetV;
+                var v2 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<int>.Count)) + offsetV;
+                var v3 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<int>.Count)) + offsetV;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 0 * Vector<int>.Count)) = v0;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 1 * Vector<int>.Count)) = v1;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 2 * Vector<int>.Count)) = v2;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 3 * Vector<int>.Count)) = v3;
+                v0 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 4 * Vector<int>.Count)) + offsetV;
+                v1 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 5 * Vector<int>.Count)) + offsetV;
+                v2 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 6 * Vector<int>.Count)) + offsetV;
+                v3 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 7 * Vector<int>.Count)) + offsetV;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 4 * Vector<int>.Count)) = v0;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 5 * Vector<int>.Count)) = v1;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 6 * Vector<int>.Count)) = v2;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 7 * Vector<int>.Count)) = v3;
+            }
+            if (i < length - (Vector<int>.Count * 4 - 1))
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<int>.Count)) + offsetV;
+                var v1 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<int>.Count)) + offsetV;
+                var v2 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<int>.Count)) + offsetV;
+                var v3 = Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<int>.Count)) + offsetV;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 0 * Vector<int>.Count)) = v0;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 1 * Vector<int>.Count)) = v1;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 2 * Vector<int>.Count)) = v2;
+                Unsafe.As<int, Vector<int>>(ref Unsafe.Add(ref r11, 3 * Vector<int>.Count)) = v3;
+                i += Vector<int>.Count * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rsi, i) + offset;
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
+        #endregion
+
         #region Interleave
 
         /// <summary>
@@ -1113,6 +1167,14 @@ namespace Shamisen.Utils
         /// <returns>The maximum value in <paramref name="values"/>.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float Max(ReadOnlySpan<float> values) => Fallback.MaxFallback(values);
+
+        /// <summary>
+        /// Returns the minimum value in <paramref name="values"/>.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>The minimum value in <paramref name="values"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Min(ReadOnlySpan<float> values) => Fallback.MinFallback(values);
         #endregion
 
         #region Unrolled Math Functions
@@ -1120,7 +1182,10 @@ namespace Shamisen.Utils
 
         /// <summary>
         /// Calculates the approximation of the binary logarithm for each element of <paramref name="source"/> using a 5th order polynomial and stores it in <paramref name="destination"/>.<br/>
-        /// The length of the <paramref name="source"/> and destination must be the same:
+        /// The maximum error in the range [1.0, 2.0) is:<br/>
+        /// 1.4534581828540283E-05 without FMA<br/>
+        /// 1.4488913925525537E-05 with FMA<br/>
+        /// The length of the <paramref name="source"/> and <paramref name="destination"/> must be the same:
         /// if the <paramref name="source"/> is longer, the trailing extra element will be ignored;
         /// if the <paramref name="destination"/> is longer, the trailing extra element will remain unchanged.
         /// </summary>
@@ -1128,7 +1193,7 @@ namespace Shamisen.Utils
         /// <param name="source">The values to calculate the approximation of the binary logarithm.</param>
         /// <param name="allowFma">
         /// The value which indicates whether the <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> can utilize Fused Multiply-Adds.<br/>
-        /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the maximum error.
+        /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the average error.
         /// </param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void Log2ApproximationOrder5(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
@@ -1144,6 +1209,28 @@ namespace Shamisen.Utils
 #endif
                 Fallback.FastLog2Order5Fallback(destination, source);
             }
+        }
+        #endregion
+
+        #region Log10
+        /// <summary>
+        /// Calculates the approximation of the decimal logarithm for each element of <paramref name="source"/> using a 5th order polynomial and stores it in <paramref name="destination"/>.<br/>
+        /// The calculation is done by calculating binary logarithm with <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> first, then multiplying the constant 0.3010299956639812f.<br/>
+        /// The length of the <paramref name="source"/> and <paramref name="destination"/> must be the same:
+        /// if the <paramref name="source"/> is longer, the trailing extra element will be ignored;
+        /// if the <paramref name="destination"/> is longer, the trailing extra element will remain unchanged.
+        /// </summary>
+        /// <param name="destination">The place to store the approximation of the decimal logarithm for each element of <paramref name="source"/>.</param>
+        /// <param name="source">The values to calculate the approximation of the decimal logarithm.</param>
+        /// <param name="allowFma">
+        /// The value which indicates whether the <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> can utilize Fused Multiply-Adds.<br/>
+        /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the average error.
+        /// </param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void Log10ApproximationOrder5(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
+        {
+            Log2ApproximationOrder5(destination, source, allowFma);
+            destination.SliceWhileIfLongerThan(source.Length).FastScalarMultiply(0.3010299956639812f);
         }
         #endregion
         #endregion

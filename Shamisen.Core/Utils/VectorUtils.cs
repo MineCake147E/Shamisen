@@ -185,7 +185,7 @@ namespace Shamisen.Utils
         #region FastUnrolledDotProduct
 
         #endregion
-        #region MaxAcross
+        #region ???Across
 
         /// <summary>
         /// Returns the largest element of the specified <paramref name="vector"/>.
@@ -302,6 +302,126 @@ namespace Shamisen.Utils
                 {
                     var f = u[i];
                     mx = f > mx ? f : mx;
+                }
+                return mx;
+            }
+        }
+
+        /// <summary>
+        /// Returns the smallest element of the specified <paramref name="vector"/>.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float MinAcross(Vector<float> vector)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.Arm64.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    return AdvSimd.Arm64.MinNumberAcross(vector.AsVector128()).GetElement(0);
+                }
+                if (AdvSimd.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var v0_4s = vector.AsVector128();
+                    var v0_2s = AdvSimd.MinNumber(v0_4s.GetLower(), v0_4s.GetUpper());
+                    var v1_2s = Vector64.CreateScalarUnsafe(v0_2s.GetElement(1));
+                    v0_2s = AdvSimd.MinNumber(v0_2s, v1_2s);
+                    return v0_2s.GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse3.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                    xmm0 = Sse.Min(xmm0, xmm1);
+                    xmm1 = Sse3.MoveHighAndDuplicate(xmm0);
+                    xmm0 = Sse.MinScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Sse2.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse2.UnpackHigh(xmm0.AsDouble(), xmm0.AsDouble()).AsSingle();
+                    xmm0 = Sse.Min(xmm0, xmm1);
+                    xmm1 = Sse.Shuffle(xmm0, xmm0, 0x55);
+                    xmm0 = Sse.MinScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Sse.IsSupported && Vector<float>.Count == Vector128<float>.Count)
+                {
+                    var xmm0 = vector.AsVector128();
+                    var xmm1 = Sse.Shuffle(xmm0, xmm0, 0b11_10_11_10).AsSingle();
+                    xmm0 = Sse.Min(xmm0, xmm1);
+                    xmm1 = Sse.Shuffle(xmm0, xmm0, 0x55);
+                    xmm0 = Sse.MinScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+                if (Avx.IsSupported && Vector<float>.Count == Vector256<float>.Count)
+                {
+                    var ymm0 = vector.AsVector256();
+                    var xmm1 = ymm0.GetUpper();
+                    var xmm0 = ymm0.GetLower();
+                    xmm0 = Sse.Min(xmm0, xmm1);
+                    xmm1 = Avx.Permute(xmm0.AsDouble(), 1).AsSingle();
+                    xmm0 = Sse.Min(xmm0, xmm1);
+                    xmm1 = Sse3.MoveHighAndDuplicate(xmm0);
+                    xmm0 = Sse.MinScalar(xmm0, xmm1);
+                    return xmm0.GetElement(0);
+                }
+#endif
+                return MinAcrossFallback(vector);
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float MinAcrossFallback(Vector<float> vector)
+        {
+            unchecked
+            {
+                switch (Vector<float>.Count)
+                {
+                    case 8:
+                        {
+                            ref var g = ref Unsafe.As<Vector<float>, Vector4>(ref vector);
+                            var tu = Unsafe.Add(ref g, 1);
+                            var tl = g;
+                            tl = Vector4.Min(tl, tu);
+                            var uu = new Vector4(new Vector2(0), tl.Z, tl.W);
+                            var ul = new Vector4(new Vector2(0), tl.X, tl.Y);
+                            ul = Vector4.Min(ul, uu);
+                            uu = new Vector4(ul.W);
+                            return Vector4.Min(ul, uu).Z;
+                        }
+                    case 4:
+                        {
+                            var tl = Unsafe.As<Vector<float>, Vector4>(ref vector);
+                            var uu = new Vector4(new Vector2(0), tl.Z, tl.W);
+                            var ul = new Vector4(new Vector2(0), tl.X, tl.Y);
+                            ul = Vector4.Min(ul, uu);
+                            uu = new Vector4(ul.W);
+                            return Vector4.Min(ul, uu).Z;
+                        }
+                    default:
+                        return MinAcrossFallback2(vector);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static float MinAcrossFallback2(Vector<float> vector)
+        {
+            unsafe
+            {
+                var u = stackalloc float[Vector<float>.Count];
+                *(Vector<float>*)u = vector;
+                var mx = u[0];
+                for (int i = 1; i < Vector<float>.Count; i++)
+                {
+                    var f = u[i];
+                    mx = f < mx ? f : mx;
                 }
                 return mx;
             }
@@ -1681,6 +1801,61 @@ namespace Shamisen.Utils
                     }
                     break;
             }
+        }
+        #endregion
+        #region GenerateVectorWithSequence
+        /// <summary>
+        /// Returns a <see cref="Vector{T}"/> value with its value set to their position.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<int> GetIndexVector()
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                switch (Vector<int>.Count)
+                {
+                    case 4:
+                        return Vector128.Create(0, 1, 2, 3).AsVector();
+                    case 8:
+                        return Vector256.Create(0, 1, 2, 3, 4, 5, 6, 7).AsVector();
+                    default:
+                        break;
+                }
+#endif
+                return GenerateIndexVectorFallback();
+            }
+        }
+
+        private static unsafe Vector<int> GenerateIndexVectorFallback()
+        {
+            switch (Vector<int>.Count)
+            {
+                case 4:
+                    {
+                        var g = new Vector4(0.0f, float.Epsilon, 3E-45f, 4E-45f);
+                        return Unsafe.As<Vector4, Vector<int>>(ref g);
+                    }
+                case <=16:
+                    {
+                        var h = stackalloc int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+                        return *(Vector<int>*)h;
+                    }
+                default:
+                    return GenerateIndexVectorFallback2();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static unsafe Vector<int> GenerateIndexVectorFallback2()
+        {
+            var span = stackalloc int[Vector<int>.Count];
+            for (int k = 0; k < Vector<int>.Count; k++)
+            {
+                span[k] = k;
+            }
+            return *(Vector<int>*)span;
         }
         #endregion
         #region Vector???.AsVector
