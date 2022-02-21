@@ -129,7 +129,7 @@
       <Version>1.0.0.13</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
-      <Version>2.4.0.1</Version>
+      <Version>2.4.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
     <PackageReference Include="Xamarin.Google.Android.Material">
