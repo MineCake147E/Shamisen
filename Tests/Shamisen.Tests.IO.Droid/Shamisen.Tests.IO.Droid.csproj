@@ -133,7 +133,7 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
     <PackageReference Include="Xamarin.Google.Android.Material">
-      <Version>1.4.0.5</Version>
+      <Version>1.4.0.6</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
