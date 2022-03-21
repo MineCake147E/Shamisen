@@ -8,7 +8,7 @@ using System.Text;
 namespace Shamisen
 {
     /// <summary>
-    /// Represents a result of <see cref="IReadSupport{TSample}.Read(Span{TSample})"/> operation.
+    /// Represents a result of read operation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]

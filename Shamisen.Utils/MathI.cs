@@ -4,8 +4,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
 
-using DSUtils = DivideSharp.Utils;
-
 using System.Diagnostics;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -329,7 +327,7 @@ namespace Shamisen
         #region BigMul Polyfill
 
         /// <summary>
-        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the whole 128bit result.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
@@ -354,12 +352,12 @@ namespace Shamisen
         }
 
         /// <summary>
-        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the whole 128bit result.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -371,7 +369,18 @@ namespace Shamisen
                 var high = Math.BigMul(x, y, out var low);
                 return (low, high);
 #else
-                return (x * y, DSUtils.MultiplyHigh(x, y));
+#if NETCOREAPP3_1_OR_GREATER
+                if (Bmi2.X64.IsSupported)
+                {
+                    unsafe
+                    {
+                        ulong low = 0;
+                        var high = Bmi2.X64.MultiplyNoFlags(x, y, &low);
+                        return (low, high);
+                    }
+                }
+#endif
+                return MathIFallbacks.BigMul(x, y);
 #endif
             }
         }

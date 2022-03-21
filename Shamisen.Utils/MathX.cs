@@ -3,8 +3,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using DSUtils = DivideSharp.Utils;
-
 namespace Shamisen
 {
     /// <summary>
@@ -93,7 +91,7 @@ namespace Shamisen
                 return PowerRootsOfUnity.Span[1];
             }
             var result = Complex.One;
-            var g = (DSUtils.Abs(value.Value) << 1) & mask;
+            var g = (MathI.Abs(value.Value) << 1) & mask;
             ref var prouHead = ref MemoryMarshal.GetReference(PowerRootsOfUnity.Span);
             while (g > 0)
             {

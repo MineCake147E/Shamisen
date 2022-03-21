@@ -30,6 +30,7 @@ namespace Shamisen
                 8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
         };
 
+        #region TrailingZeroCount
         /// <summary>
         /// Counts the consecutive zero bits on the right.
         /// </summary>
@@ -66,7 +67,9 @@ namespace Shamisen
                 return (uint)value == 0 ? TrailingZeroCount((uint)value) : 32 + TrailingZeroCount((uint)(value >> 32));
             }
         }
+        #endregion
 
+        #region LogBase2
         /// <summary>
         /// Finds last 1's position from LSB.<br/>
         /// When the value is 0, it returns 0.
@@ -105,7 +108,9 @@ namespace Shamisen
                 return 63 - LeadingZeroCount(value | 1);
             }
         }
+        #endregion
 
+        #region LeadingZeroCount
         /// <summary>
         /// Finds last 0's position from MSB.<br/>
         /// When the value is 0, it returns 32.
@@ -146,7 +151,9 @@ namespace Shamisen
                 return 64 - TrailingZeroCount(~value);
             }
         }
+        #endregion
 
+        #region PopCount
         /// <summary>
         /// Counts how many the bits are 1.
         /// </summary>
@@ -172,7 +179,9 @@ namespace Shamisen
             x = (x + (x >> 4)) & 0x0f0f_0f0f;
             return (int)((x * 0x0101_0101) >> 24);
         }
+        #endregion
 
+        #region ExtractHighestSetBit
         /// <summary>
         /// Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
         /// </summary>
@@ -212,6 +221,9 @@ namespace Shamisen
             }
         }
 
+        #endregion
+
+        #region ReverseBitOrder
         /// <summary>
         /// Reverses the bits of the specified value in 32bit.
         /// </summary>
@@ -240,7 +252,9 @@ namespace Shamisen
             value = ((value & 0x0f0f_0f0f_0f0f_0f0f) << 4) | ((value >> 4) & 0x0f0f_0f0f_0f0f_0f0f);
             return BinaryPrimitives.ReverseEndianness(value);
         }
+        #endregion
 
+        #region ExtractBitField
         /// <summary>
         /// Extracts the bit field inside <paramref name="value"/>.
         /// </summary>
@@ -262,5 +276,37 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong ExtractBitField(ulong value, byte start, byte length)
              => MathI.ZeroHighBits(length, value >> start);
+        #endregion
+
+        #region BigMul Polyfill
+        /// <summary>
+        /// Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static (ulong low, ulong high) BigMul(ulong x, ulong y)
+        {
+            ulong a0 = (uint)x;
+            var a1 = x >> 32;
+            ulong b0 = (uint)y;
+            var b1 = y >> 32;
+            var z1a = a0 * b1;
+            var z1b = a1 * b0;
+            var z0 = a0 * b0;
+            var z2 = a1 * b1;
+            var z1 = z1a + z1b;
+            var f = z1a > z1;
+            z1b = (ulong)Unsafe.As<bool, byte>(ref f) << 32;
+            z1a = z1 + (z0 >> 32);
+            z2 += z1b;
+            z1b = z1a >> 32;
+            z1a <<= 32;
+            z2 += z1b;
+            z0 = (uint)z0 | z1a;
+            return (z0, z2);
+        }
+        #endregion
     }
 }

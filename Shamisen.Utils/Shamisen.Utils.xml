@@ -1,0 +1,3752 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shamisen.Utils</name>
+    </assembly>
+    <members>
+        <member name="T:Shamisen.BinaryExtensions">
+            <summary>
+            Provides some functions that helps you about binary things.
+            </summary>
+        </member>
+        <member name="P:Shamisen.BinaryExtensions.SystemEndianness">
+            <summary>
+            Gets the system endianness.
+            </summary>
+            <value>
+            The system endianness.
+            </value>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(System.Guid)">
+            <summary>
+            Reverses internal primitive values by performing an endianness swap of the specified <see cref="T:System.Guid"/> <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to reverse.</param>
+            <returns>The reversed value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(Shamisen.Int24)">
+            <summary>
+            Reverses internal primitive values by performing an endianness swap of the specified <see cref="T:Shamisen.Int24" /> value.
+            </summary>
+            <param name="value">The value to reverse.</param>
+            <returns>
+            The reversed value.
+            </returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ReverseEndianness(Shamisen.UInt24)">
+            <summary>
+            Reverses internal primitive values by performing an endianness swap of the specified <see cref="T:Shamisen.UInt24" /> value.
+            </summary>
+            <param name="value">The value to reverse.</param>
+            <returns>
+            The reversed value.
+            </returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(Shamisen.Int24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(Shamisen.UInt24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from little endian.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(Shamisen.Int24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.ConvertToBigEndian(Shamisen.UInt24)">
+            <summary>
+            Converts the specified <paramref name="systemEndianedValue"/> to/from BIG ENDIAN.
+            </summary>
+            <param name="systemEndianedValue">The value in system endian.</param>
+            <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
+            <summary>
+            Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
+            <summary>
+            Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
+            <summary>
+            Reads a <see cref="T:System.Single"/> from the beginning of a read-only span of bytes, as little endian.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Single"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.TryReadSingleBigEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
+            <summary>
+            Reads a <see cref="T:System.Single"/> from the beginning of a read-only span of bytes, as big endian.
+            </summary>
+            <param name="source">The read-only span of bytes to read.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Single"/>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.SingleToInt32Bits(System.Single)">
+            <summary>
+            Converts a single-precision floating-point value into an integer.
+            </summary>
+            <param name="value">The single-precision floating-point value to convert.</param>
+            <returns>An integer representing the converted single-precision floating-point value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.Int32BitsToSingle(System.Int32)">
+            <summary>
+            Reinterprets the specified 32-bit integer as a single-precision floating-point value.
+            </summary>
+            <param name="value">The integer to convert.</param>
+            <returns>A single-precision floating-point value that represents the converted integer.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.SingleToUInt32Bits(System.Single)">
+            <summary>
+            Converts a single-precision floating-point value into an unsigned integer.
+            </summary>
+            <param name="value">The single-precision floating-point value to convert.</param>
+            <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.UInt32BitsToSingle(System.UInt32)">
+            <summary>
+            Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
+            </summary>
+            <param name="value">The unsigned integer to convert.</param>
+            <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
+        </member>
+        <member name="T:Shamisen.Endianness">
+            <summary>
+            Represents an endianness.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Endianness.Little">
+            <summary>
+            The little endian
+            </summary>
+        </member>
+        <member name="F:Shamisen.Endianness.Big">
+            <summary>
+            The big endian
+            </summary>
+        </member>
+        <member name="T:Shamisen.MathI">
+            <summary>
+            Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathI.FloorStep(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.FloorStepRem(System.Int32,System.Int32)">
+            <summary>
+            Aligns the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="step">The step.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Rectify(System.Int32)">
+            <summary>
+            Rectifies the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to rectify.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Min(System.IntPtr,System.IntPtr)">
+            <inheritdoc cref="M:System.Math.Min(System.Int64,System.Int64)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Min(System.Int32,System.Int32)">
+            <inheritdoc cref="M:System.Math.Min(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Min(System.UInt32,System.UInt32)">
+            <inheritdoc cref="M:System.Math.Min(System.UInt32,System.UInt32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Max(System.Int32,System.Int32)">
+            <inheritdoc cref="M:System.Math.Max(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.Max(System.UInt32,System.UInt32)">
+            <inheritdoc cref="M:System.Math.Max(System.UInt32,System.UInt32)"/>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Int32,System.Int32)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.Int32"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.UInt32,System.UInt32)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.UInt32"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Int64,System.Int64)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.Int64"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.UInt64,System.UInt64)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.UInt64"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.IntPtr,System.IntPtr)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.IntPtr"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.UIntPtr,System.UIntPtr)">
+            <summary>
+            Performs a bitwise <c>and</c> operation on two specified <see cref="T:System.UIntPtr"/> values after negating <paramref name="a"/>.
+            </summary>
+            <param name="a">The value to be negated.</param>
+            <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
+            <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int64)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Abs(System.Int32)">
+            <summary>
+            Returns the absolute value of the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
+            <summary>
+            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the whole 128bit result.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.BigMul(System.UInt64,System.UInt64)">
+            <summary>
+            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the whole 128bit result.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ModularMultiplicativeInverse(System.Int32,System.Int32)">
+            <summary>
+            Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.
+            <paramref name="a"/> * x % <paramref name="n"/> = 1.
+            </summary>
+            <param name="a">The multiplier.</param>
+            <param name="n">The modulus.</param>
+            <returns>The Modular Multiplicative Inverse of <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Max(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Determines the maximum of the parameters.
+            </summary>
+            <param name="a">The value a.</param>
+            <param name="b">The value b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.PopCount(System.UInt32)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.PopCount(System.UInt64)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bit order of the specified <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt32)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index counting from LSB.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBits(System.Int32,System.UInt64)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> to 0.
+            </summary>
+            <param name="index">The index counting from LSB.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBitsFromHigh(System.Int32,System.UInt32)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> counted from MSB, to 0.
+            </summary>
+            <param name="index">The index counting from MSB.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroHighBitsFromHigh(System.Int32,System.UInt64)">
+            <summary>
+            Sets the bits of <paramref name="value"/> higher than specified <paramref name="index"/> counted from MSB, to 0.
+            </summary>
+            <param name="index">The index counting from MSB.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.UInt32)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.Int32)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.UInt64)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.Int64)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.IntPtr)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.UIntPtr)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <param name="value">The value to return if <paramref name="condition"/> were true.</param>
+            <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.IsPowerOfTwo(System.UInt32)">
+            <summary>
+            Determines whether the specified <paramref name="i"/> is power of two.
+            </summary>
+            <param name="i">The value.</param>
+            <returns>
+              <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.MathI.IsPowerOfTwo(System.Int32)">
+            <summary>
+            Determines whether the specified <paramref name="i"/> is power of two.
+            </summary>
+            <param name="i">The value.</param>
+            <returns>
+              <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.MathI.SingleToInt32BitsTwosComplement(System.Single)">
+            <summary>
+            Returns the internal representation of a specified floating-point number from signed absolute value representation converted to two's complement representation.
+            </summary>
+            <param name="value">The value to convert</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.MathIFallbacks">
+             <summary>
+             WARNING: This class is exposed only for testing purposes.<br/>
+             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions as MathI does.<br/>
+             This class contains hand-written software fallbacks for the places that the HW Intrinsics are not available.<br/>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt32)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.TrailingZeroCount(System.UInt64)">
+            <summary>
+            Counts the consecutive zero bits on the right.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt32)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LogBase2(System.UInt64)">
+            <summary>
+            Finds last 1's position from LSB.<br/>
+            When the value is 0, it returns 0.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt32)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 32.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.LeadingZeroCount(System.UInt64)">
+            <summary>
+            Finds last 0's position from MSB.<br/>
+            When the value is 0, it returns 64.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt64)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="x">The x.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.PopCount(System.UInt32)">
+            <summary>
+            Counts how many the bits are 1.
+            </summary>
+            <param name="x">The x.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt32)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractHighestSetBit(System.UInt64)">
+            <summary>
+            Returns the largest power-of-two number less than or equals to <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt32)">
+            <summary>
+            Reverses the bits of the specified value in 32bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ReverseBitOrder(System.UInt64)">
+            <summary>
+            Reverses the bits of the specified value in 64bit.
+            </summary>
+            <param name="value">The value to reverse bit order.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt32,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.ExtractBitField(System.UInt64,System.Byte,System.Byte)">
+            <summary>
+            Extracts the bit field inside <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="start">The start from LSB.</param>
+            <param name="length">The length in bits.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathIFallbacks.BigMul(System.UInt64,System.UInt64)">
+            <summary>
+            Multiplies the specified <paramref name="x"/> and <paramref name="y"/> and returns the high part of whole 128bit result.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.MathR">
+            <summary>
+            Contains some utility functions for manipulating <c>ref</c> values.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathR.Add``1(``0@,System.IntPtr,System.IntPtr)">
+            <summary>
+            Adds the p0 and p1 and p2.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="p0">The p0.</param>
+            <param name="p1">The p1.</param>
+            <param name="p2">The p2.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.Add(System.IntPtr,System.IntPtr)">
+            <summary>
+            Adds the <paramref name="right"/> to the <paramref name="left"/>.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.Subtract(System.IntPtr,System.IntPtr)">
+            <summary>
+            Subtracts the <paramref name="right"/> from the <paramref name="left"/>.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>left - right.</returns>
+        </member>
+        <member name="M:Shamisen.MathR.Multiply(System.IntPtr,System.IntPtr)">
+            <summary>
+            Multiplies the specified left.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToRefByte(System.IntPtr)">
+            <summary>
+            Converts the specified <see cref="T:System.IntPtr"/> value to <c>ref <see cref="T:System.Byte"/></c>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToIntPtr(System.Byte@)">
+            <summary>
+            Converts the specified <paramref name="value"/> to <see cref="T:System.IntPtr"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathR.ToPointer(System.IntPtr)">
+            <summary>
+            Converts the specified <paramref name="value"/> to pointer.
+            </summary>
+            <param name="value">The <see cref="T:System.IntPtr"/> getting converted.</param>
+            <returns>
+            The converted pointer.
+            </returns>
+        </member>
+        <member name="T:Shamisen.MathX">
+            <summary>
+            Contains some mathematical functions for Fixed-Point numbers.
+            </summary>
+        </member>
+        <member name="M:Shamisen.MathX.SinCosPi(Shamisen.Fixed64,System.UInt64)">
+            <summary>
+            Returns the <see cref="T:System.Numerics.Complex"/> value with specified angle.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The precision mask.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.Sin(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
+            <summary>
+            Calculates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Optimization.X86Intrinsics">
+            <summary>
+            Defines some X86 intrinsics.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.None">
+            <summary>
+            Not X86(e.g. ARMv8-A) or X86 Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.X86Base">
+            <summary>
+            X86Base
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.X64">
+            <summary>
+            X64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Bmi1">
+            <summary>
+            BMI1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Bmi2">
+            <summary>
+            BMI2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Lzcnt">
+            <summary>
+            LZCNT
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse">
+            <summary>
+            SSE
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse2">
+            <summary>
+            SSE2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Pclmulqdq">
+            <summary>
+            PCLMULQDQ
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse3">
+            <summary>
+            SSE3
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Ssse3">
+            <summary>
+            SSSE3
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse41">
+            <summary>
+            SSE4.1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Sse42">
+            <summary>
+            SSE4.2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Avx">
+            <summary>
+            AVX
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Popcnt">
+            <summary>
+            POPCNT
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Avx2">
+            <summary>
+            AVX2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86Intrinsics.Fma">
+            <summary>
+            FMA
+            </summary>
+        </member>
+        <member name="T:Shamisen.Optimization.ArmIntrinsics">
+            <summary>
+            Defines some ARM intrinsics.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.None">
+            <summary>
+            Not ARM(e.g. x86-64) or ARM Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.ArmBase">
+            <summary>
+            ArmBase
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Arm64">
+            <summary>
+            Arm64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.AdvSimd">
+            <summary>
+            AdvSIMD
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Crc32">
+            <summary>
+            CRC32
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Sha1">
+            <summary>
+            SHA1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Sha256">
+            <summary>
+            SHA256
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Dp">
+            <summary>
+            DotProduct
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsics.Rdm">
+            <summary>
+            MultiplyRoundedDoubling
+            </summary>
+        </member>
+        <member name="T:Shamisen.Optimization.X86IntrinsicsMask">
+            <summary>
+            Defines some <see cref="T:Shamisen.Optimization.X86Intrinsics"/> masks.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.None">
+            <summary>
+            The none
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.X86Base">
+            <summary>
+            X86Base
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.X64">
+            <summary>
+            X64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Bmi1">
+            <summary>
+            BMI1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Bmi2">
+            <summary>
+            BMI2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Lzcnt">
+            <summary>
+            LZCNT
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Sse">
+            <summary>
+            SSE
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Sse2">
+            <summary>
+            SSE2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Pclmulqdq">
+            <summary>
+            PCLMULQDQ
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Sse3">
+            <summary>
+            SSE3
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Ssse3">
+            <summary>
+            SSSE3
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Sse41">
+            <summary>
+            SSE4.1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Sse42">
+            <summary>
+            SSE4.2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Avx">
+            <summary>
+            AVX
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Popcnt">
+            <summary>
+            POPCNT
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Avx2">
+            <summary>
+            AVX2
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.X86IntrinsicsMask.Fma">
+            <summary>
+            FMA
+            </summary>
+        </member>
+        <member name="T:Shamisen.Optimization.ArmIntrinsicsMask">
+            <summary>
+            Defines some <see cref="T:Shamisen.Optimization.X86Intrinsics"/> masks.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.None">
+            <summary>
+            Not ARM(e.g. x86-64) or ARM Intrinsics aren't available
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.ArmBase">
+            <summary>
+            ArmBase
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Arm64">
+            <summary>
+            Arm64 variant of each intrinsics
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.AdvSimd">
+            <summary>
+            AdvSIMD
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Aes">
+            <summary>
+            AES
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Crc32">
+            <summary>
+            CRC32
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Sha1">
+            <summary>
+            SHA1
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Sha256">
+            <summary>
+            SHA256
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Dp">
+            <summary>
+            DotProduct
+            </summary>
+        </member>
+        <member name="F:Shamisen.Optimization.ArmIntrinsicsMask.Rdm">
+            <summary>
+            MultiplyRoundedDoubling
+            </summary>
+        </member>
+        <member name="T:Shamisen.Optimization.IntrinsicsOptions">
+            <summary>
+            Represents how Shamisen component is allowed to utilize Hardware Intrinsics.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.#ctor(System.Boolean,Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.ArmIntrinsics)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> struct.
+            </summary>
+            <param name="isIntrinsicsEnabled">if set to <c>true</c> [is intrinsics enabled].</param>
+            <param name="enabledX86Intrinsics">The enabled X86 intrinsics.</param>
+            <param name="enabledArmIntrinsics">The enabled arm intrinsics.</param>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsOptions.IsIntrinsicsEnabled">
+            <summary>
+            Gets a value indicating whether the intrinsics is enabled.
+            </summary>
+            <value>
+              <c>true</c> if the intrinsics is enabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsOptions.EnabledX86Intrinsics">
+            <summary>
+            Gets the enabled X86 intrinsics.
+            </summary>
+            <value>
+            The enabled X86 intrinsics.
+            </value>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsOptions.EnabledArmIntrinsics">
+            <summary>
+            Gets the enabled arm intrinsics.
+            </summary>
+            <value>
+            The enabled arm intrinsics.
+            </value>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.Equals(Shamisen.Optimization.IntrinsicsOptions)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.op_Equality(Shamisen.Optimization.IntrinsicsOptions,Shamisen.Optimization.IntrinsicsOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsOptions.op_Inequality(Shamisen.Optimization.IntrinsicsOptions,Shamisen.Optimization.IntrinsicsOptions)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Optimization.IntrinsicsOptions"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Optimization.IntrinsicsUtils">
+            <summary>
+            Contains some utilities about Hardware Intrinsics
+            </summary>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.X86Intrinsics">
+            <summary>
+            Gets the X86 intrinsics available on this CPU.
+            </summary>
+            <value>
+            The X86 intrinsics.
+            </value>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.ArmIntrinsics">
+            <summary>
+            Gets the ARM intrinsics available on this CPU.
+            </summary>
+            <value>
+            The arm intrinsics.
+            </value>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.GetAvailableX86Intrinsics">
+            <summary>
+            Gets the available X86 intrinsics.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.GetAvailableArmIntrinsics">
+            <summary>
+            Gets the available arm intrinsics.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.AvoidAvxHeavyOperations">
+            <summary>
+            Gets the value which indicates whether the Shamisen should avoid heavy floating-point operations in 256-bits-wide vectors.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.EnableExtremeLoopUnrolling">
+            <summary>
+            Gets the value which indicates whether the Shamisen should enable extreme loop unrolling for Zen3-like microarchitecture.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Optimization.IntrinsicsUtils.PreferShiftVariable">
+            <summary>
+            Gets the value which indicates whether the Shamisen should prefer vpsllvd over vpslld even if the shift amount is same for all values.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86IntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86Intrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAllFeatures(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86IntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.X86Intrinsics,Shamisen.Optimization.X86Intrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsicsMask)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Optimization.IntrinsicsUtils.HasAtLeaseOneFeature(Shamisen.Optimization.ArmIntrinsics,Shamisen.Optimization.ArmIntrinsics)">
+            <summary>
+            Determines whether the specified value has features specified by mask.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="mask">The mask.</param>
+            <returns>
+              <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.OptimizationUtils">
+            <summary>
+            Contains some utility for optimization.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
+            <summary>
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
+            <summary>
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Primitives.Angle128">
+            <summary>
+            Represents an angle in 128-bit mixed-point value.<br/>
+            Can be used for some extremely-high-precision needs of angle and frequency.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Primitives.Angle128.low">
+            <summary>
+            The lower part.<br/>
+            Must be between 0 and 1.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Int32,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="sampleRate">The sample rate.</param>
+            <param name="frequency">The frequency.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="multiplesOfPi">The multiples of pi.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.#ctor(Shamisen.Fixed64,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
+            </summary>
+            <param name="high">The high part.</param>
+            <param name="low">The low part.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.High">
+            <summary>
+            Gets the higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Low">
+            <summary>
+            Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.Value">
+            <summary>
+            Gets the value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <value>
+            The value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInTurns">
+            <summary>
+            Gets the value in turns.
+            </summary>
+            <value>
+            The value in turns.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInRadians">
+            <summary>
+            Gets the value in radians.
+            </summary>
+            <value>
+            The value in radians.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.Angle128.ValueInDegrees">
+            <summary>
+            Gets the value in degrees.
+            </summary>
+            <value>
+            The value in degrees.
+            </value>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Addition(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Adds specified <see cref="T:Shamisen.Primitives.Angle128"/> value and <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Subtraction(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Subtracts specified <see cref="T:Shamisen.Primitives.Angle128"/> value from <see cref="T:Shamisen.Primitives.Angle128"/> value.
+            </summary>
+            <param name="left">The value to be subtracted by <paramref name="right"/>.</param>
+            <param name="right">The value to subtract from <paramref name="left"/>/</param>
+            <returns>
+            The result of subtracting <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            The value in string.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Equality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.op_Inequality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.Equals(Shamisen.Primitives.Angle128)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.Angle128.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Primitives.AngleCounter">
+            <summary>
+            Implements a extreme-precision angle counter.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Angle">
+            <summary>
+            Gets the current angle.
+            </summary>
+            <value>
+            The angle.
+            </value>
+        </member>
+        <member name="P:Shamisen.Primitives.AngleCounter.Omega">
+            <summary>
+            Gets the omega.
+            </summary>
+            <value>
+            The omega.
+            </value>
+        </member>
+        <member name="T:Shamisen.Primitives.DisposableArray`1">
+            <summary>
+            Provides a disposable array.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+            <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the <typeparamref name="T"/> value at the specified index.
+            </summary>
+            <value>
+            The <typeparamref name="T"/> value.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
+            <summary>
+            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <param name="comparer">The comparer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
+            <summary>
+            Determines whether this instance contains the object.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+            </summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <param name="comparer">The comparer.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            An enumerator that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="comparer">The comparer.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            <returns>
+            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.DataLength">
+            <summary>
+            Represents a length of some data.
+            </summary>
+        </member>
+        <member name="M:Shamisen.DataLength.#ctor(System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.DataLength" /> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="P:Shamisen.DataLength.Infinity">
+            <summary>
+            Represents the fact that the source stream is infinitely long.
+            </summary>
+        </member>
+        <member name="P:Shamisen.DataLength.Length">
+            <summary>
+            Gets the actual length available.
+            </summary>
+            <value>
+            The length.
+            </value>
+        </member>
+        <member name="P:Shamisen.DataLength.IsInfinity">
+            <summary>
+            Gets a value indicating whether the available length of data is infinity.
+            </summary>
+            <value>
+              <c>true</c> if this <see cref="P:Shamisen.DataLength.Length"/> is infinity; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Shamisen.DataLength.Cast``2">
+            <summary>
+            Casts the size value of this instance.
+            </summary>
+            <typeparam name="TFrom">The type of from.</typeparam>
+            <typeparam name="TTo">The type of to.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Division(Shamisen.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator /.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Multiply(Shamisen.DataLength,System.UInt64)">
+            <summary>
+            Implements the operator *.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Implicit(System.UInt64)~Shamisen.DataLength">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Int64" /> to <see cref="T:Shamisen.DataLength" />.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Explicit(Shamisen.DataLength)~System.UInt64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.DataLength"/> to <see cref="T:System.UInt64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.CompareTo(Shamisen.DataLength)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.DataLength.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.Equals(Shamisen.DataLength)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Equality(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.DataLength" /> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.DataLength" /> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.DataLength" /> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_Inequality(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.DataLength"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.DataLength"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.DataLength"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_LessThan(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Implements the operator &lt;.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_LessThanOrEqual(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Implements the operator &lt;=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_GreaterThan(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Implements the operator &gt;.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.DataLength.op_GreaterThanOrEqual(Shamisen.DataLength,Shamisen.DataLength)">
+            <summary>
+            Implements the operator &gt;=.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Fixed16">
+            <summary>
+            Represents a Fixed-Point Number in Signed Q0.15 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+            Useful for manipulating a 16-bit PCM waveform directly.<br/>
+            For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed16.Value">
+            <summary>
+            The internal value stored in memory.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed16.MaxValue">
+            <summary>
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed16.MinValue">
+            <summary>
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed16.Zero">
+            <summary>
+            Represents the number zero (0).
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed16.Epsilon">
+            <summary>
+            Represents the smallest positive <see cref="T:Shamisen.Fixed16"/> value that is greater than zero. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed16.#ctor(System.Int16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Fixed16"/> struct.
+            </summary>
+            <param name="internalValue">The internal value stored in memory.</param>
+        </member>
+        <member name="P:Shamisen.Fixed16.FloatValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Single"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Addition(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Adds two specified <see cref="T:Shamisen.Fixed16"/> values.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Subtraction(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Subtracts two specified <see cref="T:Shamisen.Fixed16"/> values.
+            </summary>
+            <param name="left">The minuend.</param>
+            <param name="right">The subtrahend.</param>
+            <returns>
+            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Multiply(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Multiplies two specified <see cref="T:Shamisen.Fixed16"/> values.
+            </summary>
+            <param name="left">The first value to multiply.</param>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Division(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Divides two specified <see cref="T:Shamisen.Fixed16"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Modulus(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed16"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_UnaryPlus(Shamisen.Fixed16)">
+            <summary>
+            Returns the value of the <see cref="T:Shamisen.Fixed16"/> operand (the sign of the operand is unchanged).
+            </summary>
+            <param name="value">The operand to return.</param>
+            <returns>
+            The value of the operand, <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Increment(Shamisen.Fixed16)">
+            <summary>
+            Increments the <see cref="T:Shamisen.Fixed16"/> operand by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>
+            The value of <paramref name="value"/> incremented by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_UnaryNegation(Shamisen.Fixed16)">
+            <summary>
+            Negates the value of the specified <see cref="T:Shamisen.Fixed16"/> operand.
+            </summary>
+            <param name="value">The value to negate.</param>
+            <returns>
+            The result of <paramref name="value"/> multiplied by negative one (-1).
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Decrement(Shamisen.Fixed16)">
+            <summary>
+            Decrements the <see cref="T:Shamisen.Fixed16"/> operand by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
+            </summary>
+            <param name="value">The value to decrement.</param>
+            <returns>
+            The value of <paramref name="value"/> decremented by <see cref="F:Shamisen.Fixed16.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Implicit(Shamisen.Fixed16)~System.Single">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Fixed16"/> to <see cref="T:System.Single"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Explicit(Shamisen.Fixed16)~System.Double">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed16"/> to <see cref="T:System.Single"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Explicit(System.Single)~Shamisen.Fixed16">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Explicit(System.Double)~Shamisen.Fixed16">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Double"/> to <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.CompareTo(Shamisen.Fixed16)">
+            <summary>
+            Compares this instance to a specified 16-bit signed fixed-point number and returns an indication of their relative values.
+            </summary>
+            <param name="other">An number to compare.</param>
+            <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_LessThan(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is less than another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_LessThanOrEqual(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is less than or equal to another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_GreaterThan(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is greater than another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_GreaterThanOrEqual(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed16"/> is greater than or equal to another specified <see cref="T:Shamisen.Fixed16"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.Equals(Shamisen.Fixed16)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Equality(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed16"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed16"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Fixed16"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed16.op_Inequality(Shamisen.Fixed16,Shamisen.Fixed16)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed16"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed16"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Fixed16"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Fixed32">
+            <summary>
+            Represents a Fixed-Point Number in Signed Q0.31 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+            Useful for manipulating a 32-bit PCM waveform directly.<br/>
+            For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Value">
+            <summary>
+            The internal value stored in memory.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed32.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Fixed32"/> struct.
+            </summary>
+            <param name="internalValue">The internal value stored in memory.</param>
+        </member>
+        <member name="P:Shamisen.Fixed32.FloatValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Single"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Fixed32.DoubleValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Double"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="F:Shamisen.Fixed32.MaxValue">
+            <summary>
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed32"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.MinValue">
+            <summary>
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed32"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Zero">
+            <summary>
+            Represents the number zero (0).
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed32.Epsilon">
+            <summary>
+            Represents the smallest positive <see cref="T:Shamisen.Fixed32"/> value that is greater than zero. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Addition(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Adds two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Subtraction(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Subtracts two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The minuend.</param>
+            <param name="right">The subtrahend.</param>
+            <returns>
+            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Multiply(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Multiplies two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The first value to multiply.</param>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.PowerOfInteger(Shamisen.Fixed32,System.UInt32)">
+            <summary>
+            Returns the specified value to the <paramref name="power"/>th power.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="power">The power.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Square(Shamisen.Fixed32)">
+            <summary>
+            Squares the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Division(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Divides two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Modulus(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed32"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_UnaryPlus(Shamisen.Fixed32)">
+            <summary>
+            Returns the value of the <see cref="T:Shamisen.Fixed32"/> operand (the sign of the operand is unchanged).
+            </summary>
+            <param name="value">The operand to return.</param>
+            <returns>
+            The value of the operand, <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Increment(Shamisen.Fixed32)">
+            <summary>
+            Increments the <see cref="T:Shamisen.Fixed32"/> operand by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>
+            The value of <paramref name="value"/> incremented by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_UnaryNegation(Shamisen.Fixed32)">
+            <summary>
+            Negates the value of the specified <see cref="T:Shamisen.Fixed32"/> operand.
+            </summary>
+            <param name="value">The value to negate.</param>
+            <returns>
+            The result of <paramref name="value"/> multiplied by negative one (-1).
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Decrement(Shamisen.Fixed32)">
+            <summary>
+            Decrements the <see cref="T:Shamisen.Fixed32"/> operand by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </summary>
+            <param name="value">The value to decrement.</param>
+            <returns>
+            The value of <paramref name="value"/> decremented by <see cref="F:Shamisen.Fixed32.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(Shamisen.Fixed32)~System.Single">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed32"/> to <see cref="T:System.Single"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(Shamisen.Fixed32)~System.Double">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed32"/> to <see cref="T:System.Double"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(System.Single)~Shamisen.Fixed32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Explicit(System.Double)~Shamisen.Fixed32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Double"/> to <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.CompareTo(Shamisen.Fixed32)">
+            <summary>
+            Compares this instance to a specified 16-bit signed fixed-point number and returns an indication of their relative values.
+            </summary>
+            <param name="other">An number to compare.</param>
+            <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_LessThan(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is less than another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_LessThanOrEqual(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is less than or equal to another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_GreaterThan(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is greater than another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_GreaterThanOrEqual(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed32"/> is greater than or equal to another specified <see cref="T:Shamisen.Fixed32"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.Equals(Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Equality(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed32"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed32.op_Inequality(Shamisen.Fixed32,Shamisen.Fixed32)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed32"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Fixed32"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Fixed64">
+            <summary>
+            Represents a Fixed-Point Number in Signed Q0.63 format using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">Two's Complement</a> format.<br/>
+            Useful for precisely counting angles in multiples of <see cref="F:System.Math.PI"/>.<br/>
+            For reference of "Qm.n" notation: See <a href="https://source.android.com/devices/audio/data_formats#fixed">here</a> and <a href="https://en.wikipedia.org/wiki/Q_(number_format)">here</a>.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Fixed64.Value">
+            <summary>
+            The internal value stored in memory.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed64.#ctor(System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Fixed64"/> struct.
+            </summary>
+            <param name="internalValue">The internal value stored in memory.</param>
+        </member>
+        <member name="P:Shamisen.Fixed64.FloatValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Single"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Fixed64.DoubleValue">
+            <summary>
+            Gets the value represented in <see cref="T:System.Double"/>.
+            </summary>
+            <value>
+            The float value.
+            </value>
+        </member>
+        <member name="P:Shamisen.Fixed64.MaxValue">
+            <summary>
+            Represents the largest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Fixed64.MinValue">
+            <summary>
+            Represents the smallest possible value of <see cref="T:Shamisen.Fixed64"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Fixed64.Zero">
+            <summary>
+            Represents the number zero (0).
+            </summary>
+        </member>
+        <member name="P:Shamisen.Fixed64.Epsilon">
+            <summary>
+            Represents the smallest positive <see cref="T:Shamisen.Fixed64"/> value that is greater than zero. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Addition(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Adds two specified <see cref="T:Shamisen.Fixed64"/> values.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Subtraction(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Subtracts two specified <see cref="T:Shamisen.Fixed64"/> values.
+            </summary>
+            <param name="left">The minuend.</param>
+            <param name="right">The subtrahend.</param>
+            <returns>
+            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Multiply(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Multiplies two specified <see cref="T:Shamisen.Fixed64"/> values.
+            </summary>
+            <param name="left">The first value to multiply.</param>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The result of multiplying <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.PowerOfInteger(Shamisen.Fixed64,System.UInt32)">
+            <summary>
+            Returns the specified value to the <paramref name="power"/>th power.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="power">The power.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.Square(Shamisen.Fixed64)">
+            <summary>
+            Squares the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Division(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Divides two specified <see cref="T:Shamisen.Fixed64"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The result of dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Modulus(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Returns the remainder resulting from dividing two specified <see cref="T:Shamisen.Fixed64"/> values.
+            </summary>
+            <param name="left">The dividend.</param>
+            <param name="right">The divisor.</param>
+            <returns>
+            The remainder resulting from dividing <paramref name="left"/> by <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_UnaryPlus(Shamisen.Fixed64)">
+            <summary>
+            Returns the value of the <see cref="T:Shamisen.Fixed64"/> operand (the sign of the operand is unchanged).
+            </summary>
+            <param name="value">The operand to return.</param>
+            <returns>
+            The value of the operand, <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Increment(Shamisen.Fixed64)">
+            <summary>
+            Increments the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
+            </summary>
+            <param name="value">The value to increment.</param>
+            <returns>
+            The value of <paramref name="value"/> incremented by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_UnaryNegation(Shamisen.Fixed64)">
+            <summary>
+            Negates the value of the specified <see cref="T:Shamisen.Fixed64"/> operand.
+            </summary>
+            <param name="value">The value to negate.</param>
+            <returns>
+            The result of <paramref name="value"/> multiplied by negative one (-1).
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Decrement(Shamisen.Fixed64)">
+            <summary>
+            Decrements the <see cref="T:Shamisen.Fixed64"/> operand by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
+            </summary>
+            <param name="value">The value to decrement.</param>
+            <returns>
+            The value of <paramref name="value"/> decremented by <see cref="P:Shamisen.Fixed64.Epsilon"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(Shamisen.Fixed64)~System.Single">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed64"/> to <see cref="T:System.Single"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(Shamisen.Fixed64)~System.Double">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed64"/> to <see cref="T:System.Double"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(System.Single)~Shamisen.Fixed64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Single"/> to <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(System.Double)~Shamisen.Fixed64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Double"/> to <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(Shamisen.Fixed64)~System.Int64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.Fixed64"/> to <see cref="T:System.Int64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The internal <see cref="T:System.Int64"/> value of specified <paramref name="value"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Explicit(System.Int64)~Shamisen.Fixed64">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int64"/> to <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.CompareTo(Shamisen.Fixed64)">
+            <summary>
+            Compares this instance to a specified 16-bit signed fixed-point number and returns an indication of their relative values.
+            </summary>
+            <param name="other">An number to compare.</param>
+            <returns>A signed number indicating the relative values of this instance and <paramref name="other"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_LessThan(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed64"/> is less than another specified <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_LessThanOrEqual(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed64"/> is less than or equal to another specified <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_GreaterThan(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed64"/> is greater than another specified <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_GreaterThanOrEqual(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.Fixed64"/> is greater than or equal to another specified <see cref="T:Shamisen.Fixed64"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.Equals(Shamisen.Fixed64)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Equality(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed64"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed64"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Fixed64"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Fixed64.op_Inequality(Shamisen.Fixed64,Shamisen.Fixed64)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Fixed64"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Fixed64"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Fixed64"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Int24">
+            <summary>
+            An simple representation of 24bit signed integer.
+            </summary>
+            <seealso cref="T:System.IEquatable`1" />
+        </member>
+        <member name="F:Shamisen.Int24.MaxValue">
+            <summary>
+            Represents the largest possible value of an System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Int24.MinValue">
+            <summary>
+            Represents the smallest possible value of System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Int24.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Int24"/> struct.
+            </summary>
+            <param name="value">The source <see cref="T:System.Int32"/> value. Mask:0x807fffff</param>
+        </member>
+        <member name="M:Shamisen.Int24.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Int24"/> struct.
+            </summary>
+            <param name="head">The head.</param>
+            <param name="middle">The middle.</param>
+            <param name="tail">The tail.</param>
+        </member>
+        <member name="M:Shamisen.Int24.op_Implicit(Shamisen.Int24)~System.Int32">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Int24"/> to <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_Explicit(System.Int32)~Shamisen.Int24">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int32"/> to <see cref="T:Shamisen.Int24"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_Equality(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Int24"/> objects are equal.
+            </summary>
+            <param name="int1">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="int2">The second <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_UnaryNegation(Shamisen.Int24)">
+            <summary>
+            Implements the operator -.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_Inequality(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Int24"/> objects are not equal.
+            </summary>
+            <param name="int1">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="int2">The second <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if int1 and int2 are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_LessThan(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.Int24"/> is less than another specified <see cref="T:Shamisen.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_GreaterThan(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.Int24"/> is greater than another specified <see cref="T:Shamisen.Int24"/> value.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is greater than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_LessThanOrEqual(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Returns a value that indicates whether a specified <see cref="T:Shamisen.Int24"/> is less than or equal to another specified <see cref="T:Shamisen.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.op_GreaterThanOrEqual(Shamisen.Int24,Shamisen.Int24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.Int24"/> is greater than or equal to another specified <see cref="T:Shamisen.Int24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.Int24"/> to compare.</param>
+            <returns>
+              <c>true</c> if <see cref="T:Shamisen.Int24"/> is greater than or equal to <see cref="T:Shamisen.Int24"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.ReverseEndianness(Shamisen.Int24)">
+            <summary>
+            Reverses endianness of the given <see cref="T:Shamisen.Int24"/> value.
+            </summary>
+            <param name="value">The value to reverse endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Int24.CompareTo(Shamisen.Int24)">
+            <summary>
+            Compares the value of this instance to a specified <see cref="T:Shamisen.Int24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="T:Shamisen.Int24"/> value.
+            </summary>
+            <param name="other">The <see cref="T:Shamisen.Int24"/> to compare to the current instance.</param>
+            <returns>
+            A signed number indicating the relative values of this instance and the other parameter.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" />, is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.Equals(Shamisen.Int24)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Int24.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:Shamisen.OffsetSByte">
+            <summary>
+            Represents a value that is offset 128 inside 8-bit PCM.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OffsetSByte.MaxValue">
+            <summary>
+            Represents the largest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OffsetSByte.MinValue">
+            <summary>
+            Represents the smallest possible value of <see cref="T:Shamisen.OffsetSByte"/>. This field is constant and read-only.
+            </summary>
+        </member>
+        <member name="F:Shamisen.OffsetSByte.Zero">
+            <summary>
+            Represents the number zero (0).
+            </summary>
+        </member>
+        <member name="F:Shamisen.OffsetSByte.One">
+            <summary>
+            Represents the number one (1).
+            </summary>
+        </member>
+        <member name="F:Shamisen.OffsetSByte.MinusOne">
+            <summary>
+            Represents the number negative one (-1).
+            </summary>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.#ctor(System.SByte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.OffsetSByte"/> struct.
+            </summary>
+            <param name="value">The represented value.</param>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.#ctor(System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.OffsetSByte"/> struct.
+            </summary>
+            <param name="value">The stored value.</param>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.CompareTo(Shamisen.OffsetSByte)">
+            <summary>
+            Compares this instance to a specified 32-bit signed integer and returns an indication of their relative values.
+            </summary>
+            <param name="other">An integer to compare.</param>
+            <returns>
+            A signed number indicating the relative values of this instance and value.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Equals(Shamisen.OffsetSByte)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Equality(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.OffsetSByte"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.OffsetSByte"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.OffsetSByte"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Inequality(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.OffsetSByte"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.OffsetSByte"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.OffsetSByte"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(Shamisen.OffsetSByte)~System.SByte">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.OffsetSByte"/> to <see cref="T:System.SByte"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(Shamisen.OffsetSByte)~System.Int32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.OffsetSByte"/> to <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(Shamisen.OffsetSByte)~System.Byte">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.OffsetSByte"/> to <see cref="T:System.Byte"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(System.SByte)~Shamisen.OffsetSByte">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.SByte"/> to <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_Explicit(System.Int32)~Shamisen.OffsetSByte">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.Int32"/> to <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.ToString">
+            <summary>
+            Converts the numeric value of this instance to its equivalent string representation.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents the value of this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.Parse(System.String)">
+            <summary>
+            Converts the string representation of a number to its <see cref="T:Shamisen.OffsetSByte"/> equivalent.
+            </summary>
+            <param name="s">The string representation of the number to convert.</param>
+            <returns>The equivalent to the number contained in <paramref name="s"/>.</returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.TryParse(System.String,Shamisen.OffsetSByte@)">
+            <summary>
+            Converts the string representation of a number to its <see cref="T:Shamisen.OffsetSByte"/> equivalent.<br/>
+            A return value indicates whether the conversion succeeded or failed.
+            </summary>
+            <param name="s">The string representation of the number to convert.</param>
+            <param name="result">When this method returns, contains the <see cref="T:Shamisen.OffsetSByte"/> number that is equivalent to the numeric value contained in <paramref name="s"/>, if the conversion succeeded, or zero if the conversion failed.
+            The conversion fails if the <paramref name="s"/> parameter is <c>null</c> or <see cref="F:System.String.Empty"/>, is not a number in a valid format, or represents a number less than <see cref="F:Shamisen.OffsetSByte.MinValue"/> or greater than <see cref="F:Shamisen.OffsetSByte.MaxValue"/>.
+            This parameter is passed uninitialized; any value originally supplied in result is overwritten.</param>
+            <returns>
+            <c>true</c> if <paramref name="s"/> was converted successfully; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_LessThan(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.OffsetSByte"/> is less than another specified <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_LessThanOrEqual(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.OffsetSByte"/> is less than or equal to another specified <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_GreaterThan(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.OffsetSByte"/> is greater than another specified <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.OffsetSByte.op_GreaterThanOrEqual(Shamisen.OffsetSByte,Shamisen.OffsetSByte)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.OffsetSByte"/> is greater than or equal to another specified <see cref="T:Shamisen.OffsetSByte"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.ReadResult">
+            <summary>
+            Represents a result of read operation.
+            </summary>
+        </member>
+        <member name="P:Shamisen.ReadResult.EndOfStream">
+            <summary>
+            Represents the fact that the source stream is empty right now.
+            </summary>
+        </member>
+        <member name="P:Shamisen.ReadResult.WaitingForSource">
+            <summary>
+            Represents the fact that the source stream is waiting for source's IO.
+            </summary>
+        </member>
+        <member name="M:Shamisen.ReadResult.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.ReadResult"/> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="P:Shamisen.ReadResult.IsEndOfStream">
+            <summary>
+            Gets a value indicating whether the source has already reached the end of stream.
+            </summary>
+            <value>
+              <c>true</c> if the source has already reached the end of stream; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.ReadResult.HasData">
+            <summary>
+            Gets a value indicating whether the buffer has data.
+            </summary>
+            <value>
+              <c>true</c> if the buffer has data; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.ReadResult.HasNoData">
+            <summary>
+            Gets a value indicating whether the buffer has no data.
+            </summary>
+            <value>
+              <c>true</c> if the buffer has no data; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.ReadResult.Length">
+            <summary>
+            Gets the actual length read.
+            </summary>
+            <value>
+            The actual length read.
+            </value>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Explicit(Shamisen.ReadResult)~System.UInt32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.ReadResult"/> to <see cref="T:System.UInt32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Explicit(Shamisen.ReadResult)~System.Int32">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.ReadResult"/> to <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>The result of the conversion.</returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Implicit(System.Int32)~Shamisen.ReadResult">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Int32"/> to <see cref="T:Shamisen.ReadResult"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.Equals(Shamisen.ReadResult)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.CompareTo(Shamisen.ReadResult)">
+            <summary>
+            Compares this instance to a specified <see cref="T:Shamisen.ReadResult"/> and returns an indication of their relative values.
+            </summary>
+            <param name="other">An <see cref="T:Shamisen.ReadResult"/>  to compare.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Equality(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.ReadResult"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.ReadResult"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.ReadResult"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Inequality(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.ReadResult"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.ReadResult"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.ReadResult"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_LessThan(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.ReadResult"/> is less than another specified <see cref="T:Shamisen.ReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_LessThanOrEqual(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.ReadResult"/> is less than or equal to another specified <see cref="T:Shamisen.ReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_GreaterThan(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.ReadResult"/> is greater than another specified <see cref="T:Shamisen.ReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_GreaterThanOrEqual(Shamisen.ReadResult,Shamisen.ReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.ReadResult"/> is greater than or equal to another specified <see cref="T:Shamisen.ReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Addition(Shamisen.ReadResult,System.Int32)">
+            <summary>
+            Adds specified <see cref="T:Shamisen.ReadResult"/> value and <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Multiply(Shamisen.ReadResult,System.Int32)">
+            <summary>
+            Multiplies specified <see cref="T:Shamisen.ReadResult"/> value and <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.op_Division(Shamisen.ReadResult,System.Int32)">
+            <summary>
+            Divides specified <see cref="T:Shamisen.ReadResult"/> value with <see cref="T:System.Int32"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadResult.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            The fully qualified type name.
+            </returns>
+        </member>
+        <member name="T:Shamisen.StackOnlyActionContainer`1">
+            <summary>
+            Stores <see cref="T:System.Action`1"/> that cannot leave the stack.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.#ctor(System.Action{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.StackOnlyActionContainer`1"/> struct.
+            </summary>
+            <param name="action">The action.</param>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.Invoke(`0)">
+            <summary>
+            Invokes this instance with specified parameter.
+            </summary>
+            <param name="parameter">The first parameter.</param>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.Equals(Shamisen.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="value">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.op_Equality(Shamisen.StackOnlyActionContainer{`0},Shamisen.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.StackOnlyActionContainer`1"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.StackOnlyActionContainer`1"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.StackOnlyActionContainer`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.StackOnlyActionContainer`1.op_Inequality(Shamisen.StackOnlyActionContainer{`0},Shamisen.StackOnlyActionContainer{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.StackOnlyActionContainer`1"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.StackOnlyActionContainer`1"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.StackOnlyActionContainer`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Shamisen.UInt24">
+            <summary>
+            Represents an unsigned 24-bit number.
+            </summary>
+        </member>
+        <member name="F:Shamisen.UInt24.MaxValue">
+            <summary>
+            Represents the largest possible value of an System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="F:Shamisen.UInt24.MinValue">
+            <summary>
+            Represents the smallest possible value of System.Int24. This field is constant.
+            </summary>
+        </member>
+        <member name="M:Shamisen.UInt24.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.UInt24"/> struct.
+            </summary>
+            <param name="value">The source <see cref="T:System.UInt32"/> value. Mask:0x00ffffff</param>
+        </member>
+        <member name="M:Shamisen.UInt24.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.UInt24"/> struct.
+            </summary>
+            <param name="head">The head.</param>
+            <param name="middle">The middle.</param>
+            <param name="tail">The tail.</param>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Implicit(Shamisen.UInt24)~System.UInt32">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Int24"/> to <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Explicit(System.UInt32)~Shamisen.UInt24">
+            <summary>
+            Performs an explicit conversion from <see cref="T:System.UInt32"/> to <see cref="T:Shamisen.UInt24"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Equality(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.UInt24"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Inequality(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.UInt24"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.Equals(Shamisen.UInt24)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_LessThan(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is less than another specified <see cref="T:Shamisen.UInt24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_GreaterThan(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is greater than another specified <see cref="T:Shamisen.UInt24"/> value.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is greater than right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_LessThanOrEqual(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Returns a value that indicates whether a specified <see cref="T:Shamisen.UInt24"/> is less than or equal to another specified <see cref="T:Shamisen.UInt24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.op_GreaterThanOrEqual(Shamisen.UInt24,Shamisen.UInt24)">
+            <summary>
+            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is greater than or equal to another specified <see cref="T:Shamisen.UInt24"/>.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.UInt24"/> to compare.</param>
+            <returns>
+              <c>true</c> if <see cref="T:Shamisen.UInt24"/> is greater than or equal to <see cref="T:Shamisen.UInt24"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.ReverseEndianness(Shamisen.UInt24)">
+            <summary>
+            Reverses endianness of the given <see cref="T:Shamisen.UInt24"/> value.
+            </summary>
+            <param name="value">The value to reverse endianness.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.UInt24.CompareTo(Shamisen.UInt24)">
+            <summary>
+            Compares the value of this instance to a specified <see cref="T:Shamisen.UInt24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="T:Shamisen.UInt24"/> value.
+            </summary>
+            <param name="other">The <see cref="T:Shamisen.UInt24"/> to compare to the current instance.</param>
+            <returns>
+            A signed number indicating the relative values of this instance and the other parameter.
+            </returns>
+        </member>
+        <member name="M:Shamisen.UInt24.GetDebuggerDisplay">
+            <summary>
+            Gets the debugger display.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.UInt24.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.VectorB4">
+            <summary>
+            Represents a vector of four <see cref="T:System.Byte"/> elements.
+            </summary>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value0">
+            <summary>
+            Gets the 0th value.
+            </summary>
+            <value>
+            The value0.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value1">
+            <summary>
+            Gets the 1st value.
+            </summary>
+            <value>
+            The value1.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value2">
+            <summary>
+            Gets the 2nd value.
+            </summary>
+            <value>
+            The value2.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.Value3">
+            <summary>
+            Gets the 3rd value.
+            </summary>
+            <value>
+            The value3.
+            </value>
+        </member>
+        <member name="P:Shamisen.VectorB4.StringView">
+            <summary>
+            Gets the string view.
+            </summary>
+            <value>
+            The string view.
+            </value>
+        </member>
+        <member name="M:Shamisen.VectorB4.ToString">
+            <summary>
+            Gets the string view.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.Equals(Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>
+            A 32-bit signed integer that is the hash code for this instance.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.op_Equality(Shamisen.VectorB4,Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.op_Inequality(Shamisen.VectorB4,Shamisen.VectorB4)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.VectorB4"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.VectorB4.GetDebuggerDisplay">
+            <summary>
+            Gets the debugger display.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Shamisen.Utils.EndiannessExtensions">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:Shamisen.Utils.EndiannessExtensions.EnvironmentEndianness">
+            <summary>
+            Gets the environment's endianness.
+            </summary>
+            <value>
+            The environment endianness.
+            </value>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Avx2Utils.BlendVariable(System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BlendVariable(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse3.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+    </members>
+</doc>

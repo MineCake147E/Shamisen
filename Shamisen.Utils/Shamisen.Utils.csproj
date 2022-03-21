@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+      <RootNamespace>Shamisen</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0'">
+        <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+        <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.Memory" Version="4.5.4" />
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="BinaryExtensions.g.cs" />
+      <Compile Remove="MathITemplate.cs" />
+      <Compile Remove="Utils\Audio\AudioUtils.Fallback.g.cs" />
+      <Compile Remove="Utils\Audio\AudioUtils.g.cs" />
+      <Compile Remove="Utils\Audio\AudioUtils.Intrinsics.g.cs" />
+      <Compile Remove="Utils\Memory\SpanExtensionsTemplate.cs" />
+      <Compile Remove="VectorUtils.g.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="BinaryExtensions.g.cs">
+          <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="MathITemplate.cs">
+          <DependentUpon>MathITemplate.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+        <None Include="Utils\Audio\AudioUtils.Fallback.g.cs">
+          <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.g.cs">
+          <DependentUpon>AudioUtils.g.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="Utils\Audio\AudioUtils.Intrinsics.g.cs">
+          <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="Utils\Memory\SpanExtensionsTemplate.cs">
+          <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+        <None Include="VectorUtils.g.cs">
+          <DependentUpon>VectorUtils.g.tt</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="BinaryExtensions.g.tt">
+        <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="MathITemplate.tt">
+        <LastGenOutput>MathITemplate.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
+        <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\Audio\AudioUtils.g.tt">
+        <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
+        <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+        <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
+            <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
+        <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
+          <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
+          <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
+        <None Update="VectorUtils.g.tt">
+          <LastGenOutput>VectorUtils.g.cs</LastGenOutput>
+          <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>

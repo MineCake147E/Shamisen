@@ -11,7 +11,7 @@ This library provides core components of [Shamisen](https://github.com/MineCake1
 + BiQuad Filters
 + Simple Mixing
 + Multiplying two audio sources
-+ Conversion between some PCM formats and IEEE754 Binary32
++ Conversion between some PCM formats and IEEE 754 Binary32
   + LinearPCM(Signed 16bit, Signed 24bit, Signed 32bit, Signed 8bit Excess-128)
   + G.711(8bit μ-Law, 8bit A-Law)
 + Waveform Synthesis
@@ -26,10 +26,11 @@ This library provides core components of [Shamisen](https://github.com/MineCake1
 + WAVE File Parser(Decoder)
   + RF64 and BWF support
 + WAVE File Composer(Encoder)
-  + RF64 and BWF support
+  + RF64 support as default
+  + RIFF for audio file that is proven to be less than 2^32-1 bytes in total
 
 ## License
 
-### Shamisen.Core itself
+### Shamisen.Core
 
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)

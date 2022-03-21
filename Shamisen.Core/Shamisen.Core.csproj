@@ -14,6 +14,17 @@
         <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Utils\Audio\**" />
+      <Compile Remove="Utils\Intrinsics\**" />
+      <Compile Remove="Utils\Samples\**" />
+      <EmbeddedResource Remove="Utils\Audio\**" />
+      <EmbeddedResource Remove="Utils\Intrinsics\**" />
+      <EmbeddedResource Remove="Utils\Samples\**" />
+      <None Remove="Utils\Audio\**" />
+      <None Remove="Utils\Intrinsics\**" />
+      <None Remove="Utils\Samples\**" />
+    </ItemGroup>
+    <ItemGroup>
       <Compile Remove="Data\AsyncStreamSynchronizer.cs" />
       <Compile Remove="Data\DataReader.cs" />
       <Compile Remove="Data\DataReaders.cs" />
@@ -41,7 +52,7 @@
       <Folder Include="Codecs\Waveform\Headers\" />
       <Folder Include="Data\Composing\" />
       <Folder Include="Optimization\Intrinsics\X86\" />
-      <Folder Include="Utils\Samples\" />
+      <Folder Include="Utils\Binary\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="True" PackagePath="\" />
@@ -73,36 +84,6 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </None>
-      <None Include="Utils\Audio\AudioUtils.Fallback.g.cs">
-        <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\Audio\AudioUtils.g.cs">
-        <DependentUpon>AudioUtils.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\Audio\AudioUtils.Intrinsics.g.cs">
-        <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\Binary\BinaryExtensions.g.cs">
-        <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\Intrinsics\AdvSimdUtils.g.cs">
-        <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\MathITemplate.cs">
-        <DependentUpon>MathITemplate.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
       <None Include="Utils\Memory\SpanExtensionsTemplate.cs">
         <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         <DesignTime>True</DesignTime>
@@ -113,6 +94,9 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>VectorUtils.g.tt</DependentUpon>
       </None>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
@@ -145,30 +129,10 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AudioUtils.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
-      </Compile>
       <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
       </Compile>
       <Compile Update="Utils\MathITemplate.cs">
         <DesignTime>True</DesignTime>
@@ -221,24 +185,8 @@
         <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>
-      <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
-        <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Audio\AudioUtils.g.tt">
-        <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
-        <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
       <None Update="Utils\Binary\BinaryExtensions.g.tt">
         <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
-        <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>
       <None Update="Utils\MathITemplate.tt">
