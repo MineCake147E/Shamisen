@@ -16,12 +16,15 @@
     <ItemGroup>
       <Compile Remove="Utils\Audio\**" />
       <Compile Remove="Utils\Intrinsics\**" />
+      <Compile Remove="Utils\Memory\**" />
       <Compile Remove="Utils\Samples\**" />
       <EmbeddedResource Remove="Utils\Audio\**" />
       <EmbeddedResource Remove="Utils\Intrinsics\**" />
+      <EmbeddedResource Remove="Utils\Memory\**" />
       <EmbeddedResource Remove="Utils\Samples\**" />
       <None Remove="Utils\Audio\**" />
       <None Remove="Utils\Intrinsics\**" />
+      <None Remove="Utils\Memory\**" />
       <None Remove="Utils\Samples\**" />
     </ItemGroup>
     <ItemGroup>
@@ -33,7 +36,7 @@
       <Compile Remove="Data\SynchronizedDataReader.cs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="DivideSharp" Version="0.0.4" />
+        <PackageReference Include="DivideSharp" Version="0.0.5" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
         <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
         <PackageReference Include="System.Buffers" Version="4.5.1" />
@@ -84,16 +87,6 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </None>
-      <None Include="Utils\Memory\SpanExtensionsTemplate.cs">
-        <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
-      <None Include="Utils\VectorUtils.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>VectorUtils.g.tt</DependentUpon>
-      </None>
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
@@ -138,11 +131,6 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>MathITemplate.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\Memory\SpanExtensionsTemplate.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
       </Compile>
       <Compile Update="Utils\Tuples\Tuples.cs">
         <DependentUpon>Tuples.tt</DependentUpon>
@@ -191,10 +179,6 @@
       </None>
       <None Update="Utils\MathITemplate.tt">
         <LastGenOutput>MathITemplate.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
-        <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>
       <None Update="Utils\Tuples\Tuples.g.tt">
