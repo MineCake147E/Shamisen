@@ -4,6 +4,149 @@
         <name>Shamisen.Utils</name>
     </assembly>
     <members>
+        <member name="T:Shamisen.Analysis.CooleyTukeyFft">
+            <summary>
+            Contains functionality of Fast Fourier Transform.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.CooleyTukeyFft.PowerRootsOfUnity">
+            <summary>
+            Contains (1 &lt;&lt; n) root of unity.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Span{System.Numerics.Complex},Shamisen.Analysis.FftMode)">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="span">The buffer.</param>
+            <param name="mode">The FFT's Mode.</param>
+            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Span{Shamisen.ComplexF},Shamisen.Analysis.FftMode)">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="span">The buffer.</param>
+            <param name="mode">The FFT's Mode.</param>
+            <exception cref="T:System.ArgumentException">The length of span must be power of 2! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(System.Numerics.Complex[],System.Int32,System.Int32)">
+            <summary>
+            Transforms the specified buffer using Cooley-Tukey algorithm.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="offset">The offset.</param>
+            <param name="count">The count.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.FFT(Shamisen.ComplexF[],System.Int32,System.Int32)">
+            <summary>
+            Transforms the specified buffer using Cooley-Tukey algorithm.
+            </summary>
+            <param name="buffer">The buffer.</param>
+            <param name="offset">The offset.</param>
+            <param name="count">The count.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Reverse``1(System.Span{``0})">
+            <summary>
+            Performs Bit-Reversal permutation of the <paramref name="span"/>.
+            </summary>
+            <param name="span">The in/out span.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.CalculateCache(Shamisen.Analysis.FftMode,System.Int32,System.Span{System.Numerics.Complex})">
+            <summary>
+            Calculates the cache of the powers of root of unity.
+            </summary>
+            <param name="mode">The mode.</param>
+            <param name="index">The index.</param>
+            <param name="omegas">The omegas.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.CalculateCache(Shamisen.Analysis.FftMode,System.Int32,System.Span{Shamisen.ComplexF})">
+            <summary>
+            Calculates the cache of the powers of root of unity.
+            </summary>
+            <param name="mode">The mode.</param>
+            <param name="index">The index.</param>
+            <param name="omegas">The omegas.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Perform(System.Span{System.Numerics.Complex},Shamisen.Analysis.FftMode)">
+            <summary>
+            Performs forward transform to the specified span.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="mode">The FFT's Mode.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.CooleyTukeyFft.Perform(System.Span{Shamisen.ComplexF},Shamisen.Analysis.FftMode)">
+            <summary>
+            Performs forward transform to the specified span.
+            </summary>
+            <param name="span">The span.</param>
+            <param name="mode">The FFT's Mode.</param>
+        </member>
+        <member name="T:Shamisen.Analysis.FftMode">
+            <summary>
+            Fast Fourier Transformation Modes
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.FftMode.Forward">
+            <summary>
+            The forward transform.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Analysis.FftMode.Backward">
+            <summary>
+            The backward transform.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle">
+            <summary>
+            Provides a way to perform FFT with fixed size for monaural signal.
+            Useful for making real-time FFT analyzer.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Size">
+            <summary>
+            The size of FFT.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Mode">
+            <summary>
+            The FFT mode.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.#ctor(System.Int32,Shamisen.Analysis.FftMode)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle"/>.
+            </summary>
+            <param name="size">The FFT Size. Must be a power of two and be larger than 7.</param>
+            <param name="mode">The FFT Mode.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.PerformFft(System.Span{Shamisen.ComplexF})">
+            <summary>
+            Transforms the specified span using Cooley-Tukey algorithm.
+            </summary>
+            <param name="destination">The buffer.</param>
+            <exception cref="T:System.ArgumentException">The length of <paramref name="destination"/> must be the same as <see cref="P:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Size"/>! - span</exception>
+        </member>
+        <member name="M:Shamisen.Analysis.FixedSizeCooleyTukeyFftSingle.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.Analysis.IWindowFunction">
+            <summary>
+            Defines a base infrastructure of a Window function for FFT.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Analysis.IWindowFunction.Generate(System.Span{System.Single})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Analysis.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
+        <member name="M:Shamisen.Analysis.IWindowFunction.Generate(System.Span{System.Double})">
+            <summary>
+            Generates a cache for this <see cref="T:Shamisen.Analysis.IWindowFunction"/>.
+            </summary>
+            <param name="destination">The destination.</param>
+        </member>
         <member name="T:Shamisen.BinaryExtensions">
             <summary>
             Provides some functions that helps you about binary things.
@@ -220,6 +363,62 @@
             </summary>
             <param name="systemEndianedValue">The value in system endian.</param>
             <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
+        </member>
+        <member name="T:Shamisen.Data.PooledArray`1">
+            <summary>
+            Represents a pooled <see cref="T:System.Array"/>.
+            </summary>
+            <typeparam name="T">The contents of array.</typeparam>
+        </member>
+        <member name="M:Shamisen.Data.PooledArray`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.PooledArray`1"/> class.
+            </summary>
+            <param name="size">The desired size.</param>
+        </member>
+        <member name="P:Shamisen.Data.PooledArray`1.Array">
+            <summary>
+            Gets the array.
+            </summary>
+            <value>
+            The array.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.PooledArray`1.Length">
+            <summary>
+            Gets the initially desired length of the <see cref="P:Shamisen.Data.PooledArray`1.Array"/>.
+            </summary>
+            <value>
+            The initially desired length of the <see cref="P:Shamisen.Data.PooledArray`1.Array"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.PooledArray`1.Span">
+            <summary>
+            Gets the span of the <see cref="P:Shamisen.Data.PooledArray`1.Array"/> with <see cref="P:Shamisen.Data.PooledArray`1.Length"/>.
+            </summary>
+            <value>
+            The span.
+            </value>
+        </member>
+        <member name="P:Shamisen.Data.PooledArray`1.Memory">
+            <summary>
+            Gets the memory of the <see cref="P:Shamisen.Data.PooledArray`1.Array"/> with <see cref="P:Shamisen.Data.PooledArray`1.Length"/>.
+            </summary>
+            <value>
+            The memory.
+            </value>
+        </member>
+        <member name="M:Shamisen.Data.PooledArray`1.Finalize">
+            <summary>
+            Finalizes this instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Data.PooledArray`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Shamisen.Endianness">
             <summary>
@@ -817,6 +1016,51 @@
             Initializes a new instance of <see cref="T:Shamisen.ComplexD"/>.
             </summary>
             <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.ComplexD.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ComplexD.Equals(Shamisen.ComplexD)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ComplexD.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ComplexD.op_Equality(Shamisen.ComplexD,Shamisen.ComplexD)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ComplexD.op_Inequality(Shamisen.ComplexD,Shamisen.ComplexD)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ComplexD.op_UnaryNegation(Shamisen.ComplexD)">
+            <inheritdoc cref="M:System.Numerics.Complex.op_UnaryNegation(System.Numerics.Complex)"/>
+        </member>
+        <member name="M:Shamisen.ComplexD.op_Addition(Shamisen.ComplexD,Shamisen.ComplexD)">
+            <summary>
+            Adds two complex numbers.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The sum of <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ComplexD.op_Subtraction(Shamisen.ComplexD,Shamisen.ComplexD)">
+            <summary>
+            Subtracts a complex number from another complex number.
+            </summary>
+            <param name="left">The value to subtract from (the minuend).</param>
+            <param name="right">The value to subtract (the subtrahend).</param>
+            <returns>
+            The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ComplexD.Conjugate(Shamisen.ComplexD)">
+            <summary>
+            Computes the conjugate of a complex number and returns the result.
+            </summary>
+            <param name="value">A complex number.</param>
+            <returns>The conjugate of <paramref name="value"/>.</returns>
         </member>
         <member name="T:Shamisen.ComplexF">
             <summary>
@@ -2502,348 +2746,7 @@
             <param name="v9">The value No.9.</param>
         </member>
         <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX10`1.Deconstruct(`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@)">
-            <summary>
-            Deconstructs this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX10`1"/> to values.
-            </summary>
-            <param name="v0">The output value No.0.</param>
-            <param name="v1">The output value No.1.</param>
-            <param name="v2">The output value No.2.</param>
-            <param name="v3">The output value No.3.</param>
-            <param name="v4">The output value No.4.</param>
-            <param name="v5">The output value No.5.</param>
-            <param name="v6">The output value No.6.</param>
-            <param name="v7">The output value No.7.</param>
-            <param name="v8">The output value No.8.</param>
-            <param name="v9">The output value No.9.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX10`1.op_Implicit(Shamisen.Utils.Tuples.UnmanagedTupleX10{`0})~System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0}}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX10`1"/> to <see cref="T:System.ValueTuple`2"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX10`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX10`1.op_Implicit(System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0}})~Shamisen.Utils.Tuples.UnmanagedTupleX10{`0}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:System.ValueTuple`2"/> to <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX10`1"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:System.ValueTuple`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1">
-            <summary>
-            TODO: Documentation
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item0">
-            <summary>
-            The item No.0.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item1">
-            <summary>
-            The item No.1.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item2">
-            <summary>
-            The item No.2.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item3">
-            <summary>
-            The item No.3.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item4">
-            <summary>
-            The item No.4.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item5">
-            <summary>
-            The item No.5.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item6">
-            <summary>
-            The item No.6.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item7">
-            <summary>
-            The item No.7.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item8">
-            <summary>
-            The item No.8.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item9">
-            <summary>
-            The item No.9.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Item10">
-            <summary>
-            The item No.10.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.#ctor(`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0)">
-            <summary>
-            Initializes this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1"/> from values.
-            </summary>
-            <param name="v0">The value No.0.</param>
-            <param name="v1">The value No.1.</param>
-            <param name="v2">The value No.2.</param>
-            <param name="v3">The value No.3.</param>
-            <param name="v4">The value No.4.</param>
-            <param name="v5">The value No.5.</param>
-            <param name="v6">The value No.6.</param>
-            <param name="v7">The value No.7.</param>
-            <param name="v8">The value No.8.</param>
-            <param name="v9">The value No.9.</param>
-            <param name="v10">The value No.10.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.Deconstruct(`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@)">
-            <summary>
-            Deconstructs this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1"/> to values.
-            </summary>
-            <param name="v0">The output value No.0.</param>
-            <param name="v1">The output value No.1.</param>
-            <param name="v2">The output value No.2.</param>
-            <param name="v3">The output value No.3.</param>
-            <param name="v4">The output value No.4.</param>
-            <param name="v5">The output value No.5.</param>
-            <param name="v6">The output value No.6.</param>
-            <param name="v7">The output value No.7.</param>
-            <param name="v8">The output value No.8.</param>
-            <param name="v9">The output value No.9.</param>
-            <param name="v10">The output value No.10.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.op_Implicit(Shamisen.Utils.Tuples.UnmanagedTupleX11{`0})~System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0,`0}}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1"/> to <see cref="T:System.ValueTuple`2"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX11`1.op_Implicit(System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0,`0}})~Shamisen.Utils.Tuples.UnmanagedTupleX11{`0}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:System.ValueTuple`2"/> to <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX11`1"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:System.ValueTuple`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1">
-            <summary>
-            TODO: Documentation
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item0">
-            <summary>
-            The item No.0.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item1">
-            <summary>
-            The item No.1.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item2">
-            <summary>
-            The item No.2.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item3">
-            <summary>
-            The item No.3.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item4">
-            <summary>
-            The item No.4.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item5">
-            <summary>
-            The item No.5.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item6">
-            <summary>
-            The item No.6.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item7">
-            <summary>
-            The item No.7.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item8">
-            <summary>
-            The item No.8.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item9">
-            <summary>
-            The item No.9.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item10">
-            <summary>
-            The item No.10.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Item11">
-            <summary>
-            The item No.11.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.#ctor(`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0)">
-            <summary>
-            Initializes this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1"/> from values.
-            </summary>
-            <param name="v0">The value No.0.</param>
-            <param name="v1">The value No.1.</param>
-            <param name="v2">The value No.2.</param>
-            <param name="v3">The value No.3.</param>
-            <param name="v4">The value No.4.</param>
-            <param name="v5">The value No.5.</param>
-            <param name="v6">The value No.6.</param>
-            <param name="v7">The value No.7.</param>
-            <param name="v8">The value No.8.</param>
-            <param name="v9">The value No.9.</param>
-            <param name="v10">The value No.10.</param>
-            <param name="v11">The value No.11.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.Deconstruct(`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@,`0@)">
-            <summary>
-            Deconstructs this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1"/> to values.
-            </summary>
-            <param name="v0">The output value No.0.</param>
-            <param name="v1">The output value No.1.</param>
-            <param name="v2">The output value No.2.</param>
-            <param name="v3">The output value No.3.</param>
-            <param name="v4">The output value No.4.</param>
-            <param name="v5">The output value No.5.</param>
-            <param name="v6">The output value No.6.</param>
-            <param name="v7">The output value No.7.</param>
-            <param name="v8">The output value No.8.</param>
-            <param name="v9">The output value No.9.</param>
-            <param name="v10">The output value No.10.</param>
-            <param name="v11">The output value No.11.</param>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.op_Implicit(Shamisen.Utils.Tuples.UnmanagedTupleX12{`0})~System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0,`0,`0}}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1"/> to <see cref="T:System.ValueTuple`2"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX12`1.op_Implicit(System.ValueTuple{`0,`0,`0,`0,`0,`0,`0,System.ValueTuple{`0,`0,`0,`0,`0}})~Shamisen.Utils.Tuples.UnmanagedTupleX12{`0}">
-            <summary>
-            Performs an implicit conversion from <see cref="T:System.ValueTuple`2"/> to <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX12`1"/>.
-            </summary>
-            <param name="from">The converting <see cref="T:System.ValueTuple`1"/>.</param>
-            <returns>
-            The result of the conversion.
-            </returns>
-        </member>
-        <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX13`1">
-            <summary>
-            TODO: Documentation
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item0">
-            <summary>
-            The item No.0.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item1">
-            <summary>
-            The item No.1.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item2">
-            <summary>
-            The item No.2.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item3">
-            <summary>
-            The item No.3.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item4">
-            <summary>
-            The item No.4.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item5">
-            <summary>
-            The item No.5.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item6">
-            <summary>
-            The item No.6.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item7">
-            <summary>
-            The item No.7.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item8">
-            <summary>
-            The item No.8.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item9">
-            <summary>
-            The item No.9.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item10">
-            <summary>
-            The item No.10.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item11">
-            <summary>
-            The item No.11.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.Item12">
-            <summary>
-            The item No.12.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.Tuples.UnmanagedTupleX13`1.#ctor(`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0,`0)">
-            <summary>
-            Initializes this <see cref="T:Shamisen.Utils.Tuples.UnmanagedTupleX13`1"/> from values.
-            </summary>
-            <param name="v0">The value No.0.</param>
-            <param name="v1">The value No.1.</param>
-            <param name="v2">The value No.2.</param>
-            <param name="v3">The value No.3.</param>
-            <param name="v4">The value No.4.</param>
-            <param name="v5">The value No.5.</param>
+            .5.</param>
             <param name="v6">The value No.6.</param>
             <param name="v7">The value No.7.</param>
             <param name="v8">The value No.8.</param>
@@ -3562,6 +3465,36 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector256{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector128{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector256``1(System.Numerics.Vector{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128``1(System.Numerics.Vector{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128Unsafe(System.Numerics.Vector2)">
             <summary>
             Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
@@ -3572,6 +3505,20 @@
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
             <summary>
             Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector2)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
             </summary>
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
@@ -3593,6 +3540,20 @@
         <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector64{System.Single})">
             <summary>
             Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector64`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector4(System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector4"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
             </summary>
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
@@ -6229,265 +6190,7 @@
             <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
             <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
             <returns>
-              <c>true</c> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.Equals(Shamisen.UInt24)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.op_LessThan(Shamisen.UInt24,Shamisen.UInt24)">
-            <summary>
-            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is less than another specified <see cref="T:Shamisen.UInt24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is less than right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.op_GreaterThan(Shamisen.UInt24,Shamisen.UInt24)">
-            <summary>
-            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is greater than another specified <see cref="T:Shamisen.UInt24"/> value.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is greater than right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.op_LessThanOrEqual(Shamisen.UInt24,Shamisen.UInt24)">
-            <summary>
-            Returns a value that indicates whether a specified <see cref="T:Shamisen.UInt24"/> is less than or equal to another specified <see cref="T:Shamisen.UInt24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <returns>
-              <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.op_GreaterThanOrEqual(Shamisen.UInt24,Shamisen.UInt24)">
-            <summary>
-            Determines whether one specified <see cref="T:Shamisen.UInt24"/> is greater than or equal to another specified <see cref="T:Shamisen.UInt24"/>.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.UInt24"/> to compare.</param>
-            <returns>
-              <c>true</c> if <see cref="T:Shamisen.UInt24"/> is greater than or equal to <see cref="T:Shamisen.UInt24"/>; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.ReverseEndianness(Shamisen.UInt24)">
-            <summary>
-            Reverses endianness of the given <see cref="T:Shamisen.UInt24"/> value.
-            </summary>
-            <param name="value">The value to reverse endianness.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.UInt24.CompareTo(Shamisen.UInt24)">
-            <summary>
-            Compares the value of this instance to a specified <see cref="T:Shamisen.UInt24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="T:Shamisen.UInt24"/> value.
-            </summary>
-            <param name="other">The <see cref="T:Shamisen.UInt24"/> to compare to the current instance.</param>
-            <returns>
-            A signed number indicating the relative values of this instance and the other parameter.
-            </returns>
-        </member>
-        <member name="M:Shamisen.UInt24.GetDebuggerDisplay">
-            <summary>
-            Gets the debugger display.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.UInt24.ToString">
-            <summary>
-            Converts to string.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.VectorB4">
-            <summary>
-            Represents a vector of four <see cref="T:System.Byte"/> elements.
-            </summary>
-        </member>
-        <member name="P:Shamisen.VectorB4.Value0">
-            <summary>
-            Gets the 0th value.
-            </summary>
-            <value>
-            The value0.
-            </value>
-        </member>
-        <member name="P:Shamisen.VectorB4.Value1">
-            <summary>
-            Gets the 1st value.
-            </summary>
-            <value>
-            The value1.
-            </value>
-        </member>
-        <member name="P:Shamisen.VectorB4.Value2">
-            <summary>
-            Gets the 2nd value.
-            </summary>
-            <value>
-            The value2.
-            </value>
-        </member>
-        <member name="P:Shamisen.VectorB4.Value3">
-            <summary>
-            Gets the 3rd value.
-            </summary>
-            <value>
-            The value3.
-            </value>
-        </member>
-        <member name="P:Shamisen.VectorB4.StringView">
-            <summary>
-            Gets the string view.
-            </summary>
-            <value>
-            The string view.
-            </value>
-        </member>
-        <member name="M:Shamisen.VectorB4.ToString">
-            <summary>
-            Gets the string view.
-            </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.Equals(Shamisen.VectorB4)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.op_Equality(Shamisen.VectorB4,Shamisen.VectorB4)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.VectorB4"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.op_Inequality(Shamisen.VectorB4,Shamisen.VectorB4)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.VectorB4"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.VectorB4"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.VectorB4"/> to compare.</param>
-            <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.VectorB4.GetDebuggerDisplay">
-            <summary>
-            Gets the debugger display.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.SystemExtensions.Memory.NativeSpan`1">
-            <summary>
-            Represents a continuous region of memory.
-            </summary>
-            <typeparam name="T">The type of contents.</typeparam>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(`0*,System.IntPtr)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> struct.
-            </summary>
-            <param name="headPointer">The head pointer.</param>
-            <param name="length">The length.</param>
-        </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Length">
-            <summary>
-            The length of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Item(System.IntPtr)">
-            <summary>
-            Returns the <paramref name="index"/>th element of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Slice(System.IntPtr)">
-            <summary>
-            Slices the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> with the specified start.
-            </summary>
-            <param name="start">The start.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Equality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+              <c>true</c> if <paramr same as the right; otherwise, <c>false</c>.
             </returns>
         </member>
         <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Inequality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
@@ -6664,12 +6367,6 @@
             <param name="span">The span.</param>
         </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt16})">
-            <summary>
-            Reverses the endianness of each elements in specified <paramref name="span"/>.
-            </summary>
-            <param name="span">The span.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Half})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
@@ -7309,6 +7006,537 @@
             </summary>
         </member>
         <member name="M:System.Numerics.Vector6.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.#ctor(System.Numerics.Vector4,System.Numerics.Vector2)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back two values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_UnaryNegation(System.Numerics.Vector6)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Addition(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Subtraction(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Division(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Numerics.Vector6,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Multiply(System.Single,System.Numerics.Vector6)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Division(System.Numerics.Vector6,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Equality(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.op_Inequality(System.Numerics.Vector6,System.Numerics.Vector6)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector6"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.Equals(System.Numerics.Vector6)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector6.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector7">
+            <summary>
+            Represents a vector that has 7 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector7.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector7.front">
+            <summary>
+            The front 3 values
+            </summary>
+        </member>
+        <member name="F:System.Numerics.Vector7.back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.#ctor(System.Numerics.Vector4,System.Numerics.Vector3)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector7"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back three values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_UnaryNegation(System.Numerics.Vector7)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Addition(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Subtraction(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Multiply(System.Single,System.Numerics.Vector7)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Division(System.Numerics.Vector7,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Equality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Inequality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Numerics.Vector7)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector8">
+            <summary>
+            Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value8">
+            <summary>
+            The eighth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Front">
+            <summary>
+            The front 4 values
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+            <param name="v8">The v8.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Numerics.Vector4,System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back four values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_UnaryNegation(System.Numerics.Vector8)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Addition(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+        m.Numerics.Vector6.#ctor(System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:System.Numerics.Vector6"/> struct.
             </summary>

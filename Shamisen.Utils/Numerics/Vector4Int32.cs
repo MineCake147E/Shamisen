@@ -66,6 +66,9 @@ namespace Shamisen.Utils.Numerics
         }
 #endif
         #endregion
+
+        #region ValueProperties
+
         /// <summary>
         /// Gets the value of 1st component of this <see cref="Vector4Int32"/>.
         /// </summary>
@@ -100,7 +103,7 @@ namespace Shamisen.Utils.Numerics
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             get => V3;
         }
-
+        #endregion
         #endregion
         /// <summary>
         /// Initializes a new instance of <see cref="Vector4Int32"/>.
