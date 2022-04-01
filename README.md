@@ -91,7 +91,7 @@ Legends:
 
 | Container Name    | Typical File Extensions | Implemented Codec                              | Library contains Decoder/Encoder | License                                                                                | Decoding |  Encoding   |
 | ----------------- | ----------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- | :------: | :---------: |
-| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |     ✅      |
+| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ✅<br/>(RF64 as default) |
 | FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
 
 Legends:  
@@ -109,7 +109,7 @@ Legends:
 - Requires [DivideSharp](https://github.com/MineCake147E/DivideSharp) for frequently appearing divide-by-number-of-channels operations.
 - Faster resampling is only available with `.NET Core 3.1` or `.NET 5 or later`.
   - Unfortunately, older versions doesn't support Hardware Intrinsics.
-- The all processing in this library fully depends on SINGLE core.
+- The most processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
 ## Features planned or under development
