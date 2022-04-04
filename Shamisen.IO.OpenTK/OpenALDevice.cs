@@ -12,7 +12,7 @@ namespace Shamisen.IO
     /// <summary>
     /// Represents a device for OpenAL.
     /// </summary>
-    public sealed class OpenALDevice : IAudioOutputDevice<OpenALOutput>, IEquatable<OpenALDevice>
+    public sealed class OpenALDevice : IAudioOutputDevice<OpenALOutput>, IEquatable<OpenALDevice>, IFormatSupportStatusSupport
     {
         private readonly int maxSampleRate;
         private readonly HashSet<string> extensions;
@@ -132,24 +132,23 @@ namespace Shamisen.IO
         /// <inheritdoc/>
         public DataFlow DataFlow => DataFlow.Render;
 
+        /// <inheritdoc/>
+        public IFormatSupportStatusSupport? FormatSupportStatusSupport => this;
+
         /// <summary>
         /// Indicates whether the audio output device supports a particular stream format.
         /// </summary>
         /// <param name="format">The format to judge the availability.</param>
 
-        /// <param name="mode">The share mode.</param>
+        ///
         /// <returns>The value which indicates how the <see cref="IWaveFormat"/> can be supported by <see cref="Shamisen"/>.</returns>
-        public FormatSupportStatus CheckSupportStatus(IWaveFormat format, IOExclusivity mode = IOExclusivity.Shared)
+        public FormatSupportStatus CheckSupportStatus(IWaveFormat format)
         {
-            if (mode == IOExclusivity.Exclusive)
-            {
-                return FormatSupportStatus.NotSupported;
-            }
             if (maxSampleRate < 0) return FormatSupportStatus.Unchecked;
             var alf2check = ConvertToALFormat(format);
             if (supportedFormats.Contains(alf2check))
             {
-                return FormatSupportStatus.SupportedByBackend;
+                return FormatSupportStatus.SupportedByHardware;
             }
             return format.Channels > 2
                            ? FormatSupportStatus.NotSupported

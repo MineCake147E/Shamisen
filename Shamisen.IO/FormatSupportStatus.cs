@@ -12,6 +12,10 @@ namespace Shamisen.IO
     public enum FormatSupportStatus : byte
     {
         /// <summary>
+        /// The value which indicates the <see cref="IAudioDevice"/> had no ability to check the support status.
+        /// </summary>
+        Unchecked,
+        /// <summary>
         /// The <see cref="IWaveFormat"/> is not supported by both device and binding.
         /// </summary>
         NotSupported,

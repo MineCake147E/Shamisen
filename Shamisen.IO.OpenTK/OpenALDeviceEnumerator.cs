@@ -39,7 +39,7 @@ namespace Shamisen.IO
         /// </returns>
         /// <exception cref="NotSupportedException">
         /// </exception>
-        public IEnumerable<IAudioDevice> EnumerateOutputDevices(DataFlow dataFlow)
+        public IEnumerable<IAudioDevice> EnumerateDevices(DataFlow dataFlow)
         {
             switch (dataFlow)
             {
@@ -52,11 +52,11 @@ namespace Shamisen.IO
                     }
                     if ((dataFlow & DataFlow.Render) > 0)
                     {
-                        bool flag = false;
+                        var flag = false;
                         if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATE_ALL_EXT"))
                         {
                             flag |= true;
-                            foreach (string? item in ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier))
+                            foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier))
                             {
                                 yield return new OpenALDevice(item);
                             }
@@ -64,7 +64,7 @@ namespace Shamisen.IO
                         if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATION_EXT"))
                         {
                             flag |= true;
-                            foreach (string? item in ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier))
+                            foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier))
                             {
                                 yield return new OpenALDevice(item);
                             }
@@ -87,7 +87,7 @@ namespace Shamisen.IO
         public async IAsyncEnumerable<IAudioDevice> EnumerateDevicesAsync(DataFlow dataFlow)
 #pragma warning restore CS1998
         {
-            foreach (var item in EnumerateOutputDevices(dataFlow))
+            foreach (var item in EnumerateDevices(dataFlow))
             {
                 yield return item;
             }
