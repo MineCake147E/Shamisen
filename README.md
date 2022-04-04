@@ -92,7 +92,7 @@ Legends:
 | Container Name    | Typical File Extensions | Implemented Codec                              | Library contains Decoder/Encoder | License                                                                                | Decoding |  Encoding   |
 | ----------------- | ----------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- | :------: | :---------: |
 | Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ✅<br/>(RF64 as default) |
-| FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
+| FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [BSD 3-Clause License](https://github.com/MineCake147E/Shamisen/blob/develop/Codecs/Managed/Shamisen.Codecs.Flac/LICENSE.md) |    ✅    | ❎(Planned) |
 
 Legends:  
 ✅: Supported by Shamisen itself  
@@ -148,6 +148,6 @@ Legends:
 
 | Container Name | Typical File Extensions | Target Codec | Planned Library containing Decoder/Encoder          | Planned Library License                                                                | Decoding | Encoding | Status              |
 | -------------- | ----------------------- | ------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------- | :------: | :------: | ------------------- |
-| FLAC           | `.flac`                 | FLAC         | Shamisen.Codecs.Flac                                       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
+| FLAC           | `.flac`                 | FLAC         | Shamisen.Codecs.Flac                                       | [BSD 3-Clause License](https://github.com/MineCake147E/Shamisen/blob/develop/Codecs/Managed/Shamisen.Codecs.Flac/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
 | Opus           | `.opus`                 | Opus         | Shamisen.Codecs.Opus | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Planned             |
 | Ogg            | `.ogg`                  | Vorbis       | Shamisen.Codecs.Ogg                                 | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ⭕    |    ⭕    | Planned             |
