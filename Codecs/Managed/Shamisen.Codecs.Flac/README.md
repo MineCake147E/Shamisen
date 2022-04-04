@@ -1,4 +1,4 @@
-﻿# Shamisen.Codecs.Flac - FLAC Decoder for [Shamisen](https://github.com/MineCake147E/Shamisen)
+# Shamisen.Codecs.Flac - FLAC Decoder for [Shamisen](https://github.com/MineCake147E/Shamisen)
 
 This library provides a fully-managed FLAC decoder for [Shamisen](https://github.com/MineCake147E/Shamisen).
 
@@ -6,7 +6,7 @@ This library provides a fully-managed FLAC decoder for [Shamisen](https://github
 
 ### Shamisen.Codecs.Flac itself
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[BSD 3-Clause License](LICENSE.md)
 
 ## License for ported source codes
 
