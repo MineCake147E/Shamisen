@@ -6,11 +6,13 @@
     <Nullable>enable</Nullable>
     <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;flac</PackageTags>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
-    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <Description>FLAC Decoder for Shamisen.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../../../Shamisen.Core.targets" />
+    <PropertyGroup>
+      <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    </PropertyGroup>
     <ItemGroup>
       <None Include="..\..\..\Shamisen-NuGetIcon.png">
         <Pack>True</Pack>

@@ -102,7 +102,7 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Shamisen.Tests.IO.WinRt (Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shamisen.Tests.IO.WinRt", "Tests\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt.csproj", "{F75A0E7E-697D-468C-B33F-9C4A7C1D0229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shamisen.Utils", "Shamisen.Utils\Shamisen.Utils.csproj", "{9768A526-447D-492B-BF51-48144EC7FDF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Utils", "Shamisen.Utils\Shamisen.Utils.csproj", "{9768A526-447D-492B-BF51-48144EC7FDF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
