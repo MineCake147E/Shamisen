@@ -5,6 +5,9 @@
       <RootNamespace>Shamisen</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+      <Description>Utility features independent from Shamisen</Description>
+      <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0'">

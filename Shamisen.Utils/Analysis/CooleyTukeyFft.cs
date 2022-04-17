@@ -435,7 +435,7 @@ namespace Shamisen.Analysis
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseInternal<T>(Span<T> span)
         {
-            //O(sqrt(n)) permutation
+            //O(n) permutation
             var length = (int)MathI.ExtractHighestSetBit((uint)span.Length);
             var bits = MathI.LogBase2((uint)length);
             var shift = 32 - bits;
