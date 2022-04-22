@@ -27,7 +27,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTK" Version="5.0.0-pre.6" />
+        <PackageReference Include="OpenTK" Version="5.0.0-pre.7" />
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     </ItemGroup>
 
