@@ -274,7 +274,7 @@ namespace Shamisen.Utils
             #endregion
             #region Deinterleave
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            internal static void DeinterleaveStereoSingle(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
+            internal static void DeinterleaveStereoSingleFallback(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
                 nint i, length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
                 ref var rsi = ref MemoryMarshal.GetReference(buffer);
@@ -299,6 +299,24 @@ namespace Shamisen.Utils
                     Unsafe.Add(ref r8, i) = l;
                     Unsafe.Add(ref r9, i) = r;
                 }
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static int DeinterleaveChannelsSingleFallback(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
+            {
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                for (var ch = 0; ch < channels; ch++)
+                {
+                    var chdest = destination.Slice(ch * chlen);
+                    nint length = chlen;
+                    ref var rdi = ref MemoryMarshal.GetReference(chdest);
+                    nint i = 0, j = ch;
+                    for (; i < length; i++, j += channels)
+                    {
+                        Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, j);
+                    }
+                }
+                return chlen;
             }
             #endregion
 

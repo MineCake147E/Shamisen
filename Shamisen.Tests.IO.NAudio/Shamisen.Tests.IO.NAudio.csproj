@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <AvaloniaResource Include="Assets\**" />
+    <None Remove=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.13" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
+    <PackageReference Include="ReactiveProperty" Version="8.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+    <ProjectReference Include="..\Shamisen.IO.NAudio\Shamisen.IO.NAudio.csproj" />
+    <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+    <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
+  </ItemGroup>
+</Project>

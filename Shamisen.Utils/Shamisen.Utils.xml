@@ -435,6 +435,76 @@
             The big endian
             </summary>
         </member>
+        <member name="T:Shamisen.FastMath">
+            <summary>
+            Contains some mathematical functions for Floating-Point numbers.
+            </summary>
+        </member>
+        <member name="M:Shamisen.FastMath.Max(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Max(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.FastMath.Max(System.Double,System.Double)">
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Max(System.Double,System.Double)"/>
+        </member>
+        <member name="M:Shamisen.FastMath.Min(System.Single,System.Single)">
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
+        </member>
+        <member name="M:Shamisen.FastMath.Min(System.Double,System.Double)">
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+            <inheritdoc cref="M:System.Math.Min(System.Double,System.Double)"/>
+        </member>
+        <member name="M:Shamisen.FastMath.MaxUnsignedInputs(System.Single,System.Single)">
+            <summary>
+            Returns the smaller of two single-precision floating-point numbers.
+            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+            </summary>
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.MinUnsignedInputs(System.Single,System.Single)">
+            <summary>
+            Returns the smaller of two single-precision floating-point numbers.
+            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+            </summary>
+            <returns>
+            Parameter x or y, whichever is smaller.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Round(System.Single)">
+            <summary>
+            Rounds a single-precision floating-point value to the nearest integral value,
+            and rounds midpoint values to the nearest even number.
+            </summary>
+            <param name="x">A single-precision floating-point number to be rounded.</param>
+            <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
+            integers, one of which is even and the other odd, then the even number is returned.
+            Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
         <member name="T:Shamisen.MathI">
             <summary>
             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.
@@ -1408,6 +1478,22 @@
             Represents a vector with 2 <see cref="T:System.Int16"/> values.
             </summary>
         </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector2Int16.X">
+            <summary>
+            Gets the x value of this <see cref="T:Shamisen.Utils.Numerics.Vector2Int16"/>.
+            </summary>
+            <value>
+            The x value of this <see cref="T:Shamisen.Utils.Numerics.Vector2Int16"/>.
+            </value>
+        </member>
+        <member name="P:Shamisen.Utils.Numerics.Vector2Int16.Y">
+            <summary>
+            Gets the y value of this <see cref="T:Shamisen.Utils.Numerics.Vector2Int16"/>.
+            </summary>
+            <value>
+            The y value of this <see cref="T:Shamisen.Utils.Numerics.Vector2Int16"/>.
+            </value>
+        </member>
         <member name="T:Shamisen.Utils.Numerics.Vector4Int32">
             <summary>
             Represents a vector of 4 <see cref="T:System.Int32"/> numbers.
@@ -1588,6 +1674,14 @@
             <param name="source">The values to add <paramref name="offset"/>.</param>
             <param name="offset">The value to add.</param>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.Offset(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Adds <paramref name="offset"/> to each elements in <paramref name="source"/> and stores to <paramref name="destination"/>.
+            </summary>
+            <param name="destination">The place to put sum in.</param>
+            <param name="source">The values to add <paramref name="offset"/>.</param>
+            <param name="offset">The value to add.</param>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.InterleaveStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
             Interleaves and stores Stereo samples to <paramref name="buffer"/>.
@@ -1654,6 +1748,28 @@
             <param name="destination">The multi-channel destination.</param>
             <param name="source">The monaural source.</param>
             <param name="channels">The number of channels.</param>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.DeinterleaveToChannels(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Int32)">
+            <summary>
+            Deinterleaves the specified channel-interleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+            The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
+            If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
+            </summary>
+            <param name="destination">The destination to write de-interleaved data.</param>
+            <param name="source">The source.</param>
+            <param name="channels">The number of channels.</param>
+            <returns>The length of each channels' samples.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.DeinterleaveToChannels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.Int32)">
+            <summary>
+            Deinterleaves the specified channel-interleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+            The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
+            If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
+            </summary>
+            <param name="destination">The destination to write de-interleaved data.</param>
+            <param name="source">The source.</param>
+            <param name="channels">The number of channels.</param>
+            <returns>The length of each channels' samples.</returns>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.DeinterleaveStereoSingle(System.ReadOnlySpan{System.Single},System.Span{System.Single},System.Span{System.Single})">
             <summary>
@@ -1787,76 +1903,6 @@
             The environment endianness.
             </value>
         </member>
-        <member name="T:Shamisen.Utils.FastMath">
-            <summary>
-            Contains some mathematical functions for Floating-Point numbers.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.Max(System.Single,System.Single)">
-            <returns>
-            Parameter x or y, whichever is larger.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
-            the result might depend on CPUs.
-            </returns>
-            <inheritdoc cref="M:System.Math.Max(System.Single,System.Single)"/>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.Max(System.Double,System.Double)">
-            <returns>
-            Parameter x or y, whichever is larger.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
-            the result might depend on CPUs.
-            </returns>
-            <inheritdoc cref="M:System.Math.Max(System.Double,System.Double)"/>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.Min(System.Single,System.Single)">
-            <returns>
-            Parameter x or y, whichever is smaller.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
-            the result might depend on CPUs.
-            </returns>
-            <inheritdoc cref="M:System.Math.Min(System.Single,System.Single)"/>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.Min(System.Double,System.Double)">
-            <returns>
-            Parameter x or y, whichever is smaller.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Double.NaN"/>,
-            the result might depend on CPUs.
-            </returns>
-            <inheritdoc cref="M:System.Math.Min(System.Double,System.Double)"/>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.MaxUnsignedInputs(System.Single,System.Single)">
-            <summary>
-            Returns the smaller of two single-precision floating-point numbers.
-            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-            </summary>
-            <returns>
-            Parameter x or y, whichever is larger.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
-            the result might depend on CPUs.
-            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.MinUnsignedInputs(System.Single,System.Single)">
-            <summary>
-            Returns the smaller of two single-precision floating-point numbers.
-            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-            </summary>
-            <returns>
-            Parameter x or y, whichever is smaller.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
-            the result might depend on CPUs.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Utils.FastMath.Round(System.Single)">
-            <summary>
-            Rounds a single-precision floating-point value to the nearest integral value,
-            and rounds midpoint values to the nearest even number.
-            </summary>
-            <param name="x">A single-precision floating-point number to be rounded.</param>
-            <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
-            integers, one of which is even and the other odd, then the even number is returned.
-            Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
-        </member>
         <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
             <summary>
             Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
@@ -1885,6 +1931,9 @@
         </member>
         <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})">
             <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.GetZero``1">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Vector256`1.Zero"/>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
             <summary>
@@ -7736,6 +7785,262 @@
             Returns a value that indicates whether each pair of elements in two specified vectors are equal.
             </summary>
             <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.op_Inequality(System.Numerics.Vector7,System.Numerics.Vector7)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.Equals(System.Numerics.Vector7)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector7.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="T:System.Numerics.Vector8">
+            <summary>
+            Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value1">
+            <summary>
+            The first value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value2">
+            <summary>
+            The second value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value3">
+            <summary>
+            The third value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value4">
+            <summary>
+            The fourth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value5">
+            <summary>
+            The fifth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value6">
+            <summary>
+            The sixth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value7">
+            <summary>
+            The seventh value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Value8">
+            <summary>
+            The eighth value
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Front">
+            <summary>
+            The front 4 values
+            </summary>
+        </member>
+        <member name="P:System.Numerics.Vector8.Back">
+            <summary>
+            The back 4 values
+            </summary>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="v1">The v1.</param>
+            <param name="v2">The v2.</param>
+            <param name="v3">The v3.</param>
+            <param name="v4">The v4.</param>
+            <param name="v5">The v5.</param>
+            <param name="v6">The v6.</param>
+            <param name="v7">The v7.</param>
+            <param name="v8">The v8.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Numerics.Vector4,System.Numerics.Vector4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="front">The front four values.</param>
+            <param name="back">The back four values.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_UnaryNegation(System.Numerics.Vector8)">
+            <summary>
+            Negates the specified vector.
+            </summary>
+            <param name="value">The vector to negate.</param>
+            <returns>
+            The negated vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Addition(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Adds two vectors together.
+            </summary>
+            <param name="left">The first vector to add.</param>
+            <param name="right">The second vector to add.</param>
+            <returns>
+            The summed vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Subtracts the second vector from the first.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The element-wise product vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Divides the first vector by the second.
+            </summary>
+            <param name="left">The first vector.</param>
+            <param name="right">The second vector.</param>
+            <returns>
+            The vector that results from dividing left by right.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
+            <summary>
+            Multiples the specified vector by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The vector.</param>
+            <returns>
+            The scaled vector.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
+            <summary>
+            Divides the specified vector by a specified scalar value.
+            </summary>
+            <param name="left">The vector.</param>
+            <param name="right">The scalar value.</param>
+            <returns>
+            The result of the division.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
+            <summary>
+            Returns a value that indicates whether two specified vectors are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
+            <returns>
+              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Numerics.Vector8.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+    </members>
+</doc>
+e="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
             <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
             <returns>
               <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.

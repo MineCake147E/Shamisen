@@ -3,6 +3,9 @@
     "WSL": {
       "commandName": "WSL2",
       "distributionName": ""
+    },
+    "Local Machine": {
+      "commandName": "Project"
     }
   }
 }

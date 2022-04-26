@@ -100,9 +100,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Pipeline", "Shamis
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Shamisen.Tests.IO.WinRt (Package)", "Tests\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt (Package)\Shamisen.Tests.IO.WinRt (Package).wapproj", "{3952F3F0-1361-4D25-BA28-AA2D6E3627BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shamisen.Tests.IO.WinRt", "Tests\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt.csproj", "{F75A0E7E-697D-468C-B33F-9C4A7C1D0229}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Tests.IO.WinRt", "Tests\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt.csproj", "{F75A0E7E-697D-468C-B33F-9C4A7C1D0229}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Utils", "Shamisen.Utils\Shamisen.Utils.csproj", "{9768A526-447D-492B-BF51-48144EC7FDF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shamisen.Tests.IO.NAudio", "Shamisen.Tests.IO.NAudio\Shamisen.Tests.IO.NAudio.csproj", "{F43ED62D-935F-4848-871B-0B3740751512}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -674,6 +676,26 @@ Global
 		{9768A526-447D-492B-BF51-48144EC7FDF1}.Release|x64.Build.0 = Release|Any CPU
 		{9768A526-447D-492B-BF51-48144EC7FDF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{9768A526-447D-492B-BF51-48144EC7FDF1}.Release|x86.Build.0 = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|ARM.Build.0 = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|x64.Build.0 = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Debug|x86.Build.0 = Debug|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|ARM.ActiveCfg = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|ARM.Build.0 = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|ARM64.Build.0 = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|x64.ActiveCfg = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|x64.Build.0 = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|x86.ActiveCfg = Release|Any CPU
+		{F43ED62D-935F-4848-871B-0B3740751512}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -710,6 +732,7 @@ Global
 		{E7388F1A-E23E-49D2-9379-7A12D6B6EF34} = {A3DDBE9B-5F1F-4ED2-A57B-07CA13575D67}
 		{3952F3F0-1361-4D25-BA28-AA2D6E3627BD} = {5E4517CB-05B6-4B76-9107-C451B10B605D}
 		{F75A0E7E-697D-468C-B33F-9C4A7C1D0229} = {5E4517CB-05B6-4B76-9107-C451B10B605D}
+		{F43ED62D-935F-4848-871B-0B3740751512} = {5E4517CB-05B6-4B76-9107-C451B10B605D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23CFD92A-4FB0-40E0-8D60-2006FF299F5C}

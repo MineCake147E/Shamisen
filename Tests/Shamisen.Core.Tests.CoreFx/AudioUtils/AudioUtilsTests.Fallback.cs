@@ -15,6 +15,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         public class Fallback
         {
             private static IEnumerable<int> FallbackSizeTestCaseGenerator() => SizeTestCaseGenerator();
+            private static IEnumerable<int> FallbackChannelsTestCaseGenerator() => ChannelsTestCaseGenerator();
             #region Interleave
             [TestCaseSource(nameof(FallbackSizeTestCaseGenerator))]
             public void InterleaveStereoWorksCorrectly(int size)
@@ -74,6 +75,20 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 AssertArrayForDuplicate(b, 4);
             }
 
+            #endregion
+
+            #region Deinterleave
+
+            [TestCaseSource(nameof(FallbackChannelsTestCaseGenerator))]
+            public void DeinterleaveChannelsWorksCorrectly(int channels)
+            {
+                const int Size = 1023;
+                PrepareDeinterleave(Size, channels, out var sA, out var dA);
+                var src = MemoryMarshal.Cast<int, float>(sA.AsSpan());
+                var dst = MemoryMarshal.Cast<int, float>(dA.AsSpan());
+                AudioUtils.Fallback.DeinterleaveChannelsSingleFallback(dst, src, channels, Size);
+                AssertArrayForInterleave(dA);
+            }
             #endregion
 
             #region Floating-Point Utils

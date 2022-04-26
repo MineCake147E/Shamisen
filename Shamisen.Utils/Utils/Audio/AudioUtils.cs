@@ -17,8 +17,8 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
 using Shamisen.Utils.Intrinsics;
-
 #endif
+using Shamisen.Data;
 namespace Shamisen.Utils
 {
     /// <summary>
@@ -797,6 +797,58 @@ namespace Shamisen.Utils
                 Unsafe.Add(ref rdi, i) = v;
             }
         }
+
+        /// <summary>
+        /// Adds <paramref name="offset"/> to each elements in <paramref name="source"/> and stores to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The place to put sum in.</param>
+        /// <param name="source">The values to add <paramref name="offset"/>.</param>
+        /// <param name="offset">The value to add.</param>
+        public static void Offset(Span<float> destination, ReadOnlySpan<float> source, float offset)
+        {
+            var offsetV = new Vector<float>(offset);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref MemoryMarshal.GetReference(destination);
+            nint i, length = MathI.Min(source.Length, destination.Length);
+            for (i = 0; i < length - (Vector<float>.Count * 8 - 1); i += Vector<float>.Count * 8)
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<float>.Count)) + offsetV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<float>.Count)) + offsetV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<float>.Count)) + offsetV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<float>.Count)) + offsetV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 0 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 1 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 2 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 3 * Vector<float>.Count)) = v3;
+                v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 4 * Vector<float>.Count)) + offsetV;
+                v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 5 * Vector<float>.Count)) + offsetV;
+                v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 6 * Vector<float>.Count)) + offsetV;
+                v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 7 * Vector<float>.Count)) + offsetV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 4 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 5 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 6 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 7 * Vector<float>.Count)) = v3;
+            }
+            if (i < length - (Vector<float>.Count * 4 - 1))
+            {
+                ref var r11 = ref Unsafe.Add(ref rdi, i);
+                var v0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 0 * Vector<float>.Count)) + offsetV;
+                var v1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 1 * Vector<float>.Count)) + offsetV;
+                var v2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 2 * Vector<float>.Count)) + offsetV;
+                var v3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref rsi, i + 3 * Vector<float>.Count)) + offsetV;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 0 * Vector<float>.Count)) = v0;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 1 * Vector<float>.Count)) = v1;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 2 * Vector<float>.Count)) = v2;
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref r11, 3 * Vector<float>.Count)) = v3;
+                i += Vector<float>.Count * 4;
+            }
+            for (; i < length; i++)
+            {
+                var v = Unsafe.Add(ref rsi, i) + offset;
+                Unsafe.Add(ref rdi, i) = v;
+            }
+        }
         #endregion
 
         #region Interleave
@@ -1092,6 +1144,78 @@ namespace Shamisen.Utils
         #endregion
 
         #region Deinterleave
+
+        /// <summary>
+        /// Deinterleaves the specified channel-interleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+        /// The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
+        /// If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
+        /// </summary>
+        /// <param name="destination">The destination to write de-interleaved data.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="channels">The number of channels.</param>
+        /// <returns>The length of each channels' samples.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int DeinterleaveToChannels(Span<float> destination, ReadOnlySpan<float> source, int channels)
+        {
+            if (channels <= 0) throw new ArgumentOutOfRangeException(nameof(channels), channels, $"The {nameof(channels)} must be larger than 0!");
+            var minlen = MathI.Min(source.Length, destination.Length);
+            if (channels > minlen)
+            {
+                throw new ArgumentOutOfRangeException(nameof(channels), channels,
+                    $"The {nameof(channels)} must be smaller than the minimum size of both {nameof(destination)} and {nameof(source)}!");
+            }
+            if (destination.Overlaps(source))
+            {
+                using var temp = new PooledArray<float>(source.Length);
+                source.CopyTo(temp.Span);
+                return DeinterleaveToChannelsInternal(destination, temp.Span, channels, minlen);
+            }
+            return DeinterleaveToChannelsInternal(destination, source, channels, minlen);
+        }
+
+        /// <summary>
+        /// Deinterleaves the specified channel-interleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+        /// The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
+        /// If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
+        /// </summary>
+        /// <param name="destination">The destination to write de-interleaved data.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="channels">The number of channels.</param>
+        /// <returns>The length of each channels' samples.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int DeinterleaveToChannels(Span<int> destination, ReadOnlySpan<int> source, int channels)
+            => DeinterleaveToChannels(MemoryMarshal.Cast<int, float>(destination), MemoryMarshal.Cast<int, float>(source), channels);
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        private static int DeinterleaveToChannelsInternal(Span<float> destination, ReadOnlySpan<float> source, int channels, int minlen)
+        {
+            minlen -= minlen % channels;
+            var chlen = minlen / channels;
+            source = source.SliceWhile(minlen);
+            destination = destination.SliceWhile(minlen);
+            switch (channels)
+            {
+                case <= 0:
+                    return int.MinValue;
+                case 1:
+                    source.CopyTo(destination);
+                    return source.Length;
+                case 2:
+                    DeinterleaveStereoSingle(source, destination, destination.Slice(chlen));
+                    return chlen;
+                default:
+                    if (source.Length > channels) return 0;
+#if NETCOREAPP3_1_OR_GREATER
+                    if (X86.IsSupported)
+                    {
+                        return X86.DeinterleaveChannelsSingleX86(destination, source, channels, chlen);
+                    }
+#endif
+                    return Fallback.DeinterleaveChannelsSingleFallback(destination, source, channels, chlen);
+            }
+        }
+
+
         /// <summary>
         /// Deinterleaves <paramref name="buffer"/> to <paramref name="left"/> and <paramref name="right"/>.
         /// </summary>
@@ -1109,7 +1233,7 @@ namespace Shamisen.Utils
                     return;
                 }
 #endif
-                Fallback.DeinterleaveStereoSingle(buffer, left, right);
+                Fallback.DeinterleaveStereoSingleFallback(buffer, left, right);
             }
         }
         #endregion

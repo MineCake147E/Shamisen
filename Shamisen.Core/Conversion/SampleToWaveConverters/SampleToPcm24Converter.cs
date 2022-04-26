@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-
 using Shamisen.Utils;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -15,6 +14,7 @@ using System.Runtime.Intrinsics.X86;
 using Shamisen.Utils.Intrinsics;
 
 using System.Security.Cryptography;
+using Shamisen;
 
 #endif
 #if NET5_0_OR_GREATER

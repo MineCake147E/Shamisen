@@ -43,6 +43,20 @@ namespace Shamisen.Utils.Intrinsics
                 return Avx2.IsSupported ? Avx2.Xor(left.AsUInt64(), right.AsUInt64()).AsSingle() : Avx.Xor(left, right);
             }
         }
+
+        /// <inheritdoc cref="Vector256{T}.Zero"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector256<T> GetZero<T>() where T : struct
+        {
+            unchecked
+            {
+#if DEBUG
+                return Vector256<T>.Zero;
+#else
+                return Vector128<T>.Zero.ToVector256Unsafe();
+#endif
+            }
+        }
     }
 }
 #endif

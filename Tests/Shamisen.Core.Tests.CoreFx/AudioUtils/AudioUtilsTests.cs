@@ -77,6 +77,13 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             1024, 1048575, 1048576,
         };
 
+        internal static IEnumerable<int> ChannelsTestCaseGenerator() => new[] {
+            //Common channels
+            1, 2, 3, 4, 5, 6, 7, 8,
+            //Big surround
+            12, 24
+        };
+
         internal static void AssertArrayForInterleave(int[] b)
         {
             var q = new List<(int expected, int actual)>();
@@ -163,6 +170,21 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             }
             Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
+
+        internal static void PrepareDeinterleave(int size, int channels, out int[] src, out int[] dst)
+        {
+            src = new int[size * channels];
+            dst = new int[src.Length];
+            for (var c = 0; c < channels; c++)
+            {
+                var j = c * size;
+                ref var rdi = ref Unsafe.Add(ref MemoryMarshal.GetReference(src.AsSpan()), c);
+                for (nint i = 0; i < size; i++)
+                {
+                    Unsafe.Add(ref rdi, i * channels) = j + (int)i;
+                }
+            }
+        }
         #endregion
 
         #region Floating-Point Utils
@@ -175,7 +197,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             TestHelper.GenerateRandomNumbers(src);
             src.AsSpan().CopyTo(exp);
             long count = 0;
-            for (int i = 0; i < exp.Length; i++)
+            for (var i = 0; i < exp.Length; i++)
             {
                 var t = exp[i];
                 if (float.IsNaN(t))

@@ -20,7 +20,6 @@ using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.IO;
 using Shamisen.IO.WinRt;
 using Shamisen.Synthesis;
-using Shamisen.Utils;
 
 using Windows.Foundation;
 using Windows.Foundation.Collections;

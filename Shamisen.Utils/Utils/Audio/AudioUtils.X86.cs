@@ -28,7 +28,7 @@ namespace Shamisen.Utils
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
-                if (Avx.IsSupported && MathI.Min(buffer.Length / 2, MathI.Min(left.Length, right.Length)) >= 128)
+                if (Avx.IsSupported)
                 {
                     InterleaveStereoInt32Avx(buffer, left, right);
                     return;
@@ -39,6 +39,65 @@ namespace Shamisen.Utils
                     return;
                 }
                 Fallback.InterleaveStereoInt32(buffer, left, right);
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static void InterleaveStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
+            {
+                if (left.Length < Vector256<int>.Count)
+                {
+                    Fallback.InterleaveStereoInt32(buffer, left, right);
+                    return;
+                }
+                ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                ref var r8 = ref MemoryMarshal.GetReference(left);
+                ref var r9 = ref MemoryMarshal.GetReference(right);
+                nint i = 0, j = 0, length = MathI.Min(buffer.Length / 2, MathI.Min(left.Length, right.Length));
+                var olen = length - 31;
+                for (; i < olen; i += 32, j += 64)
+                {
+                    var ymm8 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r8, i + 0 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm1 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r9, i + 0 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm9 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r8, i + 1 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm3 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r9, i + 1 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm10 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r8, i + 2 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm5 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r9, i + 2 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm11 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r8, i + 3 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm7 = Avx2.Permute4x64(Unsafe.As<int, Vector256<double>>(ref Unsafe.Add(ref r9, i + 3 * Vector256<int>.Count)), 0b1101_1000).AsSingle();
+                    var ymm0 = Avx.UnpackLow(ymm8, ymm1);
+                    ymm1 = Avx.UnpackHigh(ymm8, ymm1);
+                    var ymm2 = Avx.UnpackLow(ymm9, ymm3);
+                    ymm3 = Avx.UnpackHigh(ymm9, ymm3);
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 0 * Vector256<int>.Count)) = ymm0;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 1 * Vector256<int>.Count)) = ymm1;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 2 * Vector256<int>.Count)) = ymm2;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 3 * Vector256<int>.Count)) = ymm3;
+                    var ymm4 = Avx.UnpackLow(ymm10, ymm5);
+                    ymm5 = Avx.UnpackHigh(ymm10, ymm5);
+                    var ymm6 = Avx.UnpackLow(ymm11, ymm7);
+                    ymm7 = Avx.UnpackHigh(ymm11, ymm7);
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 4 * Vector256<int>.Count)) = ymm4;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 5 * Vector256<int>.Count)) = ymm5;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 6 * Vector256<int>.Count)) = ymm6;
+                    Unsafe.As<int, Vector256<float>>(ref Unsafe.Add(ref rdi, j + 7 * Vector256<int>.Count)) = ymm7;
+                }
+                olen = length - 3;
+                for (; i < olen; i += 4, j += 8)
+                {
+                    var ymm0 = Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref r8, i));
+                    var ymm1 = Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref r9, i));
+                    var ymm4 = Sse.UnpackLow(ymm0, ymm1);
+                    var ymm5 = Sse.UnpackHigh(ymm0, ymm1);
+                    Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref rdi, j + 0)) = ymm4;
+                    Unsafe.As<int, Vector128<float>>(ref Unsafe.Add(ref rdi, j + 4)) = ymm5;
+                }
+                for (; i < length; i += 1, j += 2)
+                {
+                    var a = Unsafe.Add(ref r8, i);
+                    Unsafe.Add(ref rdi, j) = a;
+                    a = Unsafe.Add(ref r9, i);
+                    Unsafe.Add(ref Unsafe.Add(ref rdi, j), 1) = a;
+                }
             }
 
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -1010,6 +1069,7 @@ namespace Shamisen.Utils
             #endregion DuplicateMonauralToChannels
 
             #region Deinterleave
+            #region Stereo
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DeinterleaveStereoSingleX86(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
@@ -1023,7 +1083,7 @@ namespace Shamisen.Utils
                     DeinterleaveStereoSingleSse(buffer, left, right);
                     return;
                 }
-                Fallback.DeinterleaveStereoSingle(buffer, left, right);
+                Fallback.DeinterleaveStereoSingleFallback(buffer, left, right);
             }
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
             internal static void DeinterleaveStereoSingleAvx2(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
@@ -1133,6 +1193,120 @@ namespace Shamisen.Utils
                     }
                 }
             }
+            #endregion
+
+            #region Channels
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static int DeinterleaveChannelsSingleX86(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
+            {
+                if (Avx2.IsSupported && chlen >= Vector256<float>.Count * 8)
+                {
+                    return DeinterleaveChannelsSingleAvx2(destination, source, channels, chlen);
+                }
+                return Fallback.DeinterleaveChannelsSingleFallback(destination, source, channels, chlen);
+            }
+
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            internal static int DeinterleaveChannelsSingleAvx2(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
+            {
+                unsafe
+                {
+                    fixed (float* rsi = source)
+                    {
+                        var ymm0 = Vector256<float>.Zero;
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm1);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm2);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm3);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm4);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm5);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm6);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm7);
+                        Unsafe.SkipInit<Vector256<float>>(out var ymm8);
+                        var ymm15 = Vector256.Create(channels);
+                        ymm15 = Avx2.MultiplyLow(ymm15, Vector256.Create(0, 1, 2, 3, 4, 5, 6, 7));
+                        nint chm8 = channels * 8;
+                        for (var ch = 0; ch < channels; ch++)
+                        {
+                            var chdest = destination.Slice(ch * chlen);
+                            nint length = chlen;
+                            ref var rdi = ref MemoryMarshal.GetReference(chdest);
+                            nint i = 0, j = ch;
+                            var olen = length - 63;
+                            var chm32 = chm8 * 4;
+                            var r8 = rsi + ch - chm32;
+                            r8 += chm32;
+                            var r9 = r8 + chm8;
+                            var r10 = r8 + 2 * chm8;
+                            var r11 = r9 + 2 * chm8;
+                            ymm8 = Avx2.CompareEqual(ymm8.AsInt32(), ymm8.AsInt32()).AsSingle();
+                            for (; i < olen; i += 64)
+                            {
+                                ymm0 = Sse.Xor(ymm0.GetLower(), ymm0.GetLower()).ToVector256Unsafe();
+                                ymm1 = Sse.Xor(ymm1.GetLower(), ymm1.GetLower()).ToVector256Unsafe();
+                                ymm2 = Sse.Xor(ymm2.GetLower(), ymm2.GetLower()).ToVector256Unsafe();
+                                ymm3 = Sse.Xor(ymm3.GetLower(), ymm3.GetLower()).ToVector256Unsafe();
+                                //Current .NET isn't smart enough to allow us resetting masks earlier.
+                                ymm0 = Avx2.GatherMaskVector256(ymm0, r8, ymm15, ymm8, 4);
+                                ymm4 = Sse.Xor(ymm4.GetLower(), ymm4.GetLower()).ToVector256Unsafe();
+                                r8 += chm32;
+                                ref var r12 = ref Unsafe.Add(ref rdi, i);
+                                ymm1 = Avx2.GatherMaskVector256(ymm1, r9, ymm15, ymm8, 4);
+                                ymm5 = Sse.Xor(ymm5.GetLower(), ymm5.GetLower()).ToVector256Unsafe();
+                                r9 += chm32;
+                                ymm2 = Avx2.GatherMaskVector256(ymm2, r10, ymm15, ymm8, 4);
+                                ymm6 = Sse.Xor(ymm6.GetLower(), ymm6.GetLower()).ToVector256Unsafe();
+                                r10 += chm32;
+                                ymm3 = Avx2.GatherMaskVector256(ymm3, r11, ymm15, ymm8, 4);
+                                ymm7 = Sse.Xor(ymm7.GetLower(), ymm7.GetLower()).ToVector256Unsafe();
+                                r11 += chm32;
+                                ymm4 = Avx2.GatherMaskVector256(ymm4, r8, ymm15, ymm8, 4);
+                                r8 += chm32;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 0 * Vector256<float>.Count)) = ymm0;
+                                ymm5 = Avx2.GatherMaskVector256(ymm5, r9, ymm15, ymm8, 4);
+                                r9 += chm32;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 1 * Vector256<float>.Count)) = ymm1;
+                                ymm6 = Avx2.GatherMaskVector256(ymm6, r10, ymm15, ymm8, 4);
+                                r10 += chm32;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 2 * Vector256<float>.Count)) = ymm2;
+                                ymm7 = Avx2.GatherMaskVector256(ymm7, r11, ymm15, ymm8, 4);
+                                r11 += chm32;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 3 * Vector256<float>.Count)) = ymm3;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 4 * Vector256<float>.Count)) = ymm4;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 5 * Vector256<float>.Count)) = ymm5;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 6 * Vector256<float>.Count)) = ymm6;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 7 * Vector256<float>.Count)) = ymm7;
+                                ymm8 = Avx2.CompareEqual(ymm8.AsInt32(), ymm8.AsInt32()).AsSingle();
+                            }
+                            var chm16 = chm32 >> 1;
+                            r8 -= chm16;
+                            r8 += chm16;
+                            r9 = r8 + chm8;
+                            olen = length - 15;
+                            for (; i < olen; i += 16)
+                            {
+                                ymm0 = Sse.Xor(ymm0.GetLower(), ymm0.GetLower()).ToVector256Unsafe();
+                                ymm1 = Sse.Xor(ymm1.GetLower(), ymm1.GetLower()).ToVector256Unsafe();
+                                ymm0 = Avx2.GatherMaskVector256(ymm0, r8, ymm15, ymm8, 4);
+                                ymm1 = Avx2.GatherMaskVector256(ymm1, r9, ymm15, ymm8, 4);
+                                ref var r12 = ref Unsafe.Add(ref rdi, i);
+                                r8 += chm16;
+                                r9 += chm16;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 0 * Vector256<float>.Count)) = ymm0;
+                                Unsafe.As<float, Vector256<float>>(ref Unsafe.Add(ref r12, 1 * Vector256<float>.Count)) = ymm1;
+                                ymm8 = Avx2.CompareEqual(ymm8.AsInt32(), ymm8.AsInt32()).AsSingle();
+                            }
+                            for (; i < length; i++)
+                            {
+                                Unsafe.Add(ref rdi, i) = *r8;
+                                r8 += channels;
+                            }
+                        }
+                        return chlen;
+                    }
+                }
+            }
+
+            #endregion
             #endregion
 
             #region Floating-Point Utils

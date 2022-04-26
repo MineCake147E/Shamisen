@@ -15,7 +15,7 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
     [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
-    public class InterleaveStereoBenchmarks
+    public class DeinterleaveChannelsBenchmarks
     {
         private class Config : ManualConfig
         {
@@ -25,24 +25,26 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
                 _ = AddColumn(new FrameThroughputColumn(frameSelector));
             }
         }
-        [Params(8191)]
+        [Params(65535)]
         public int Frames { get; set; }
-        private int[] bufferDst, bufferA, bufferB;
+
+        [Params(2, 3, 4, 9)]
+        public int Channels { get; set; }
+        private float[] bufferDst, bufferA, bufferB;
+
         [GlobalSetup]
         public void Setup()
         {
-            var samples = Frames;
-            bufferDst = new int[samples * 2];
-            bufferA = new int[samples];
-            bufferB = new int[samples];
+            var samples = Frames * Channels;
+            bufferDst = new float[samples];
+            bufferA = new float[samples];
+            bufferA.AsSpan().FastFill(1.5f);
         }
+
         [Benchmark]
-        public void Avx2() => AudioUtils.X86.InterleaveStereoInt32Avx2(bufferDst.AsSpan(), bufferA.AsSpan(), bufferB.AsSpan());
+        public void Avx2() => AudioUtils.X86.DeinterleaveChannelsSingleAvx2(bufferDst, bufferA, Channels, Frames);
+
         [Benchmark]
-        public void Avx() => AudioUtils.X86.InterleaveStereoInt32Avx(bufferDst.AsSpan(), bufferA.AsSpan(), bufferB.AsSpan());
-        [Benchmark]
-        public void Sse() => AudioUtils.X86.InterleaveStereoInt32Sse(bufferDst.AsSpan(), bufferA.AsSpan(), bufferB.AsSpan());
-        [Benchmark]
-        public void Standard() => AudioUtils.Fallback.InterleaveStereoInt32(bufferDst.AsSpan(), bufferA.AsSpan(), bufferB.AsSpan());
+        public void Fallback() => AudioUtils.Fallback.DeinterleaveChannelsSingleFallback(bufferDst, bufferA, Channels, Frames);
     }
 }

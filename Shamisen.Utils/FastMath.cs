@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+
+using Shamisen.Utils;
 #if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+
+using Shamisen;
 
 #endif
 #if NET5_0_OR_GREATER
@@ -18,7 +15,7 @@ using System.Runtime.Intrinsics.Arm;
 
 #endif
 
-namespace Shamisen.Utils
+namespace Shamisen
 {
     /// <summary>
     /// Contains some mathematical functions for Floating-Point numbers.

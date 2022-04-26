@@ -12,9 +12,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
 using Shamisen.Utils.Numerics;
-
 
 namespace Shamisen.Utils
 {

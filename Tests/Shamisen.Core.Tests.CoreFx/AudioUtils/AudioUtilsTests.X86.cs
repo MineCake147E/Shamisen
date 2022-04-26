@@ -20,6 +20,8 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
         public class X86
         {
             private static IEnumerable<int> X86SizeTestCaseGenerator() => SizeTestCaseGenerator();
+
+            private static IEnumerable<int> X86ChannelsTestCaseGenerator() => ChannelsTestCaseGenerator();
             #region Interleave
             [TestCaseSource(nameof(X86SizeTestCaseGenerator))]
             public void InterleaveStereoWorksCorrectly(int size)
@@ -105,6 +107,24 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralTo4Channels(bf, af);
                 AssertArrayForDuplicate(b, 4);
+            }
+            #endregion
+
+            #region Deinterleave
+            [TestCaseSource(nameof(X86ChannelsTestCaseGenerator))]
+            public void DeinterleaveChannelsAvx2WorksCorrectly(int channels)
+            {
+                if (!Avx2.IsSupported)
+                {
+                    Assert.Warn("AVX2 is not supported on this machine!");
+                    return;
+                }
+                const int Size = 1023;
+                PrepareDeinterleave(Size, channels, out var sA, out var dA);
+                var src = MemoryMarshal.Cast<int, float>(sA.AsSpan());
+                var dst = MemoryMarshal.Cast<int, float>(dA.AsSpan());
+                AudioUtils.X86.DeinterleaveChannelsSingleAvx2(dst, src, channels, Size);
+                AssertArrayForInterleave(dA);
             }
             #endregion
 
@@ -198,8 +218,8 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 GenerateIndexValuedArraySingle(src, 1.0f);
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
-                    var span = MemoryMarshal.Cast<float, int>(sSrc);
-                for (int k = 0; k < 256; k++)
+                var span = MemoryMarshal.Cast<float, int>(sSrc);
+                for (var k = 0; k < 256; k++)
                 {
                     AudioUtils.X86.FastLog2Order5FAvx2Fma(dst, src);
                     (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
@@ -225,7 +245,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
                 var span = MemoryMarshal.Cast<float, int>(sSrc);
-                for (int k = 0; k < 256; k++)
+                for (var k = 0; k < 256; k++)
                 {
                     AudioUtils.X86.FastLog2Order5Avx2(dst, src);
                     (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
@@ -250,7 +270,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
                 var span = MemoryMarshal.Cast<float, int>(sSrc);
-                for (int k = 0; k < 256; k++)
+                for (var k = 0; k < 256; k++)
                 {
                     AudioUtils.X86.FastLog2Order5Sse2(dst, src);
                     (maxError, sumError) = CheckLog2(maxError, sSrc, sDst, sumError);
