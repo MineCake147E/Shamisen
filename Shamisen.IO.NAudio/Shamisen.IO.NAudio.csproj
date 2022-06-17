@@ -13,7 +13,7 @@
     </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>
-        <PackageReference Include="NAudio" Version="2.0.1" />
+        <PackageReference Include="NAudio" Version="2.1.0" />
     </ItemGroup>
 
     <ItemGroup>

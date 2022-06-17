@@ -140,10 +140,10 @@
       <Version>0.0.5</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.13</Version>
+      <Version>6.2.14</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
-      <Version>4.5.4</Version>
+      <Version>4.5.5</Version>
     </PackageReference>
     <PackageReference Include="System.Numerics.Vectors">
       <Version>4.5.0</Version>
