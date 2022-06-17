@@ -555,6 +555,250 @@ namespace Shamisen
 
         #endregion
 
+        #region Floating-point Logical
+        /// <summary>
+        /// Calculates the logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static float Xor(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Xor(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Xor(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.Xor(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) ^ BinaryExtensions.SingleToUInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static double Xor(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Xor(Vector64.CreateScalar(left), Vector64.CreateScalar(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Xor(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.Xor(Vector128.CreateScalarUnsafe(left).AsSingle(), Vector128.CreateScalarUnsafe(right).AsSingle()).AsDouble().GetElement(0);
+                }
+#endif
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) ^ BitConverter.DoubleToInt64Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static float And(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.And(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.And(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.And(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) & BinaryExtensions.SingleToUInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static double And(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.And(Vector64.CreateScalar(left), Vector64.CreateScalar(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.And(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.And(Vector128.CreateScalarUnsafe(left).AsSingle(), Vector128.CreateScalarUnsafe(right).AsSingle()).AsDouble().GetElement(0);
+                }
+#endif
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) & BitConverter.DoubleToInt64Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static float Or(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Or(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Or(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.Or(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) | BinaryExtensions.SingleToUInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static double Or(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Or(Vector64.CreateScalar(left), Vector64.CreateScalar(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Or(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.Or(Vector128.CreateScalarUnsafe(left).AsSingle(), Vector128.CreateScalarUnsafe(right).AsSingle()).AsDouble().GetElement(0);
+                }
+#endif
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) | BitConverter.DoubleToInt64Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value to be negated.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static float AndNot(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = AdvSimd.Not(Vector64.CreateScalarUnsafe(left));
+                    return AdvSimd.And(s0, Vector64.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.AndNot(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.AndNot(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(~BinaryExtensions.SingleToUInt32Bits(left) & BinaryExtensions.SingleToUInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.
+        /// </summary>
+        /// <param name="left">The first value to be negated.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        public static double AndNot(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = AdvSimd.Not(Vector64.CreateScalar(left));
+                    return AdvSimd.And(s0, Vector64.CreateScalar(right)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.AndNot(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+                if (Sse.IsSupported)
+                {
+                    return Sse.AndNot(Vector128.CreateScalarUnsafe(left).AsSingle(), Vector128.CreateScalarUnsafe(right).AsSingle()).AsDouble().GetElement(0);
+                }
+#endif
+                return BitConverter.Int64BitsToDouble(~BitConverter.DoubleToInt64Bits(left) & BitConverter.DoubleToInt64Bits(right));
+            }
+        }
+        #endregion
+
         #region BigMul Polyfill
 
         /// <summary>

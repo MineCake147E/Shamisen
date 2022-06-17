@@ -22,6 +22,10 @@ namespace Shamisen
     /// </summary>
     public static class FastMath
     {
+        /// <summary>
+        /// Represents the number of radians in one turn, specified by the constant, τ.
+        /// </summary>
+        public const float Tau = MathF.PI * 2.0f;
         /// <returns>
         /// Parameter x or y, whichever is larger.
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
@@ -233,6 +237,28 @@ namespace Shamisen
                 return (float)Math.Round(x);
 #endif
             }
+        }
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians.</param>
+        /// <returns>
+        /// The approximation of sine of <paramref name="x"/>, by wrapping <paramref name="x"/> around ±<see cref="MathF.PI"/>,
+        /// wrapping the absolute value of <paramref name="x"/> between <see cref="MathF.PI"/>/2 and 3*<see cref="MathF.PI"/>/2, and applying 6 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Sin(float x)
+        {
+            x *= 0.31830987f;
+            const float SignBit = -0.0f;
+            x -= 2 * Round(x * 0.5f);
+            var a = MathI.AndNot(SignBit, x);
+            var s = MathI.And(SignBit, x);
+            a = Min(a, 1.0f - a);
+            s = MathI.Xor(s, a);
+            return MathX.SinFInternalF32(s);
         }
     }
 }

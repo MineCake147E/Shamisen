@@ -440,6 +440,11 @@
             Contains some mathematical functions for Floating-Point numbers.
             </summary>
         </member>
+        <member name="F:Shamisen.FastMath.Tau">
+            <summary>
+            Represents the number of radians in one turn, specified by the constant, τ.
+            </summary>
+        </member>
         <member name="M:Shamisen.FastMath.Max(System.Single,System.Single)">
             <returns>
             Parameter x or y, whichever is larger.
@@ -504,6 +509,17 @@
             <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Sin(System.Single)">
+            <summary>
+            Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="x"/>.
+            </summary>
+            <param name="x">An angle, measured in radians.</param>
+            <returns>
+            The approximation of sine of <paramref name="x"/>, by wrapping <paramref name="x"/> around ±<see cref="F:System.MathF.PI"/>,
+            wrapping the absolute value of <paramref name="x"/> between <see cref="F:System.MathF.PI"/>/2 and 3*<see cref="F:System.MathF.PI"/>/2, and applying 6 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
+            If either <see cref="M:System.Single.IsNaN(System.Single)"/> or <see cref="M:System.Single.IsInfinity(System.Single)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="F:System.Single.NaN"/>.
+            </returns>
         </member>
         <member name="T:Shamisen.MathI">
             <summary>
@@ -684,6 +700,70 @@
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Xor(System.Single,System.Single)">
+            <summary>
+            Calculates the logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Xor(System.Double,System.Double)">
+            <summary>
+            Calculates the logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.And(System.Single,System.Single)">
+            <summary>
+            Calculates the logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.And(System.Double,System.Double)">
+            <summary>
+            Calculates the logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Or(System.Single,System.Single)">
+            <summary>
+            Calculates the logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Or(System.Double,System.Double)">
+            <summary>
+            Calculates the logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Single,System.Single)">
+            <summary>
+            Calculates the logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value to be negated.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AndNot(System.Double,System.Double)">
+            <summary>
+            Calculates the logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value to be negated.</param>
+            <param name="right">The second value.</param>
+            <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
         </member>
         <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
             <summary>
@@ -1120,7 +1200,7 @@
         </member>
         <member name="M:Shamisen.MathX.Sin(Shamisen.Fixed64)">
             <summary>
-            Calculates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
+            Approximates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/>.
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
