@@ -36,24 +36,25 @@ namespace Shamisen.Filters
         /// <summary>
         /// Gets the value which indicates whether the <see cref="BiQuadFilter"/> can alter results for speed, or not.
         /// </summary>
-        public bool AllowFusedMultiplyAddForPerformance { get; }
+        public bool AllowInconsistencyForSpeed { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BiQuadFilter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameter">The parameter.</param>
+        /// <param name="allowInconsistencyForSpeed">The value which indicates whether the <see cref="BiQuadFilter"/> can alter results for speed, or not.</param>
         /// <exception cref="ArgumentNullException">source</exception>
-        public BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter) : this(source, parameter, true)
+        public BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool allowInconsistencyForSpeed = false) : this(source, parameter, true, allowInconsistencyForSpeed)
         {
         }
 
-        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics)
-            : this(source, parameter, enableIntrinsics, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics)
+        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics, bool allowInconsistencyForSpeed = false)
+            : this(source, parameter, enableIntrinsics, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, allowInconsistencyForSpeed)
         {
         }
 
-        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics)
+        internal BiQuadFilter(IReadableAudioSource<float, SampleFormat> source, BiQuadParameter parameter, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics, ArmIntrinsics enabledArmIntrinsics, bool allowInconsistencyForSpeed = false)
         {
             Source = source?.EnsureBlocks() ?? throw new ArgumentNullException(nameof(source));
             Parameter = parameter;
@@ -62,6 +63,7 @@ namespace Shamisen.Filters
             this.enableIntrinsics = enableIntrinsics;
             this.enabledX86Intrinsics = enabledX86Intrinsics;
             this.enabledArmIntrinsics = enabledArmIntrinsics;
+            AllowInconsistencyForSpeed = allowInconsistencyForSpeed;
         }
 
         /// <summary>
@@ -364,7 +366,20 @@ namespace Shamisen.Filters
             states[1] = iStateR;
         }
 
-        private void ProcessMonaural(Span<float> buffer) => ProcessMonauralStandard(buffer, Parameter, internalStates);
+        private void ProcessMonaural(Span<float> buffer)
+        {
+            unchecked
+            {
+#if NETCOREAPP3_1_OR_GREATER
+                if (AllowInconsistencyForSpeed && Fma.IsSupported && Avx2.IsSupported)
+                {
+                    X86.ProcessMonauralAvx2Fma(buffer, Parameter, internalStates);
+                    return;
+                }
+#endif
+                ProcessMonauralStandard(buffer, Parameter, internalStates);
+            }
+        }
 
         internal static void ProcessMonauralStandard(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
         {

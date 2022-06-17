@@ -59,7 +59,7 @@
           <Generator>TextTemplatingFileGenerator</Generator>
           <LastGenOutput>Tuples.g.cs</LastGenOutput>
         </None>
-        <None Update="VectorUtils.g.tt">
+        <None Update="Utils\VectorUtils.g.tt">
           <LastGenOutput>VectorUtils.g.cs</LastGenOutput>
           <Generator>TextTemplatingFileGenerator</Generator>
         </None>
@@ -108,7 +108,7 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Tuples.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="VectorUtils.g.cs">
+      <Compile Update="Utils\VectorUtils.g.cs">
         <DependentUpon>VectorUtils.g.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>

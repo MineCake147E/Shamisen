@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -18,6 +19,115 @@ namespace Shamisen.Filters
 {
     public sealed partial class BiQuadFilter
     {
+        internal static class X86
+        {
+            internal static void ProcessMonauralAvx2Fma(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
+            {
+                unsafe
+                {
+                    Debug.Assert(!states.IsEmpty);
+                    Debug.Assert(!buffer.IsEmpty);
+                    var factorB = parameter.B;
+                    var factorA = parameter.A;
+                    ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector3, double>(ref factorB)).AsSingle();
+                    var xmm3 = Vector128.CreateScalarUnsafe(factorB.Z);
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector2, double>(ref factorA)).AsSingle();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector2, double>(ref states[0])).AsSingle();
+                    //LLVM has found a way to vectorize monaural BiQuad filtering in transposed form 2.
+                    nint i, length = buffer.Length;
+                    var olen = length - 1;
+                    for (i = 0; i < olen; i += 2)
+                    {
+                        var xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i));
+                        xmm2 = Fma.MultiplyAdd(xmm1, xmm4, xmm2);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i) = xmm2.GetElement(0);
+                        var xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm2 = Fma.MultiplyAdd(xmm0, xmm5, xmm2);
+                        xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i + 1));
+                        xmm2 = Fma.MultiplyAdd(xmm1, xmm4, xmm2);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i + 1) = xmm2.GetElement(0);
+                        xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm2 = Fma.MultiplyAdd(xmm0, xmm5, xmm2);
+                    }
+                    if (i < length)
+                    {
+                        var xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i));
+                        xmm2 = Fma.MultiplyAdd(xmm1, xmm4, xmm2);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i) = xmm2.GetElement(0);
+                        var xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm2 = Fma.MultiplyAdd(xmm0, xmm5, xmm2);
+                    }
+                    states[0] = xmm2.AsVector2();
+                }
+            }
+
+            internal static void ProcessMonauralAvx2(Span<float> buffer, BiQuadParameter parameter, Span<Vector2> states)
+            {
+                unsafe
+                {
+                    Debug.Assert(!states.IsEmpty);
+                    Debug.Assert(!buffer.IsEmpty);
+                    var factorB = parameter.B;
+                    var factorA = parameter.A;
+                    ref var rdi = ref MemoryMarshal.GetReference(buffer);
+                    var xmm1 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector3, double>(ref factorB)).AsSingle();
+                    var xmm3 = Vector128.CreateScalarUnsafe(factorB.Z);
+                    var xmm0 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector2, double>(ref factorA)).AsSingle();
+                    var xmm2 = Vector128.CreateScalarUnsafe(Unsafe.As<Vector2, double>(ref states[0])).AsSingle();
+                    //LLVM has found a way to vectorize monaural BiQuad filtering in transposed form 2.
+                    nint i, length = buffer.Length;
+                    var olen = length - 1;
+                    for (i = 0; i < olen; i += 2)
+                    {
+                        var xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i));
+                        var xmm6 = Sse.Multiply(xmm1, xmm4);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i) = xmm2.GetElement(0);
+                        var xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i + 1));
+                        xmm6 = Sse.Multiply(xmm0, xmm5);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                        xmm6 = Sse.Multiply(xmm1, xmm4);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i + 1) = xmm2.GetElement(0);
+                        xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm6 = Sse.Multiply(xmm0, xmm5);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                    }
+                    if (i < length)
+                    {
+                        var xmm4 = Vector128.Create(Unsafe.Add(ref rdi, i));
+                        var xmm6 = Sse.Multiply(xmm1, xmm4);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                        xmm4 = Sse.MultiplyScalar(xmm4, xmm3);
+                        Unsafe.Add(ref rdi, i) = xmm2.GetElement(0);
+                        var xmm5 = Avx2.BroadcastScalarToVector128(xmm2);
+                        xmm2 = Sse3.MoveHighAndDuplicate(xmm2);
+                        xmm2 = Sse41.Insert(xmm2, xmm4, 0x10);
+                        xmm6 = Sse.Multiply(xmm0, xmm5);
+                        xmm2 = Sse.Add(xmm2, xmm6);
+                    }
+                    states[0] = xmm2.AsVector2();
+                }
+            }
+        }
+
         private void ProcessMultipleSse(Span<float> buffer)
         {
             if ((internalStates.Length & 1) > 0)

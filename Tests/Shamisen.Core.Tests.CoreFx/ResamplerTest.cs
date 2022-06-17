@@ -21,6 +21,7 @@ using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
+using Shamisen.TestUtils;
 using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx

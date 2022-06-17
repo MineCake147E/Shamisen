@@ -103,25 +103,25 @@ namespace Shamisen
         }
 
         /// <summary>
-        /// Calculates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/>.
+        /// Approximates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         public static double Sin(Fixed64 value)
         {
-            if (value < Fixed64.Zero) return -Sin(value);   //Wrap negative numbers
-            if ((long)value > 0x3fff_ffff_ffff_ffff)    //Wrap sinusoid
-            {
-                value = (Fixed64)(long)(0x8000_0000_0000_0000ul - (ulong)value);    //1 - value
-            }
-            return SinInternal(value);
+            var u = (long)value;
+            var a = MathI.Abs(u);
+            var q = (ulong)(u >> 63);
+            a = MathI.Min(a, 0x8000_0000_0000_0000ul - a);
+            a = (a ^ q) - q;
+            return SinInternal((long)a);
         }
 
-        private static double SinInternal(Fixed64 value) => Math.Sin((double)value);
+        private static double SinInternal(long value) => Math.Sin(value * PiOverTwoToThe63rdPower);
 
 #if NETSTANDARD2_0
         /// <summary>
-        /// Calculates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/> and converts the value to <see cref="float"/>.
+        /// Approximates the <see cref="Math.Sin(double)"/> of the <paramref name="value"/> and converts the value to <see cref="float"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
@@ -129,57 +129,58 @@ namespace Shamisen
 #else
 
         /// <summary>
-        /// Calculates the <see cref="MathF.Sin(float)"/> of the <paramref name="value"/>.
+        /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float SinF(Fixed64 value)
 #endif
         {
-            var u = (int)(value.Value >> 32);
+            var u = (long)value;
             var a = MathI.Abs(u);
-            a = Math.Min(a, 0x8000_0000u - a);
-            return Math.Sign(u) * SinFInternal32((int)a);
+            var q = (ulong)(u >> 63);
+            a = MathI.Min(a, 0x8000_0000_0000_0000ul - a);
+            a = (a ^ q) - q;
+            return SinFInternal64((long)a);
         }
 
         private const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
+        private const float PiOverTwoToThe63rdPower = (float)(-Math.PI / long.MinValue);
 
-        internal const float C0 = 0.0f;
-        internal const float C1 = 3.1415926535897932385f;
-        internal const float C2 = 0.0f;
-        internal const float C3 = -5.1677127800499700292f;
-        internal const float C4 = 0.0f;
-        internal const float C5 = 2.5496493437571871309f;
-        internal const float C6 = 0.0049683640241416525772f;
-        internal const float C7 = -0.61803287266375526383f;
-        internal const float C8 = 0.033708615781302465869f;
-        internal const float C9 = 0.056476450995301634261f;
-        private static float SinFInternal32(int value)
+        internal const float C6 = 4.2687028e-4f;
+        internal const float C5 = -7.3412732e-3f;
+        internal const float C4 = 8.2134832e-2f;
+        internal const float C3 = -5.9926228e-1f;
+        internal const float C2 = 2.5501638f;
+        internal const float C1 = -5.1677128f;
+        internal const float C0 = 3.1415927f;
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static float SinFInternal64(long value)
         {
             unchecked
             {
-                const float OneOverTwoToThe31stPower = -1.0f / int.MinValue;
-                var x = OneOverTwoToThe31stPower * value;
-                var x2 = x * x;
-                var res = C9;
-                res = res * x + C8;
-                res = res * x + C7;
-                res = res * x + C6;
-                res = res * x + C5;
-                res = res * x2 + C3;
-                res = res * x2 + C1;
-                return res * x;
+                const float OneOverTwoToThe63rdPower = -1.0f / long.MinValue;
+                var x = OneOverTwoToThe63rdPower * value;
+                return SinFInternalF32(x);
             }
         }
-        private static float SinFInternal(Fixed64 value)
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static float SinFInternalF32(float x)
         {
             unchecked
             {
-#if NETSTANDARD2_0
-                return (float)Math.Sin(Math.PI * (double)value);
-#else
-                return MathF.Sin(MathF.PI * (float)(double)value);
-#endif
+                var x2 = x * x;
+                var res = C6;
+                res = res * x2 + C5;
+                res = res * x2 + C4;
+                res = res * x2 + C3;
+                res = res * x2 + C2;
+                res = res * x2 + C1;
+                res = res * x2 + C0;
+                return res * x;
             }
         }
     }

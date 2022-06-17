@@ -19,6 +19,7 @@ using Shamisen.Conversion.WaveToSampleConverters;
 using Shamisen.Data;
 using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
+using Shamisen.TestUtils;
 using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.TestUtils
@@ -236,7 +237,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
         public static void AssertArraysRelative(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
         {
             Assert.AreEqual(exp.Length, dst.Length);
-            double maxdiff = 0.0;
+            var maxdiff = 0.0;
             for (var i = 0; i < dst.Length; i++)
             {
                 double opt = dst[i];

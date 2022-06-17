@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using Shamisen.Conversion.SampleToWaveConverters;
-using Shamisen.Core.Tests.CoreFx.TestUtils;
+using Shamisen.TestUtils;
 
 namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
 {

@@ -29,6 +29,7 @@ namespace Shamisen.Utils
     foreach(var item in typesVectorable){#>
         
         /// <inheritdoc cref="Vector.AsVector<#=item#>{T}(Vector{T})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         [DebuggerStepThrough]
         public static Vector<<#=item#>> As<#=item#><T>(this Vector<T> value) where T : struct
             => Vector.AsVector<#=item#>(value);

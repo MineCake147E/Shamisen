@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shamisen.Core.Tests.CoreFx.TestUtils
+namespace Shamisen.TestUtils
 {
     public readonly struct NeumaierAccumulator
     {
@@ -16,9 +16,9 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
 
         public static NeumaierAccumulator operator +(NeumaierAccumulator left, double right)
         {
-            double sum = left.sum;
-            double c = left.c;
-            double t = sum + right;
+            var sum = left.sum;
+            var c = left.c;
+            var t = sum + right;
             if (Math.Abs(sum) >= Math.Abs(right))
             {
                 c += sum - t + right;

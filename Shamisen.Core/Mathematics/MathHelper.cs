@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace Shamisen.Mathematics
 {
@@ -48,17 +49,11 @@ namespace Shamisen.Mathematics
         /// <param name="a">a.</param>
         /// <param name="b">The b.</param>
         /// <returns></returns>
-        public static int Gcd(int a, int b) => a == b ? a : a > b ? GcdInternalI32(a, b) : GcdInternalI32(b, a);
+        public static int Gcd(int a, int b) => GcdInternalI32(a, b);
 
         private static int GcdInternalI32(int m, int n)
         {
-            while (n != 0)
-            {
-                var k = n;
-                n = m % n;
-                m = k;
-            }
-            return m;
+            return (int)Gcd((uint)m, (uint)n);
         }
 
         /// <summary>
@@ -67,17 +62,59 @@ namespace Shamisen.Mathematics
         /// <param name="a">a.</param>
         /// <param name="b">The b.</param>
         /// <returns></returns>
-        public static ulong Gcd(ulong a, ulong b) => a == b ? a : a > b ? GcdInternalU64(a, b) : GcdInternalU64(b, a);
-
-        private static ulong GcdInternalU64(ulong m, ulong n)
+        public static uint Gcd(uint a, uint b)
         {
-            while (n != 0)
+            var m = Math.Min(a, b);
+            if (m == 0) return Math.Max(a, b);
+            var i = MathI.TrailingZeroCount(a);
+            a >>= i;
+            var j = MathI.TrailingZeroCount(b);
+            b >>= j;
+            var k = Math.Min(i, j);
+            while (true)
             {
-                var k = n;
-                n = m % n;
-                m = k;
+                if (a > b)
+                {
+                    (b, a) = (a, b);
+                }
+                b -= a;
+                if (b == 0)
+                {
+                    return a << k;
+                }
+                b >>= MathI.TrailingZeroCount(b);
             }
-            return m;
         }
+
+        /// <summary>
+        /// Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
+        /// </summary>
+        /// <param name="a">a.</param>
+        /// <param name="b">The b.</param>
+        /// <returns></returns>
+        public static ulong Gcd(ulong a, ulong b)
+        {
+            var m = Math.Min(a, b);
+            if (m == 0) return Math.Max(a, b);
+            var i = MathI.TrailingZeroCount(a);
+            a >>= i;
+            var j = MathI.TrailingZeroCount(b);
+            b >>= j;
+            var k = Math.Min(i, j);
+            while (true)
+            {
+                if (a > b)
+                {
+                    (b, a) = (a, b);
+                }
+                b -= a;
+                if (b == 0)
+                {
+                    return a << k;
+                }
+                b >>= MathI.TrailingZeroCount(b);
+            }
+        }
+
     }
 }

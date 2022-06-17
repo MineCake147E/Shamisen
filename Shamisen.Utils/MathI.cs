@@ -72,7 +72,19 @@ namespace Shamisen
         }
         #endregion
 
-        #region nint Math
+        #region Integer Min
+
+        /// <summary>
+        /// Determines the maximum of the parameters.
+        /// </summary>
+        /// <param name="a">The value a.</param>
+        /// <param name="b">The value b.</param>
+        /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ReadResult Min(ReadResult a, ReadResult b) => a < b ? a : b;
 
         /// <inheritdoc cref="Math.Min(long, long)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -90,9 +102,22 @@ namespace Shamisen
             return r | q;
         }
 
-        #endregion
+        /// <inheritdoc cref="Math.Min(long, long)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
 
-        #region Fast Math
+        [DebuggerStepThrough]
+#endif
+        public static nuint Min(nuint val1, nuint val2)
+        {
+            var g = val1 > val2;
+            nuint y = Unsafe.As<bool, byte>(ref g);
+            y = (nuint)(-(nint)y);
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
         /// <inheritdoc cref="Math.Min(int, int)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
 #if DEBUG_MATHI_NON_USER_CODE
@@ -124,6 +149,84 @@ namespace Shamisen
             var q = AndNot(y, val1);
             return r | q;
         }
+        /// <inheritdoc cref="Math.Min(long, long)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static long Min(long val1, long val2)
+        {
+            var g = val1 > val2;
+            long y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Min(ulong, ulong)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ulong Min(ulong val1, ulong val2)
+        {
+            var g = val1 > val2;
+            ulong y = Unsafe.As<bool, byte>(ref g);
+            y = (ulong)-(long)y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Min(short, short)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static short Min(short val1, short val2) => (short)Min((uint)val1, (uint)val2);
+
+        /// <inheritdoc cref="Math.Min(ushort, ushort)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ushort Min(ushort val1, ushort val2) => (ushort)Min((uint)val1, val2);
+        /// <inheritdoc cref="Math.Min(sbyte, sbyte)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static sbyte Min(sbyte val1, sbyte val2) => (sbyte)Min((uint)val1, (uint)val2);
+
+        /// <inheritdoc cref="Math.Min(byte, byte)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static byte Min(byte val1, byte val2) => (byte)Min((uint)val1, val2);
+
+        #endregion
+
+        #region Integer Max
+
+        /// <summary>
+        /// Determines the maximum of the parameters.
+        /// </summary>
+        /// <param name="a">The value a.</param>
+        /// <param name="b">The value b.</param>
+        /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
 
         /// <inheritdoc cref="Math.Max(int, int)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -131,9 +234,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-#pragma warning disable S4136 // Method overloads should be grouped together
         public static int Max(int val1, int val2)
-#pragma warning restore S4136 // Method overloads should be grouped together
         {
             var g = val1 < val2;
             int y = Unsafe.As<bool, byte>(ref g);
@@ -158,6 +259,102 @@ namespace Shamisen
             var q = AndNot(y, val1);
             return r | q;
         }
+
+        /// <inheritdoc cref="Math.Max(long, long)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static long Max(long val1, long val2)
+        {
+            var g = val1 < val2;
+            long y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Max(ulong, ulong)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ulong Max(ulong val1, ulong val2)
+        {
+            var g = val1 < val2;
+            ulong y = Unsafe.As<bool, byte>(ref g);
+            y = (ulong)-(long)y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Max(long, long)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static nint Max(nint val1, nint val2)
+        {
+            var g = val1 < val2;
+            nint y = Unsafe.As<bool, byte>(ref g);
+            y = -y;
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Max(ulong, ulong)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static nuint Max(nuint val1, nuint val2)
+        {
+            var g = val1 < val2;
+            nuint y = Unsafe.As<bool, byte>(ref g);
+            y = (nuint)(-(nint)y);
+            var r = y & val2;
+            var q = AndNot(y, val1);
+            return r | q;
+        }
+
+        /// <inheritdoc cref="Math.Max(short, short)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static short Max(short val1, short val2) => (short)Max((uint)val1, (uint)val2);
+
+        /// <inheritdoc cref="Math.Max(ushort, ushort)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static ushort Max(ushort val1, ushort val2) => (ushort)Max((uint)val1, val2);
+        /// <inheritdoc cref="Math.Max(sbyte, sbyte)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static sbyte Max(sbyte val1, sbyte val2) => (sbyte)Max((uint)val1, (uint)val2);
+
+        /// <inheritdoc cref="Math.Max(byte, byte)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        public static byte Max(byte val1, byte val2) => (byte)Max((uint)val1, val2);
+
         #endregion
 
         #region Fast Bit Operations
@@ -300,7 +497,6 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ulong Abs(long value)
         {
-            //Copied from DivideSharp in order to aggressively inline this method.
             var q = value >> 63;
             return (ulong)((value + q) ^ q);
         }
@@ -317,12 +513,47 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static uint Abs(int value)
         {
-            //Copied from DivideSharp in order to aggressively inline this method.
             var q = value >> 31;
             return (uint)((value + q) ^ q);
         }
 
+
+        /// <summary>
+        /// Returns the absolute value of the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ushort Abs(short value)
+        {
+            var q = value >> 15;
+            return (ushort)((value + q) ^ q);
+        }
+
+        /// <summary>
+        /// Returns the absolute value of the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+#if DEBUG_MATHI_NON_USER_CODE
+
+        [DebuggerStepThrough]
+#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static byte Abs(sbyte value)
+        {
+            var q = value >> 7;
+            return (byte)((value + q) ^ q);
+        }
         #endregion Abs
+
+        #region CopySign
+
+        #endregion
 
         #region BigMul Polyfill
 
@@ -417,22 +648,6 @@ namespace Shamisen
             return t;
         }
         #endregion
-
-        #region ReadResult functions
-
-        /// <summary>
-        /// Determines the maximum of the parameters.
-        /// </summary>
-        /// <param name="a">The value a.</param>
-        /// <param name="b">The value b.</param>
-        /// <returns></returns>
-#if DEBUG_MATHI_NON_USER_CODE
-
-        [DebuggerStepThrough]
-#endif
-        public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
-
-        #endregion ReadResult functions
 
         #region TrailingZeroCount
 

@@ -43,6 +43,12 @@ namespace Shamisen.Benchmarks.BiQuad
         [Benchmark]
         public void ProcessMonauralStandard() => BiQuadFilter.ProcessMonauralStandard(buffer, parameter, states);
 
+        [Benchmark]
+        public void ProcessMonauralAvx2() => BiQuadFilter.X86.ProcessMonauralAvx2(buffer, parameter, states);
+
+        [Benchmark]
+        public void ProcessMonauralAvx2Fma() => BiQuadFilter.X86.ProcessMonauralAvx2Fma(buffer, parameter, states);
+
         [GlobalCleanup]
         public void Cleanup() => buffer = null;
     }

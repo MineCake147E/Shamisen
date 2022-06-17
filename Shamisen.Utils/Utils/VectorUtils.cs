@@ -12,6 +12,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using Shamisen.Utils.Numerics;
 
 namespace Shamisen.Utils
@@ -296,7 +297,7 @@ namespace Shamisen.Utils
                 var u = stackalloc float[Vector<float>.Count];
                 *(Vector<float>*)u = vector;
                 var mx = u[0];
-                for (int i = 1; i < Vector<float>.Count; i++)
+                for (var i = 1; i < Vector<float>.Count; i++)
                 {
                     var f = u[i];
                     mx = f > mx ? f : mx;
@@ -416,7 +417,7 @@ namespace Shamisen.Utils
                 var u = stackalloc float[Vector<float>.Count];
                 *(Vector<float>*)u = vector;
                 var mx = u[0];
-                for (int i = 1; i < Vector<float>.Count; i++)
+                for (var i = 1; i < Vector<float>.Count; i++)
                 {
                     var f = u[i];
                     mx = f < mx ? f : mx;
@@ -986,6 +987,9 @@ namespace Shamisen.Utils
                 {
                     return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
                 }
+
+#endif
+#if NETCOREAPP3_1_OR_GREATER
                 if (Vector<float>.Count == 8 && Avx.IsSupported)
                 {
                     return Avx.RoundToNearestInteger(values.AsVector256()).AsVector();
@@ -993,79 +997,11 @@ namespace Shamisen.Utils
                 if (Vector<float>.Count == 4 && Sse41.IsSupported)
                 {
                     return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
-                }
-#endif
-#if NETCOREAPP3_1
-                if (Vector<float>.Count == 8 && Avx.IsSupported)
-                {
-                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
-                    ymm0 = Avx.RoundToNearestInteger(ymm0);
-                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
-                }
-                if (Vector<float>.Count == 4 && Sse41.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
-                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
-                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
                 }
 #endif
                 var v = values;
                 var sign = Vector.AsVectorSingle(new Vector<int>(int.MinValue));
                 var reciprocalEpsilon = new Vector<float>(16777216f);
-                //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
-                var s = Vector.BitwiseAnd(sign, v);
-                var a = Vector.BitwiseOr(reciprocalEpsilon, s);
-                v += a;
-                v -= a;
-                return Vector.BitwiseOr(v, s);
-            }
-        }
-
-        /// <summary>
-        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
-        /// and rounds midpoint values to the nearest even number.<br/>
-        /// This one is suitable for processing inside loops.
-        /// </summary>
-        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
-        /// <param name="sign">A broadcast vector with only sign bits set. If you pass wrong value, this function won't work as intended.</param>
-        /// <param name="reciprocalEpsilon">A broadcast vector represents 16777216f. If you pass wrong value, this function won't work as intended.</param>
-        /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
-        /// integers, one of which is even and the other odd, then the even number is returned.
-        /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<float> RoundInLoop(Vector<float> values, Vector<float> sign, Vector<float> reciprocalEpsilon)
-        {
-            unchecked
-            {
-#if NET5_0_OR_GREATER
-                if (Vector<float>.Count == 4 && AdvSimd.IsSupported)
-                {
-                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
-                }
-                if (Vector<float>.Count == 8 && Avx.IsSupported)
-                {
-                    return Avx.RoundToNearestInteger(values.AsVector256()).AsVector();
-                }
-                if (Vector<float>.Count == 4 && Sse41.IsSupported)
-                {
-                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
-                }
-#endif
-#if NETCOREAPP3_1
-                if (Vector<float>.Count == 8 && Avx.IsSupported)
-                {
-                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
-                    ymm0 = Avx.RoundToNearestInteger(ymm0);
-                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
-                }
-                if (Vector<float>.Count == 4 && Sse41.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
-                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
-                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
-                }
-#endif
-                var v = values;
                 //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
                 var s = Vector.BitwiseAnd(sign, v);
                 var a = Vector.BitwiseOr(reciprocalEpsilon, s);
@@ -1092,17 +1028,11 @@ namespace Shamisen.Utils
                 {
                     return AdvSimd.RoundToNearest(values.AsVector128()).AsVector4();
                 }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
                 if (Sse41.IsSupported)
                 {
                     return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector4();
-                }
-#endif
-#if NETCOREAPP3_1
-                if (Sse41.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref values);
-                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
-                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
                 }
 #endif
                 var s0 = values.X;
@@ -1193,6 +1123,60 @@ namespace Shamisen.Utils
                 s1 = FastMath.Round(s1);
                 s2 = FastMath.Round(s2);
                 return new(s0, s1, s2);
+            }
+        }
+
+        /// <summary>
+        /// Rounds a vector of single-precision floating-point value to the nearest integral values,
+        /// and rounds midpoint values to the nearest even number.<br/>
+        /// This one is suitable for processing inside loops.
+        /// </summary>
+        /// <param name="values">A vector of single-precision floating-point numbers to be rounded.</param>
+        /// <param name="sign">A broadcast vector with only sign bits set. If you pass wrong value, this function won't work as intended.</param>
+        /// <param name="reciprocalEpsilon">A broadcast vector represents 16777216f. If you pass wrong value, this function won't work as intended.</param>
+        /// <returns>The integer <see cref="Vector{T}"/> nearest <paramref name="values"/>. If the fractional component of <paramref name="values"/> is halfway between two
+        /// integers, one of which is even and the other odd, then the even number is returned.
+        /// Note that this method returns a floating-point <see cref="Vector{T}"/> instead of an integral <see cref="Vector{T}"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<float> RoundInLoop(Vector<float> values, Vector<float> sign, Vector<float> reciprocalEpsilon)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (Vector<float>.Count == 4 && AdvSimd.IsSupported)
+                {
+                    return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
+                }
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    return Avx.RoundToNearestInteger(values.AsVector256()).AsVector();
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
+                }
+#endif
+#if NETCOREAPP3_1
+                if (Vector<float>.Count == 8 && Avx.IsSupported)
+                {
+                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
+                    ymm0 = Avx.RoundToNearestInteger(ymm0);
+                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
+                }
+                if (Vector<float>.Count == 4 && Sse41.IsSupported)
+                {
+                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
+                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
+                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
+                }
+#endif
+                var v = values;
+                //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
+                var s = Vector.BitwiseAnd(sign, v);
+                var a = Vector.BitwiseOr(reciprocalEpsilon, s);
+                v += a;
+                v -= a;
+                return Vector.BitwiseOr(v, s);
             }
         }
         #endregion
@@ -1801,6 +1785,11 @@ namespace Shamisen.Utils
             }
         }
         #endregion
+        #region Permutation
+        #region Vector128
+
+        #endregion
+        #endregion
         #region GenerateVectorWithSequence
         /// <summary>
         /// Returns a <see cref="Vector{T}"/> value with its value set to their position.
@@ -1835,7 +1824,7 @@ namespace Shamisen.Utils
                         var g = new Vector4(0.0f, float.Epsilon, 3E-45f, 4E-45f);
                         return Unsafe.As<Vector4, Vector<int>>(ref g);
                     }
-                case <=16:
+                case <= 16:
                     {
                         var h = stackalloc int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
                         return *(Vector<int>*)h;
@@ -1849,7 +1838,7 @@ namespace Shamisen.Utils
         private static unsafe Vector<int> GenerateIndexVectorFallback2()
         {
             var span = stackalloc int[Vector<int>.Count];
-            for (int k = 0; k < Vector<int>.Count; k++)
+            for (var k = 0; k < Vector<int>.Count; k++)
             {
                 span[k] = k;
             }

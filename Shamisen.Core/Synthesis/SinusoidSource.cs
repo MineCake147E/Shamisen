@@ -167,7 +167,7 @@ namespace Shamisen.Synthesis
             var ymm10 = Vector256.Create(C2);
             var ymm9 = Vector256.Create(C1);
             var ymm8 = Vector256.Create(C0);
-            //TODO: AdvSimd, Avx2FmaMM, and Sse42 variant
+            //TODO: AdvSimd variant
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             nint i = 0, length = buffer.Length;
             var olen = length - 7;

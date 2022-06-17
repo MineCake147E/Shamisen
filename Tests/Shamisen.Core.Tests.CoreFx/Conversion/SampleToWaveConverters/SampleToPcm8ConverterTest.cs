@@ -12,10 +12,10 @@ using NUnit.Framework;
 
 using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
-using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Filters;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
+using Shamisen.TestUtils;
 
 namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
 {

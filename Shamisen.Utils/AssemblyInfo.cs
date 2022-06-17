@@ -7,5 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Shamisen.Core.Tests.CoreFx")]
+[assembly: InternalsVisibleTo("Shamisen.Utils.Tests")]
+[assembly: InternalsVisibleTo("Shamisen.TestUtils")]
 [assembly: InternalsVisibleTo("Shamisen.Core.Tests.CoreFx.*")]
 [assembly: InternalsVisibleTo("Shamisen.Benchmarks")]

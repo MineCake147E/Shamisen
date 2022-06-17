@@ -55,6 +55,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
+        <ProjectReference Include="..\..\Shamisen.TestUtils\Shamisen.TestUtils.csproj" />
         <ProjectReference Include="..\..\Shamisen\Shamisen.csproj" />
     </ItemGroup>
 
