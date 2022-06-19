@@ -5799,22 +5799,6 @@
              <param name="rateMul"></param>
              <param name="acc"></param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            SSE2 vectorized path
-            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
-            <summary>
-            FMA vectorized path
-            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
-            </summary>
-            <param name="coeffs"></param>
-            <param name="rateMulInverse"></param>
-        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -5840,31 +5824,6 @@
             <param name="acc"></param>
             <param name="facc"></param>
             <param name="rmi"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
-            <summary>
-            For arbitrary sampling frequency ratio larger than 1
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
-            <param name="rci"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
-            <summary>
-            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
-            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
-            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
             <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
@@ -6684,14 +6643,6 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one can be slightly faster than simple approach.
-            </summary>
-            <param name="dest"></param>
-            <param name="wrote"></param>
-        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -6943,21 +6894,6 @@
             <returns>
             The length of the data written.
             </returns>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2M(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Straightforward convert-and-multiply approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
-        </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2A(System.Span{System.Byte},System.Span{System.Single})">
-            <summary>
-            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
-            This one is slightly faster than simple approach.
-            </summary>
-            <param name="wrote"></param>
-            <param name="dest"></param>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.Dispose(System.Boolean)">
             <summary>
@@ -8971,15 +8907,15 @@
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="buffer">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="destination">The destination.</param>
+            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="buffer">The destination.</param>
-            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="destination">The destination.</param>
+            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.Dispose">
             <summary>
@@ -9614,28 +9550,6 @@
         </member>
         <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
             <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
-            The orders more than 8 should be processed with serially cascaded function calls.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
-        </member>
-        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
-            <summary>
-            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
-            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
-            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
-            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
-            </summary>
-            <param name="target"></param>
-            <param name="parameters"></param>
-            <param name="internalStates"></param>
         </member>
         <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
             <summary>
@@ -12219,6 +12133,14 @@
             <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
         </member>
         <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.Int32,System.Int32)">
+            <summary>
+            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
+            </summary>
+            <param name="a">a.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.UInt32,System.UInt32)">
             <summary>
             Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
             </summary>

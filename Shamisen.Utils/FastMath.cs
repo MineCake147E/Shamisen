@@ -238,6 +238,11 @@ namespace Shamisen
 #endif
             }
         }
+        internal const float C4 = 7.7656368e-2f;
+        internal const float C3 = -5.9824574e-1f;
+        internal const float C2 = 2.5500606f;
+        internal const float C1 = -5.1677083f;
+        internal const float C0 = 3.1415926f;
 
         /// <summary>
         /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
@@ -245,20 +250,29 @@ namespace Shamisen
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
         /// The approximation of sine of <paramref name="x"/>, by wrapping <paramref name="x"/> around ±<see cref="MathF.PI"/>,
-        /// wrapping the absolute value of <paramref name="x"/> between <see cref="MathF.PI"/>/2 and 3*<see cref="MathF.PI"/>/2, and applying 6 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
+        /// wrapping the absolute value of <paramref name="x"/> between 0 and <see cref="MathF.PI"/>/2, and applying 4 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float Sin(float x)
         {
-            x *= 0.31830987f;
+            const float MaxAngle = 1.0f;
             const float SignBit = -0.0f;
-            x -= 2 * Round(x * 0.5f);
+            var t = x * 0.15915494f;
+            t = Round(t);
+            x = x * 0.31830987f - 2 * t;
             var a = MathI.AndNot(SignBit, x);
             var s = MathI.And(SignBit, x);
-            a = Min(a, 1.0f - a);
+            a = Min(a, MaxAngle - a);
+            var s2 = a * a;
             s = MathI.Xor(s, a);
-            return MathX.SinFInternalF32(s);
+            var res = C4;
+            res = res * s2 + C3;
+            res = res * s2 + C2;
+            res = res * s2 + C1;
+            res = res * s2 + C0;
+            return res * s;
+
         }
     }
 }

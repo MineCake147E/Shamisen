@@ -148,13 +148,12 @@ namespace Shamisen
         private const float PiOverTwoToThe31stPower = (float)(-Math.PI / int.MinValue);
         private const float PiOverTwoToThe63rdPower = (float)(-Math.PI / long.MinValue);
 
-        internal const float C6 = 4.2687028e-4f;
-        internal const float C5 = -7.3412732e-3f;
-        internal const float C4 = 8.2134832e-2f;
-        internal const float C3 = -5.9926228e-1f;
-        internal const float C2 = 2.5501638f;
-        internal const float C1 = -5.1677128f;
-        internal const float C0 = 3.1415927f;
+        internal const float C5 = -6.647926e-3f;
+        internal const float C4 = 8.1701727e-2f;
+        internal const float C3 = -5.9913243e-1f;
+        internal const float C2 = 2.5501449f;
+        internal const float C1 = -5.1677116f;
+        internal const float C0 = 3.1415926f;
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static float SinFInternal64(long value)
@@ -173,8 +172,7 @@ namespace Shamisen
             unchecked
             {
                 var x2 = x * x;
-                var res = C6;
-                res = res * x2 + C5;
+                var res = C5;
                 res = res * x2 + C4;
                 res = res * x2 + C3;
                 res = res * x2 + C2;

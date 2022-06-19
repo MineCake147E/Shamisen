@@ -562,6 +562,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float Xor(float left, float right)
         {
             unchecked
@@ -592,6 +593,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static double Xor(double left, double right)
         {
             unchecked
@@ -622,6 +624,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float And(float left, float right)
         {
             unchecked
@@ -652,6 +655,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static double And(double left, double right)
         {
             unchecked
@@ -682,6 +686,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float Or(float left, float right)
         {
             unchecked
@@ -712,6 +717,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static double Or(double left, double right)
         {
             unchecked
@@ -742,6 +748,7 @@ namespace Shamisen
         /// <param name="left">The first value to be negated.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float AndNot(float left, float right)
         {
             unchecked
@@ -773,6 +780,7 @@ namespace Shamisen
         /// <param name="left">The first value to be negated.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static double AndNot(double left, double right)
         {
             unchecked
