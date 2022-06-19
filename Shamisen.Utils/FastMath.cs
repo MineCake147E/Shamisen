@@ -238,6 +238,35 @@ namespace Shamisen
 #endif
             }
         }
+
+        /// <summary>
+        /// Returns (x * y) + z, sometimes rounded as one ternary operation.
+        /// </summary>
+        /// <param name="x">The number to be multiplied with y.</param>
+        /// <param name="y">The number to be multiplied with x.</param>
+        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
+        /// <returns>(x * y) + z, sometimes rounded as one ternary operation.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastMultiplyAdd(float x, float y, float z)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return MathF.FusedMultiplyAdd(x, y, z);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Fma.IsSupported)
+                {
+                    return MathF.FusedMultiplyAdd(x, y, z);
+                }
+#endif
+                return x * y + z;
+            }
+        }
+
         internal const float C4 = 7.7656368e-2f;
         internal const float C3 = -5.9824574e-1f;
         internal const float C2 = 2.5500606f;
@@ -249,8 +278,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
-        /// The approximation of sine of <paramref name="x"/>, by wrapping <paramref name="x"/> around ±<see cref="MathF.PI"/>,
-        /// wrapping the absolute value of <paramref name="x"/> between 0 and <see cref="MathF.PI"/>/2, and applying 4 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
+        /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -272,7 +300,35 @@ namespace Shamisen
             res = res * s2 + C1;
             res = res * s2 + C0;
             return res * s;
+        }
 
+        /// <summary>
+        /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians.</param>
+        /// <returns>
+        /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastSin(float x)
+        {
+            const float MaxAngle = 1.0f;
+            const float SignBit = -0.0f;
+            var t = x * 0.15915494f;
+            t = Round(t);
+            x = x * 0.31830987f - 2 * t;
+            var a = MathI.AndNot(SignBit, x);
+            var s = MathI.And(SignBit, x);
+            a = Min(a, MaxAngle - a);
+            var s2 = a * a;
+            s = MathI.Xor(s, a);
+            var res = C4;
+            res = FastMultiplyAdd(res, s2, C3);
+            res = FastMultiplyAdd(res, s2, C2);
+            res = FastMultiplyAdd(res, s2, C1);
+            res = FastMultiplyAdd(res, s2, C0);
+            return res * s;
         }
     }
 }

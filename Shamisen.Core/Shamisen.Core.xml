@@ -8907,15 +8907,15 @@
             <summary>
             Reads the data to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.ReadAsync(System.Memory{System.Byte})">
             <summary>
             Reads the data asynchronously to the specified destination.
             </summary>
-            <param name="destination">The destination.</param>
-            <returns>The bytess read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
+            <param name="buffer">The destination.</param>
+            <returns>The number of <see cref="T:System.Byte"/>s read from this <see cref="T:Shamisen.IDataSource`1"/>.</returns>
         </member>
         <member name="M:Shamisen.Data.StreamDataSource.Dispose">
             <summary>

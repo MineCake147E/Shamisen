@@ -510,14 +510,32 @@
             integers, one of which is even and the other odd, then the even number is returned.
             Note that this method returns a <see cref="T:System.Single"/> instead of an integral type.</returns>
         </member>
+        <member name="M:Shamisen.FastMath.FastMultiplyAdd(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns (x * y) + z, sometimes rounded as one ternary operation.
+            </summary>
+            <param name="x">The number to be multiplied with y.</param>
+            <param name="y">The number to be multiplied with x.</param>
+            <param name="z">The number to be added to the result of x multiplied by y.</param>
+            <returns>(x * y) + z, sometimes rounded as one ternary operation.</returns>
+        </member>
         <member name="M:Shamisen.FastMath.Sin(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="x"/>.
             </summary>
             <param name="x">An angle, measured in radians.</param>
             <returns>
-            The approximation of sine of <paramref name="x"/>, by wrapping <paramref name="x"/> around ±<see cref="F:System.MathF.PI"/>,
-            wrapping the absolute value of <paramref name="x"/> between 0 and <see cref="F:System.MathF.PI"/>/2, and applying 4 degree polynomial for the <paramref name="x"/> squared, and multiplying <paramref name="x"/> with it.<br/>
+            Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+            If either <see cref="M:System.Single.IsNaN(System.Single)"/> or <see cref="M:System.Single.IsInfinity(System.Single)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="F:System.Single.NaN"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastSin(System.Single)">
+            <summary>
+            Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="x"/>.
+            </summary>
+            <param name="x">An angle, measured in radians.</param>
+            <returns>
+            Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
             If either <see cref="M:System.Single.IsNaN(System.Single)"/> or <see cref="M:System.Single.IsInfinity(System.Single)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="F:System.Single.NaN"/>.
             </returns>
         </member>
@@ -1207,7 +1225,7 @@
         </member>
         <member name="M:Shamisen.MathX.SinF(Shamisen.Fixed64)">
             <summary>
-            Approximates the <see cref="M:System.Math.Sin(System.Double)"/> of the <paramref name="value"/> and converts the value to <see cref="T:System.Single"/>.
+            Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="value"/>.
             </summary>
             <param name="value">The value.</param>
             <returns></returns>
@@ -1223,6 +1241,12 @@
             </summary>
         </member>
         <member name="M:Shamisen.ComplexD.#ctor(System.Numerics.Complex)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.ComplexD"/>.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Shamisen.ComplexD.#ctor(System.Runtime.Intrinsics.Vector128{System.Double})">
             <summary>
             Initializes a new instance of <see cref="T:Shamisen.ComplexD"/>.
             </summary>
@@ -1564,6 +1588,13 @@
             </summary>
             <param name="value">A complex number.</param>
             <returns>The square root of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Shamisen.ComplexF.AsComplexF(System.Runtime.Intrinsics.Vector128{System.Single}@)">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:Shamisen.ComplexF"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
         </member>
         <member name="M:Shamisen.ComplexF.AsComplexF(System.Numerics.Vector2@)">
             <summary>
@@ -2036,6 +2067,70 @@
             <value>
             The environment endianness.
             </value>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Avx2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Avx2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Avx2Utils.BlendVariable(System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BlendVariable(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AvxUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Avx"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AvxUtils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.AvxUtils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.BroadcastScalarToVector128(System.Single@)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.BroadcastScalarToVector128(System.Single*)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Avx.Xor(System.Runtime.Intrinsics.Vector256{System.Single},System.Runtime.Intrinsics.Vector256{System.Single})"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AvxUtils.GetZero``1">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Vector256`1.Zero"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Sse2Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Sse2"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Sse2Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Sse2Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftRightLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse2.ShiftLeftLogical128BitLane(System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Sse2Utils.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Sse3.MoveAndDuplicate(System.Runtime.Intrinsics.Vector128{System.Double})"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.Ssse3Utils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.X86.Ssse3"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.Ssse3Utils.IsSupported">
+            <summary>
+            Gets the value which indicates whether the <see cref="T:Shamisen.Utils.Intrinsics.Ssse3Utils"/> can be used in this machine.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
+            <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
         </member>
         <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1">
             <summary>
@@ -3510,6 +3605,14 @@
             <param name="vector1">The value to multiply.</param>
             <returns>The dot product of two vectors.</returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Returns the dot product of two vectors.
+            </summary>
+            <param name="vector0">The value to multiply.</param>
+            <param name="vector1">The value to multiply.</param>
+            <returns>The dot product of two vectors.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.MaxAcross(System.Numerics.Vector{System.Single})">
             <summary>
             Returns the largest element of the specified <paramref name="vector"/>.
@@ -3644,7 +3747,7 @@
         <member name="M:Shamisen.Utils.VectorUtils.AndNot``1(System.Numerics.Vector{``0},System.Numerics.Vector{``0})">
             <summary>
             Returns a new vector by performing a bitwise And Not operation on each pair of corresponding elements in two vectors.
-            This variant preserves parameter order consistency with <c>Avx2.AndNot(Vector256{int}, Vector256{int})</c>.
+            This variant preserves parameter order consistency with <see cref="M:System.Runtime.Intrinsics.X86.Avx2.AndNot(System.Runtime.Intrinsics.Vector256{System.Int32},System.Runtime.Intrinsics.Vector256{System.Int32})"/>.
             </summary>
             <param name="right">The second vector to be negated.</param>
             <param name="left">The first vector.</param>
@@ -3741,6 +3844,99 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector256{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector128{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector256``1(System.Numerics.Vector{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128``1(System.Numerics.Vector{``0})">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128Unsafe(System.Numerics.Vector2)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
+            <summary>
+            Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector2)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector64(System.Numerics.Vector2)">
+            <summary>
+            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector64`1"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector64`1"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsComplexF(System.Runtime.Intrinsics.Vector128{System.Single}@)">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:Shamisen.ComplexF"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:Shamisen.ComplexF"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector64{System.Single})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector64`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector4(System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector4"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
+            </summary>
+            <param name="value">The vector to reinterpret.</param>
+            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
+        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsSingle``1(System.Numerics.Vector{``0})">
             <inheritdoc cref="M:System.Numerics.Vector.AsVectorSingle``1(System.Numerics.Vector{``0})"/>
         </member>
@@ -3775,6 +3971,16 @@
             <summary>
             Contains some utility functions for <see cref="T:System.Numerics.Vector`1" /> and some its close relatives.
             </summary>
+        </member>
+        <member name="M:Shamisen.VectorExtensions.Deconstruct(System.Runtime.Intrinsics.Vector256{System.UInt64},System.UInt64@,System.UInt64@,System.UInt64@,System.UInt64@)">
+             <summary>
+            
+             </summary>
+             <param name="vector"></param>
+             <param name="v0"></param>
+             <param name="v1"></param>
+             <param name="v2"></param>
+             <param name="v3"></param>
         </member>
         <member name="T:Shamisen.Optimization.X86Intrinsics">
             <summary>
@@ -4294,12 +4500,12 @@
         </member>
         <member name="F:Shamisen.OptimizationUtils.AggressiveOptimizationIfPossible">
             <summary>
-            Returns 0 when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns 0 when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="F:Shamisen.OptimizationUtils.InlineAndOptimizeIfPossible">
             <summary>
-            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="T:System.Runtime.CompilerServices.MethodImplOptions"/>.AggressiveOptimization.
+            Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
         <member name="T:Shamisen.Primitives.Angle128">
@@ -7203,33 +7409,6 @@
             <param name="destination">The target of the copy operation.</param>
             <returns></returns>
         </member>
-        <member name="T:System.MathF">
-            <summary>
-            Provides constants and static methods for trigonometric, logarithmic, and other common mathematical functions.
-            </summary>
-        </member>
-        <member name="F:System.MathF.PI">
-            <inheritdoc cref="F:System.Math.PI"/>
-        </member>
-        <member name="F:System.MathF.E">
-            <inheritdoc cref="F:System.Math.E"/>
-        </member>
-        <member name="M:System.MathF.Truncate(System.Single)">
-            <summary>
-            Calculates the integral part of a specified single-precision floating-point number.
-            </summary>
-            <param name="d">A number to truncate.</param>
-            <returns>
-            The integral part of <paramref name="d"/>; that is, the number that remains after any fractional digits have been discarded, or one of the values listed in the following table.<br/>
-               <paramref name="d"/> – Return value<br/>
-               <see cref="F:System.Single.NaN"/> –<see cref="F:System.Single.NaN"/><br/>
-               <see cref="F:System.Single.NegativeInfinity"/> –<see cref="F:System.Single.NegativeInfinity"/><br/>
-               <see cref="F:System.Single.PositiveInfinity"/> –<see cref="F:System.Single.PositiveInfinity"/><br/>
-            </returns>
-        </member>
-        <member name="M:System.MathF.Sin(System.Single)">
-            <inheritdoc cref="M:System.Math.Sin(System.Double)"/>
-        </member>
         <member name="T:System.Numerics.Vector5">
             <summary>
             Represents a vector that has 5 IEEE754-single-precision-floating-point numbers.
@@ -7872,6 +8051,12 @@
             Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
             </summary>
             <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
+            </summary>
+            <param name="value">The value.</param>
         </member>
         <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>

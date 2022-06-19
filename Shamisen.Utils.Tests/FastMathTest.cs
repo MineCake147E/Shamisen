@@ -48,5 +48,43 @@ namespace Shamisen.Utils.Tests
             Console.WriteLine(maxerr);
             Assert.Pass();
         }
+
+        [TestCase(MathF.PI / 2)]
+        [TestCase(-MathF.PI / 2)]
+        [TestCase(MathF.PI)]
+        [TestCase(-MathF.PI)]
+        [TestCase(0.0f)]
+        [TestCase(float.Epsilon)]
+        [TestCase(-float.Epsilon)]
+
+        public void FastSinCalculatesCorrectly(float value)
+        {
+            var exp = MathF.Sin(value);
+            var act = FastMath.FastSin(value);
+            Assert.That(act, Is.EqualTo(exp).Within(8.74227766E-08f));
+            Console.WriteLine($"Expected: {exp}, Actual: {act}");
+        }
+
+        [Test]
+        public void FastSinBruteForceAccuracyCheck()
+        {
+            var max = BitConverter.SingleToInt32Bits(MathF.PI * 0.5f) + 1;
+            var na = new NeumaierAccumulator();
+            var maxerr = double.NegativeInfinity;
+            ulong cnt = 0;
+            for (var i = 0; i < max; i++)
+            {
+                var v = BitConverter.Int32BitsToSingle(i);
+                var exp = MathF.Sin(v);
+                var act = FastMath.FastSin(v);
+                var diff = Math.Abs(exp - act);
+                na += diff;
+                maxerr = FastMath.Max(maxerr, diff);
+                cnt++;
+            }
+            Console.WriteLine(na.Sum / cnt);
+            Console.WriteLine(maxerr);
+            Assert.Pass();
+        }
     }
 }

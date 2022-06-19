@@ -71,5 +71,19 @@ namespace Shamisen.Benchmarks.Utils
             }
         }
 
+        [Benchmark]
+        public void FastMathFastSin()
+        {
+            var source = bufferSrc.AsSpan();
+            var destination = bufferDst.AsSpan();
+            ref var x9 = ref MemoryMarshal.GetReference(source);
+            ref var x10 = ref MemoryMarshal.GetReference(destination);
+            nint i = 0, length = MathI.Min(destination.Length, source.Length);
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref x10, i) = FastMath.FastSin(Unsafe.Add(ref x9, i));
+            }
+        }
+
     }
 }
