@@ -238,6 +238,7 @@ namespace Shamisen
 #endif
             }
         }
+        #region FastMultiplyAdd
 
         /// <summary>
         /// Returns (x * y) + z, sometimes rounded as one ternary operation.
@@ -267,14 +268,45 @@ namespace Shamisen
             }
         }
 
-        internal const float C4 = 7.7656368e-2f;
-        internal const float C3 = -5.9824574e-1f;
-        internal const float C2 = 2.5500606f;
-        internal const float C1 = -5.1677083f;
-        internal const float C0 = 3.1415926f;
+        /// <summary>
+        /// Returns z - (x * y), sometimes rounded as one ternary operation.
+        /// </summary>
+        /// <param name="x">The number to be multiplied with y.</param>
+        /// <param name="y">The number to be multiplied with x.</param>
+        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
+        /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastMultiplyAddNegated(float x, float y, float z)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.FusedMultiplySubtractScalar(Vector64.CreateScalarUnsafe(z), Vector64.CreateScalarUnsafe(x), Vector64.CreateScalarUnsafe(y)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Fma.IsSupported)
+                {
+                    return Fma.MultiplyAddNegatedScalar(Vector128.CreateScalarUnsafe(x), Vector128.CreateScalarUnsafe(y), Vector128.CreateScalarUnsafe(z)).GetElement(0);
+                }
+#endif
+                return z - x * y;
+            }
+        }
+        #endregion
+
+        #region Cross-Platform Fast Trigonometric
+        internal const float S4 = 7.7656368e-2f;
+        internal const float S3 = -5.9824574e-1f;
+        internal const float S2 = 2.5500606f;
+        internal const float S1 = -5.1677083f;
+        internal const float S0 = 3.1415926f;
 
         /// <summary>
         /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
+        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
@@ -290,18 +322,76 @@ namespace Shamisen
             t = Round(t);
             x = x * 0.31830987f - 2 * t;
             var a = MathI.AndNot(SignBit, x);
+            t = MaxAngle - a;
+            a = Min(a, t);
             var s = MathI.And(SignBit, x);
-            a = Min(a, MaxAngle - a);
             var s2 = a * a;
             s = MathI.Xor(s, a);
-            var res = C4;
-            res = res * s2 + C3;
-            res = res * s2 + C2;
-            res = res * s2 + C1;
-            res = res * s2 + C0;
+            var res = S4;
+            res = res * s2 + S3;
+            res = res * s2 + S2;
+            res = res * s2 + S1;
+            res = res * s2 + S0;
             return res * s;
         }
 
+        /// <summary>
+        /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">An angle, measured in half turns.</param>
+        /// <returns>
+        /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SinPi(float x)
+        {
+            const float MaxAngle = 1.0f;
+            const float SignBit = -0.0f;
+            var t = x * 0.5f;
+            t = Round(t);
+            x -= 2 * t;
+            var a = MathI.AndNot(SignBit, x);
+            t = MaxAngle - a;
+            a = Min(a, t);
+            var s = MathI.And(SignBit, x);
+            var s2 = a * a;
+            s = MathI.Xor(s, a);
+            var res = S4;
+            res = res * s2 + S3;
+            res = res * s2 + S2;
+            res = res * s2 + S1;
+            res = res * s2 + S0;
+            return res * s;
+        }
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians.</param>
+        /// <returns>
+        /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Cos(float x) => Sin(x + 1.5707964f);
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">An angle, measured in half turns.</param>
+        /// <returns>
+        /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float CosPi(float x) => SinPi(x + 0.5f);
+        #endregion
+
+        #region Fast Trigonometric
         /// <summary>
         /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
         /// </summary>
@@ -319,16 +409,140 @@ namespace Shamisen
             t = Round(t);
             x = x * 0.31830987f - 2 * t;
             var a = MathI.AndNot(SignBit, x);
+            t = MaxAngle - a;
+            a = Min(a, t);
             var s = MathI.And(SignBit, x);
-            a = Min(a, MaxAngle - a);
             var s2 = a * a;
             s = MathI.Xor(s, a);
-            var res = C4;
-            res = FastMultiplyAdd(res, s2, C3);
-            res = FastMultiplyAdd(res, s2, C2);
-            res = FastMultiplyAdd(res, s2, C1);
-            res = FastMultiplyAdd(res, s2, C0);
+            var res = S4;
+            res = FastMultiplyAdd(res, s2, S3);
+            res = FastMultiplyAdd(res, s2, S2);
+            res = FastMultiplyAdd(res, s2, S1);
+            res = FastMultiplyAdd(res, s2, S0);
             return res * s;
         }
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
+        /// </summary>
+        /// <param name="x">An angle, measured in half turns.</param>
+        /// <returns>
+        /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastSinPi(float x)
+        {
+            const float MaxAngle = 1.0f;
+            const float SignBit = -0.0f;
+            var t = x * 0.5f;
+            t = Round(t);
+            x = FastMultiplyAdd(t, -2, x);
+            var a = MathI.AndNot(SignBit, x);
+            t = MaxAngle - a;
+            a = Min(a, t);
+            var s = MathI.And(SignBit, x);
+            var s2 = a * a;
+            s = MathI.Xor(s, a);
+            var res = S4;
+            res = FastMultiplyAdd(res, s2, S3);
+            res = FastMultiplyAdd(res, s2, S2);
+            res = FastMultiplyAdd(res, s2, S1);
+            res = FastMultiplyAdd(res, s2, S0);
+            return res * s;
+        }
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians.</param>
+        /// <returns>
+        /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastCos(float x) => FastSin(x + 1.5707964f);
+
+        /// <summary>
+        /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">An angle, measured in half turns.</param>
+        /// <returns>
+        /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastCosPi(float x) => FastSinPi(x + 0.5f);
+        #endregion
+
+        #region Cross-Platform Fast Exponentiation
+        internal const float Exp2C4 = -2.1715025e-4f;
+        internal const float Exp2C3 = -1.461238e-3f;
+        internal const float Exp2C2 = -1.1139302e-2f;
+        internal const float Exp2C1 = -6.6623454e-2f;
+        internal const float Exp2C0 = -3.0685297e-1f;
+
+        /// <summary>
+        /// Approximates the 2.0f raised to the power <paramref name="x"/>.
+        /// This function is fully implemented in C#.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the Exp2 of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Exp2(float x)
+        {
+            var ip = Max(MathF.Floor(x), -150.0f);
+            var ix = (int)ip + 1023;
+            var fp = x - ip;
+            var res = Exp2C4;
+            res = res * fp + Exp2C3;
+            var v = 1.0f - fp;
+            res = res * fp + Exp2C2;
+            v *= fp;
+            res = res * fp + Exp2C1;
+            var q = BitConverter.Int64BitsToDouble((long)ix << 52);
+            res = res * fp + Exp2C0;
+            var q2 = (float)q;
+            res = res * v + fp;
+            q2 = q2 * res + q2;
+            return q2;
+        }
+
+        #endregion
+
+        #region Fast Exponentiation
+
+        /// <summary>
+        /// Approximates the 2.0f raised to the power <paramref name="x"/>.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians.</param>
+        /// <returns>
+        /// Approximation of the Exp2 of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
+        /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastExp2(float x)
+        {
+            var ip = Max(MathF.Floor(x), -150.0f);
+            var ix = (int)ip + 1023;
+            var fp = x - ip;
+            var res = Exp2C4;
+            res = FastMultiplyAdd(res, fp, Exp2C3);
+            var v = FastMultiplyAddNegated(fp, fp, fp);
+            res = FastMultiplyAdd(res, fp, Exp2C2);
+            res = FastMultiplyAdd(res, fp, Exp2C1);
+            var q = BitConverter.Int64BitsToDouble((long)ix << 52);
+            res = FastMultiplyAdd(res, fp, Exp2C0);
+            var q2 = (float)q;
+            res = FastMultiplyAdd(res, v, fp);
+            q2 = FastMultiplyAdd(res, q2, q2);
+            return q2;
+        }
+        #endregion
     }
 }

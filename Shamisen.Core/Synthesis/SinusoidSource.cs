@@ -25,12 +25,11 @@ namespace Shamisen.Synthesis
         private const double C3d = C2d / 6 / 7 * PiSquared;
         private const double C4d = C3d / 8 / 9 * PiSquared;
         private const double C5d = C4d / 10 / 11 * PiSquared;
-        private const float C0 = 3.1415926f;
-        private const float C1 = -5.1677116f;
-        private const float C2 = 2.5501449f;
-        private const float C3 = -5.9913243e-1f;
-        private const float C4 = 8.1701727e-2f;
-        private const float C5 = -6.647926e-3f;
+        internal const float C4 = 7.7656368e-2f;
+        internal const float C3 = -5.9824574e-1f;
+        internal const float C2 = 2.5500606f;
+        internal const float C1 = -5.1677083f;
+        internal const float C0 = 3.1415926f;
         private const float X2FRatio = (float)(-1.0 / int.MinValue);
 
         /// <summary>
@@ -161,7 +160,6 @@ namespace Shamisen.Synthesis
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
             ymm15 = Vector256.Create(0x8000_0000u).AsSingle();
             var ymm14 = Vector256.Create(X2FRatio);
-            var ymm13 = Vector256.Create(C5);
             var ymm12 = Vector256.Create(C4);
             var ymm11 = Vector256.Create(C3);
             var ymm10 = Vector256.Create(C2);
@@ -181,8 +179,7 @@ namespace Shamisen.Synthesis
                 ymm4 = Avx.Multiply(ymm14, ymm4);
                 //Calculate SinPi(x)
                 ymm5 = Avx.Multiply(ymm4, ymm4);
-                var ymm6 = ymm13;
-                ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm12);
+                var ymm6 = ymm12;
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm11);
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm10);
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm9);
@@ -204,8 +201,7 @@ namespace Shamisen.Synthesis
                 ymm4 = Avx.ConvertToVector256Single(ymm4.AsInt32());
                 ymm4 = Avx.Multiply(ymm14, ymm4);
                 ymm5 = Avx.Multiply(ymm4, ymm4);
-                var ymm6 = ymm13;
-                ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm12);
+                var ymm6 = ymm12;
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm11);
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm10);
                 ymm6 = Fma.MultiplyAdd(ymm5, ymm6, ymm9);
@@ -251,7 +247,6 @@ namespace Shamisen.Synthesis
             ymm1 = Avx2.Add(ymm1, ymm15.AsInt64());
             ymm15 = Vector256.Create(0x8000_0000u).AsSingle();
             var ymm14 = Vector256.Create(X2FRatio);
-            var ymm13 = Vector256.Create(C5);
             var ymm12 = Vector256.Create(C4);
             var ymm11 = Vector256.Create(C3);
             var ymm10 = Vector256.Create(C2);
@@ -270,9 +265,7 @@ namespace Shamisen.Synthesis
                 ymm4 = Avx.ConvertToVector256Single(ymm4.AsInt32());
                 ymm4 = Avx.Multiply(ymm14, ymm4);
                 ymm5 = Avx.Multiply(ymm4, ymm4);
-                var ymm6 = ymm13;
-                ymm6 = Avx.Multiply(ymm5, ymm6);
-                ymm6 = Avx.Add(ymm6, ymm12);
+                var ymm6 = ymm12;
                 ymm6 = Avx.Multiply(ymm5, ymm6);
                 ymm6 = Avx.Add(ymm6, ymm11);
                 ymm6 = Avx.Multiply(ymm5, ymm6);
@@ -298,9 +291,7 @@ namespace Shamisen.Synthesis
                 ymm4 = Avx.ConvertToVector256Single(ymm4.AsInt32());
                 ymm4 = Avx.Multiply(ymm14, ymm4);
                 ymm5 = Avx.Multiply(ymm4, ymm4);
-                var ymm6 = ymm13;
-                ymm6 = Avx.Multiply(ymm5, ymm6);
-                ymm6 = Avx.Add(ymm6, ymm12);
+                var ymm6 = ymm12;
                 ymm6 = Avx.Multiply(ymm5, ymm6);
                 ymm6 = Avx.Add(ymm6, ymm11);
                 ymm6 = Avx.Multiply(ymm5, ymm6);
@@ -350,7 +341,6 @@ namespace Shamisen.Synthesis
             xmm1 = Sse2.Add(xmm1, xmm15.AsInt64());
             xmm15 = Vector128.Create(0x8000_0000u).AsSingle();
             var xmm14 = Vector128.Create(X2FRatio);
-            var xmm13 = Vector128.Create(C5);
             var xmm12 = Vector128.Create(C4);
             var xmm11 = Vector128.Create(C3);
             var xmm10 = Vector128.Create(C2);
@@ -368,9 +358,7 @@ namespace Shamisen.Synthesis
                 xmm4 = Sse2.ConvertToVector128Single(xmm4.AsInt32());
                 xmm4 = Sse.Multiply(xmm14, xmm4);
                 xmm5 = Sse.Multiply(xmm4, xmm4);
-                var xmm6 = xmm13;
-                xmm6 = Sse.Multiply(xmm5, xmm6);
-                xmm6 = Sse.Add(xmm6, xmm12);
+                var xmm6 = xmm12;
                 xmm6 = Sse.Multiply(xmm5, xmm6);
                 xmm6 = Sse.Add(xmm6, xmm11);
                 xmm6 = Sse.Multiply(xmm5, xmm6);
@@ -396,9 +384,7 @@ namespace Shamisen.Synthesis
                 xmm4 = Sse2.ConvertToVector128Single(xmm4.AsInt32());
                 xmm4 = Sse.Multiply(xmm14, xmm4);
                 xmm5 = Sse.Multiply(xmm4, xmm4);
-                var xmm6 = xmm13;
-                xmm6 = Sse.Multiply(xmm5, xmm6);
-                xmm6 = Sse.Add(xmm6, xmm12);
+                var xmm6 = xmm12;
                 xmm6 = Sse.Multiply(xmm5, xmm6);
                 xmm6 = Sse.Add(xmm6, xmm11);
                 xmm6 = Sse.Multiply(xmm5, xmm6);
@@ -438,8 +424,7 @@ namespace Shamisen.Synthesis
         {
             var f = ConvertFixed64ToSingle(theta);
             var g = f * f;
-            var u = C5;
-            u = u * g + C4;
+            var u = C4;
             u = u * g + C3;
             u = u * g + C2;
             u = u * g + C1;

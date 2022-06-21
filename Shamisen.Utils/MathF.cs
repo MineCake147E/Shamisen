@@ -33,6 +33,12 @@ namespace System
 
         /// <inheritdoc cref="Math.Sin(double)"/>
         public static float Sin(float a) => (float)Math.Sin(a);
+
+        /// <inheritdoc cref="Math.Cos(double)"/>
+        public static float Cos(float a) => (float)Math.Cos(a);
+
+        /// <inheritdoc cref="Math.Floor(double)"/>
+        public static float Floor(float d) => (float)Math.Floor(d);
     }
 }
 

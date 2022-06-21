@@ -11,12 +11,12 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-namespace Shamisen.Benchmarks.Utils
+namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
-    public class FastMathBenchmarks
+    public class Exp2Benchmarks
     {
         private class Config : ManualConfig
         {
@@ -44,7 +44,7 @@ namespace Shamisen.Benchmarks.Utils
         }
 
         [Benchmark]
-        public void MathFSin()
+        public void MathFExp2()
         {
             var source = bufferSrc.AsSpan();
             var destination = bufferDst.AsSpan();
@@ -53,12 +53,12 @@ namespace Shamisen.Benchmarks.Utils
             nint i = 0, length = MathI.Min(destination.Length, source.Length);
             for (; i < length; i++)
             {
-                Unsafe.Add(ref x10, i) = MathF.Sin(Unsafe.Add(ref x9, i));
+                Unsafe.Add(ref x10, i) = MathF.Pow(2.0f, Unsafe.Add(ref x9, i));
             }
         }
 
         [Benchmark]
-        public void FastMathSin()
+        public void FastMathExp2()
         {
             var source = bufferSrc.AsSpan();
             var destination = bufferDst.AsSpan();
@@ -67,12 +67,12 @@ namespace Shamisen.Benchmarks.Utils
             nint i = 0, length = MathI.Min(destination.Length, source.Length);
             for (; i < length; i++)
             {
-                Unsafe.Add(ref x10, i) = FastMath.Sin(Unsafe.Add(ref x9, i));
+                Unsafe.Add(ref x10, i) = FastMath.Exp2(Unsafe.Add(ref x9, i));
             }
         }
 
         [Benchmark]
-        public void FastMathFastSin()
+        public void FastMathFastExp2()
         {
             var source = bufferSrc.AsSpan();
             var destination = bufferDst.AsSpan();
@@ -81,7 +81,7 @@ namespace Shamisen.Benchmarks.Utils
             nint i = 0, length = MathI.Min(destination.Length, source.Length);
             for (; i < length; i++)
             {
-                Unsafe.Add(ref x10, i) = FastMath.FastSin(Unsafe.Add(ref x9, i));
+                Unsafe.Add(ref x10, i) = FastMath.FastExp2(Unsafe.Add(ref x9, i));
             }
         }
 

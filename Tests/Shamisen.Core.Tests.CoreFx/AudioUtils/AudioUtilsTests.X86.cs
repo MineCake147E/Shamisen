@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using Shamisen.Core.Tests.CoreFx.TestUtils;
+using Shamisen.TestUtils;
 using Shamisen.Utils;
 
 namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
