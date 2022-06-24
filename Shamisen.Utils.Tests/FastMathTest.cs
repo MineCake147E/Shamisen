@@ -341,7 +341,7 @@ namespace Shamisen.Utils.Tests
             {
                 var v = BitConverter.Int32BitsToSingle(i);
                 var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate if v were normal, while it's more than 4x slower than FastMath.Log2AsNormal.
-                var act = FastMath.Log2AsNormal(v);     //If you want to verify the statement above, just replace FastMath with MathF, and see what happens.
+                var act = FastMath.Log2AsNormal(v);     //If you want to verify the statement above, just replace FastMath.Log2AsNormal with MathF.Log2, and see what happens.
                 var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
                 na += diff;
                 errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
@@ -394,7 +394,7 @@ namespace Shamisen.Utils.Tests
             {
                 var v = BitConverter.Int32BitsToSingle(i);
                 var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate, while it's more than 2x slower than FastMath.Log2.
-                var act = FastMath.Log2(v);     //If you want to verify the statement above, just replace FastMath with MathF, and see what happens.
+                var act = FastMath.Log2(v);     //If you want to verify the statement above, just replace FastMath.Log2 with MathF.Log2, and see what happens.
                 var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
                 na += diff;
                 errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
@@ -444,8 +444,8 @@ namespace Shamisen.Utils.Tests
             for (var i = BitConverter.SingleToInt32Bits(1.0f); i < max; i++)
             {
                 var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);          //MathF.Log2 is quite inaccurate if v were normal, while it's more than 4x slower than FastMath.FastLog2AsNormal.
-                var act = FastMath.FastLog2AsNormal(v); //If you want to verify the statement above, just replace FastMath with MathF, and see what happens.
+                var exp = (float)Math.Log2(v);          //MathF.Log2 is quite inaccurate if v were normal, while it's more than 6x slower than FastMath.FastLog2AsNormal.
+                var act = FastMath.FastLog2AsNormal(v); //If you want to verify the statement above, just replace FastMath.FastLog2AsNormal with MathF.Log2, and see what happens.
                 var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
                 na += diff;
                 errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
@@ -497,8 +497,8 @@ namespace Shamisen.Utils.Tests
             for (var i = 0; i < max; i++)
             {
                 var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate, while it's more than 2x slower than FastMath.FastLog2.
-                var act = FastMath.FastLog2(v); //If you want to verify the statement above, just replace FastMath with MathF, and see what happens.
+                var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate, while it's more than 4x slower than FastMath.FastLog2.
+                var act = FastMath.FastLog2(v); //If you want to verify the statement above, just replace FastMath.FastLog2 with MathF.Log2, and see what happens.
                 var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
                 na += diff;
                 errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
