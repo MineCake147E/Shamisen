@@ -5799,6 +5799,22 @@
              <param name="rateMul"></param>
              <param name="acc"></param>
         </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsSse2(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            SSE2 vectorized path
+            x1.1 faster than Standard on Core i7-4790 at 3.90GHz
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.GenerateCoeffsFma128(System.Span{System.Numerics.Vector4},System.Single)">
+            <summary>
+            FMA vectorized path
+            x1.5 faster than Sse2 on Core i7-4790 at 3.59GHz(AVX DOWNCLOCK!?)
+            </summary>
+            <param name="coeffs"></param>
+            <param name="rateMulInverse"></param>
+        </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
             <summary>
             Reads the audio to the specified buffer.
@@ -5824,6 +5840,31 @@
             <param name="acc"></param>
             <param name="facc"></param>
             <param name="rmi"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            For arbitrary sampling frequency ratio larger than 1
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
+            <param name="ram"></param>
+            <param name="acc"></param>
+            <param name="rci"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
+            <summary>
+            This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
+            It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
+            TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
+            </summary>
+            <param name="buffer"></param>
+            <param name="srcBuffer"></param>
+            <param name="coeffPtr"></param>
+            <param name="x"></param>
             <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
@@ -6643,6 +6684,14 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            This one can be slightly faster than simple approach.
+            </summary>
+            <param name="dest"></param>
+            <param name="wrote"></param>
+        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -6894,6 +6943,21 @@
             <returns>
             The length of the data written.
             </returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2M(System.Span{System.Byte},System.Span{System.Single})">
+            <summary>
+            Straightforward convert-and-multiply approach.
+            </summary>
+            <param name="wrote"></param>
+            <param name="dest"></param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.ProcessAvx2A(System.Span{System.Byte},System.Span{System.Single})">
+            <summary>
+            Tricky convert-and-subtract approach, witch the conversion is also done with trick.
+            This one is slightly faster than simple approach.
+            </summary>
+            <param name="wrote"></param>
+            <param name="dest"></param>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm8ToSampleConverter.Dispose(System.Boolean)">
             <summary>
@@ -9551,6 +9615,28 @@
         <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Dispose">
             <inheritdoc/>
         </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder8Avx2(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 5-8 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.<br/>
+            The orders more than 8 should be processed with serially cascaded function calls.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
+        </member>
+        <member name="M:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter.Process.X86.ProcessMonauralOrder4Sse41(System.Span{System.Single},System.Span{System.Single},System.Span{System.Single})">
+            <summary>
+            Processes the signal with 2-4 order of cascaded BiQuad filters with the technique called "software pipelining".<br/>
+            Single BiQuad filters must be processed with <see cref="T:Shamisen.Filters.BiQuadFilter"/>.<br/>
+            Software pipelining enables us to implement cascaded BiQuad parallelization as we did in scalar version of single BiQuad filter.<br/>
+            The bypass can be represented by 1.0f for b0 and 0.0f for b1, b2, a1, and a2.
+            </summary>
+            <param name="target"></param>
+            <param name="parameters"></param>
+            <param name="internalStates"></param>
+        </member>
         <member name="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilterStates">
             <summary>
             Contains states of <see cref="T:Shamisen.Filters.BiQuad.Cascaded.CascadedBiQuadFilter"/>.
@@ -10837,41 +10923,103 @@
             <param name="length">The length.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.IAudioFormat`1">
+        <member name="T:Shamisen.Formats.HalfPrecisionSampleFormat">
             <summary>
-            Defines a base structure of audio formats.<br/>
-            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            Represents a format of a half-precision sample source.
             </summary>
-            <typeparam name="TSample">The type of sample.</typeparam>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.Channels">
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.#ctor(System.Int32,System.Int32)">
             <summary>
-            Gets the number of channels.<br/>
-            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
-            It does not affect the type of <typeparamref name="TSample"/>.
+            Initializes a new instance of the <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> struct.
+            </summary>
+            <param name="channels">The channels.</param>
+            <param name="sampleRate">The sample rate.</param>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels">
+            <summary>
+            Gets the number of channels.
+            It does not describe how these loudspeakers of each channels are placed in the room.
             </summary>
             <value>
             The number of channels.
             </value>
         </member>
-        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
-             <summary>
-             Gets the average number of samples contained in one second.<br/>
-            
-             </summary>
-             <value>
-             The sample rate.
-             </value>
-        </member>
-        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleRate">
             <summary>
-            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
-            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
-            -1 means the bit depth is variable in the whole stream.
+            Gets the number indicates how many times the audio signal is sampled.
+            </summary>
+            <value>
+            The sample rate.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.
             </summary>
             <value>
             The bit depth.
             </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.BlockSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/> values are required per whole frame.<br/>
+            It depends on <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <value>
+            The size of block.
+            </value>
+        </member>
+        <member name="P:Shamisen.Formats.HalfPrecisionSampleFormat.SampleSize">
+            <summary>
+            Gets the value indicates how many <see cref="T:System.Half"/>s are required per 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.Formats.HalfPrecisionSampleFormat.Channels"/>.<br/>
+            </summary>
+            <value>
+            The size of a frame in <see cref="T:System.Half"/>s.
+            </value>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(System.Object)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.Equals(Shamisen.IAudioFormat{System.Half})">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.GetHashCode">
+            <summary>Returns a hash code for this instance.</summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Equality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Formats.HalfPrecisionSampleFormat.op_Inequality(Shamisen.Formats.HalfPrecisionSampleFormat,Shamisen.Formats.HalfPrecisionSampleFormat)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> objects are different.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Formats.HalfPrecisionSampleFormat"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="T:Shamisen.Formats.IChannelMaskedFormat">
             <summary>
@@ -11034,6 +11182,42 @@
             <returns>
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="T:Shamisen.IAudioFormat`1">
+            <summary>
+            Defines a base structure of audio formats.<br/>
+            <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
+            </summary>
+            <typeparam name="TSample">The type of sample.</typeparam>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.Channels">
+            <summary>
+            Gets the number of channels.<br/>
+            It does not describe how these loudspeakers of each channels are placed in the room.<br/>
+            It does not affect the type of <typeparamref name="TSample"/>.
+            </summary>
+            <value>
+            The number of channels.
+            </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.SampleRate">
+             <summary>
+             Gets the average number of samples contained in one second.<br/>
+            
+             </summary>
+             <value>
+             The sample rate.
+             </value>
+        </member>
+        <member name="P:Shamisen.IAudioFormat`1.BitDepth">
+            <summary>
+            Gets the number indicates how many bits are consumed per every single 1-channel sample.<br/>
+            Does not depend on the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.<br/>
+            -1 means the bit depth is variable in the whole stream.
+            </summary>
+            <value>
+            The bit depth.
+            </value>
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
             <summary>

@@ -807,6 +807,604 @@ namespace Shamisen
         }
         #endregion
 
+        #region Vector-Friendly Integer Arithmetics
+        #region Add
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float AddInteger(float left, int right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) + right);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float AddInteger(int left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(right) + left);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float AddInteger(float left, uint right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left).AsUInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsUInt32(), Vector128.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) + right);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float AddInteger(uint left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(right) + left);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and the internal representation of <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float AddInteger(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) + BinaryExtensions.SingleToInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double AddInteger(double left, long right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) + right);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double AddInteger(long left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(right) + left);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double AddInteger(double left, ulong right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(left) + right);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double AddInteger(ulong left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(right) + left);
+            }
+        }
+
+        /// <summary>
+        /// Adds the internal representation of <paramref name="left"/> and the internal representation of <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double AddInteger(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) + BinaryExtensions.DoubleToInt64Bits(right));
+            }
+        }
+        #endregion
+
+        #region Subtract
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SubtractInteger(float left, int right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) - right);
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SubtractInteger(int left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(left - BinaryExtensions.SingleToInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SubtractInteger(float left, uint right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector64.CreateScalarUnsafe(left).AsUInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsUInt32(), Vector128.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) - right);
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SubtractInteger(uint left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector64.CreateScalarUnsafe(left), Vector64.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(left - BinaryExtensions.SingleToUInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by the internal representation of <paramref name="right"/> as 32-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float SubtractInteger(float left, float right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) - BinaryExtensions.SingleToInt32Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double SubtractInteger(double left, long right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) - right);
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double SubtractInteger(long left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(left - BinaryExtensions.DoubleToInt64Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second integer value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double SubtractInteger(double left, ulong right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(left) - right);
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first integer value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double SubtractInteger(ulong left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt64BitsToDouble(left - BinaryExtensions.DoubleToUInt64Bits(right));
+            }
+        }
+
+        /// <summary>
+        /// Subtracts the internal representation of <paramref name="left"/> by the internal representation of <paramref name="right"/> as 64-bit integer.
+        /// </summary>
+        /// <param name="left">The first floating-point value.</param>
+        /// <param name="right">The second floating-point value.</param>
+        /// <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double SubtractInteger(double left, double right)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse2.IsSupported)
+                {
+                    return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) - BinaryExtensions.DoubleToInt64Bits(right));
+            }
+        }
+        #endregion
+
+        #region ShiftRightArithmetic
+
+        /// <summary>
+        /// Shifts the internal representation of <paramref name="value"/> right by <paramref name="count"/> bits with copying the sign bits.
+        /// </summary>
+        /// <param name="value">The value to be shifted.</param>
+        /// <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float ShiftRightArithmetic(float value, byte count)
+        {
+#if NET5_0_OR_GREATER
+            if (AdvSimd.IsSupported)
+            {
+                return AdvSimd.ShiftRightArithmetic(Vector64.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
+            }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+            if (Sse2.IsSupported)
+            {
+                return Sse2.ShiftRightArithmetic(Vector128.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
+            }
+#endif
+            return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(value) >> count);
+        }
+
+        /// <summary>
+        /// Shifts the internal representation of <paramref name="value"/> right by <paramref name="count"/> bits with copying the sign bits.
+        /// </summary>
+        /// <param name="value">The value to be shifted.</param>
+        /// <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double ShiftRightArithmetic(double value, byte count)
+        {
+#if NET5_0_OR_GREATER
+            if (AdvSimd.IsSupported)
+            {
+                return AdvSimd.ShiftRightArithmetic(Vector128.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
+            }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+            if (Sse2.IsSupported)
+            {
+                return Sse2.ShiftRightArithmetic(Vector128.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
+            }
+#endif
+            return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(value) >> count);
+        }
+        #endregion
+        #endregion
+
         #region BigMul Polyfill
 
         /// <summary>

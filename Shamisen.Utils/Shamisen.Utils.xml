@@ -219,22 +219,22 @@
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
             <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadDoubleBigEndian(System.ReadOnlySpan{System.Byte},System.Double@)">
             <summary>
             Reads a <see cref="T:System.Double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-            This method poly-fills the <see cref="T:System.Buffers.Binary.BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
+            This method poly-fills the <see cref="M:System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte})"/> method for non-supported frameworks.
             </summary>
             <param name="source">The read-only span of bytes to read.</param>
-            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
+            <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
             <returns><c>true</c> if the span is large enough to contain a <see cref="T:System.Double"/>; otherwise, <c>false</c>.</returns>
-            /// <seealso cref="T:System.Buffers.Binary.BinaryPrimitives"/>
+            <seealso cref="M:System.Buffers.Binary.BinaryPrimitives.TryReadDoubleLittleEndian(System.ReadOnlySpan{System.Byte},System.Double@)"/>
         </member>
         <member name="M:Shamisen.BinaryExtensions.TryReadSingleLittleEndian(System.ReadOnlySpan{System.Byte},System.Single@)">
             <summary>
@@ -279,6 +279,34 @@
             </summary>
             <param name="value">The unsigned integer to convert.</param>
             <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.DoubleToInt64Bits(System.Double)">
+            <summary>
+            Converts a double-precision floating-point value into an integer.
+            </summary>
+            <param name="value">The double-precision floating-point value to convert.</param>
+            <returns>An integer representing the converted double-precision floating-point value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.Int64BitsToDouble(System.Int64)">
+            <summary>
+            Reinterprets the specified 64-bit integer as a double-precision floating-point value.
+            </summary>
+            <param name="value">The integer to convert.</param>
+            <returns>A double-precision floating-point value that represents the converted integer.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.DoubleToUInt64Bits(System.Double)">
+            <summary>
+            Converts a double-precision floating-point value into an unsigned integer.
+            </summary>
+            <param name="value">The double-precision floating-point value to convert.</param>
+            <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
+        </member>
+        <member name="M:Shamisen.BinaryExtensions.UInt64BitsToDouble(System.UInt64)">
+            <summary>
+            Reinterprets the specified 64-bit unsigned integer as a double-precision floating-point value.
+            </summary>
+            <param name="value">The unsigned integer to convert.</param>
+            <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
         </member>
         <member name="M:Shamisen.BinaryExtensions.ConvertToLittleEndian(System.UInt16)">
             <summary>
@@ -531,7 +559,6 @@
         <member name="M:Shamisen.FastMath.Sin(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="x"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in radians.</param>
             <returns>
@@ -542,7 +569,6 @@
         <member name="M:Shamisen.FastMath.SinPi(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Sin(System.Single)"/> of the <paramref name="x"/> multiplied by <see cref="F:System.MathF.PI"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in half turns.</param>
             <returns>
@@ -553,7 +579,6 @@
         <member name="M:Shamisen.FastMath.Cos(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Cos(System.Single)"/> of the <paramref name="x"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in radians.</param>
             <returns>
@@ -564,7 +589,6 @@
         <member name="M:Shamisen.FastMath.CosPi(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Cos(System.Single)"/> of the <paramref name="x"/> multiplied by <see cref="F:System.MathF.PI"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in half turns.</param>
             <returns>
@@ -595,7 +619,6 @@
         <member name="M:Shamisen.FastMath.FastCos(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Cos(System.Single)"/> of the <paramref name="x"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in radians.</param>
             <returns>
@@ -606,7 +629,6 @@
         <member name="M:Shamisen.FastMath.FastCosPi(System.Single)">
             <summary>
             Approximates the <see cref="M:System.MathF.Cos(System.Single)"/> of the <paramref name="x"/> multiplied by <see cref="F:System.MathF.PI"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">An angle, measured in half turns.</param>
             <returns>
@@ -617,7 +639,6 @@
         <member name="M:Shamisen.FastMath.Exp2(System.Single)">
             <summary>
             Approximates the 2.0f raised to the power <paramref name="x"/>.
-            This function is fully implemented in C#.
             </summary>
             <param name="x">The number that specifies a power.</param>
             <returns>
@@ -633,6 +654,50 @@
             <returns>
             Approximation of the Exp2 of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
             If either <see cref="M:System.Single.IsNaN(System.Single)"/> or <see cref="M:System.Single.IsInfinity(System.Single)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="F:System.Single.NaN"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Log2AsNormal(System.Single)">
+            <summary>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            All numbers, including <see cref="F:System.Single.PositiveInfinity"/> and <see cref="F:System.Single.NaN"/>, are treated as normal number, so it returns -127 for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Log2(System.Single)">
+            <summary>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            Unlike <see cref="M:Shamisen.FastMath.Log2AsNormal(System.Single)"/>, it checks for exponent if it's neither 255 nor 0, so it returns <see cref="F:System.Single.NegativeInfinity"/> for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastLog2AsNormal(System.Single)">
+            <summary>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            All numbers, including <see cref="F:System.Single.PositiveInfinity"/> and <see cref="F:System.Single.NaN"/>, are treated as normal number, so it returns -127 for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastLog2(System.Single)">
+            <summary>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            Unlike <see cref="M:Shamisen.FastMath.Log2AsNormal(System.Single)"/>, it checks for exponent if it's neither 255 nor 0, so it returns <see cref="F:System.Single.NegativeInfinity"/> for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
             </returns>
         </member>
         <member name="T:Shamisen.MathI">
@@ -878,6 +943,182 @@
             <param name="left">The first value to be negated.</param>
             <param name="right">The second value.</param>
             <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Single,System.Int32)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Int32,System.Single)">
+            <summary>
+            Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Single,System.UInt32)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.UInt32,System.Single)">
+            <summary>
+            Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Single,System.Single)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and the internal representation of <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Double,System.Int64)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Int64,System.Double)">
+            <summary>
+            Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Double,System.UInt64)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.UInt64,System.Double)">
+            <summary>
+            Adds the internal representation of <paramref name="right"/> and <paramref name="left"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.AddInteger(System.Double,System.Double)">
+            <summary>
+            Adds the internal representation of <paramref name="left"/> and the internal representation of <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Single,System.Int32)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Int32,System.Single)">
+            <summary>
+            Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Single,System.UInt32)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.UInt32,System.Single)">
+            <summary>
+            Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Single,System.Single)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by the internal representation of <paramref name="right"/> as 32-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Double,System.Int64)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Int64,System.Double)">
+            <summary>
+            Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Double,System.UInt64)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second integer value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.UInt64,System.Double)">
+            <summary>
+            Subtracts the internal representation of <paramref name="right"/> by <paramref name="left"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first integer value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.SubtractInteger(System.Double,System.Double)">
+            <summary>
+            Subtracts the internal representation of <paramref name="left"/> by the internal representation of <paramref name="right"/> as 64-bit integer.
+            </summary>
+            <param name="left">The first floating-point value.</param>
+            <param name="right">The second floating-point value.</param>
+            <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ShiftRightArithmetic(System.Single,System.Byte)">
+            <summary>
+            Shifts the internal representation of <paramref name="value"/> right by <paramref name="count"/> bits with copying the sign bits.
+            </summary>
+            <param name="value">The value to be shifted.</param>
+            <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ShiftRightArithmetic(System.Double,System.Byte)">
+            <summary>
+            Shifts the internal representation of <paramref name="value"/> right by <paramref name="count"/> bits with copying the sign bits.
+            </summary>
+            <param name="value">The value to be shifted.</param>
+            <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
+            <returns></returns>
         </member>
         <member name="M:Shamisen.MathI.BigMul(System.Int64,System.Int64)">
             <summary>
@@ -2163,6 +2404,182 @@
             <value>
             The environment endianness.
             </value>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported"/>
+        </member>
+        <member name="T:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64">
+            <summary>
+            Contains some utility functions for <see cref="T:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.IsSupported">
+            <inheritdoc cref="P:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.IsSupported"/>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Single@,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Single*,System.Runtime.Intrinsics.Vector64{System.Single},System.Runtime.Intrinsics.Vector64{System.Single})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector128{System.Double},System.Runtime.Intrinsics.Vector128{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Double@,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Double*,System.Runtime.Intrinsics.Vector64{System.Double},System.Runtime.Intrinsics.Vector64{System.Double})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Byte@,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Byte*,System.Runtime.Intrinsics.Vector64{System.Byte},System.Runtime.Intrinsics.Vector64{System.Byte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector128{System.UInt16},System.Runtime.Intrinsics.Vector128{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt16@,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt16*,System.Runtime.Intrinsics.Vector64{System.UInt16},System.Runtime.Intrinsics.Vector64{System.UInt16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector128{System.UInt32},System.Runtime.Intrinsics.Vector128{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt32@,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt32*,System.Runtime.Intrinsics.Vector64{System.UInt32},System.Runtime.Intrinsics.Vector64{System.UInt32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector128{System.UInt64},System.Runtime.Intrinsics.Vector128{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.UInt64@,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.UInt64*,System.Runtime.Intrinsics.Vector64{System.UInt64},System.Runtime.Intrinsics.Vector64{System.UInt64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector128{System.SByte},System.Runtime.Intrinsics.Vector128{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.SByte@,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.SByte*,System.Runtime.Intrinsics.Vector64{System.SByte},System.Runtime.Intrinsics.Vector64{System.SByte})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector128{System.Int16},System.Runtime.Intrinsics.Vector128{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int16@,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int16*,System.Runtime.Intrinsics.Vector64{System.Int16},System.Runtime.Intrinsics.Vector64{System.Int16})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector128{System.Int32},System.Runtime.Intrinsics.Vector128{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int32@,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int32*,System.Runtime.Intrinsics.Vector64{System.Int32},System.Runtime.Intrinsics.Vector64{System.Int32})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector128{System.Int64},System.Runtime.Intrinsics.Vector128{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Intrinsics.AdvSimdUtils.Arm64.StorePair(System.Int64@,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})">
+            <summary>
+            Executes <see cref="M:System.Runtime.Intrinsics.Arm.AdvSimd.Arm64.StorePair(System.Int64*,System.Runtime.Intrinsics.Vector64{System.Int64},System.Runtime.Intrinsics.Vector64{System.Int64})" /> when in Release mode, but falls back in Debug mode.
+            </summary>
+            <param name="address">The target address.</param>
+            <param name="value1">The first value to write.</param>
+            <param name="value2">The second value to write.</param>
         </member>
         <member name="T:Shamisen.Utils.Intrinsics.Avx2Utils">
             <summary>
@@ -3940,36 +4357,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector256{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector``1(System.Runtime.Intrinsics.Vector128{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector256`1"/> as a new <see cref="T:System.Numerics.Vector`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector256``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector256`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128``1(System.Numerics.Vector{``0})">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector`1"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128Unsafe(System.Numerics.Vector2)">
             <summary>
             Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
@@ -3980,20 +4367,6 @@
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
             <summary>
             Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector4)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector4"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128(System.Numerics.Vector2)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
             </summary>
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
@@ -4015,20 +4388,6 @@
         <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector64{System.Single})">
             <summary>
             Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector64`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector4(System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector4"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector4"/>.</returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector2(System.Runtime.Intrinsics.Vector128{System.Single})">
-            <summary>
-            Reinterprets a <see cref="T:System.Runtime.Intrinsics.Vector128`1"/> as a new <see cref="T:System.Numerics.Vector2"/>.
             </summary>
             <param name="value">The vector to reinterpret.</param>
             <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Numerics.Vector2"/>.</returns>
@@ -7105,6 +7464,12 @@
             </summary>
             <param name="span">The span.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Half})">
+            <summary>
+            Reverses the endianness of each elements in specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The span.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int16})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
@@ -8046,262 +8411,6 @@
             Returns a value that indicates whether each pair of elements in two specified vectors are equal.
             </summary>
             <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector7.op_Inequality(System.Numerics.Vector7,System.Numerics.Vector7)">
-            <summary>
-            Returns a value that indicates whether two specified vectors are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector7.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector7.Equals(System.Numerics.Vector7)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector7.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="T:System.Numerics.Vector8">
-            <summary>
-            Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value1">
-            <summary>
-            The first value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value2">
-            <summary>
-            The second value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value3">
-            <summary>
-            The third value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value4">
-            <summary>
-            The fourth value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value5">
-            <summary>
-            The fifth value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value6">
-            <summary>
-            The sixth value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value7">
-            <summary>
-            The seventh value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Value8">
-            <summary>
-            The eighth value
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Front">
-            <summary>
-            The front 4 values
-            </summary>
-        </member>
-        <member name="P:System.Numerics.Vector8.Back">
-            <summary>
-            The back 4 values
-            </summary>
-        </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Single)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Runtime.Intrinsics.Vector256{System.Single})">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="value">The value.</param>
-        </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="v1">The v1.</param>
-            <param name="v2">The v2.</param>
-            <param name="v3">The v3.</param>
-            <param name="v4">The v4.</param>
-            <param name="v5">The v5.</param>
-            <param name="v6">The v6.</param>
-            <param name="v7">The v7.</param>
-            <param name="v8">The v8.</param>
-        </member>
-        <member name="M:System.Numerics.Vector8.#ctor(System.Numerics.Vector4,System.Numerics.Vector4)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Numerics.Vector8"/> struct.
-            </summary>
-            <param name="front">The front four values.</param>
-            <param name="back">The back four values.</param>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_UnaryNegation(System.Numerics.Vector8)">
-            <summary>
-            Negates the specified vector.
-            </summary>
-            <param name="value">The vector to negate.</param>
-            <returns>
-            The negated vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Addition(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Adds two vectors together.
-            </summary>
-            <param name="left">The first vector to add.</param>
-            <param name="right">The second vector to add.</param>
-            <returns>
-            The summed vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Subtraction(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Subtracts the second vector from the first.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The vector that results from subtracting <paramref name="right"/> from <paramref name="left"/>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a new vector whose values are the product of each pair of elements in two specified vectors.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The element-wise product vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Divides the first vector by the second.
-            </summary>
-            <param name="left">The first vector.</param>
-            <param name="right">The second vector.</param>
-            <returns>
-            The vector that results from dividing left by right.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Multiply(System.Single,System.Numerics.Vector8)">
-            <summary>
-            Multiples the specified vector by the specified scalar value.
-            </summary>
-            <param name="left">The scalar value.</param>
-            <param name="right">The vector.</param>
-            <returns>
-            The scaled vector.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Division(System.Numerics.Vector8,System.Single)">
-            <summary>
-            Divides the specified vector by a specified scalar value.
-            </summary>
-            <param name="left">The vector.</param>
-            <param name="right">The scalar value.</param>
-            <returns>
-            The result of the division.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Equality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether each pair of elements in two specified vectors are equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.op_Inequality(System.Numerics.Vector8,System.Numerics.Vector8)">
-            <summary>
-            Returns a value that indicates whether two specified vectors are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <param name="right">The second <see cref="T:System.Numerics.Vector8"/> to compare.</param>
-            <returns>
-              <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.Equals(System.Numerics.Vector8)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:System.Numerics.Vector8.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-    </members>
-</doc>
-e="left">The first <see cref="T:System.Numerics.Vector7"/> to compare.</param>
             <param name="right">The second <see cref="T:System.Numerics.Vector7"/> to compare.</param>
             <returns>
               <c>true</c> if the <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.

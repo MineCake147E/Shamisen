@@ -306,7 +306,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
@@ -337,7 +336,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Sin(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in half turns.</param>
         /// <returns>
@@ -368,7 +366,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
@@ -380,7 +377,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in half turns.</param>
         /// <returns>
@@ -454,7 +450,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in radians.</param>
         /// <returns>
@@ -466,7 +461,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the <see cref="MathF.Cos(float)"/> of the <paramref name="x"/> multiplied by <see cref="MathF.PI"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">An angle, measured in half turns.</param>
         /// <returns>
@@ -486,7 +480,6 @@ namespace Shamisen
 
         /// <summary>
         /// Approximates the 2.0f raised to the power <paramref name="x"/>.
-        /// This function is fully implemented in C#.
         /// </summary>
         /// <param name="x">The number that specifies a power.</param>
         /// <returns>
@@ -529,19 +522,198 @@ namespace Shamisen
         public static float FastExp2(float x)
         {
             var ip = Max(MathF.Floor(x), -150.0f);
-            var ix = (int)ip + 1023;
             var fp = x - ip;
             var res = Exp2C4;
+            var ix = (long)ip + 1023;
             res = FastMultiplyAdd(res, fp, Exp2C3);
             var v = FastMultiplyAddNegated(fp, fp, fp);
             res = FastMultiplyAdd(res, fp, Exp2C2);
+            ix <<= 52;
             res = FastMultiplyAdd(res, fp, Exp2C1);
-            var q = BitConverter.Int64BitsToDouble((long)ix << 52);
+            var q = BitConverter.Int64BitsToDouble(ix);
             res = FastMultiplyAdd(res, fp, Exp2C0);
             var q2 = (float)q;
             res = FastMultiplyAdd(res, v, fp);
             q2 = FastMultiplyAdd(res, q2, q2);
             return q2;
+        }
+        #endregion
+
+        #region Cross-Platform Fast Logarithm
+        internal const float Log2C8 = 4.7347029e-3f;
+        internal const float Log2C7 = -2.4173276e-2f;
+        internal const float Log2C6 = 5.854831e-2f;
+        internal const float Log2C5 = -9.5026491e-2f;
+        internal const float Log2C4 = 1.2616411e-1f;
+        internal const float Log2C3 = -1.5783951e-1f;
+        internal const float Log2C2 = 2.0220152e-1f;
+        internal const float Log2C1 = -2.786512e-1f;
+        internal const float Log2C0 = 4.4269503e-1f;
+
+        /// <summary>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// All numbers, including <see cref="float.PositiveInfinity"/> and <see cref="float.NaN"/>, are treated as normal number, so it returns -127 for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Log2AsNormal(float x)
+        {
+            x = Math.Abs(x);
+            var y = MathI.AndNot(BinaryExtensions.UInt32BitsToSingle(0x7f80_0000u), x);
+            const float One = 1.0f;
+            x = MathI.SubtractInteger(x, One);
+            y = MathI.AddInteger(One, y);
+            y -= One;
+            var z = Log2C8;
+            var ix = BinaryExtensions.SingleToInt32Bits(x);
+            z = z * y + Log2C7;
+            z = z * y + Log2C6;
+            z = z * y + Log2C5;
+            ix >>= 23;
+            z = z * y + Log2C4;
+            z = z * y + Log2C3;
+            x = ix;
+            z = z * y + Log2C2;
+            z = z * y + Log2C1;
+            var w = y - y * y;
+            z = z * y + Log2C0;
+            z = z * w + y;
+            x += z;
+            return x;
+        }
+
+        /// <summary>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// Unlike <see cref="Log2AsNormal(float)"/>, it checks for exponent if it's neither 255 nor 0, so it returns <see cref="float.NegativeInfinity"/> for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Log2(float x)
+        {
+            x = Math.Abs(x);
+            var v = (double)x;
+            const double One = 1.0;
+            var p = MathI.AndNot(BinaryExtensions.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
+            v = MathI.SubtractInteger(v, One);
+            p = MathI.AddInteger(One, p);
+            p -= One;
+            var y = (float)p;
+            var z = Log2C8;
+            var ix = BinaryExtensions.DoubleToInt64Bits(v);
+            z = z * y + Log2C7;
+            ix >>= 52;
+            z = z * y + Log2C6;
+            var isnan = ix == 1024;
+            var nisnan = (uint)-Unsafe.As<bool, byte>(ref isnan);
+            var isz = ix == -1023;
+            var nisz = (uint)-Unsafe.As<bool, byte>(ref isz);
+            z = z * y + Log2C5;
+            ix += (int)nisz;
+            z = z * y + Log2C4;
+            x = ix;
+            z = z * y + Log2C3;
+            nisz &= 0x7F80_0000u;
+            nisz |= nisnan;
+            z = z * y + Log2C2;
+            x = MathI.Or(x, BinaryExtensions.UInt32BitsToSingle(nisz));
+            z = z * y + Log2C1;
+            var w = y - y * y;
+            z = z * y + Log2C0;
+            z = z * w + y;
+            x += z;
+            return x;
+        }
+        #endregion
+
+        #region Fast Logarithm
+        /// <summary>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// All numbers, including <see cref="float.PositiveInfinity"/> and <see cref="float.NaN"/>, are treated as normal number, so it returns -127 for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastLog2AsNormal(float x)
+        {
+            x = Math.Abs(x);
+            var y = MathI.AndNot(BinaryExtensions.UInt32BitsToSingle(0x7f80_0000u), x);
+            const float One = 1.0f;
+            x = MathI.SubtractInteger(x, One);
+            y = MathI.AddInteger(One, y);
+            y -= One;
+            var z = Log2C8;
+            var ix = BinaryExtensions.SingleToInt32Bits(x);
+            z = FastMultiplyAdd(z, y, Log2C7);
+            z = FastMultiplyAdd(z, y, Log2C6);
+            z = FastMultiplyAdd(z, y, Log2C5);
+            ix >>= 23;
+            z = FastMultiplyAdd(z, y, Log2C4);
+            z = FastMultiplyAdd(z, y, Log2C3);
+            x = ix;
+            z = FastMultiplyAdd(z, y, Log2C2);
+            z = FastMultiplyAdd(z, y, Log2C1);
+            var w = FastMultiplyAddNegated(y, y, y);
+            z = FastMultiplyAdd(z, y, Log2C0);
+            z = FastMultiplyAdd(z, w, y);
+            x += z;
+            return x;
+        }
+
+        /// <summary>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// Unlike <see cref="Log2AsNormal(float)"/>, it checks for exponent if it's neither 255 nor 0, so it returns <see cref="float.NegativeInfinity"/> for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastLog2(float x)
+        {
+            x = Math.Abs(x);
+            var v = (double)x;
+            const double One = 1.0;
+            var p = MathI.AndNot(BinaryExtensions.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
+            v = MathI.SubtractInteger(v, One);
+            p = MathI.AddInteger(One, p);
+            p -= One;
+            var y = (float)p;
+            var z = Log2C8;
+            var ix = BinaryExtensions.DoubleToInt64Bits(v);
+            z = FastMultiplyAdd(z, y, Log2C7);
+            ix >>= 52;
+            z = FastMultiplyAdd(z, y, Log2C6);
+            var isnan = ix == 1024;
+            var nisnan = (uint)-Unsafe.As<bool, byte>(ref isnan);
+            var isz = ix == -1023;
+            var nisz = (uint)-Unsafe.As<bool, byte>(ref isz);
+            z = FastMultiplyAdd(z, y, Log2C5);
+            ix += (int)nisz;
+            z = FastMultiplyAdd(z, y, Log2C4);
+            x = ix;
+            z = FastMultiplyAdd(z, y, Log2C3);
+            nisz &= 0x7F80_0000u;
+            nisz |= nisnan;
+            z = FastMultiplyAdd(z, y, Log2C2);
+            x = MathI.Or(x, BinaryExtensions.UInt32BitsToSingle(nisz));
+            z = FastMultiplyAdd(z, y, Log2C1);
+            var w = FastMultiplyAddNegated(y, y, y);
+            z = FastMultiplyAdd(z, y, Log2C0);
+            z = FastMultiplyAdd(z, w, y);
+            x += z;
+            return x;
         }
         #endregion
     }

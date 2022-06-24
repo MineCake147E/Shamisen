@@ -330,5 +330,66 @@ namespace Shamisen
             return Unsafe.As<uint, float>(ref v);  //assuming ulong and double is stored as same endianness.
         }
 #endif
+
+        /// <summary>
+        /// Converts a double-precision floating-point value into an integer.
+        /// </summary>
+        /// <param name="value">The double-precision floating-point value to convert.</param>
+        /// <returns>An integer representing the converted double-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static long DoubleToInt64Bits(double value) => BitConverter.DoubleToInt64Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 64-bit integer as a double-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The integer to convert.</param>
+        /// <returns>A double-precision floating-point value that represents the converted integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static double Int64BitsToDouble(long value) => BitConverter.Int64BitsToDouble(value);
+
+
+#if NET6_0_OR_GREATER
+
+        /// <summary>
+        /// Converts a double-precision floating-point value into an unsigned integer.
+        /// </summary>
+        /// <param name="value">The double-precision floating-point value to convert.</param>
+        /// <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static ulong DoubleToUInt64Bits(double value) => BitConverter.DoubleToUInt64Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 64-bit unsigned integer as a double-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The unsigned integer to convert.</param>
+        /// <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static double UInt64BitsToDouble(ulong value) => BitConverter.UInt64BitsToDouble(value);
+
+#else
+
+        /// <summary>
+        /// Converts a double-precision floating-point value into an unsigned integer.
+        /// </summary>
+        /// <param name="value">The double-precision floating-point value to convert.</param>
+        /// <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static ulong DoubleToUInt64Bits(double value) => (ulong)BitConverter.DoubleToInt64Bits(value);
+
+        /// <summary>
+        /// Reinterprets the specified 64-bit unsigned integer as a double-precision floating-point value.
+        /// </summary>
+        /// <param name="value">The unsigned integer to convert.</param>
+        /// <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [DebuggerStepThrough]
+        public static double UInt64BitsToDouble(ulong value) => BitConverter.Int64BitsToDouble((long)value);
+
+#endif
     }
 }
