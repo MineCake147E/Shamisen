@@ -8,6 +8,8 @@ using System.Runtime.Intrinsics.X86;
 
 using Shamisen;
 
+using System.Reflection.Metadata;
+
 #endif
 #if NET5_0_OR_GREATER
 
@@ -26,6 +28,7 @@ namespace Shamisen
         /// Represents the number of radians in one turn, specified by the constant, τ.
         /// </summary>
         public const float Tau = MathF.PI * 2.0f;
+        #region Max
         /// <returns>
         /// Parameter x or y, whichever is larger.
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
@@ -87,7 +90,43 @@ namespace Shamisen
                 return Math.Max(x, y);
             }
         }
+        /// <summary>
+        /// Returns the smaller of two single-precision floating-point numbers.
+        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+        /// </summary>
+        /// <returns>
+        /// Parameter x or y, whichever is larger.
+        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
+        /// the result might depend on CPUs.
+        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float MaxUnsignedInputs(float x, float y)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    var s0 = Vector64.CreateScalarUnsafe(x);
+                    var s1 = Vector64.CreateScalarUnsafe(y);
+                    return AdvSimd.Max(s0.AsUInt32(), s1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Sse41.IsSupported)
+                {
+                    var xmm0 = Vector128.CreateScalarUnsafe(x);
+                    var xmm1 = Vector128.CreateScalarUnsafe(y);
+                    return Sse41.Max(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
+                }
+#endif
+                return BinaryExtensions.UInt32BitsToSingle(MathI.Max(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
+            }
+        }
+        #endregion
 
+        #region Min
         /// <returns>
         /// Parameter x or y, whichever is smaller.
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
@@ -155,40 +194,6 @@ namespace Shamisen
         /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
         /// </summary>
         /// <returns>
-        /// Parameter x or y, whichever is larger.
-        /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
-        /// the result might depend on CPUs.
-        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-        /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static float MaxUnsignedInputs(float x, float y)
-        {
-            unchecked
-            {
-#if NET5_0_OR_GREATER
-                if (AdvSimd.IsSupported)
-                {
-                    var s0 = Vector64.CreateScalarUnsafe(x);
-                    var s1 = Vector64.CreateScalarUnsafe(y);
-                    return AdvSimd.Max(s0.AsUInt32(), s1.AsUInt32()).AsSingle().GetElement(0);
-                }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-                if (Sse41.IsSupported)
-                {
-                    var xmm0 = Vector128.CreateScalarUnsafe(x);
-                    var xmm1 = Vector128.CreateScalarUnsafe(y);
-                    return Sse41.Max(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
-                }
-#endif
-                return BinaryExtensions.UInt32BitsToSingle(MathI.Max(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
-            }
-        }
-        /// <summary>
-        /// Returns the smaller of two single-precision floating-point numbers.
-        /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-        /// </summary>
-        /// <returns>
         /// Parameter x or y, whichever is smaller.
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
         /// the result might depend on CPUs.
@@ -217,6 +222,7 @@ namespace Shamisen
                 return BinaryExtensions.UInt32BitsToSingle(MathI.Min(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
             }
         }
+        #endregion
 
         /// <summary>
         /// Rounds a single-precision floating-point value to the nearest integral value,
@@ -238,6 +244,7 @@ namespace Shamisen
 #endif
             }
         }
+
         #region FastMultiplyAdd
 
         /// <summary>
@@ -246,7 +253,7 @@ namespace Shamisen
         /// <param name="x">The number to be multiplied with y.</param>
         /// <param name="y">The number to be multiplied with x.</param>
         /// <param name="z">The number to be added to the result of x multiplied by y.</param>
-        /// <returns>(x * y) + z, sometimes rounded as one ternary operation.</returns>
+        /// <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static float FastMultiplyAdd(float x, float y, float z)
         {
@@ -284,6 +291,62 @@ namespace Shamisen
                 if (AdvSimd.IsSupported)
                 {
                     return AdvSimd.FusedMultiplySubtractScalar(Vector64.CreateScalarUnsafe(z), Vector64.CreateScalarUnsafe(x), Vector64.CreateScalarUnsafe(y)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Fma.IsSupported)
+                {
+                    return Fma.MultiplyAddNegatedScalar(Vector128.CreateScalarUnsafe(x), Vector128.CreateScalarUnsafe(y), Vector128.CreateScalarUnsafe(z)).GetElement(0);
+                }
+#endif
+                return z - x * y;
+            }
+        }
+
+        /// <summary>
+        /// Returns (x * y) + z, sometimes rounded as one ternary operation.
+        /// </summary>
+        /// <param name="x">The number to be multiplied with y.</param>
+        /// <param name="y">The number to be multiplied with x.</param>
+        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
+        /// <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double FastMultiplyAdd(double x, double y, double z)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return Math.FusedMultiplyAdd(x, y, z);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Fma.IsSupported)
+                {
+                    return Math.FusedMultiplyAdd(x, y, z);
+                }
+#endif
+                return x * y + z;
+            }
+        }
+
+        /// <summary>
+        /// Returns z - (x * y), sometimes rounded as one ternary operation.
+        /// </summary>
+        /// <param name="x">The number to be multiplied with y.</param>
+        /// <param name="y">The number to be multiplied with x.</param>
+        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
+        /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static double FastMultiplyAddNegated(double x, double y, double z)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.FusedMultiplySubtractScalar(Vector64.Create(z), Vector64.Create(x), Vector64.Create(y)).GetElement(0);
                 }
 #endif
 #if NETCOREAPP3_1_OR_GREATER
@@ -540,15 +603,15 @@ namespace Shamisen
         #endregion
 
         #region Cross-Platform Fast Logarithm
-        internal const float Log2C8 = 4.7347029e-3f;
-        internal const float Log2C7 = -2.4173276e-2f;
-        internal const float Log2C6 = 5.854831e-2f;
-        internal const float Log2C5 = -9.5026491e-2f;
-        internal const float Log2C4 = 1.2616411e-1f;
-        internal const float Log2C3 = -1.5783951e-1f;
-        internal const float Log2C2 = 2.0220152e-1f;
-        internal const float Log2C1 = -2.786512e-1f;
-        internal const float Log2C0 = 4.4269503e-1f;
+        internal const float Log2C8 = 3.6030097e-3f;
+        internal const float Log2C7 = -2.0096829e-2f;
+        internal const float Log2C6 = 5.2624937e-2f;
+        internal const float Log2C5 = -9.0581175e-2f;
+        internal const float Log2C4 = 1.2433369e-1f;
+        internal const float Log2C3 = -1.5743491e-1f;
+        internal const float Log2C2 = 2.0215821e-1f;
+        internal const float Log2C1 = -2.7864946e-1f;
+        internal const float Log2C0 = 4.4269502e-1f;
 
         /// <summary>
         /// Approximates the log base 2 of <paramref name="x"/>.<br/>
@@ -665,7 +728,9 @@ namespace Shamisen
             z = FastMultiplyAdd(z, y, Log2C1);
             var w = FastMultiplyAddNegated(y, y, y);
             z = FastMultiplyAdd(z, y, Log2C0);
+#pragma warning disable S2234 // Parameters should be passed in the correct order
             z = FastMultiplyAdd(z, w, y);
+#pragma warning restore S2234 // Parameters should be passed in the correct order
             x += z;
             return x;
         }
@@ -711,10 +776,97 @@ namespace Shamisen
             z = FastMultiplyAdd(z, y, Log2C1);
             var w = FastMultiplyAddNegated(y, y, y);
             z = FastMultiplyAdd(z, y, Log2C0);
+#pragma warning disable S2234 // Parameters should be passed in the correct order
             z = FastMultiplyAdd(z, w, y);
+#pragma warning restore S2234 // Parameters should be passed in the correct order
             x += z;
             return x;
         }
+        #endregion
+
+        #region nth Root
+        // Reference: Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+        private const double CbrtC1 = 1.7523196763699390234751750023038468;
+        private const double CbrtC2 = 1.2509524245066599988510127816507199;
+        private const double CbrtC3 = 0.50938182920440939104272244099570921;
+        private const ulong Magic = 0x553C_3014_2000_0000;
+
+        /// <summary>
+        /// Approximates the cube root of <paramref name="x"/>.<br/>
+        /// </summary>
+        /// <returns>
+        /// Approximation of the cube root of <paramref name="x"/> computed with a method described in the article below.<br/>
+        /// Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+        /// </returns>
+        /// <inheritdoc cref="MathF.Cbrt(float)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float Cbrt(float x)
+        {
+            // Reference: Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+            const double One = 1.0;
+            const double OneOver3 = 0.33333333333333333333;
+            var fabsx = MathF.Abs(x);
+            var i = BitConverter.DoubleToUInt64Bits(fabsx);
+            var absx = (double)fabsx;
+            i = Magic - i / 3;
+            var y = BitConverter.UInt64BitsToDouble(i);
+            var q = absx * y;
+            var c = y * y;
+            c *= q;
+            q = CbrtC2 - c * CbrtC3;
+            c = CbrtC1 - c * q;
+            y *= c;
+            q = absx * y;
+            c = y * y;
+            c = One - q * c;
+            c = One + OneOver3 * c;
+            y *= c;
+            q = absx * y;
+            c = y * y;
+            c = One - q * c;
+            c = One + OneOver3 * c;
+            y *= c;
+            return (float)(y * y * x);
+        }
+
+        /// <summary>
+        /// Approximates the cube root of <paramref name="x"/>.<br/>
+        /// </summary>
+        /// <returns>
+        /// Approximation of the cube root of <paramref name="x"/> computed with a method described in the article below.<br/>
+        /// Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+        /// </returns>
+        /// <inheritdoc cref="MathF.Cbrt(float)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastCbrt(float x)
+        {
+            // Reference: Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+            const double One = 1.0;
+            const double OneOver3 = 0.33333333333333333333;
+            var fabsx = MathF.Abs(x);
+            var i = BitConverter.DoubleToUInt64Bits(fabsx);
+            var absx = (double)fabsx;
+            i = Magic - i / 3;
+            var y = BitConverter.UInt64BitsToDouble(i);
+            var q = absx * y;
+            var c = y * y;
+            c *= q;
+            q = FastMultiplyAddNegated(c, CbrtC3, CbrtC2);
+            c = FastMultiplyAddNegated(c, q, CbrtC1);
+            y *= c;
+            q = absx * y;
+            c = y * y;
+            c = FastMultiplyAddNegated(c, q, One);
+            c = FastMultiplyAdd(OneOver3, c, One);
+            y *= c;
+            q = absx * y;
+            c = y * y;
+            c = FastMultiplyAddNegated(c, q, One);
+            c = FastMultiplyAdd(OneOver3, c, One);
+            y *= c;
+            return (float)(y * y * x);
+        }
+
         #endregion
     }
 }

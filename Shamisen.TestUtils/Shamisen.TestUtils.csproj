@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
+  </ItemGroup>
+
 </Project>

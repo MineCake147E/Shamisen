@@ -489,6 +489,18 @@
             </returns>
             <inheritdoc cref="M:System.Math.Max(System.Double,System.Double)"/>
         </member>
+        <member name="M:Shamisen.FastMath.MaxUnsignedInputs(System.Single,System.Single)">
+            <summary>
+            Returns the smaller of two single-precision floating-point numbers.
+            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+            </summary>
+            <returns>
+            Parameter x or y, whichever is larger.
+            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
+            the result might depend on CPUs.
+            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
+            </returns>
+        </member>
         <member name="M:Shamisen.FastMath.Min(System.Single,System.Single)">
             <returns>
             Parameter x or y, whichever is smaller.
@@ -504,18 +516,6 @@
             the result might depend on CPUs.
             </returns>
             <inheritdoc cref="M:System.Math.Min(System.Double,System.Double)"/>
-        </member>
-        <member name="M:Shamisen.FastMath.MaxUnsignedInputs(System.Single,System.Single)">
-            <summary>
-            Returns the smaller of two single-precision floating-point numbers.
-            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-            </summary>
-            <returns>
-            Parameter x or y, whichever is larger.
-            If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="F:System.Single.NaN"/>,
-            the result might depend on CPUs.
-            This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
-            </returns>
         </member>
         <member name="M:Shamisen.FastMath.MinUnsignedInputs(System.Single,System.Single)">
             <summary>
@@ -545,9 +545,27 @@
             <param name="x">The number to be multiplied with y.</param>
             <param name="y">The number to be multiplied with x.</param>
             <param name="z">The number to be added to the result of x multiplied by y.</param>
-            <returns>(x * y) + z, sometimes rounded as one ternary operation.</returns>
+            <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
         </member>
         <member name="M:Shamisen.FastMath.FastMultiplyAddNegated(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns z - (x * y), sometimes rounded as one ternary operation.
+            </summary>
+            <param name="x">The number to be multiplied with y.</param>
+            <param name="y">The number to be multiplied with x.</param>
+            <param name="z">The number to be added to the result of x multiplied by y.</param>
+            <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastMultiplyAdd(System.Double,System.Double,System.Double)">
+            <summary>
+            Returns (x * y) + z, sometimes rounded as one ternary operation.
+            </summary>
+            <param name="x">The number to be multiplied with y.</param>
+            <param name="y">The number to be multiplied with x.</param>
+            <param name="z">The number to be added to the result of x multiplied by y.</param>
+            <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastMultiplyAddNegated(System.Double,System.Double,System.Double)">
             <summary>
             Returns z - (x * y), sometimes rounded as one ternary operation.
             </summary>
@@ -699,6 +717,26 @@
             <returns>
             Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
             </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Cbrt(System.Single)">
+            <summary>
+            Approximates the cube root of <paramref name="x"/>.<br/>
+            </summary>
+            <returns>
+            Approximation of the cube root of <paramref name="x"/> computed with a method described in the article below.<br/>
+            Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+            </returns>
+            <inheritdoc cref="M:System.MathF.Cbrt(System.Single)"/>
+        </member>
+        <member name="M:Shamisen.FastMath.FastCbrt(System.Single)">
+            <summary>
+            Approximates the cube root of <paramref name="x"/>.<br/>
+            </summary>
+            <returns>
+            Approximation of the cube root of <paramref name="x"/> computed with a method described in the article below.<br/>
+            Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
+            </returns>
+            <inheritdoc cref="M:System.MathF.Cbrt(System.Single)"/>
         </member>
         <member name="T:Shamisen.MathI">
             <summary>
@@ -4190,18 +4228,27 @@
             <summary>
              Creates a new single-precision vector with elements selected between two specified single-precision source vectors based on an integral mask vector.
             </summary>
-            <param name="condition"></param>
+            <param name="condition">The condition. Only MSB is tested.</param>
             <param name="left">The default value.</param>
-            <param name="right">The values that is used when <paramref name="condition"/> is <see cref="F:System.UInt32.MaxValue"/>.</param>
+            <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Utils.VectorUtils.Blend(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.Int32})">
             <summary>
              Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
             </summary>
-            <param name="condition"></param>
-            <param name="left"></param>
-            <param name="right"></param>
+            <param name="condition">The condition. Only MSB is tested.</param>
+            <param name="left">The default value.</param>
+            <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Utils.VectorUtils.Blend(System.Numerics.Vector{System.UInt32},System.Numerics.Vector{System.UInt32},System.Numerics.Vector{System.UInt32})">
+            <summary>
+             Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
+            </summary>
+            <param name="condition">The condition. Only MSB is tested.</param>
+            <param name="left">The default value.</param>
+            <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.Utils.VectorUtils.Round(System.Numerics.Vector{System.Single})">

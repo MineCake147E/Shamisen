@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+      <TargetFrameworks>net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>Core interfaces of IO features for Shamisen.</Description>

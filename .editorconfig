@@ -1,4 +1,4 @@
-# this is root .editorconfig
+﻿# this is root .editorconfig
 root = true
 
 # C# source files
@@ -330,3 +330,4 @@ dotnet_diagnostic.CS1734.severity = error
 [*.{cs,vb}]
 dotnet_style_allow_multiple_blank_lines_experimental=false:suggestion
 dotnet_style_allow_statement_immediately_after_block_experimental=true:suggestion
+dotnet_diagnostic.RCS1123.severity = none

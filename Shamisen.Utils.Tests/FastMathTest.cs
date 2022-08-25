@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace Shamisen.Utils.Tests
     public class FastMathTest
     {
         #region Trigonometry
+        #region Sin
         [TestCase(MathF.PI / 2)]
         [TestCase(-MathF.PI / 2)]
         [TestCase(MathF.PI)]
@@ -33,22 +36,59 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void SinBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(MathF.PI * 0.5f) + 1;
-            var na = new NeumaierAccumulator();
-            var maxerr = double.NegativeInfinity;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Sin(v);
-                var act = FastMath.Sin(v);
-                var diff = Math.Abs(exp - act);
-                na += diff;
-                maxerr = FastMath.Max(maxerr, diff);
-                cnt++;
-            }
-            Console.WriteLine(na.Sum / cnt);
-            Console.WriteLine(maxerr);
+            var res = ErrorUtils.EvaluateErrors(0.0f, MathF.PI * 0.5f,
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = (float)Math.Sin(s0);
+                        Unsafe.Add(ref x10, 1) = (float)Math.Sin(s1);
+                        Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2);
+                        Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = (float)Math.Sin(x10);
+                    }
+                },
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = FastMath.Sin(s0);
+                        Unsafe.Add(ref x10, 1) = FastMath.Sin(s1);
+                        Unsafe.Add(ref x10, 2) = FastMath.Sin(s2);
+                        Unsafe.Add(ref x10, 3) = FastMath.Sin(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = FastMath.Sin(x10);
+                    }
+                });
+            ErrorUtils.WriteResult(res);
+            var maxUlpError = res.MaxUlpError;
+            var parameterAt = maxUlpError.ParameterAt;
+            var check0 = (float)Math.Sin(parameterAt);
+            var check1 = FastMath.Sin(parameterAt);
+            Console.WriteLine($"Maximum Ulp Difference(Check): {ErrorUtils.CalculateAbsoluteUlpDifference(check0, check1)} at {parameterAt} ({Math.Abs(check0 - check1)})");
             Assert.Pass();
         }
 
@@ -71,22 +111,54 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void SinPiBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(0.5f) + 1;
-            var na = new NeumaierAccumulator();
-            var maxerr = double.NegativeInfinity;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Sin(v * Math.PI);
-                var act = FastMath.SinPi(v);
-                var diff = Math.Abs(exp - act);
-                na += diff;
-                maxerr = FastMath.Max(maxerr, diff);
-                cnt++;
-            }
-            Console.WriteLine(na.Sum / cnt);
-            Console.WriteLine(maxerr);
+            var res = ErrorUtils.EvaluateErrors(0.0f, 0.5f,
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = (float)Math.Sin(s0 * Math.PI);
+                        Unsafe.Add(ref x10, 1) = (float)Math.Sin(s1 * Math.PI);
+                        Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2 * Math.PI);
+                        Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3 * Math.PI);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = (float)Math.Sin(x10 * Math.PI);
+                    }
+                },
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = FastMath.SinPi(s0);
+                        Unsafe.Add(ref x10, 1) = FastMath.SinPi(s1);
+                        Unsafe.Add(ref x10, 2) = FastMath.SinPi(s2);
+                        Unsafe.Add(ref x10, 3) = FastMath.SinPi(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = FastMath.SinPi(x10);
+                    }
+                });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -109,24 +181,129 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void FastSinBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(MathF.PI * 0.5f) + 1;
-            var na = new NeumaierAccumulator();
-            var maxerr = double.NegativeInfinity;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = MathF.Sin(v);
-                var act = FastMath.FastSin(v);
-                var diff = Math.Abs(exp - act);
-                na += diff;
-                maxerr = FastMath.Max(maxerr, diff);
-                cnt++;
-            }
-            Console.WriteLine(na.Sum / cnt);
-            Console.WriteLine(maxerr);
+            var res = ErrorUtils.EvaluateErrors(0.0f, MathF.PI * 0.5f,
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = MathF.Sin(s0);
+                        Unsafe.Add(ref x10, 1) = MathF.Sin(s1);
+                        Unsafe.Add(ref x10, 2) = MathF.Sin(s2);
+                        Unsafe.Add(ref x10, 3) = MathF.Sin(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = MathF.Sin(x10);
+                    }
+                },
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = FastMath.FastSin(s0);
+                        Unsafe.Add(ref x10, 1) = FastMath.FastSin(s1);
+                        Unsafe.Add(ref x10, 2) = FastMath.FastSin(s2);
+                        Unsafe.Add(ref x10, 3) = FastMath.FastSin(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = FastMath.FastSin(x10);
+                    }
+                });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
+        [TestCase(1.0f / 2)]
+        [TestCase(-1.0f / 2)]
+        [TestCase(1.0f)]
+        [TestCase(-1.0f)]
+        [TestCase(0.0f)]
+        [TestCase(float.Epsilon)]
+        [TestCase(-float.Epsilon)]
+
+        public void FastSinPiCalculatesCorrectly(float value)
+        {
+            var exp = (float)Math.Sin(value * Math.PI);
+            var act = FastMath.FastSinPi(value);
+            Assert.That(act, Is.EqualTo(exp).Within(8.74227766E-08f));
+            Console.WriteLine($"Expected: {exp}, Actual: {act}");
+        }
+
+        [Test]
+        public void FastSinPiBruteForceAccuracyCheck()
+        {
+            var res = ErrorUtils.EvaluateErrors(0.0f, 0.5f,
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = (float)Math.Sin(s0 * Math.PI);
+                        Unsafe.Add(ref x10, 1) = (float)Math.Sin(s1 * Math.PI);
+                        Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2 * Math.PI);
+                        Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3 * Math.PI);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = (float)Math.Sin(x10 * Math.PI);
+                    }
+                },
+                (a) =>
+                {
+                    nint i, length = a.Length;
+                    ref var x9 = ref MemoryMarshal.GetReference(a);
+                    var olen = length - 3;
+                    for (i = 0; i < olen; i += 4)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        var s0 = x10;
+                        var s1 = Unsafe.Add(ref x9, i + 1);
+                        var s2 = Unsafe.Add(ref x9, i + 2);
+                        var s3 = Unsafe.Add(ref x9, i + 3);
+                        x10 = FastMath.FastSinPi(s0);
+                        Unsafe.Add(ref x10, 1) = FastMath.FastSinPi(s1);
+                        Unsafe.Add(ref x10, 2) = FastMath.FastSinPi(s2);
+                        Unsafe.Add(ref x10, 3) = FastMath.FastSinPi(s3);
+                    }
+                    for (; i < a.Length; i++)
+                    {
+                        ref var x10 = ref Unsafe.Add(ref x9, i);
+                        x10 = FastMath.FastSinPi(x10);
+                    }
+                });
+            ErrorUtils.WriteResult(res);
+            Assert.Pass();
+        }
+
+        #endregion
+
+        #region Cos
         [TestCase(MathF.PI / 2)]
         [TestCase(-MathF.PI / 2)]
         [TestCase(MathF.PI)]
@@ -146,22 +323,54 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void CosBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(MathF.PI * 0.5f) + 1;
-            var na = new NeumaierAccumulator();
-            var maxerr = double.NegativeInfinity;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = MathF.Cos(v);
-                var act = FastMath.Cos(v);
-                var diff = Math.Abs(exp - act);
-                na += diff;
-                maxerr = FastMath.Max(maxerr, diff);
-                cnt++;
-            }
-            Console.WriteLine(na.Sum / cnt);
-            Console.WriteLine(maxerr);
+            var res = ErrorUtils.EvaluateErrors(0.0f, MathF.PI * 0.5f,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = (float)Math.Cos(s0);
+                         Unsafe.Add(ref x10, 1) = (float)Math.Cos(s1);
+                         Unsafe.Add(ref x10, 2) = (float)Math.Cos(s2);
+                         Unsafe.Add(ref x10, 3) = (float)Math.Cos(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = (float)Math.Cos(x10);
+                     }
+                 },
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Cos(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Cos(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Cos(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Cos(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Cos(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -184,24 +393,57 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void FastCosBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(MathF.PI * 0.5f) + 1;
-            var na = new NeumaierAccumulator();
-            var maxerr = double.NegativeInfinity;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = MathF.Cos(v);
-                var act = FastMath.FastCos(v);
-                var diff = Math.Abs(exp - act);
-                na += diff;
-                maxerr = FastMath.Max(maxerr, diff);
-                cnt++;
-            }
-            Console.WriteLine(na.Sum / cnt);
-            Console.WriteLine(maxerr);
+            var res = ErrorUtils.EvaluateErrors(0.0f, MathF.PI * 0.5f,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = MathF.Cos(s0);
+                         Unsafe.Add(ref x10, 1) = MathF.Cos(s1);
+                         Unsafe.Add(ref x10, 2) = MathF.Cos(s2);
+                         Unsafe.Add(ref x10, 3) = MathF.Cos(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = MathF.Cos(x10);
+                     }
+                 },
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.FastCos(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.FastCos(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.FastCos(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.FastCos(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.FastCos(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
+        #endregion
         #endregion
 
         #region Exponential
@@ -224,37 +466,54 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void Exp2BruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.0f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = BitConverter.SingleToInt32Bits(1.0f); i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Pow(2.0, v);
-                var act = FastMath.Exp2(v);
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = (float)Math.Pow(2.0, s0);
+                         Unsafe.Add(ref x10, 1) = (float)Math.Pow(2.0, s1);
+                         Unsafe.Add(ref x10, 2) = (float)Math.Pow(2.0, s2);
+                         Unsafe.Add(ref x10, 3) = (float)Math.Pow(2.0, s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = (float)Math.Pow(2.0, x10);
+                     }
+                 },
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Exp2(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Exp2(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Exp2(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Exp2(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Exp2(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -277,37 +536,54 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void FastExp2BruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.0f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = BitConverter.SingleToInt32Bits(1.0f); i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Pow(2.0, v);
-                var act = FastMath.FastExp2(v);
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = (float)Math.Pow(2.0, s0);
+                         Unsafe.Add(ref x10, 1) = (float)Math.Pow(2.0, s1);
+                         Unsafe.Add(ref x10, 2) = (float)Math.Pow(2.0, s2);
+                         Unsafe.Add(ref x10, 3) = (float)Math.Pow(2.0, s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = (float)Math.Pow(2.0, x10);
+                     }
+                 },
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.FastExp2(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.FastExp2(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.FastExp2(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.FastExp2(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.FastExp2(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
         #endregion
@@ -319,7 +595,6 @@ namespace Shamisen.Utils.Tests
         [TestCase(1.0f)]
         [TestCase(1.1754944E-38f)]
         [TestCase(MathF.PI)]
-
         public void Log2AsNormalCalculatesCorrectly(float value)
         {
             var exp = Math.Log2(MathF.Abs(value));
@@ -331,37 +606,32 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void Log2AsNormalBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.0f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = BitConverter.SingleToInt32Bits(1.0f); i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate if v were normal, while it's more than 4x slower than FastMath.Log2AsNormal.
-                var act = FastMath.Log2AsNormal(v);     //If you want to verify the statement above, just replace FastMath.Log2AsNormal with MathF.Log2, and see what happens.
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Log2AsNormal(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Log2AsNormal(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Log2AsNormal(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Log2AsNormal(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Log2AsNormal(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -372,49 +642,45 @@ namespace Shamisen.Utils.Tests
         [TestCase(7.83662853838e-39f)]
         [TestCase(MathF.PI)]
         [TestCase(0.0f)]
-
-        public void Log2CalculatesCorrectly(float value)
+        [TestCase(1.0000027f, 3.9555955470941250298012288333906993583409943602314108378923E-6)]
+        public void Log2CalculatesCorrectly(float value, double? expected = null)
         {
-            var exp = Math.Log2(MathF.Abs(value));
+            var exp = expected ?? Math.Log2(MathF.Abs(value));
             var act = FastMath.Log2(value);
-            Console.WriteLine($"Expected:   {exp}\t({(float)exp}f)\nActual: \t{(double)act}\t({act}f)\nOff by {exp - act}\t({(float)exp - act}f)");
+            var diffulp = MathI.Abs(BitConverter.SingleToInt32Bits((float)exp) - BitConverter.SingleToInt32Bits(act));
+            Console.WriteLine($"Expected:   {exp}\t({(float)exp}f)\nActual: \t{(double)act}\t({act}f)\nOff by {exp - act}\t({diffulp}ulp)");
             Assert.That(BitConverter.SingleToUInt32Bits(act), Is.EqualTo(BitConverter.SingleToUInt32Bits((float)exp)).Within(1));
         }
 
         [Test]
         public void Log2BruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.35098870164e-38f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate, while it's more than 2x slower than FastMath.Log2.
-                var act = FastMath.Log2(v);     //If you want to verify the statement above, just replace FastMath.Log2 with MathF.Log2, and see what happens.
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(0.0f, 2.35098870164e-38f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Log2(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Log2(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Log2(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Log2(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Log2(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -435,37 +701,32 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void FastLog2AsNormalBruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.0f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = BitConverter.SingleToInt32Bits(1.0f); i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);          //MathF.Log2 is quite inaccurate if v were normal, while it's more than 6x slower than FastMath.FastLog2AsNormal.
-                var act = FastMath.FastLog2AsNormal(v); //If you want to verify the statement above, just replace FastMath.FastLog2AsNormal with MathF.Log2, and see what happens.
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.FastLog2AsNormal(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.FastLog2AsNormal(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.FastLog2AsNormal(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.FastLog2AsNormal(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.FastLog2AsNormal(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
         }
 
@@ -476,10 +737,10 @@ namespace Shamisen.Utils.Tests
         [TestCase(7.83662853838e-39f)]
         [TestCase(MathF.PI)]
         [TestCase(0.0f)]
-
-        public void FastLog2CalculatesCorrectly(float value)
+        [TestCase(1.0000027f, 3.9555955470941250298012288333906993583409943602314108378923E-6)]
+        public void FastLog2CalculatesCorrectly(float value, double? expected = null)
         {
-            var exp = Math.Log2(MathF.Abs(value));
+            var exp = expected ?? Math.Log2(MathF.Abs(value));
             var act = FastMath.FastLog2(value);
             Console.WriteLine($"Expected:   {exp}\t({(float)exp}f)\nActual: \t{(double)act}\t({act}f)\nOff by {exp - act}\t({(float)exp - act}f)");
             Assert.That(BitConverter.SingleToUInt32Bits(act), Is.EqualTo(BitConverter.SingleToUInt32Bits((float)exp)).Within(1));
@@ -488,38 +749,149 @@ namespace Shamisen.Utils.Tests
         [Test]
         public void FastLog2BruteForceAccuracyCheck()
         {
-            var max = BitConverter.SingleToInt32Bits(2.35098870164e-38f) + 1;
-            var na = 0ul;
-            var errPerUlp = new uint[16];
-            var maxerr = 0ul;
-            var lastmax = 0;
-            ulong cnt = 0;
-            for (var i = 0; i < max; i++)
-            {
-                var v = BitConverter.Int32BitsToSingle(i);
-                var exp = (float)Math.Log2(v);  //MathF.Log2 is quite inaccurate, while it's more than 4x slower than FastMath.FastLog2.
-                var act = FastMath.FastLog2(v); //If you want to verify the statement above, just replace FastMath.FastLog2 with MathF.Log2, and see what happens.
-                var diff = MathI.Abs(BitConverter.SingleToInt32Bits(exp) - BitConverter.SingleToInt32Bits(act));
-                na += diff;
-                errPerUlp[MathI.Min(errPerUlp.Length - 1, diff)]++;
-                if (maxerr < diff)
-                {
-                    maxerr = diff;
-                    lastmax = i;
-                }
-                cnt++;
-            }
-            var inv = 1.0 / cnt;
-            Console.WriteLine($"Total errors: {na} ulp / {cnt} values ({na * inv:P})");
-            var errt = errPerUlp.AsSpan().SliceWhileIfLongerThan(maxerr + 1);
-            for (var i = 0; i < errt.Length; i++)
-            {
-                var err = errt[i];
-                Console.WriteLine($"Values with {i}ulp error: {err} values ({err * inv:P})");
-            }
-            Console.WriteLine($"Maximum Error: {maxerr} ulp");
-            Console.WriteLine($"at {lastmax} ({BitConverter.Int32BitsToSingle(lastmax)})");
+            var res = ErrorUtils.EvaluateErrors(0.0f, 2.35098870164e-38f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.FastLog2(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.FastLog2(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.FastLog2(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.FastLog2(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.FastLog2(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
             Assert.Pass();
+        }
+
+        private static void GenerateLog2Reference(Span<float> a)
+        {
+            nint i, length = a.Length;
+            ref var x9 = ref MemoryMarshal.GetReference(a);
+            var olen = length - 3;
+            for (i = 0; i < olen; i += 4)
+            {
+                ref var x10 = ref Unsafe.Add(ref x9, i);
+                var s0 = x10;
+                var s1 = Unsafe.Add(ref x9, i + 1);
+                var s2 = Unsafe.Add(ref x9, i + 2);
+                var s3 = Unsafe.Add(ref x9, i + 3);
+                x10 = (float)Math.Log2(s0);
+                Unsafe.Add(ref x10, 1) = (float)Math.Log2(s1);
+                Unsafe.Add(ref x10, 2) = (float)Math.Log2(s2);
+                Unsafe.Add(ref x10, 3) = (float)Math.Log2(s3);
+            }
+            for (; i < a.Length; i++)
+            {
+                ref var x10 = ref Unsafe.Add(ref x9, i);
+                x10 = (float)Math.Log2(x10);
+            }
+        }
+        #endregion
+
+        #region Root
+        [TestCase(0.0f, 1.1754944E-38f)]
+        [TestCase(1.1754944E-38f, 1.1754944E-38f * 2.0f)]
+        [TestCase(1.0f, 8.0f)]
+        public void CbrtBruteForceAccuracyCheck(float start, float end)
+        {
+            var res = ErrorUtils.EvaluateErrors(start, end,
+                 GenerateCbrtReference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Cbrt(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Cbrt(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Cbrt(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Cbrt(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Cbrt(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
+            Assert.Pass();
+        }
+        [TestCase(0.0f, 1.1754944E-38f)]
+        [TestCase(1.1754944E-38f, 1.1754944E-38f * 2.0f)]
+        [TestCase(1.0f, 8.0f)]
+        public void FastCbrtBruteForceAccuracyCheck(float start, float end)
+        {
+            var res = ErrorUtils.EvaluateErrors(start, end,
+                 GenerateCbrtReference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.FastCbrt(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.FastCbrt(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.FastCbrt(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.FastCbrt(s3);
+                     }
+                     for (; i < a.Length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.FastCbrt(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
+            Assert.Pass();
+        }
+        private static void GenerateCbrtReference(Span<float> a)
+        {
+            nint i, length = a.Length;
+            ref var x9 = ref MemoryMarshal.GetReference(a);
+            var olen = length - 3;
+            for (i = 0; i < olen; i += 4)
+            {
+                ref var x10 = ref Unsafe.Add(ref x9, i);
+                var s0 = x10;
+                var s1 = Unsafe.Add(ref x9, i + 1);
+                var s2 = Unsafe.Add(ref x9, i + 2);
+                var s3 = Unsafe.Add(ref x9, i + 3);
+                x10 = (float)Math.Cbrt(s0);
+                Unsafe.Add(ref x10, 1) = (float)Math.Cbrt(s1);
+                Unsafe.Add(ref x10, 2) = (float)Math.Cbrt(s2);
+                Unsafe.Add(ref x10, 3) = (float)Math.Cbrt(s3);
+            }
+            for (; i < a.Length; i++)
+            {
+                ref var x10 = ref Unsafe.Add(ref x9, i);
+                x10 = (float)Math.Cbrt(x10);
+            }
         }
         #endregion
     }

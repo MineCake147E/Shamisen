@@ -880,9 +880,9 @@ namespace Shamisen.Utils
         /// <summary>
         ///  Creates a new single-precision vector with elements selected between two specified single-precision source vectors based on an integral mask vector.
         /// </summary>
-        /// <param name="condition"></param>
+        /// <param name="condition">The condition. Only MSB is tested.</param>
         /// <param name="left">The default value.</param>
-        /// <param name="right">The values that is used when <paramref name="condition"/> is <see cref="uint.MaxValue"/>.</param>
+        /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector<float> Blend(Vector<int> condition, Vector<float> left, Vector<float> right)
@@ -918,16 +918,17 @@ namespace Shamisen.Utils
                 }
 #endif
 #pragma warning disable S2234 // Parameters should be passed in the correct order
-                return Vector.ConditionalSelect(condition, right, left);
+                var c = Vector.LessThan(condition, new(0));
+                return Vector.ConditionalSelect(c, left, right);
 #pragma warning restore S2234 // Parameters should be passed in the correct order
             }
         }
         /// <summary>
         ///  Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
         /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="condition">The condition. Only MSB is tested.</param>
+        /// <param name="left">The default value.</param>
+        /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Vector<int> Blend(Vector<int> condition, Vector<int> left, Vector<int> right)
@@ -963,10 +964,20 @@ namespace Shamisen.Utils
                 }
 #endif
 #pragma warning disable S2234 // Parameters should be passed in the correct order
-                return Vector.ConditionalSelect(condition, right, left);
+                var c = Vector.LessThan(condition, new(0));
+                return Vector.ConditionalSelect(c, left, right);
 #pragma warning restore S2234 // Parameters should be passed in the correct order
             }
         }
+        /// <summary>
+        ///  Creates a new 32-bit integer vector with elements selected between two specified 32-bit integer source vectors based on an integral mask vector.
+        /// </summary>
+        /// <param name="condition">The condition. Only MSB is tested.</param>
+        /// <param name="left">The default value.</param>
+        /// <param name="right">The values that is used when <paramref name="condition"/> is negative.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Vector<uint> Blend(Vector<uint> condition, Vector<uint> left, Vector<uint> right) => Blend(condition.AsInt32(), left.AsInt32(), right.AsInt32()).AsUInt32();
         #endregion
         #region Round
         /// <summary>

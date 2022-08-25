@@ -216,7 +216,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 var dst = new float[src.Length];
                 var maxError = double.MinValue;
                 var sumError = new NeumaierAccumulator(0.0, 0.0);
-                GenerateIndexValuedArraySingle(src, 1.0f);
+                ErrorUtils.GenerateIndexValuedArraySingle(src, 1.0f);
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
                 var span = MemoryMarshal.Cast<float, int>(sSrc);
@@ -242,7 +242,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 var dst = new float[src.Length];
                 var maxError = double.MinValue;
                 var sumError = new NeumaierAccumulator(0.0, 0.0);
-                GenerateIndexValuedArraySingle(src, 1.0f);
+                ErrorUtils.GenerateIndexValuedArraySingle(src, 1.0f);
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
                 var span = MemoryMarshal.Cast<float, int>(sSrc);
@@ -260,14 +260,14 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             {
                 if (!Sse2.IsSupported)
                 {
-                    Assert.Warn("Either AVX2 or FMA is not supported on this machine!");
+                    Assert.Warn("SSE2 is not supported on this machine!");
                     return;
                 }
                 var src = new float[65536];
                 var dst = new float[src.Length];
                 var maxError = double.MinValue;
                 var sumError = new NeumaierAccumulator(0.0, 0.0);
-                GenerateIndexValuedArraySingle(src, 1.0f);
+                ErrorUtils.GenerateIndexValuedArraySingle(src, 1.0f);
                 var sSrc = src.AsSpan();
                 var sDst = dst.AsSpan();
                 var span = MemoryMarshal.Cast<float, int>(sSrc);

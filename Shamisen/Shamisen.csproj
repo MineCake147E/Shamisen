@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net6.0</TargetFrameworks>
         <RootNamespace>Shamisen</RootNamespace>
         <AssemblyName>Shamisen</AssemblyName>
     </PropertyGroup>
@@ -29,6 +29,10 @@
 
     <ItemGroup>
         <Compile Remove="Filters\SimpleMixerEntry.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
         <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.tt">
