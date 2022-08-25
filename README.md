@@ -4,13 +4,7 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/minecake147e/shamisen/badge)](https://www.codefactor.io/repository/github/minecake147e/shamisen)
 [![.NET](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml/badge.svg)](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml)  
-A Cross-Platform Audio Library for:
-
-- .NET 6
-- .NET 5
-- .NET Core 3.1
-- .NET Standard 2.1
-- .NET Standard 2.0
+A Cross-Platform Audio Library for .NET 6.
 
 ## Usage of Shamisen
 
@@ -28,9 +22,7 @@ A Cross-Platform Audio Library for:
 | [OpenTK (OpenAL)](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
 | [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❎       |   ❎    |  ❎   | ❎  |   ❎    |
 | [NAudio (WaveOut, ASIO, DirectSound, WASAPI)](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
-| [UWP (AudioGraph)](https://docs.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ✅       |   ❎    |  ❎   | ❎  |   ❎    |
 | [Xamarin.Android (AudioTrack)](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
-| [CSCore (WaveOut, WASAPI, DirectSoundOut, XAudio2)](https://github.com/filoe/cscore)                                                            | [Florian](https://github.com/filoe)       | [Ms-PL](https://github.com/filoe/cscore/blob/master/license.md)                        |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
 
 ❓: Not Tested or needs more information  
 ✅: Tested  
