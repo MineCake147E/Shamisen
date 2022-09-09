@@ -60,6 +60,8 @@ using System.Diagnostics;
 using System.Buffers.Binary;
 using System.ComponentModel;
 
+using Shamisen.Conversion;
+
 namespace Shamisen.Codecs.Flac.Parsing
 {
     /// <summary>
@@ -158,12 +160,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             get => 8 - (consumedBits & 7);
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         /// <exception cref="ObjectDisposedException">FlacBitReader</exception>
         public IReadableDataSource<byte> Source => source ?? throw new ObjectDisposedException(nameof(FlacBitReader));
 

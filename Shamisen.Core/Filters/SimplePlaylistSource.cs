@@ -17,12 +17,7 @@ namespace Shamisen.Filters
     {
         private bool disposedValue;
 
-        /// <summary>
-        /// Gets the current source.
-        /// </summary>
-        /// <value>
-        /// The current source.
-        /// </value>
+        /// <inheritdoc/>
         public IReadableAudioSource<TSample, TFormat>? CurrentSource { get; private set; }
 
         /// <summary>
@@ -41,12 +36,7 @@ namespace Shamisen.Filters
         /// </value>
         public ILoopSupport? LoopSupport => this;
 
-        /// <summary>
-        /// Gets the shuffle support.
-        /// </summary>
-        /// <value>
-        /// The shuffle support.
-        /// </value>
+        /// <inheritdoc/>
         public IShuffleSupport? ShuffleSupport { get; }
 
         /// <summary>
@@ -69,55 +59,22 @@ namespace Shamisen.Filters
 
         private List<IReadableAudioSource<TSample, TFormat>> ShuffledContents { get; }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format { get; }
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length { get; }
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength { get; }
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position { get; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
         bool ILoopSupport.IsLoopingEnabled { get; set; }
@@ -155,11 +112,7 @@ namespace Shamisen.Filters
             Format = format;
         }
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer)
         {
             while (CurrentSource is null)

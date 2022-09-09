@@ -32,67 +32,28 @@ namespace Shamisen.Conversion.ChannelConverters
             Format = new SampleFormat(2, source.Format.SampleRate);
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<float, SampleFormat>? Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => Source?.Length;
 
-        /// <summary>
-        /// Gets the total length.
-        /// </summary>
-        /// <value>
-        /// The total length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => Source?.TotalLength;
 
-        /// <summary>
-        /// Gets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => Source?.Position;
 
-        /// <summary>
-        /// Gets the skip support.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => Source?.SkipSupport;
 
-        /// <summary>
-        /// Gets the seek support.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => Source?.SeekSupport;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
             if (Source is null) throw new ObjectDisposedException(nameof(MonauralToStrereoSampleConverter));

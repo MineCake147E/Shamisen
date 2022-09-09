@@ -14,31 +14,29 @@ namespace Shamisen.Data
     /// </summary>
     public sealed class PreloadDataBuffer<TSample> : IReadableDataSource<TSample> where TSample : unmanaged
     {
-        private ManualResetEventSlim fillFlag = new(true);
-        private ManualResetEventSlim readFlag = new(true);
-        private ManualResetEventSlim peekFlag = new(true);
-        private ManualResetEventSlim fallbackFlag = new(true);
+        private readonly ManualResetEventSlim fillFlag = new(true);
+        private readonly ManualResetEventSlim readFlag = new(true);
+        private readonly ManualResetEventSlim peekFlag = new(true);
+        private readonly ManualResetEventSlim fallbackFlag = new(true);
         private bool isEndOfStream = false;
-        private SemaphoreSlim readSemaphore = new(1);
+        private readonly SemaphoreSlim readSemaphore = new(1);
 
         private bool disposedValue = false;
 
         private volatile int bufferSize = 0;
 
         private volatile int totalBuffers = 0;
-        private readonly int maxBuffers = 2048;
+        private readonly ConcurrentQueue<(BufferInstance<TSample> buffer, bool isEndOfStream)> buffersFilled;
 
-        private ConcurrentQueue<(BufferInstance<TSample> buffer, bool isEndOfStream)> buffersFilled;
+        private readonly ConcurrentQueue<BufferInstance<TSample>> buffersEmpty;
 
-        private ConcurrentQueue<BufferInstance<TSample>> buffersEmpty;
+        private readonly ConcurrentQueue<(BufferInstance<TSample> buffer, int newSize)> buffersNeededToBeResized;
 
-        private ConcurrentQueue<(BufferInstance<TSample> buffer, int newSize)> buffersNeededToBeResized;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
-        private CancellationTokenSource cancellationTokenSource;
+        private readonly Task writeTask;
 
-        private Task writeTask;
-
-        private IDataSource<TSample> dataSource;
+        private readonly IDataSource<TSample> dataSource;
 
         /// <summary>
         /// Gets or sets the value which indicates whether the <see cref="PreloadDataBuffer{TSample}"/> should wait for another sample block or not.

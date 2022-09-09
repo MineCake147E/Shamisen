@@ -9,20 +9,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     /// </summary>
     public abstract class SampleToWaveConverterBase : IAudioConverter<float, SampleFormat, byte, IWaveFormat>, IWaveSource
     {
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public IWaveFormat Format { get; }
 
         /// <summary>
@@ -33,20 +23,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </value>
         protected abstract int BytesPerSample { get; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         /// <summary>

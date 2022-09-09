@@ -2,26 +2,42 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:a="using:Shamisen.Tests.IO.OpenTK"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
         x:Class="Shamisen.Tests.IO.OpenTK.MainWindow"
         Title="Shamisen.Tests.IO.OpenTK">
-    <Grid ColumnDefinitions="1*, 1*" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel Orientation="Vertical">
-            <Button Content="Initialize" Command="{Binding Initialize}" />
-            <Button Content="Play" Command="{Binding Play}" />
-            <Button Content="Pause" Command="{Binding Pause}" />
-            <Button Content="Resume" Command="{Binding Resume}" />
-            <Button Content="Stop" Command="{Binding Stop}" />
-            <Grid ColumnDefinitions="Auto, 96,1*" HorizontalAlignment="Stretch">
-                <Label Grid.Column="0" Content="Frequency: " VerticalContentAlignment="Center" />
-                <Label Grid.Column="1" Content="{Binding ElementName=Freq, Path=Value, StringFormat=\{0:N\} [Hz]}" FontFamily="monospace" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
-                <Slider Grid.Column="2" x:Name="Freq" Minimum="0" Maximum="24000" Value="{Binding Frequency.Value}" />
+    <Grid ColumnDefinitions="1*, 1*" Margin="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <Grid ColumnDefinitions="1*,2,1*,2,1*,2,1*,2,1*">
+                <Button Grid.Column="0" Content="Initialize" Command="{Binding Initialize}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="2" Content="Play" Command="{Binding Play}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="4" Content="Pause" Command="{Binding Pause}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="6" Content="Resume" Command="{Binding Resume}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="8" Content="Stop" Command="{Binding Stop}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+            </Grid>
+            <Grid ColumnDefinitions="Auto, 1*,Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" HorizontalAlignment="Stretch">
+                <Label Content="Waveform: " VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,3,3,3" SelectedItem="{Binding SelectedWaveform.Value , Mode=TwoWay}" Items="{Binding Waveforms}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="a:WaveformViewModel">
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Label Grid.Row="1" Grid.Column="0" Content="Frequency: " VerticalContentAlignment="Center" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Minimum="0" Maximum="{Binding NyquistFrequency.Value}" Value="{Binding #Freq.Value, Mode=TwoWay}" />
+                <Label Grid.Row="1" Grid.Column="2" Content=" [Hz]" FontFamily="monospace" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                <Slider Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" x:Name="Freq" Padding="0,-15" VerticalAlignment="Top" Minimum="0" Maximum="{Binding NyquistFrequency.Value}" Value="{Binding Frequency.Value, Mode=TwoWay}" Margin="4"/>
+                <Label Grid.Row="3" Content="Volume: " VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <NumericUpDown Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Minimum="0" Maximum="{Binding NyquistFrequency.Value}" Value="{Binding #Vol.Value, Mode=TwoWay}" />
+                <Label Grid.Row="3" Grid.Column="2" Content=" [%]" FontFamily="monospace" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" />
+                <Slider Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" x:Name="Vol" Padding="0,-15" Minimum="0" Maximum="100" Value="{Binding Volume.Value, Mode=TwoWay}" Margin="4" VerticalAlignment="Stretch"/>
             </Grid>
         </StackPanel>
-        <Border Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid ColumnDefinitions="Auto,1*">
-                <Label Grid.Column="0" Content="Device: "  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Border Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4">
+            <Grid RowDefinitions="Auto,10*">
+                <Label Grid.Row="0" Content="Device"  HorizontalContentAlignment="Left" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Border Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListBox Items="{Binding Devices}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <ListBox.ItemTemplate>
                             <DataTemplate>

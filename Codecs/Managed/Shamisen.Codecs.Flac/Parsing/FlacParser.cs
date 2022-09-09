@@ -105,12 +105,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ReadOnlyMemory<FlacUnusedMetadata> UnusedMetadata { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public Int32RangedLinearPcmSampleFormat Format { get; }
 
         /// <summary>
@@ -121,20 +116,10 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ulong Length => TotalLength - Position;
 
-        /// <summary>
-        /// Gets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
+        /// <inheritdoc/>
         public ulong Position { get; private set; }
 
-        /// <summary>
-        /// Gets the total length.
-        /// </summary>
-        /// <value>
-        /// The total length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong TotalLength { get; }
 
         ulong? IAudioSource<int, Int32RangedLinearPcmSampleFormat>.Length => Length;

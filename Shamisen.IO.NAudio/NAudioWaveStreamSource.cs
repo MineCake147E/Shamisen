@@ -36,55 +36,22 @@ namespace Shamisen.IO
             SkipSupport = null;
         }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public IWaveFormat Format { get; }
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length { get; }
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => (ulong)Source.Length;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => (ulong)Source.Position;
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
         /// <summary>

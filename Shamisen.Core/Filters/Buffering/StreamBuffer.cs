@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using DivideSharp;
 
+using Shamisen.Conversion;
 using Shamisen.Data;
 using Shamisen.Formats;
 using Shamisen.Utils;
@@ -25,20 +26,10 @@ namespace Shamisen.Filters
 
         private PreloadDataBuffer<TSample> dataBuffer;
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<TSample, TFormat> Source { get; private set; }
 
         /// <summary>
@@ -68,20 +59,10 @@ namespace Shamisen.Filters
         /// </value>
         public ulong? Position => Source.Position;
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => null;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => null;
 
         private UInt32Divisor blockSizeDivisor;
@@ -111,11 +92,7 @@ namespace Shamisen.Filters
             }
         }
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer)
         {
             buffer = buffer.SliceAlign(blockSizeDivisor);

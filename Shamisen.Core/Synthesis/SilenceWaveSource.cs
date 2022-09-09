@@ -24,12 +24,7 @@ namespace Shamisen.Synthesis
             Format = format ?? throw new ArgumentNullException(nameof(format));
         }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public IWaveFormat Format { get; }
 
         /// <summary>
@@ -39,20 +34,10 @@ namespace Shamisen.Synthesis
         [Obsolete("Not Supported", true)]
         public long Position { get; set; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => throw new NotImplementedException();
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => throw new NotImplementedException();
 
         ulong? IAudioSource<byte, IWaveFormat>.Length => null;
@@ -61,11 +46,7 @@ namespace Shamisen.Synthesis
 
         ulong? IAudioSource<byte, IWaveFormat>.Position => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<byte> buffer)
         {
             buffer.FastFill();

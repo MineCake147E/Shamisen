@@ -29,39 +29,45 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static int ResampleCachedDirectVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
-            var i = 0;
-            nint length = buffer.Length;
-            var isx = 0;
+            nint i = 0;
+            nint isx = 0;
             nint psx = x;
             nint nrci = rci;
             nint nram = ram;
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
-            var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
-            var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
-            for (; i < vBuffer.Length; i++)
+            nint length = buffer.Length - Vector<float>.Count + 1;
+            nint vfacc = facc * Vector<float>.Count;
+            for (; i < length; i += Vector<float>.Count)
             {
                 x += acc;
-                ref var values = ref Unsafe.As<Vector<float>,
-                    (Vector<float> X, Vector<float> Y, Vector<float> Z, Vector<float> W)>(ref vSrcBuffer[isx]);
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
-                isx += facc;
+                var ymm0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx));
+                var ymm4 = new Vector<float>(cutmullCoeffs.X);
+                var ymm1 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx + Vector<float>.Count));
+                var ymm5 = new Vector<float>(cutmullCoeffs.Y);
+                var ymm2 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx + 2 * Vector<float>.Count));
+                var ymm6 = new Vector<float>(cutmullCoeffs.Z);
+                var ymm3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx + 3 * Vector<float>.Count));
+                var ymm7 = new Vector<float>(cutmullCoeffs.W);
+                isx += vfacc;
                 var j = ++nrci < nram;
                 nint z = Unsafe.As<bool, byte>(ref j);
-                var value1 = values.X * cutmullCoeffs.X;
+                var value1 = ymm0 * ymm4;
                 nrci &= -z;
-                var value2 = values.Y * cutmullCoeffs.Y;
+                var value2 = ymm1 * ymm5;
                 var h = x >= ram;
                 int y = Unsafe.As<bool, byte>(ref h);
-                var value3 = values.Z * cutmullCoeffs.Z;
-                var value4 = values.W * cutmullCoeffs.W;
-                isx += y;
+                value1 += ymm2 * ymm6;
+                value2 += ymm3 * ymm7;
+                isx += y * Vector<float>.Count;
+                value1 += value2;
                 x -= -y & ram;
-                vBuffer[i] = (value1 + value3) + (value2 + value4);
+                Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref dst, i)) = value1;
             }
             rci = (int)nrci;
             x = (int)psx;
-            return isx;
+            return (int)(isx / Vector<float>.Count);
         }
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         private static int ResampleCachedDirectMonauralStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
@@ -288,7 +294,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 #if NETCOREAPP3_1_OR_GREATER
                 return ResampleCachedDirectGenericX86(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
 #endif
-                return ResampleCachedDirectGenericStandard(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
             }
         }
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
@@ -507,7 +512,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 #if NETCOREAPP3_1_OR_GREATER
                 return ResampleDirectGenericX86(buffer, srcBuffer, channels, ref x, ram, acc, facc, rmi);
 #endif
-                return ResampleDirectGenericStandard(buffer, srcBuffer, channels, ref x, ram, acc, facc, rmi);
             }
         }
 

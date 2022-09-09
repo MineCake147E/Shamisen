@@ -29,6 +29,14 @@
             Represents a device for OpenAL.
             </summary>
         </member>
+        <member name="P:Shamisen.IO.OpenALDevice.DataFlow">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenALDevice.Name">
+            <summary>
+            Gets the name of this <see cref="T:Shamisen.IO.OpenALDevice"/>.
+            </summary>
+        </member>
         <member name="M:Shamisen.IO.OpenALDevice.#ctor(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALDevice"/> class.
@@ -36,38 +44,34 @@
             <param name="name">The name.</param>
             <exception cref="T:System.ArgumentNullException">name</exception>
         </member>
-        <member name="P:Shamisen.IO.OpenALDevice.Name">
+        <member name="M:Shamisen.IO.OpenALDevice.op_Inequality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
             <summary>
-            Gets the name of this <see cref="T:Shamisen.IO.OpenALDevice"/>.
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are not equal.
             </summary>
-        </member>
-        <member name="P:Shamisen.IO.OpenALDevice.DataFlow">
-            <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.IOExclusivity)">
-            <summary>
-            Indicates whether the audio output device supports a particular stream format.
-            </summary>
-            <param name="format">The format to judge the availability.</param>
-            <param name="mode">The share mode.</param>
-            <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by <see cref="N:Shamisen"/>.</returns>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDevice.CreateSoundOut(System.TimeSpan)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundOut" /> that outputs audio to this device.
-            </summary>
-            <param name="latency">The desired latency for output.</param>
+            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
             <returns>
-            The <see cref="T:Shamisen.IO.OpenALOutput"/> instance.
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.Shamisen#IO#IAudioOutputDevice{Shamisen#IO#OpenALOutput}#CreateSoundOut(System.TimeSpan,Shamisen.IO.IOExclusivity)">
+        <member name="M:Shamisen.IO.OpenALDevice.op_Equality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
             <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundOut" /> that outputs audio to this device with the specified <paramref name="mode" />.
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are equal.
             </summary>
-            <param name="latency">The latency.</param>
-            <param name="mode">The share mode.</param>
-            <returns></returns>
+            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.OpenALOutputConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.OpenALDevice.CreateSoundOut(Shamisen.IO.OpenALOutputConfiguration)">
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.IO.OpenALDevice.Equals(System.Object)">
             <summary>
@@ -104,25 +108,11 @@
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.op_Equality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
+        <member name="M:Shamisen.IO.OpenALDevice.ConvertToALFormat(Shamisen.IWaveFormat)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are equal.
+            Indicates whether the audio output device supports a particular stream format.
             </summary>
-            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDevice.op_Inequality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-            </returns>
+            <param name="format">The format to judge the availability.</param>
         </member>
         <member name="T:Shamisen.IO.OpenALDeviceEnumerator">
             <summary>
@@ -263,6 +253,28 @@
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
+        </member>
+        <member name="T:Shamisen.IO.OpenALOutputConfiguration">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor(Shamisen.IO.Devices.ConfigurationProperty{System.TimeSpan})">
+             <summary>
+            
+             </summary>
+             <param name="latency"></param>
+        </member>
+        <member name="P:Shamisen.IO.OpenALOutputConfiguration.Latency">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenALOutputConfiguration.Exclusivity">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

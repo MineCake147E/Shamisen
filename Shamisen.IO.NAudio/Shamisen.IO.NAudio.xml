@@ -158,52 +158,22 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.Length">
-            <summary>
-            Gets the length.
-            </summary>
-            <value>
-            The length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.SkipSupport">
-            <summary>
-            Gets the skip support.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveProviderSource.SeekSupport">
-            <summary>
-            Gets the seek support.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.IO.NAudioWaveProviderSource.Read(System.Span{System.Byte})">
             <summary>
@@ -236,55 +206,22 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.TotalLength">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.NAudioWaveStreamSource.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.IO.NAudioWaveStreamSource.Read(System.Span{System.Byte})">
             <summary>

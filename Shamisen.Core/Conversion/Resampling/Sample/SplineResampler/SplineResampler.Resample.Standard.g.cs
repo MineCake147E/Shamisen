@@ -17,10 +17,10 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region CachedDirect
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private int ResampleCachedDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {
+        private int ResampleCachedDirect (Span<float> buffer, int channels, Span<float> srcBuffer)
+        {
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
             ref var coeffPtr = ref GetReference(cspan);
-            int outputSamplePosition = 0;
             int inputSampleIndex = 0, x = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
@@ -251,7 +251,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
             ref var coeffPtr = ref GetReference(cspan);
-            int outputSamplePosition = 0;
             int inputSampleIndex = 0, x = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
@@ -523,7 +522,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         {
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
             ref var coeffPtr = ref GetReference(cspan);
-            int outputSamplePosition = 0;
             int inputSampleIndex = 0, x = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;
@@ -784,8 +782,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region Direct
-        private int ResampleDirect (Span<float> buffer, int channels, Span<float> srcBuffer) {
-            int outputSamplePosition = 0;
+        private int ResampleDirect (Span<float> buffer, int channels, Span<float> srcBuffer)
+        {
             int inputSampleIndex = 0, cG = conversionGradient;
             int ram = RateMul;
             int acc = GradientIncrement;

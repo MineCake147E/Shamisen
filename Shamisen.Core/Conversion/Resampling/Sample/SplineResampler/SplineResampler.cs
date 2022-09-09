@@ -42,7 +42,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         private Vector4[] preCalculatedCatmullRomCoefficients;
 
         private float[][] sampleCache;
-        private int samplesRemaining = 0;
 
         private bool isEndOfStream = false;
 
@@ -577,11 +576,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             a.CopyTo(bufferWrapper.Buffer);
         }
         #endregion
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public override ReadResult Read(Span<float> buffer)
         {
             var channels = Channels;

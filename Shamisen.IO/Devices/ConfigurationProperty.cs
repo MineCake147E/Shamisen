@@ -12,6 +12,17 @@ namespace Shamisen.IO.Devices
     /// <typeparam name="T"></typeparam>
     public readonly struct ConfigurationProperty<T> : IConfigurationProperty<T>
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConfigurationProperty{T}"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="priority">The priority.</param>
+        public ConfigurationProperty(T value, ConfigurationPropertyPriority priority)
+        {
+            Value = value;
+            Priority = priority;
+        }
+
         /// <inheritdoc/>
         public ConfigurationPropertyPriority Priority { get; }
         /// <inheritdoc/>
@@ -30,18 +41,8 @@ namespace Shamisen.IO.Devices
         public ConfigurationPropertyPriority Priority { get; set; }
 
         /// <summary>
-        /// Sets the priority for this setting.
-        /// </summary>
-        public void SetPriority(ConfigurationPropertyPriority value) => Priority = value;
-
-        /// <summary>
         /// Gets or sets the value.
         /// </summary>
         public T Value { get; set; }
-
-        /// <summary>
-        /// Sets the value.
-        /// </summary>
-        public void SetValue(T value) => Value = value;
     }
 }

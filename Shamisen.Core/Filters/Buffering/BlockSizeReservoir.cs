@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using DivideSharp;
 
+using Shamisen.Conversion;
+
 namespace Shamisen.Filters.Buffering
 {
     /// <summary>
@@ -34,20 +36,10 @@ namespace Shamisen.Filters.Buffering
             written = default;
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<TSample, TFormat> Source { get; }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format => Source.Format;
 
         /// <summary>

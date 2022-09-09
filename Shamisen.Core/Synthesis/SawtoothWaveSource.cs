@@ -14,10 +14,10 @@ using DivideSharp;
 namespace Shamisen.Synthesis
 {
     /// <summary>
-    /// Generates a square wave with specified frequency.
+    /// Generates a sawtooth wave with specified frequency.
     /// </summary>
     /// <seealso cref="ISampleSource" />
-    public sealed class SawtoothWaveSource : ISampleSource, IFrequencyGeneratorSource
+    public sealed class SawtoothWaveSource : ISampleSource, IFrequencyGeneratorSource, IPeriodicGeneratorSource<Fixed64>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SquareWaveSource"/> class.
@@ -30,60 +30,30 @@ namespace Shamisen.Synthesis
             ChannelsDivisor = new(format.Channels);
         }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
-        /// <summary>
-        /// Gets or sets the frequency.
-        /// </summary>
-        /// <value>
-        /// The frequency.
-        /// </value>
+        /// <inheritdoc/>
         public double Frequency
         {
             get => AngularVelocity.DoubleValue * Format.SampleRate * 0.5;
-            set => AngularVelocity = (Fixed64)Math.Abs(2.0 * value / Format.SampleRate);
+            set => AngularVelocity = (Fixed64)Math.Abs(2.0 * value * SamplingFrequencyInverse);
         }
 
         private double SamplingFrequencyInverse { get; }
 
-        /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
-        /// Some implementation could not support this property.
-        /// </summary>
-        public long Position { get => Theta.Value; set => Theta = new(value); }
-
-        /// <summary>
-        /// Gets or sets the current phase of this <see cref="SawtoothWaveSource"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public Fixed64 Theta { get; set; } = Fixed64.Zero;
 
-        /// <summary>
-        /// Gets or sets the angular velocity of this <see cref="SquareWaveSource"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public Fixed64 AngularVelocity { get; set; }
 
         private Int32Divisor ChannelsDivisor { get; set; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => null;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => null;
 
         ulong? IAudioSource<float, SampleFormat>.Length => null;
@@ -92,11 +62,7 @@ namespace Shamisen.Synthesis
 
         ulong? IAudioSource<float, SampleFormat>.Position => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
             var channels = Format.Channels;
@@ -106,29 +72,6 @@ namespace Shamisen.Synthesis
             var r = Process(buffer, omega, theta, channels, ChannelsDivisor, out var nt);
             Theta = nt;
             return r;
-        }
-
-        /// <summary>
-        /// Generates the monaural sample.
-        /// </summary>
-        /// <param name="theta">The theta(from -pi to pi).</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static float GenerateMonauralSample(Fixed64 theta)
-        {
-            var y = (int)(theta.Value >> 32) & int.MinValue;
-            y |= 0x3f80_0000;
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-            return BitConverter.Int32BitsToSingle(y);
-#else
-            return Unsafe.As<int, float>(ref y);
-#endif
-        }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
-        {
-            var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
-            return r > 0 ? q + 1 : q;
         }
 
         internal static ReadResult Process(Span<float> buffer, Fixed64 omega, Fixed64 theta, int channels, Int32Divisor channelsDivisor, out Fixed64 newTheta)

@@ -18,6 +18,7 @@ using System.Runtime.Intrinsics.Arm;
 using System.Text;
 
 using Shamisen.Optimization;
+using Shamisen.Conversion;
 
 using System.Runtime.InteropServices;
 
@@ -66,12 +67,7 @@ namespace Shamisen.Filters
             AllowInconsistencyForSpeed = allowInconsistencyForSpeed;
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
 
         /// <summary>
@@ -82,12 +78,7 @@ namespace Shamisen.Filters
         /// </value>
         public BiQuadParameter Parameter { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format => Source.Format;
 
         private Vector2[] internalStates;
@@ -119,20 +110,10 @@ namespace Shamisen.Filters
         /// </value>
         public ulong? Position => Source.Position;
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => Source.SkipSupport;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => Source.SeekSupport;
 
         /// <summary>

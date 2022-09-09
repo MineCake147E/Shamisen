@@ -17,7 +17,7 @@ namespace Shamisen.Synthesis
     /// Generates a square wave with specified frequency.
     /// </summary>
     /// <seealso cref="ISampleSource" />
-    public sealed class SquareWaveSource : ISampleSource, IFrequencyGeneratorSource
+    public sealed class SquareWaveSource : ISampleSource, IFrequencyGeneratorSource, IPeriodicGeneratorSource<Fixed64>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SquareWaveSource"/> class.
@@ -30,12 +30,7 @@ namespace Shamisen.Synthesis
             ChannelsDivisor = new(format.Channels);
         }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
         /// <summary>
@@ -70,20 +65,10 @@ namespace Shamisen.Synthesis
 
         private Int32Divisor ChannelsDivisor { get; set; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => null;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => null;
 
         ulong? IAudioSource<float, SampleFormat>.Length => null;
@@ -92,11 +77,7 @@ namespace Shamisen.Synthesis
 
         ulong? IAudioSource<float, SampleFormat>.Position => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
             var channels = Format.Channels;
@@ -304,7 +285,6 @@ namespace Shamisen.Synthesis
         #region IDisposable Support
 
         private bool disposedValue = false; //
-        private double frequency;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

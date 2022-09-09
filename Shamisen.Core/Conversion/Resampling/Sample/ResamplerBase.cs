@@ -14,20 +14,10 @@ namespace Shamisen.Conversion.Resampling.Sample
     /// <seealso cref="IAudioFilter{TSample, TFormat}" />
     public abstract class ResamplerBase : IAudioFilter<float, SampleFormat>, ISampleSource
     {
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<float, SampleFormat> Source { get; }
 
         /// <summary>
@@ -112,47 +102,19 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         protected int IndexIncrement { get; }
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => Source.Length * (ulong)RateMul / RateDivDivisor64;
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => Source.TotalLength * (ulong)RateMul / RateDivDivisor64;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => Source.Position * (ulong)RateMul / RateDivDivisor64;
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
         /// <summary>

@@ -30,13 +30,5 @@ namespace Shamisen.Formats
         /// The sub format.
         /// </value>
         Guid SubFormat { get; }
-
-        /// <summary>
-        /// Gets the extra data.
-        /// </summary>
-        /// <value>
-        /// The extra data.
-        /// </value>
-        ReadOnlyMemory<byte> ExtraData { get; }
     }
 }

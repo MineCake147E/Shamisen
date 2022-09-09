@@ -48,6 +48,7 @@ using System.Threading.Tasks;
 using DivideSharp;
 
 using Shamisen.Codecs.Flac.SubFrames;
+using Shamisen.Conversion;
 using Shamisen.Data;
 using Shamisen.Data.Binary;
 using Shamisen.Utils;
@@ -78,54 +79,22 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         private IFlacSubFrame[]? subFrames;
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public Int32LinearPcmSampleFormat Format { get; }
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}"/> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => TotalLength - Position;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position { get; private set; } = 0;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public FlacBitReader Source { get; }
 
         /// <summary>
@@ -136,13 +105,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public FlacStreamInfoBlock StreamInfoBlock { get; }
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br/>
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}"/> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength { get; private set; } = 0;
 
         /// <summary>

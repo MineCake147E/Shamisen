@@ -31,7 +31,7 @@ namespace Shamisen.IO
         private ALFormat format;
         private ALContext contextHandle;
         private bool disposedValue = false;
-        private ManualResetEventSlim fillFlag = new ManualResetEventSlim(false);
+        private ManualResetEventSlim fillFlag = new(false);
         private Task? fillTask;
         private ALDevice device;
         private IWaveFormat? sourceFormat;
@@ -80,11 +80,6 @@ namespace Shamisen.IO
         /// <param name="latency">The latency.</param>
         public OpenALOutput(OpenALDevice device, TimeSpan latency) : this(device.Name, latency) { }
 
-        [Obsolete("The Device name gets no longer supported!")]
-        internal OpenALOutput(string name) : this(name, DefaultLatency)
-        {
-        }
-
         private OpenALOutput(string name, TimeSpan latency)
         {
             device = ALC.OpenDevice(name);
@@ -102,7 +97,7 @@ namespace Shamisen.IO
                 switch (Key)
                 {
                     case AlcContextAttributes.Frequency:
-                        sampleRate = Math.Max(sampleRate, Value);
+                        sampleRate = MathI.Max(sampleRate, Value);
                         break;
                     default:
                         continue;
@@ -133,7 +128,7 @@ namespace Shamisen.IO
             Source = source;
             sourceFormat = source.Format;
             bufferCreationNeeded = true;
-            if (!(cancellationTokenSource is null))
+            if (cancellationTokenSource is not null)
             {
                 cancellationTokenSource.Cancel();
             }
@@ -190,7 +185,7 @@ namespace Shamisen.IO
                     if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
                     bufferPointers = AL.GenBuffers(NumberOfBuffers); CheckErrors();
                     src = AL.GenSource(); CheckErrors();
-                    var sf = sourceFormat ?? throw new ArgumentNullException();
+                    var sf = sourceFormat ?? throw new NullReferenceException();
 
                     inbuf = new byte[sf.GetBufferSizeRequired(Latency)];
                     format = OpenALDevice.ConvertToALFormat(sf);
@@ -225,10 +220,12 @@ namespace Shamisen.IO
             {
                 while (running)
                 {
+                    if (token.IsCancellationRequested) return;
                     token.ThrowIfCancellationRequested();
                     fillFlag.Wait(token);
-                    token.ThrowIfCancellationRequested();
                     int bp;
+                    if (token.IsCancellationRequested) return;
+                    token.ThrowIfCancellationRequested();
                     using (_ = await OpenALContextManager.WaitForContextAsync(contextHandle))
                     {
                         AL.GetSource(src, ALGetSourcei.BuffersProcessed, out bp); CheckErrors();
@@ -290,7 +287,7 @@ namespace Shamisen.IO
         /// </summary>
         public void Pause()
         {
-            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot pause without playing!");
+            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException("Cannot pause without playing!");
             PlaybackState = PlaybackState.Paused;
             _ = Task.Run(async () => await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
                 {
@@ -315,7 +312,7 @@ namespace Shamisen.IO
             }
             else
             {
-                if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException($"Cannot start playback without stopping or initializing!");
+                if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException("Cannot start playback without stopping or initializing!");
                 _ = Task.Run(async () =>
                 {
                     running = true;
@@ -337,7 +334,7 @@ namespace Shamisen.IO
         /// </summary>
         public void Resume()
         {
-            if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException($"Cannot resume without pausing!");
+            if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException("Cannot resume without pausing!");
             _ = Task.Run(async () => await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
                 {
                     if (AL.IsSource(src)) AL.SourcePlay(src);
@@ -351,7 +348,7 @@ namespace Shamisen.IO
         /// </summary>
         public void Stop()
         {
-            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot stop without playing!");
+            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException("Cannot stop without playing!");
             _ = Task.Run(StopInternalAsync).ConfigureAwait(false);
         }
 

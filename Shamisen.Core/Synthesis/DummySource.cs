@@ -18,32 +18,17 @@ namespace Shamisen.Synthesis
     {
         private bool disposedValue = false;
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format { get; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample, TFormat}" />.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample, TFormat}" />.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SilenceSource{TSample, TFormat}"/> class.
+        /// Initializes a new instance of the <see cref="DummySource{TSample, TFormat}"/> class.
         /// </summary>
         /// <param name="format">The format.</param>
         public DummySource(TFormat format)
@@ -51,40 +36,16 @@ namespace Shamisen.Synthesis
             Format = format;
         }
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => null;
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => null;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample,TFormat}" /> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>
-        /// The length of the data written.
-        /// </returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer) => buffer.Length;
 
         #region IDisposable Support

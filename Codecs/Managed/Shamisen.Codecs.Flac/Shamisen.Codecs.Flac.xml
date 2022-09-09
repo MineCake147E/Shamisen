@@ -1161,12 +1161,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
             <exception cref="T:System.ObjectDisposedException">FlacBitReader</exception>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacBitReader.UnconsumedInputBits">
@@ -1620,54 +1615,22 @@
             </summary>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.StreamInfoBlock">
             <summary>
@@ -1678,13 +1641,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacFrameParser.#ctor(Shamisen.Codecs.Flac.Parsing.FlacBitReader,Shamisen.Codecs.Flac.FlacStreamInfoBlock)">
             <summary>
@@ -1826,12 +1783,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParser.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParser.Length">
             <summary>
@@ -1842,20 +1794,10 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParser.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Flac.FlacParser.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Flac.FlacParser.#ctor(Shamisen.IReadableDataSource{System.Byte},Shamisen.Codecs.Flac.FlacParserOptions)">
             <summary>

@@ -39,12 +39,7 @@ namespace Shamisen.IO
         /// </value>
         public ShamisenWaveSource Source { get; }
 
-        /// <summary>
-        /// Gets the format of the audio data.
-        /// </summary>
-        /// <value>
-        /// The format of the audio data.
-        /// </value>
+        /// <inheritdoc/>
         public CSCore.WaveFormat WaveFormat { get; }
 
         /// <summary>

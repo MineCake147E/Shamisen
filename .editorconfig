@@ -331,3 +331,5 @@ dotnet_diagnostic.CS1734.severity = error
 dotnet_style_allow_multiple_blank_lines_experimental=false:suggestion
 dotnet_style_allow_statement_immediately_after_block_experimental=true:suggestion
 dotnet_diagnostic.RCS1123.severity = none
+# S907: "goto" statement should not be used
+dotnet_diagnostic.S907.severity = none

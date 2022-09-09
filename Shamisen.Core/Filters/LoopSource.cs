@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Shamisen.Conversion;
 using Shamisen.Data;
 
 namespace Shamisen.Filters
@@ -41,67 +42,28 @@ namespace Shamisen.Filters
             cache.SeekTo(0);
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<TSample, TFormat> Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => Source.TotalLength - Position;
 
-        /// <summary>
-        /// Gets the total length.
-        /// </summary>
-        /// <value>
-        /// The total length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => null;
 
-        /// <summary>
-        /// Gets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => cache.ReadPosition;
 
-        /// <summary>
-        /// Gets the skip support.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>The length of the data written.</returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer)
         {
             var written = 0;

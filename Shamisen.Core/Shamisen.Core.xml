@@ -3267,62 +3267,25 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Read(System.Span{System.Byte})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Formats.LinearPcm.ByteAlignedPcmWaveformChunkParser.Dispose">
             <summary>
@@ -3884,12 +3847,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.RiffSize">
             <summary>
@@ -3916,47 +3874,19 @@
             </value>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.#ctor(Shamisen.Codecs.Waveform.Parsing.IChunkParserFactory,Shamisen.IReadableDataSource{System.Byte})">
             <summary>
@@ -3988,11 +3918,7 @@
             <exception cref="T:System.InvalidOperationException">The parser is not parsing RF64 data.</exception>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.Read(System.Span{System.Byte})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Codecs.Waveform.Parsing.SimpleWaveParser.Dispose">
             <summary>
@@ -5405,67 +5331,28 @@
             <param name="source">The source.</param>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Length">
-            <summary>
-            Gets the length.
-            </summary>
-            <value>
-            The length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SkipSupport">
-            <summary>
-            Gets the skip support.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SeekSupport">
-            <summary>
-            Gets the seek support.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Dispose(System.Boolean)">
             <summary>
@@ -5502,20 +5389,10 @@
             <seealso cref="T:Shamisen.Filters.IAudioFilter`2" />
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Channels">
             <summary>
@@ -5600,47 +5477,19 @@
             </summary>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.Resampling.Sample.ResamplerBase.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.ResamplerBase.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},System.Int32)">
             <summary>
@@ -5816,11 +5665,7 @@
             <param name="rateMulInverse"></param>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ActualDispose(System.Boolean)">
             <summary>
@@ -6253,20 +6098,10 @@
             </summary>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.BytesPerSample">
             <summary>
@@ -6277,20 +6112,10 @@
             </value>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.SampleToWaveConverters.SampleToWaveConverterBase.Length">
             <summary>
@@ -7009,20 +6834,10 @@
             </summary>
         </member>
         <member name="P:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.BytesPerSample">
             <summary>
@@ -7060,20 +6875,10 @@
             </value>
         </member>
         <member name="P:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.WaveToSampleConverterBase.#ctor(Shamisen.IReadableAudioSource{System.Byte,Shamisen.IWaveFormat},Shamisen.SampleFormat)">
             <summary>
@@ -8328,12 +8133,7 @@
             <seealso cref="T:Shamisen.IDataSource`1" />
         </member>
         <member name="P:Shamisen.Data.Parsing.BufferedBinaryParser.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="F:Shamisen.Data.Parsing.BufferedBinaryParser.MinimumBufferLength">
             <summary>
@@ -9302,12 +9102,7 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.Parameter">
             <summary>
@@ -9318,12 +9113,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.Length">
             <summary>
@@ -9353,20 +9143,10 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.BiQuadFilter.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.BiQuadFilter.Read(System.Span{System.Single})">
             <summary>
@@ -9729,55 +9509,22 @@
             <param name="format">The format.</param>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.AudioCache`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Buffering.AudioCache`2.Read(System.Span{`0})">
             <summary>
@@ -9810,20 +9557,10 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Length">
             <summary>
@@ -9895,20 +9632,10 @@
             </summary>
         </member>
         <member name="P:Shamisen.Filters.StreamBuffer`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.StreamBuffer`2.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Filters.StreamBuffer`2.Length">
             <summary>
@@ -9938,20 +9665,10 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.StreamBuffer`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.StreamBuffer`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.StreamBuffer`2.#ctor(Shamisen.IReadableAudioSource{`0,`1},System.Int32,System.Int32,System.Boolean)">
             <summary>
@@ -9969,11 +9686,7 @@
             <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
         </member>
         <member name="M:Shamisen.Filters.StreamBuffer`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.StreamBuffer`2.Dispose">
             <summary>
@@ -10120,60 +9833,25 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.Length">
-            <summary>
-            Gets the length.
-            </summary>
-            <value>
-            The length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.SkipSupport">
-            <summary>
-            Gets the skip support.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LengthTruncationSource`2.SeekSupport">
-            <summary>
-            Gets the seek support.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.LengthTruncationSource`2.Read(System.Span{`0})">
             <summary>
@@ -10202,67 +9880,28 @@
             <param name="source">The source.</param>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.Source">
-            <summary>
-            Gets the source.
-            </summary>
-            <value>
-            The source.
-            </value>
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.Format">
-            <summary>
-            Gets the format.
-            </summary>
-            <value>
-            The format.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.Length">
-            <summary>
-            Gets the length.
-            </summary>
-            <value>
-            The length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.TotalLength">
-            <summary>
-            Gets the total length.
-            </summary>
-            <value>
-            The total length.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.Position">
-            <summary>
-            Gets the position.
-            </summary>
-            <value>
-            The position.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.SkipSupport">
-            <summary>
-            Gets the skip support.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.LoopSource`2.SeekSupport">
-            <summary>
-            Gets the seek support.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.LoopSource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.LoopSource`2.Dispose">
             <summary>
@@ -10555,12 +10194,7 @@
              <seealso cref="T:Shamisen.Filters.IPlaylistSource`2" />
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.CurrentSource">
-            <summary>
-            Gets the current source.
-            </summary>
-            <value>
-            The current source.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.ListSupport">
             <summary>
@@ -10579,12 +10213,7 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.ShuffleSupport">
-            <summary>
-            Gets the shuffle support.
-            </summary>
-            <value>
-            The shuffle support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.SimpleAdditionSupport">
             <summary>
@@ -10603,55 +10232,22 @@
             </value>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.SimplePlaylistSource`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.SimplePlaylistSource`2.#ctor(System.Collections.Generic.List{Shamisen.IReadableAudioSource{`0,`1}})">
             <summary>
@@ -10673,11 +10269,7 @@
             <param name="format">The format.</param>
         </member>
         <member name="M:Shamisen.Filters.SimplePlaylistSource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.SimplePlaylistSource`2.Dispose">
             <summary>
@@ -10694,12 +10286,7 @@
             <seealso cref="T:Shamisen.Filters.IAudioFilter`2" />
         </member>
         <member name="P:Shamisen.AudioSocket`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.AudioSocket`2.Source">
             <summary>
@@ -10710,47 +10297,19 @@
             </value>
         </member>
         <member name="P:Shamisen.AudioSocket`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.AudioSocket`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.AudioSocket`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.AudioSocket`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.AudioSocket`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.AudioSocket`2.#ctor(`1)">
             <summary>
@@ -10759,11 +10318,7 @@
             <param name="format">The format.</param>
         </member>
         <member name="M:Shamisen.AudioSocket`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.AudioSocket`2.ReplaceSource(Shamisen.IReadableAudioSource{`0,`1})">
             <summary>
@@ -11063,14 +10618,6 @@
             </summary>
             <value>
             The sub format.
-            </value>
-        </member>
-        <member name="P:Shamisen.Formats.IExtensibleWaveFormat.ExtraData">
-            <summary>
-            Gets the extra data.
-            </summary>
-            <value>
-            The extra data.
             </value>
         </member>
         <member name="T:Shamisen.Formats.Int32RangedLinearPcmSampleFormat">
@@ -12598,70 +12145,31 @@
             <seealso cref="T:Shamisen.IReadableAudioSource`2" />
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2" />.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2" />.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.DummySource`2.#ctor(`1)">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Synthesis.SilenceSource`2"/> class.
+            Initializes a new instance of the <see cref="T:Shamisen.Synthesis.DummySource`2"/> class.
             </summary>
             <param name="format">The format.</param>
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.DummySource`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.DummySource`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.DummySource`2.Dispose">
             <summary>
@@ -12687,6 +12195,21 @@
             The frequency.
             </value>
         </member>
+        <member name="T:Shamisen.Synthesis.IPeriodicGeneratorSource`1">
+            <summary>
+            Defines a base infrastructure of a periodic waveform generator.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.IPeriodicGeneratorSource`1.Theta">
+            <summary>
+            Gets or sets the current phase of this <see cref="T:Shamisen.Synthesis.IPeriodicGeneratorSource`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Synthesis.IPeriodicGeneratorSource`1.AngularVelocity">
+            <summary>
+            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.IPeriodicGeneratorSource`1"/>.
+            </summary>
+        </member>
         <member name="T:Shamisen.Synthesis.PseudoMonauralSignalSourceBase">
             <summary>
             Defines a base infrastructure of the source generates a deterministic pseudo-monaural wave with specified frequency.
@@ -12700,12 +12223,7 @@
             <param name="format">The output format.</param>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.Frequency">
             <summary>
@@ -12716,54 +12234,22 @@
             </value>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2"/> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br/>
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2"/> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.PseudoMonauralSignalSourceBase.GenerateMonauralSample(System.Double)">
             <summary>
@@ -12791,7 +12277,7 @@
         </member>
         <member name="T:Shamisen.Synthesis.SawtoothWaveSource">
             <summary>
-            Generates a square wave with specified frequency.
+            Generates a sawtooth wave with specified frequency.
             </summary>
             <seealso cref="T:Shamisen.ISampleSource" />
         </member>
@@ -12802,66 +12288,25 @@
             <param name="format">The output format.</param>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Frequency">
-            <summary>
-            Gets or sets the frequency.
-            </summary>
-            <value>
-            The frequency.
-            </value>
-        </member>
-        <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Position">
-            <summary>
-            Gets or sets where the <see cref="T:Shamisen.IAudioSource`2"/> is.
-            Some implementation could not support this property.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.Theta">
-            <summary>
-            Gets or sets the current phase of this <see cref="T:Shamisen.Synthesis.SawtoothWaveSource"/>.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.AngularVelocity">
-            <summary>
-            Gets or sets the angular velocity of this <see cref="T:Shamisen.Synthesis.SquareWaveSource"/>.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SawtoothWaveSource.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SawtoothWaveSource.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
-        </member>
-        <member name="M:Shamisen.Synthesis.SawtoothWaveSource.GenerateMonauralSample(Shamisen.Fixed64)">
-            <summary>
-            Generates the monaural sample.
-            </summary>
-            <param name="theta">The theta(from -pi to pi).</param>
-            <returns></returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SawtoothWaveSource.Dispose(System.Boolean)">
             <summary>
@@ -12984,12 +12429,7 @@
             <exception cref="T:System.ArgumentNullException">format</exception>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceWaveSource.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceWaveSource.Position">
             <summary>
@@ -12998,27 +12438,13 @@
             </summary>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceWaveSource.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SilenceWaveSource.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceWaveSource.Read(System.Span{System.Byte})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceWaveSource.Dispose">
             <summary>
@@ -13110,12 +12536,7 @@
             <param name="format">The output format.</param>
         </member>
         <member name="P:Shamisen.Synthesis.SquareWaveSource.Format">
-            <summary>
-            Gets the format of the audio data.
-            </summary>
-            <value>
-            The format of the audio data.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SquareWaveSource.Frequency">
             <summary>
@@ -13142,27 +12563,13 @@
             </summary>
         </member>
         <member name="P:Shamisen.Synthesis.SquareWaveSource.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Synthesis.SquareWaveSource.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2"/>.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SquareWaveSource.Read(System.Span{System.Single})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>The length of the data written.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SquareWaveSource.GenerateMonauralSample(Shamisen.Fixed64)">
             <summary>

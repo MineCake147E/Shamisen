@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Shamisen.Conversion;
+
 using Shamisen.Data.Binary;
 
 namespace Shamisen.Data.Parsing
@@ -18,12 +20,7 @@ namespace Shamisen.Data.Parsing
     {
         private bool disposedValue;
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableDataSource<byte> Source { get; private set; }
 
         /// <summary>

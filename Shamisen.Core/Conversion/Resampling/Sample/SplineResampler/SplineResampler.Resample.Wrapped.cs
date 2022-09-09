@@ -110,7 +110,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -136,7 +136,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -159,7 +159,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y; //The control point 2.
                     var value3 = values.Z * cutmullCoeffs.Z; //The control point 3.
                     var value4 = values.W * cutmullCoeffs.W; //The control point 4.
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -183,7 +183,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 #if NETCOREAPP3_1_OR_GREATER
                 return ResampleCachedWrappedOddGenericX86(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
 #endif
-                return ResampleCachedWrappedOddGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
             }
         }
 
@@ -368,7 +367,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y;
                     var value3 = values.Z * cutmullCoeffs.Z;
                     var value4 = values.W * cutmullCoeffs.W;
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -393,7 +392,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y;
                     var value3 = values.Z * cutmullCoeffs.Z;
                     var value4 = values.W * cutmullCoeffs.W;
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -415,7 +414,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     var value2 = values.Y * cutmullCoeffs.Y;
                     var value3 = values.Z * cutmullCoeffs.Z;
                     var value4 = values.W * cutmullCoeffs.W;
-                    Unsafe.Add(ref rdi, i) = (value1 + value3) + (value2 + value4);
+                    Unsafe.Add(ref rdi, i) = value1 + value3 + (value2 + value4);
                     psx += acc;
                     isx += facc;
                     var h = psx >= ram;
@@ -439,7 +438,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 #if NETCOREAPP3_1_OR_GREATER
                 return ResampleCachedWrappedEvenGenericX86(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
 #endif
-                return ResampleCachedWrappedEvenGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
             }
         }
 

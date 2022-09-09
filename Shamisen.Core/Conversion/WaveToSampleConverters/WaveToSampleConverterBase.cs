@@ -11,20 +11,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
     /// </summary>
     public abstract class WaveToSampleConverterBase : IAudioConverter<byte, IWaveFormat, float, SampleFormat>, ISampleSource
     {
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<byte, IWaveFormat> Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public SampleFormat Format { get; }
 
         /// <summary>
@@ -62,20 +52,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </value>
         public abstract ulong? Position { get; }
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public abstract ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample,TFormat}"/>.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public abstract ISeekSupport? SeekSupport { get; }
 
         /// <summary>

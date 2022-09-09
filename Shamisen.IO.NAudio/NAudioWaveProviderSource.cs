@@ -38,52 +38,22 @@ namespace Shamisen.IO
 
         private IWaveProvider Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public IWaveFormat Format { get; }
 
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length { get; }
 
-        /// <summary>
-        /// Gets the total length.
-        /// </summary>
-        /// <value>
-        /// The total length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength { get; }
 
-        /// <summary>
-        /// Gets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position { get; }
 
-        /// <summary>
-        /// Gets the skip support.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport { get; }
 
-        /// <summary>
-        /// Gets the seek support.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport { get; }
 
         /// <summary>

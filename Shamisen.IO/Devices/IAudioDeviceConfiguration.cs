@@ -14,16 +14,16 @@ namespace Shamisen.IO
     public interface IAudioDeviceConfiguration
     {
         /// <summary>
-        /// The <see cref="IConfigurationProperty{T}"/> for the latency.<br/>
+        /// The <see cref="ConfigurationProperty{T}"/> for the latency.<br/>
         /// Returns <see langword="null"/> if it's not supported.
         /// </summary>
-        IConfigurationProperty<TimeSpan>? Latency { get; }
+        ConfigurationProperty<TimeSpan>? Latency { get; }
 
         /// <summary>
-        /// The <see cref="IConfigurationProperty{T}"/> for the exclusivity.<br/>
+        /// The <see cref="ConfigurationProperty{T}"/> for the exclusivity.<br/>
         /// Returns <see langword="null"/> if it's not supported.
         /// </summary>
-        IConfigurationProperty<IOExclusivity>? Exclusivity { get; }
+        ConfigurationProperty<IOExclusivity>? Exclusivity { get; }
     }
     /// <summary>
     /// Defines a base structure of audio device's mutable initialization configuration.
@@ -31,16 +31,16 @@ namespace Shamisen.IO
     public interface IMutableAudioDeviceConfiguration<out TAudioDeviceConfiguration> where TAudioDeviceConfiguration : IAudioDeviceConfiguration
     {
         /// <summary>
-        /// The <see cref="IConfigurationProperty{T}"/> for the latency.<br/>
+        /// The <see cref="ConfigurationProperty{T}"/> for the latency.<br/>
         /// Returns <see langword="null"/> if it's not supported.
         /// </summary>
-        IMutableConfigurationProperty<TimeSpan>? Latency { get; }
+        MutableConfigurationProperty<TimeSpan>? Latency { get; }
 
         /// <summary>
-        /// The <see cref="IConfigurationProperty{T}"/> for the exclusivity.<br/>
+        /// The <see cref="ConfigurationProperty{T}"/> for the exclusivity.<br/>
         /// Returns <see langword="null"/> if it's not supported.
         /// </summary>
-        IMutableConfigurationProperty<IOExclusivity>? Exclusivity { get; }
+        MutableConfigurationProperty<IOExclusivity>? Exclusivity { get; }
 
         /// <summary>
         /// Generates a <typeparamref name="TAudioDeviceConfiguration"/> instance.

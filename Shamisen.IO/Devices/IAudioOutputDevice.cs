@@ -19,16 +19,8 @@ namespace Shamisen.IO
         /// <summary>
         /// Creates the <see cref="ISoundOut"/> that outputs audio to this device.
         /// </summary>
-        /// <param name="latency">The desired latency for output.</param>
+        /// <param name="configuration">The configuration for output.</param>
         /// <returns>The <typeparamref name="TSoundOut"/> instance.</returns>
-        TSoundOut CreateSoundOut(TimeSpan latency = default);
-
-        /// <summary>
-        /// Creates the <see cref="ISoundOut"/> that outputs audio to this device with the specified <paramref name="mode"/>.
-        /// </summary>
-        /// <param name="latency">The latency.</param>
-        /// <param name="mode">The share mode.</param>
-        /// <returns></returns>
-        TSoundOut CreateSoundOut(TimeSpan latency, IOExclusivity mode);
+        TSoundOut CreateSoundOut(TAudioDeviceConfiguration configuration);
     }
 }

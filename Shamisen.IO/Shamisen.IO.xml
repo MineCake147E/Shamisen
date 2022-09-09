@@ -34,27 +34,44 @@
         </member>
         <member name="T:Shamisen.IO.Devices.ConfigurationPropertyPriority">
             <summary>
-            Defines the values for priority of settings.
+            Defines the values for priority of settings.<br/>
+            The "best" in documents of each values means highest for <see cref="P:Shamisen.IAudioFormat`1.SampleRate"/> and <see cref="P:Shamisen.IAudioFormat`1.BitDepth"/>,
+            lowest for <see cref="P:Shamisen.IO.IAudioDeviceConfiguration.Latency"/>.<br/>
+            For <see cref="P:Shamisen.IAudioFormat`1.Channels"/>, the device should be rendering each channels as close as it's originally intended as a result of initialization.
             </summary>
         </member>
         <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.Optional">
             <summary>
-            The initializer can ignore the setting if it's impossible to obey.
+            If the value is set, the initializer should set the property exactly to the specified value, but can ignore the setting if it's impossible to obey.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.DesiredBetterThanOrEqualsTo">
+        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.BestPossible">
             <summary>
-            The initializer can compromise the setting if it's impossible to obey.
+            The initializer should set the property to the best possible value, regardless of the set value.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.RequiredBetterThanOrEqualsTo">
+        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.BestEffort">
             <summary>
-            The initializer must cancel the initialization if it's impossible to obey.
+            The initializer should set the property to a minimum value greater than the specified value.<br/>
+            The initializer can compromise the setting if it's impossible to meet at least the minimum necessary conditions.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.RequiredBestOrExact">
+            <summary>
+            The initializer must set the property to the best possible value, regardless of the set value.<br/>
+            The initializer must cancel the initialization if it's impossible to meet at least the minimum necessary conditions.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.RequiredExactOrBetter">
+            <summary>
+            The initializer must set the property to a minimum value greater than the specified value.<br/>
+            The initializer must cancel the initialization if it's impossible to meet at least the minimum necessary conditions.
             </summary>
         </member>
         <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.RequiredExact">
             <summary>
-            The initializer must cancel the initialization if it's impossible to obey.
+            The initializer must set the property exactly to the specified value.<br/>
+            The initializer must cancel the initialization if it's impossible to set the specified conditions exactly.
             </summary>
         </member>
         <member name="T:Shamisen.IO.Devices.ConfigurationProperty`1">
@@ -62,6 +79,13 @@
             Provides a way to tell someone the value and priority.
             </summary>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Shamisen.IO.Devices.ConfigurationProperty`1.#ctor(`0,Shamisen.IO.Devices.ConfigurationPropertyPriority)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="priority">The priority.</param>
         </member>
         <member name="P:Shamisen.IO.Devices.ConfigurationProperty`1.Priority">
             <inheritdoc/>
@@ -80,19 +104,9 @@
             Gets or sets the priority for this setting.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.Devices.MutableConfigurationProperty`1.SetPriority(Shamisen.IO.Devices.ConfigurationPropertyPriority)">
-            <summary>
-            Sets the priority for this setting.
-            </summary>
-        </member>
         <member name="P:Shamisen.IO.Devices.MutableConfigurationProperty`1.Value">
             <summary>
             Gets or sets the value.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.Devices.MutableConfigurationProperty`1.SetValue(`0)">
-            <summary>
-            Sets the value.
             </summary>
         </member>
         <member name="T:Shamisen.IO.Devices.IConfigurationProperty`1">
@@ -116,17 +130,30 @@
             Defines a base infrastructure of a mutable configuration property.<br/>
             Some implementation can provide setters for <see cref="P:Shamisen.IO.Devices.IConfigurationProperty`1.Priority"/> and <see cref="P:Shamisen.IO.Devices.IConfigurationProperty`1.Value"/>.
             </summary>
-            <typeparam name="T">The type for <see cref="M:Shamisen.IO.Devices.IMutableConfigurationProperty`1.SetValue(`0)"/>.</typeparam>
+            <typeparam name="T">The type for <see cref="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Value"/>.</typeparam>
         </member>
-        <member name="M:Shamisen.IO.Devices.IMutableConfigurationProperty`1.SetPriority(Shamisen.IO.Devices.ConfigurationPropertyPriority)">
+        <member name="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Priority">
             <summary>
-            Sets the priority for this setting.
+            Gets or sets the priority for this setting.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.Devices.IMutableConfigurationProperty`1.SetValue(`0)">
+        <member name="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Value">
             <summary>
-            Sets the value.
+            Gets or sets the value.
             </summary>
+        </member>
+        <member name="T:Shamisen.IO.Devices.ConfigurationUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.IO.Devices.IConfigurationProperty`1"/> and <see cref="T:Shamisen.IO.Devices.IMutableConfigurationProperty`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.Devices.ConfigurationUtils.Set``2(``0,``1,Shamisen.IO.Devices.ConfigurationPropertyPriority)">
+            <summary>
+            Sets the <see cref="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Value"/> and <see cref="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Priority"/> at the same time.
+            </summary>
+            <param name="property">The property to set.</param>
+            <param name="value">The value.</param>
+            <param name="priority">The priority.</param>
         </member>
         <member name="T:Shamisen.IO.IAudioDevice">
             <summary>
@@ -156,13 +183,13 @@
         </member>
         <member name="P:Shamisen.IO.IAudioDeviceConfiguration.Latency">
             <summary>
-            The <see cref="T:Shamisen.IO.Devices.IConfigurationProperty`1"/> for the latency.<br/>
+            The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the latency.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
         <member name="P:Shamisen.IO.IAudioDeviceConfiguration.Exclusivity">
             <summary>
-            The <see cref="T:Shamisen.IO.Devices.IConfigurationProperty`1"/> for the exclusivity.<br/>
+            The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the exclusivity.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
@@ -173,13 +200,13 @@
         </member>
         <member name="P:Shamisen.IO.IMutableAudioDeviceConfiguration`1.Latency">
             <summary>
-            The <see cref="T:Shamisen.IO.Devices.IConfigurationProperty`1"/> for the latency.<br/>
+            The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the latency.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
         <member name="P:Shamisen.IO.IMutableAudioDeviceConfiguration`1.Exclusivity">
             <summary>
-            The <see cref="T:Shamisen.IO.Devices.IConfigurationProperty`1"/> for the exclusivity.<br/>
+            The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the exclusivity.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
@@ -243,20 +270,12 @@
             Gets the <see cref="T:Shamisen.IO.IFormatSupportStatusSupport`1"/> for this <see cref="T:Shamisen.IO.IAudioOutputDevice`2"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IAudioOutputDevice`2.CreateSoundOut(System.TimeSpan)">
+        <member name="M:Shamisen.IO.IAudioOutputDevice`2.CreateSoundOut(`1)">
             <summary>
             Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device.
             </summary>
-            <param name="latency">The desired latency for output.</param>
+            <param name="configuration">The configuration for output.</param>
             <returns>The <typeparamref name="TSoundOut"/> instance.</returns>
-        </member>
-        <member name="M:Shamisen.IO.IAudioOutputDevice`2.CreateSoundOut(System.TimeSpan,Shamisen.IO.IOExclusivity)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device with the specified <paramref name="mode"/>.
-            </summary>
-            <param name="latency">The latency.</param>
-            <param name="mode">The share mode.</param>
-            <returns></returns>
         </member>
         <member name="T:Shamisen.IO.IFormatSupportStatusSupport`1">
             <summary>

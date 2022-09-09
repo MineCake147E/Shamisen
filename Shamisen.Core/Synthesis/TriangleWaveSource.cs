@@ -13,7 +13,7 @@ namespace Shamisen.Synthesis
     /// <summary>
     /// Generates a triangular wave with specified frequency.
     /// </summary>
-    public sealed class TriangleWaveSource : ISampleSource, IFrequencyGeneratorSource
+    public sealed class TriangleWaveSource : ISampleSource, IFrequencyGeneratorSource, IPeriodicGeneratorSource<Fixed64>
     {
         private bool disposedValue;
 

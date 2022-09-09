@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using DivideSharp;
 
+using Shamisen.Conversion;
+
 namespace Shamisen.Filters
 {
     /// <summary>
@@ -31,60 +33,25 @@ namespace Shamisen.Filters
             blockSizeDivisorU32 = new UInt32Divisor((uint)source.Format.BlockSize);
         }
 
-        /// <summary>
-        /// Gets the source.
-        /// </summary>
-        /// <value>
-        /// The source.
-        /// </value>
+        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
         public IReadableAudioSource<TSample, TFormat> Source { get; }
 
-        /// <summary>
-        /// Gets the format.
-        /// </summary>
-        /// <value>
-        /// The format.
-        /// </value>
+        /// <inheritdoc/>
         public TFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
-        /// <value>
-        /// The length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => TotalLength - Position;
 
-        /// <summary>
-        /// Gets the total length.
-        /// </summary>
-        /// <value>
-        /// The total length.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength { get; }
 
-        /// <summary>
-        /// Gets the position.
-        /// </summary>
-        /// <value>
-        /// The position.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => position;
 
-        /// <summary>
-        /// Gets the skip support.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => Source.SkipSupport;
 
-        /// <summary>
-        /// Gets the seek support.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => Source.SeekSupport;
 
         /// <summary>

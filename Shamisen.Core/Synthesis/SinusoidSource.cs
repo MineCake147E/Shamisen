@@ -15,7 +15,7 @@ namespace Shamisen.Synthesis
     /// <summary>
     /// Generates a sinusoid wave with specified frequency.
     /// </summary>
-    public sealed class SinusoidSource : ISampleSource, IFrequencyGeneratorSource
+    public sealed class SinusoidSource : ISampleSource, IFrequencyGeneratorSource, IPeriodicGeneratorSource<Fixed64>
     {
         private const double PiSquared = Math.PI * Math.PI;
 
@@ -448,7 +448,6 @@ namespace Shamisen.Synthesis
         #region IDisposable Support
 
         private bool disposedValue = false; //
-        private double frequency;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
