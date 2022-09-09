@@ -952,9 +952,10 @@ namespace Shamisen.Codecs.Flac.Parsing
             var bytes = (q.Length - words) * BytesPerWord - bytesOfIncompleteWord;
             if (bytes == 0) return false;   //no space left
             var target = MemoryMarshal.AsBytes(q).Slice(words * BytesPerWord + bytesOfIncompleteWord);
+            var preswap = q[words];
             if (BitConverter.IsLittleEndian && bytesOfIncompleteWord > 0)
             {
-                q[words] = BinaryPrimitives.ReverseEndianness(q[words]);
+                q[words] = BinaryPrimitives.ReverseEndianness(preswap);
             }
             var rr = Source.Read(target);
             if (rr.IsEndOfStream)
@@ -962,7 +963,11 @@ namespace Shamisen.Codecs.Flac.Parsing
                 isEndOfStream = true;
             }
             if (rr.HasNoData)
+            {
+                q[words] = preswap;
                 return false;
+            }
+
             var size = (bytesOfIncompleteWord + rr.Length + (BytesPerWord - 1)) / BytesPerWord;
             MemoryMarshal.Cast<byte, ulong>(MemoryMarshal.AsBytes(q).Slice(words * BytesPerWord)).SliceWhile(size).ReverseEndianness();
             var d = words * BytesPerWord + bytesOfIncompleteWord + rr.Length;
