@@ -37,8 +37,10 @@ namespace Shamisen.Filters.BiQuad.Cascaded
             Channels = channels;
             Orders = orders;
             if (orders % 4 != 0) throw new ArgumentOutOfRangeException(nameof(orders), $"The number of {nameof(orders)} must be aligned with 4!");
-            this.parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-            this.states = states ?? throw new ArgumentNullException(nameof(states));
+            ArgumentNullException.ThrowIfNull(parameters);
+            this.parameters = parameters;
+            ArgumentNullException.ThrowIfNull(states);
+            this.states = states;
             if (parameters.LongLength < 5L * channels * orders)
                 throw new ArgumentException($"The length of {nameof(parameters)} must be at least as large as {5L * channels * orders} !", nameof(parameters));
             if (states.LongLength < 2L * channels * orders)

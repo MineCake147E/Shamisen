@@ -28,7 +28,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentNullException">source</exception>
         public LengthTruncationSource(IReadableAudioSource<TSample, TFormat> source, ulong totalLength)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             TotalLength = Math.Min(source.TotalLength ?? totalLength, totalLength);
             blockSizeDivisorU32 = new UInt32Divisor((uint)source.Format.BlockSize);
         }

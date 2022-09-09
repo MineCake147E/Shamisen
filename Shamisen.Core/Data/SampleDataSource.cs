@@ -25,7 +25,8 @@ namespace Shamisen.Data
         /// <exception cref="ArgumentNullException">source</exception>
         public SampleDataSource(IReadableAudioSource<TSample, TFormat> source)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
         }
 
         /// <summary>

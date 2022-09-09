@@ -18,7 +18,8 @@ namespace Shamisen.Filters.Mixing
         /// <exception cref="ArgumentNullException"></exception>
         public SimpleSourceBufferPair(ISampleSource source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             buffer = new(1024 * Format.Channels);
         }
 

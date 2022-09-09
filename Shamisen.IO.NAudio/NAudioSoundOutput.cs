@@ -24,7 +24,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">backend</exception>
         public NAudioSoundOutput(IWavePlayer backend, IWaveSource source)
         {
-            Backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            ArgumentNullException.ThrowIfNull(backend);
+            Backend = backend;
             backend.Init(new ShamisenWaveProvider(source));
         }
 

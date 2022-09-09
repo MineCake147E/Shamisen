@@ -42,7 +42,8 @@ namespace Shamisen.Data.Parsing
         /// <exception cref="ArgumentNullException">source</exception>
         public BufferedBinaryParser(IReadableDataSource<byte> source, int bufferLength = MinimumBufferLength)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             if (bufferLength < MinimumBufferLength)
                 throw new ArgumentOutOfRangeException(nameof(bufferLength), $"The {nameof(bufferLength)} must be larger than or equals to {MinimumBufferLength}!");
             buffer = new byte[bufferLength];

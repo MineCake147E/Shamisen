@@ -150,7 +150,8 @@ namespace Shamisen.Codecs.Flac
         /// </exception>
         public FlacParser(IReadableDataSource<byte> source, FlacParserOptions options = default)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             var fLaC = source.ReadUInt32LittleEndian();
             if (fLaC != BinaryExtensions.ConvertToBigEndian(0x664C_6143))
                 throw new ArgumentException("The FLAC Stream is invalid!", nameof(source));

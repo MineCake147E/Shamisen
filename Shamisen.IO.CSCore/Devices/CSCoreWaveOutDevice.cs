@@ -21,7 +21,8 @@ namespace Shamisen.IO.Devices
         /// <exception cref="ArgumentNullException">device</exception>
         public CSCoreWaveOutDevice(WaveOutDevice device)
         {
-            Device = device ?? throw new ArgumentNullException(nameof(device));
+            ArgumentNullException.ThrowIfNull(device);
+            Device = device;
         }
 
         /// <summary>

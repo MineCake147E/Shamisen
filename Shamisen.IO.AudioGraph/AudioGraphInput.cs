@@ -32,8 +32,10 @@ namespace Shamisen.IO.WinRt
         /// <exception cref="ArgumentNullException"></exception>
         public AudioGraphInput(AudioGraph audioGraph, IAudioInputNode inputNode)
         {
-            graph = audioGraph ?? throw new ArgumentNullException(nameof(audioGraph));
-            this.inputNode = inputNode ?? throw new ArgumentNullException(nameof(inputNode));
+            ArgumentNullException.ThrowIfNull(audioGraph);
+            graph = audioGraph;
+            ArgumentNullException.ThrowIfNull(inputNode);
+            this.inputNode = inputNode;
             var outputNode = audioGraph.CreateFrameOutputNode();
             inputNode.AddOutgoingConnection(outputNode);
             frameOutputNode = outputNode;

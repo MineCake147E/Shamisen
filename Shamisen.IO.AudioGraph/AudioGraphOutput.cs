@@ -39,7 +39,8 @@ namespace Shamisen.IO.WinRt
         private AudioGraphOutput(AudioGraph audioGraph, AudioDeviceOutputNode deviceOutputNode, IWaveSource source)
         {
             PlaybackState = PlaybackState.Stopped;
-            Graph = audioGraph ?? throw new ArgumentNullException(nameof(audioGraph));
+            ArgumentNullException.ThrowIfNull(audioGraph);
+            Graph = audioGraph;
             Source = source;
             var nodeEncodingProperties = audioGraph.EncodingProperties;
             frameInputNode = audioGraph.CreateFrameInputNode(nodeEncodingProperties);

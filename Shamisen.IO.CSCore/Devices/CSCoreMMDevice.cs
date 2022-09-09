@@ -22,7 +22,8 @@ namespace Shamisen.IO.Devices
         /// <param name="device"></param>
         internal CSCoreMMDevice(MMDevice device)
         {
-            Device = device ?? throw new ArgumentNullException(nameof(device));
+            ArgumentNullException.ThrowIfNull(device);
+            Device = device;
         }
 
         /// <summary>

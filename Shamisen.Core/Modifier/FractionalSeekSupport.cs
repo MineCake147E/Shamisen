@@ -31,7 +31,8 @@ namespace Shamisen.Modifier
         /// <exception cref="ArgumentNullException">source</exception>
         public FractionalSeekSupport(ISeekSupport source, ulong divisor, ulong multiplier)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
             (var m, var d) = MathHelper.MinimizeDivisor(multiplier, divisor);
             this.divisor = new UInt64Divisor(d);
             signedDivisor = new Int64Divisor((long)d);
@@ -47,7 +48,8 @@ namespace Shamisen.Modifier
         /// <exception cref="ArgumentNullException">source</exception>
         public FractionalSeekSupport(ISeekSupport source, UInt64Divisor divisor, ulong multiplier)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
             this.divisor = divisor;
             signedDivisor = new Int64Divisor((long)divisor.Divisor);
             this.multiplier = multiplier;

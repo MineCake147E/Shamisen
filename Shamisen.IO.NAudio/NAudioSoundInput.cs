@@ -28,7 +28,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException"></exception>
         public NAudioSoundInput(IWaveIn waveIn)
         {
-            WaveIn = waveIn ?? throw new ArgumentNullException(nameof(waveIn));
+            ArgumentNullException.ThrowIfNull(waveIn);
+            WaveIn = waveIn;
             Format = WaveIn.WaveFormat.AsShamisenWaveFormat();
             waveIn.DataAvailable += WaveIn_DataAvailable;
             waveIn.RecordingStopped += WaveIn_RecordingStopped;

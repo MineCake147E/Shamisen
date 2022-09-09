@@ -20,8 +20,10 @@ namespace Shamisen.Pipeline
         /// <param name="consumer"></param>
         public AudioPipe(IAudioPipelineProducer<TSample, TFormat> producer, IAudioPipelineConsumer<TSample, TFormat> consumer)
         {
-            Producer = producer ?? throw new ArgumentNullException(nameof(producer));
-            Consumer = consumer ?? throw new ArgumentNullException(nameof(consumer));
+            ArgumentNullException.ThrowIfNull(producer);
+            Producer = producer;
+            ArgumentNullException.ThrowIfNull(consumer);
+            Consumer = consumer;
         }
 
         /// <summary>

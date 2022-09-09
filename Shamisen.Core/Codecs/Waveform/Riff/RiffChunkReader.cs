@@ -125,7 +125,8 @@ namespace Shamisen.Codecs.Waveform
         /// <exception cref="ArgumentNullException">dataSource</exception>
         public RiffChunkReader(IReadableDataSource<byte> dataSource)
         {
-            DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+            ArgumentNullException.ThrowIfNull(dataSource);
+            DataSource = dataSource;
             ChunkId = (ChunkId)DataSource.ReadUInt32LittleEndian();
             TotalSize = RemainingBytes = ChunkId switch
             {
@@ -137,7 +138,8 @@ namespace Shamisen.Codecs.Waveform
 
         private RiffChunkReader(RiffChunkReader parent)
         {
-            DataSource = Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            ArgumentNullException.ThrowIfNull(parent);
+            DataSource = Parent = parent;
             ChunkId = (ChunkId)parent.ReadUInt32LittleEndian();
             TotalSize = RemainingBytes = parent.ReadUInt32LittleEndian();
         }

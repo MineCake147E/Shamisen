@@ -22,7 +22,8 @@ namespace Shamisen.Data
         /// <exception cref="ArgumentNullException">stream</exception>
         public StreamDataSource(Stream stream)
         {
-            source = stream ?? throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
+            source = stream;
             if (!stream.CanRead) throw new ArgumentException("The stream doesn't support reading!", nameof(stream));
             if (stream.CanSeek) SeekSupport = new StreamSeekSupport(stream);
         }

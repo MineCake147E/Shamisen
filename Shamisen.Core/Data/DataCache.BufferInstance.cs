@@ -31,7 +31,8 @@ namespace Shamisen.Data
 
             public BufferInstance(TSample[] actualBuffer, ulong initialIndex)
             {
-                this.actualBuffer = actualBuffer ?? throw new ArgumentNullException(nameof(actualBuffer));
+                ArgumentNullException.ThrowIfNull(actualBuffer);
+                this.actualBuffer = actualBuffer;
                 InitialIndex = initialIndex;
                 writePosition = 0;
                 ReadPosition = 0;

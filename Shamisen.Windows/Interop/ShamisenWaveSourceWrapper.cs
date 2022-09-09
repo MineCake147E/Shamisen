@@ -24,7 +24,8 @@ namespace Shamisen.Interop
 
         public ShamisenWaveSourceWrapper(IWaveSource source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             WaveFormat = new CSCore.WaveFormat(Source.Format.SampleRate, Source.Format.BitDepth, Source.Format.Channels,
                                                (CSCore.AudioEncoding)(short)Source.Format.Encoding, Source.Format.ExtraSize);
         }

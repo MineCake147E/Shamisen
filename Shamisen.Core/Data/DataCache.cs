@@ -13,7 +13,7 @@ namespace Shamisen.Data
     /// Caches data into managed memory region.
     /// </summary>
     /// <seealso cref="IDisposable" />
-    public sealed partial class DataCache<TSample> : IReadableDataSource<TSample>, ISeekSupport, IAsyncReadSupport<TSample> where TSample : unmanaged
+    public sealed partial class DataCache<TSample> : IReadableDataSource<TSample>, ISkipSupport, IAsyncReadSupport<TSample> where TSample : unmanaged
     {
         private int allocUnit = 1024;
 
@@ -76,7 +76,7 @@ namespace Shamisen.Data
         /// <value>
         /// The seek support.
         /// </value>
-        public ISeekSupport? SeekSupport => this;
+        public ISeekSupport? SeekSupport => null;
 
         /// <summary>
         /// Gets the read support of the <see cref="IDataSource{TSample}" />.

@@ -136,8 +136,10 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <exception cref="ArgumentNullException">dataSource</exception>
         public Rf64ChunkReader(IReadableDataSource<byte> dataSource, IRf64Parser parser, out StackOnlyActionContainer<ulong> totalSizeSetter)
         {
-            DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            ArgumentNullException.ThrowIfNull(dataSource);
+            DataSource = dataSource;
+            ArgumentNullException.ThrowIfNull(parser);
+            Parser = parser;
             Span<byte> buffer = stackalloc byte[8];
             dataSource.CheckRead(buffer);
             ChunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);
@@ -160,8 +162,10 @@ namespace Shamisen.Codecs.Waveform.Rf64
         /// <exception cref="ArgumentNullException">dataSource</exception>
         public Rf64ChunkReader(IReadableDataSource<byte> dataSource, IRf64Parser parser)
         {
-            DataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            ArgumentNullException.ThrowIfNull(dataSource);
+            DataSource = dataSource;
+            ArgumentNullException.ThrowIfNull(parser);
+            Parser = parser;
             Span<byte> buffer = stackalloc byte[8];
             dataSource.CheckRead(buffer);
             ChunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);
@@ -170,8 +174,10 @@ namespace Shamisen.Codecs.Waveform.Rf64
 
         private Rf64ChunkReader(Rf64ChunkReader parent, IRf64Parser parser)
         {
-            DataSource = Parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            ArgumentNullException.ThrowIfNull(parent);
+            DataSource = Parent = parent;
+            ArgumentNullException.ThrowIfNull(parser);
+            Parser = parser;
             Span<byte> buffer = stackalloc byte[8];
             parent.CheckRead(buffer);
             var chunkId = (ChunkId)BinaryPrimitives.ReadUInt32LittleEndian(buffer);

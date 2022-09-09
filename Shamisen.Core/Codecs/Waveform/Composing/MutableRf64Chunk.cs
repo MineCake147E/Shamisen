@@ -38,7 +38,8 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <exception cref="ArgumentNullException">contents</exception>
         public MutableRf64Chunk(ChunkId chunkId, List<IRf64Content> contents, uint? size = null) : this(chunkId, size)
         {
-            this.contents = contents ?? throw new ArgumentNullException(nameof(contents));
+            ArgumentNullException.ThrowIfNull(contents);
+            this.contents = contents;
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <summary>
         /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
         /// </summary>
-        public int Count => ((ICollection<IRf64Content>)contents).Count;
+        public int Count => contents.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="ICollection{T}" /> is read-only.
@@ -101,7 +102,7 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// </value>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public IRf64Content this[int index] { get => ((IList<IRf64Content>)contents)[index]; set => ((IList<IRf64Content>)contents)[index] = value; }
+        public IRf64Content this[int index] { get => contents[index]; set => contents[index] = value; }
 
         private List<IRf64Content> contents = new();
 
@@ -145,7 +146,7 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public int IndexOf(IRf64Content item) => ((IList<IRf64Content>)contents).IndexOf(item);
+        public int IndexOf(IRf64Content item) => contents.IndexOf(item);
 
         /// <summary>
         /// Inserts an item to the <see cref="IList{T}"/> at the specified index.
@@ -153,27 +154,27 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public void Insert(int index, IRf64Content item) => ((IList<IRf64Content>)contents).Insert(index, item);
+        public void Insert(int index, IRf64Content item) => contents.Insert(index, item);
 
         /// <summary>
         /// Removes the <see cref="IList{T}"/> item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public void RemoveAt(int index) => ((IList<IRf64Content>)contents).RemoveAt(index);
+        public void RemoveAt(int index) => contents.RemoveAt(index);
 
         /// <summary>
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public void Add(IRf64Content item) => ((ICollection<IRf64Content>)contents).Add(item);
+        public void Add(IRf64Content item) => contents.Add(item);
 
         /// <summary>
         /// Clears this instance.
         /// </summary>
         /// <returns></returns>
-        public void Clear() => ((ICollection<IRf64Content>)contents).Clear();
+        public void Clear() => contents.Clear();
 
         /// <summary>
         /// Determines whether this instance contains the object.
@@ -182,7 +183,7 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <returns>
         ///   <c>true</c> if the specified item exists; otherwise, <c>false</c>.
         /// </returns>
-        public bool Contains(IRf64Content item) => ((ICollection<IRf64Content>)contents).Contains(item);
+        public bool Contains(IRf64Content item) => contents.Contains(item);
 
         /// <summary>
         /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
@@ -190,14 +191,14 @@ namespace Shamisen.Codecs.Waveform.Composing
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
         /// <returns></returns>
-        public void CopyTo(IRf64Content[] array, int arrayIndex) => ((ICollection<IRf64Content>)contents).CopyTo(array, arrayIndex);
+        public void CopyTo(IRf64Content[] array, int arrayIndex) => contents.CopyTo(array, arrayIndex);
 
         /// <summary>
         /// Removes the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public bool Remove(IRf64Content item) => ((ICollection<IRf64Content>)contents).Remove(item);
+        public bool Remove(IRf64Content item) => contents.Remove(item);
 
         /// <summary>
         /// Gets the enumerator.

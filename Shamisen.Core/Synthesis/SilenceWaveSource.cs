@@ -21,7 +21,8 @@ namespace Shamisen.Synthesis
         /// <exception cref="ArgumentNullException">format</exception>
         public SilenceWaveSource(IWaveFormat format)
         {
-            Format = format ?? throw new ArgumentNullException(nameof(format));
+            ArgumentNullException.ThrowIfNull(format);
+            Format = format;
         }
 
         /// <inheritdoc/>

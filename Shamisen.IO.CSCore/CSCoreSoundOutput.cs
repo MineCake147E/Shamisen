@@ -18,7 +18,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">backend</exception>
         public CSCoreSoundOutput(ICSCoreSoundOut backend)
         {
-            Backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            ArgumentNullException.ThrowIfNull(backend);
+            Backend = backend;
         }
 
         /// <summary>

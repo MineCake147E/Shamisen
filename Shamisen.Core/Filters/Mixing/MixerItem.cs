@@ -22,7 +22,8 @@ namespace Shamisen.Filters.Mixing
         public MixerItem(ISampleSource source, AudioSourceProperties<float, SampleFormat> sourceProperties)
         {
             Source = source;
-            SourceProperties = sourceProperties ?? throw new ArgumentNullException(nameof(sourceProperties));
+            ArgumentNullException.ThrowIfNull(sourceProperties);
+            SourceProperties = sourceProperties;
             ActualSource = !sourceProperties.IsDynamic
                 ? new StreamBuffer<float, SampleFormat>(Source, Format.GetBufferSizeRequired(TimeSpan.FromSeconds(SourceProperties.PreferredLatency)))
                 : source;

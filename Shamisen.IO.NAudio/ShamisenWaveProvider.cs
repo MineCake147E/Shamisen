@@ -27,7 +27,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">source</exception>
         public ShamisenWaveProvider(IWaveSource source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             WaveFormat = NWaveFormat.CreateCustomFormat(
                 (WaveFormatEncoding)(short)source.Format.Encoding, source.Format.SampleRate, source.Format.Channels,
                 source.Format.BlockSize * source.Format.SampleRate, source.Format.BlockSize, source.Format.BitDepth);

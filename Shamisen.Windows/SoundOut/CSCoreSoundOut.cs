@@ -40,7 +40,8 @@ namespace Shamisen.SoundOut
         /// <exception cref="ArgumentNullException">out</exception>
         public CSCoreSoundOut(CSCore.SoundOut.ISoundOut @out)
         {
-            Out = @out ?? throw new ArgumentNullException(nameof(@out));
+            ArgumentNullException.ThrowIfNull(@out);
+            Out = @out;
         }
 
         #region IDisposable Support

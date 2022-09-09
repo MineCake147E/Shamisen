@@ -12,7 +12,8 @@ namespace Shamisen.Benchmarks
 
         public DummySourceCSCore(CSCore.WaveFormat waveFormat)
         {
-            WaveFormat = waveFormat ?? throw new ArgumentNullException(nameof(waveFormat));
+            ArgumentNullException.ThrowIfNull(waveFormat);
+            WaveFormat = waveFormat;
         }
 
         public bool CanSeek => false;

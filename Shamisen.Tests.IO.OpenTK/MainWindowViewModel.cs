@@ -194,7 +194,8 @@ namespace Shamisen.Tests.IO.OpenTK
 
         public DeviceViewModel(OpenALDevice device)
         {
-            Device = device ?? throw new ArgumentNullException(nameof(device));
+            ArgumentNullException.ThrowIfNull(device);
+            Device = device;
         }
 
         public bool Checked

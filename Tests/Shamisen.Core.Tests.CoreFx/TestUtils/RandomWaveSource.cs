@@ -12,8 +12,10 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
 
         public RandomWaveSource(IWaveFormat format, RandomDataSource source)
         {
-            Format = format ?? throw new ArgumentNullException(nameof(format));
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(format);
+            Format = format;
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
         }
 
         public IWaveFormat Format { get; }

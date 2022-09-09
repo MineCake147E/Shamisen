@@ -23,7 +23,8 @@ namespace Shamisen.Codecs.Waveform.Parsing.Chunks
         {
             ChunkId = chunkId;
             ChunkLength = chunkLength;
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             Source.Skip(source.RemainingBytes);
         }
 

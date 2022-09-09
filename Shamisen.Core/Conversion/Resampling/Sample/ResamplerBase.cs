@@ -126,7 +126,8 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// <exception cref="ArgumentOutOfRangeException">destinationSampleRate</exception>
         protected ResamplerBase(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             Format = new SampleFormat(source.Format.Channels, destinationSampleRate);
             if (destinationSampleRate < 1) throw new ArgumentOutOfRangeException(nameof(destinationSampleRate), $"{nameof(destinationSampleRate)} must be grater than 0!");
             (RateMul, RateDiv) = MathHelper.MinimizeDivisor(destinationSampleRate, source.Format.SampleRate);

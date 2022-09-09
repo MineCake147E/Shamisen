@@ -124,7 +124,8 @@ namespace Shamisen.Codecs.Waveform.Parsing
         public SimpleWaveParser(IChunkParserFactory chunkParserFactory, IReadableDataSource<byte> dataSource)
         {
             //All preparation must be done in this constructor.
-            ChunkParserFactory = chunkParserFactory ?? throw new ArgumentNullException(nameof(chunkParserFactory));
+            ArgumentNullException.ThrowIfNull(chunkParserFactory);
+            ChunkParserFactory = chunkParserFactory;
             if (dataSource is null) throw new ArgumentNullException(nameof(dataSource));
             Rf64ChunkReader mainReader;
             Rf64ChunkReader = mainReader = new Rf64ChunkReader(dataSource, this, out var setter);

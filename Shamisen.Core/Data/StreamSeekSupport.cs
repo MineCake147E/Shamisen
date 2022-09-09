@@ -10,7 +10,8 @@ namespace Shamisen.Data
 
         public StreamSeekSupport(Stream source)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
         }
 
         /// <summary>

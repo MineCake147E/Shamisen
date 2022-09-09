@@ -12,7 +12,8 @@ namespace Shamisen.Benchmarks
         #region Properties
         public FrameThroughputColumn(Func<BenchmarkCase, int> frameSelector)
         {
-            FrameSelector = frameSelector ?? throw new ArgumentNullException(nameof(frameSelector));
+            ArgumentNullException.ThrowIfNull(frameSelector);
+            FrameSelector = frameSelector;
         }
 
         public string Id { get; } = $"FrameThroughput{Guid.NewGuid()}";

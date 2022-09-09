@@ -13,7 +13,7 @@ namespace Shamisen.Filters.Buffering
     /// <summary>
     /// Aligns the result of <see cref="IReadableAudioSource{TSample, TFormat}"/> with <see cref="IInterleavedAudioFormat{TSample}.BlockSize"/>.
     /// </summary>
-    public sealed class BlockSizeReservoir<TSample, TFormat> : IReadableAudioSource<TSample, TFormat>
+    public sealed class BlockSizeReservoir<TSample, TFormat> : IAudioFilter<TSample, TFormat>
          where TSample : unmanaged
         where TFormat : IInterleavedAudioFormat<TSample>
     {
@@ -30,68 +30,35 @@ namespace Shamisen.Filters.Buffering
         /// <exception cref="ArgumentNullException">source</exception>
         public BlockSizeReservoir(IReadableAudioSource<TSample, TFormat> source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             blockSizeDivisor = new UInt32Divisor((uint)source.Format.BlockSize);
             buffer = new TSample[source.Format.BlockSize];
             written = default;
         }
 
-        /// <inheritdoc cref="IAudioConverter{TFrom, TFromFormat, TTo, TToFormat}.Source"/>
+        /// <inheritdoc/>
         public IReadableAudioSource<TSample, TFormat> Source { get; }
 
         /// <inheritdoc/>
         public TFormat Format => Source.Format;
 
-        /// <summary>
-        /// Gets the remaining length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The remaining length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Length => Source.Length;
 
-        /// <summary>
-        /// Gets the total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> continues infinitely.
-        /// </summary>
-        /// <value>
-        /// The total length of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? TotalLength => Source.TotalLength;
 
-        /// <summary>
-        /// Gets the position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.<br />
-        /// The <c>null</c> means that the <see cref="IAudioSource{TSample, TFormat}" /> doesn't support this property.
-        /// </summary>
-        /// <value>
-        /// The position of the <see cref="IAudioSource{TSample, TFormat}" /> in frames.
-        /// </value>
+        /// <inheritdoc/>
         public ulong? Position => Source.Position;
 
-        /// <summary>
-        /// Gets the skip support of the <see cref="IAudioSource{TSample, TFormat}" />.
-        /// </summary>
-        /// <value>
-        /// The skip support.
-        /// </value>
+        /// <inheritdoc/>
         public ISkipSupport? SkipSupport => null;
 
-        /// <summary>
-        /// Gets the seek support of the <see cref="IAudioSource{TSample, TFormat}" />.
-        /// </summary>
-        /// <value>
-        /// The seek support.
-        /// </value>
+        /// <inheritdoc/>
         public ISeekSupport? SeekSupport => null;
 
-        /// <summary>
-        /// Reads the audio to the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <returns>
-        /// The length of the data written.
-        /// </returns>
+        /// <inheritdoc/>
         public ReadResult Read(Span<TSample> buffer)
         {
             unchecked
@@ -113,7 +80,7 @@ namespace Shamisen.Filters.Buffering
                     {
                         return rr;
                     }
-                    written = written = this.buffer.AsMemory(0, w);
+                    written = this.buffer.AsMemory(0, w);
                     return ReadResult.WaitingForSource;
                 }
                 w += rr.Length;

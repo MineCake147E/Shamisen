@@ -20,7 +20,8 @@ namespace Shamisen.Modifier
         /// <exception cref="ArgumentNullException">seekSupport</exception>
         public OffsetSeekSupport(ISeekSupport seekSupport, ulong offset)
         {
-            SeekSupport = seekSupport ?? throw new ArgumentNullException(nameof(seekSupport));
+            ArgumentNullException.ThrowIfNull(seekSupport);
+            SeekSupport = seekSupport;
             Offset = offset;
         }
 

@@ -29,7 +29,8 @@ namespace Shamisen.Modifier
         /// <exception cref="ArgumentNullException">source</exception>
         public FractionalSkipSupport(ISkipSupport source, UInt64Divisor divisor, ulong multiplier)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
             this.divisor = divisor;
             this.multiplier = multiplier;
         }
@@ -43,7 +44,8 @@ namespace Shamisen.Modifier
         /// <exception cref="ArgumentNullException">source</exception>
         public FractionalSkipSupport(ISkipSupport source, ulong divisor, ulong multiplier)
         {
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
             (var m, var d) = MathHelper.MinimizeDivisor(multiplier, divisor);
             this.divisor = new UInt64Divisor(d);
             this.multiplier = m;

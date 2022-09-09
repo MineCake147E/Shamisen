@@ -12,8 +12,10 @@ namespace Shamisen.Benchmarks
         #region Properties
         public PlaybackSpeedColumn(Func<BenchmarkCase, int> frameSelector, Func<BenchmarkCase, int> sampleRateSelector)
         {
-            FrameSelector = frameSelector ?? throw new ArgumentNullException(nameof(frameSelector));
-            SampleRateSelector = sampleRateSelector ?? throw new ArgumentNullException(nameof(sampleRateSelector));
+            ArgumentNullException.ThrowIfNull(frameSelector);
+            FrameSelector = frameSelector;
+            ArgumentNullException.ThrowIfNull(sampleRateSelector);
+            SampleRateSelector = sampleRateSelector;
         }
 
         public string Id => "PlaybackSpeed";

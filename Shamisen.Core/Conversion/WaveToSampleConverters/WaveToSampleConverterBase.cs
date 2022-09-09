@@ -70,7 +70,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </exception>
         protected WaveToSampleConverterBase(IReadableAudioSource<byte, IWaveFormat> source, SampleFormat format)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             Format = format;
         }
 

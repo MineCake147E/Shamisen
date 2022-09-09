@@ -30,7 +30,8 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
 
         public MemoryDataSource(MemoryStream memory)
         {
-            this.memory = memory ?? throw new ArgumentNullException(nameof(memory));
+            ArgumentNullException.ThrowIfNull(memory);
+            this.memory = memory;
         }
 
         public ReadResult Read(Span<byte> buffer)

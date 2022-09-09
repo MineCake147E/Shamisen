@@ -20,7 +20,8 @@ namespace Shamisen.Data
         /// <exception cref="System.ArgumentNullException">source</exception>
         public WaypointRweindingDataSource(IReadableDataSource<TSample> source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             DataCache = new();
         }
 

@@ -20,7 +20,8 @@ namespace Shamisen.Filters.BiQuad.Cascaded
         /// <exception cref="ArgumentNullException"></exception>
         public CascadedBiQuadParameters(BiQuadParameter[,] parameters)
         {
-            this.parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+            ArgumentNullException.ThrowIfNull(parameters);
+            this.parameters = parameters;
         }
 
         /// <summary>

@@ -36,7 +36,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">name</exception>
         internal OpenALDevice(string name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
+            Name = name;
             maxSampleRate = -1;
             supportedFormats = new(new[] { ALFormat.Mono16, ALFormat.Mono8, ALFormat.Stereo16, ALFormat.Stereo8 });
             var device = ALC.OpenDevice(Name);

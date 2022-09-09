@@ -28,7 +28,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">source</exception>
         public NAudioWaveStreamSource(WaveStream source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             var sourceFormat = source.WaveFormat;
             internalBuffer = new(sourceFormat.BlockAlign * 2048);
             Format = sourceFormat.AsShamisenWaveFormat();

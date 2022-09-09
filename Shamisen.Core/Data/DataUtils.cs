@@ -32,7 +32,7 @@ namespace Shamisen
                 }
                 else
                 {
-                    var pbuf = new PooledArray<TSample>((int)Math.Min(numberOfElementsToSkip, 2048));
+                    using var pbuf = new PooledArray<TSample>((int)Math.Min(numberOfElementsToSkip, 2048));
                     var buffer = pbuf.Span;
                     var h = numberOfElementsToSkip;
                     while (h > 0 && h <= numberOfElementsToSkip)

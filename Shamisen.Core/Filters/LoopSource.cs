@@ -27,11 +27,10 @@ namespace Shamisen.Filters
         /// <param name="source">The source.</param>
         public LoopSource(IReadableAudioSource<TSample, TFormat> source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-#pragma warning disable IDE0083
-            if (!(source.TotalLength is ulong tlen)) throw new ArgumentException($"{nameof(source.TotalLength)} must not be null!", nameof(source));
-#pragma warning restore IDE0083
-            var allocationUnit = (int)Math.Min(tlen, 4096ul);
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
+            if (source.TotalLength is not ulong tlen) throw new ArgumentException($"{nameof(source.TotalLength)} must not be null!", nameof(source));
+            var allocationUnit = (int)MathI.Min(tlen, 4096ul);
             cache = new(allocationUnit);
             var buffer = new TSample[allocationUnit];
             var span = buffer.AsSpan();

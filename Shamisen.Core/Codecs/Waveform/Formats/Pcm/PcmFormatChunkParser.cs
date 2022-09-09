@@ -23,7 +23,8 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
         /// <exception cref="ArgumentNullException">source</exception>
         public PcmFormatChunkParser(IChunkReader source, AudioEncoding encoding)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             ChunkId = source.ChunkId;
             ChunkLength = source.TotalSize;
             //Data for formatTag is already consumed by IChunkParserFactory.

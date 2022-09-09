@@ -75,7 +75,8 @@ namespace Shamisen.Data
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
         public PreloadDataBuffer(IDataSource<TSample> dataSource, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
         {
-            this.dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
+            ArgumentNullException.ThrowIfNull(dataSource);
+            this.dataSource = dataSource;
             AllowWaitForRead = allowWaitForRead;
             if (initialBlockSize < 2048) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
             if (internalBufferNumber < 16) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));

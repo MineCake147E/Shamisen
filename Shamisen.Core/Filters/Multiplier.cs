@@ -23,8 +23,10 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentException">The <paramref name="itemA"/>'s <see cref="IAudioSource{TSample, TFormat}.Format"/> is not same as <paramref name="itemB"/>'s <see cref="IAudioSource{TSample, TFormat}.Format"/>.</exception>
         public Multiplier(ISourceBufferPair itemA, ISourceBufferPair itemB)
         {
-            ItemA = itemA ?? throw new ArgumentNullException(nameof(itemA));
-            ItemB = itemB ?? throw new ArgumentNullException(nameof(itemB));
+            ArgumentNullException.ThrowIfNull(itemA);
+            ItemA = itemA;
+            ArgumentNullException.ThrowIfNull(itemB);
+            ItemB = itemB;
             if (!ItemA.Format.Equals(ItemB.Format)) throw new ArgumentException($"The itemA's Format is not same as itemB's Format!");
             Format = ItemA.Format;
         }

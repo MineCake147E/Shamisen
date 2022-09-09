@@ -17,7 +17,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentNullException">source</exception>
         public Attenuator(IReadableAudioSource<float, SampleFormat> source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
         }
 
         /// <inheritdoc/>

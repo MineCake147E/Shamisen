@@ -20,13 +20,18 @@ namespace Shamisen
         /// <param name="instance">The instance of <typeparamref name="T"/>.</param>
         /// <param name="isDisposed">if set to <c>true</c> it throws.</param>
         /// <exception cref="ObjectDisposedException">This instance of <typeparamref name="T"/> is disposed!</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [DebuggerNonUserCode]
         internal static void ThrowIfDisposed<T>(this T instance, bool isDisposed) where T : IDisposable
         {
-            if (isDisposed) throw new ObjectDisposedException(typeof(T).Name);
+            if (isDisposed)
+            {
+                ThrowObjectDisposedException<T>();
+                return;
+            }
         }
-
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowObjectDisposedException<T>() where T : IDisposable => throw new ObjectDisposedException(typeof(T).Name);
 #pragma warning restore IDE0060 // 未使用のパラメーターを削除します
     }
 }

@@ -31,7 +31,8 @@ namespace Shamisen.Data
         /// <exception cref="ArgumentNullException">source</exception>
         public StreamDataSink(Stream destination, bool propagateDispose = true)
         {
-            this.destination = destination ?? throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(destination);
+            this.destination = destination;
             PropagateDispose = propagateDispose;
             if (!destination.CanWrite) throw new ArgumentException($"The {nameof(destination)} doesn't support writing!", nameof(destination));
             if (destination.CanSeek)
@@ -50,7 +51,8 @@ namespace Shamisen.Data
         /// <exception cref="ArgumentNullException">source</exception>
         internal StreamDataSink(Stream destination, bool propagateDispose, bool disableSeek)
         {
-            this.destination = destination ?? throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(destination);
+            this.destination = destination;
             PropagateDispose = propagateDispose;
             if (!destination.CanWrite) throw new ArgumentException($"The {nameof(destination)} doesn't support writing!", nameof(destination));
             if (!disableSeek && destination.CanSeek)

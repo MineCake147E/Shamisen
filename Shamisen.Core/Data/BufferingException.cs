@@ -21,23 +21,29 @@ namespace Shamisen.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferingException"/> class.
         /// </summary>
-        /// <param name="message">A <see cref="string"></see> that describes the error. The content of message is intended to be understood by humans. The caller of this constructor is required to ensure that this string has been localized for the current system culture.</param>
+        /// <inheritdoc/>
         public BufferingException(string message) : base(message) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferingException"/> class.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="inner">The inner.</param>
-        public BufferingException(string message, Exception inner) : base(message, inner) { }
+        /// <inheritdoc/>
+        public BufferingException(string message, Exception innerException) : base(message, innerException) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferingException"/> class.
         /// </summary>
-        /// <param name="info">The data for serializing or deserializing the object.</param>
-        /// <param name="context">The source and destination for the object.</param>
+        /// <inheritdoc/>
         protected BufferingException(
           SerializationInfo info,
           StreamingContext context) : base(info, context) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BufferingException"/> class.
+        /// </summary>
+        /// <inheritdoc/>
+        public BufferingException(string? message, int hresult) : base(message, hresult)
+        {
+        }
     }
 }

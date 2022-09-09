@@ -82,7 +82,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="internalBufferNumber"/> should be larger than or equals to 16.</exception>
         public StreamBuffer(IReadableAudioSource<TSample, TFormat> source, int initialBlockSize, int internalBufferNumber = 16, bool allowWaitForRead = false)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             if (initialBlockSize < 2048) throw new ArgumentOutOfRangeException(nameof(initialBlockSize));
             if (internalBufferNumber < 16) throw new ArgumentOutOfRangeException(nameof(internalBufferNumber));
             dataBuffer = new PreloadDataBuffer<TSample>(new SampleDataSource<TSample, TFormat>(source), initialBlockSize, internalBufferNumber);

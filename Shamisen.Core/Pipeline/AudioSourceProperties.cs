@@ -40,7 +40,8 @@ namespace Shamisen.Pipeline
         /// <exception cref="ArgumentNullException">source</exception>
         public AudioSourceProperties(IAudioSource<TSample, TFormat> source, bool isDynamic, double preferredLatency = 1.0)
         {
-            _ = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            _ = source;
             PreferredLatency = double.IsNaN(preferredLatency) || double.IsInfinity(preferredLatency) || preferredLatency <= 0 ? throw new ArgumentOutOfRangeException(nameof(preferredLatency), "Only positive non-infinity values are accepted!") : preferredLatency;
             IsDynamic = isDynamic;
         }

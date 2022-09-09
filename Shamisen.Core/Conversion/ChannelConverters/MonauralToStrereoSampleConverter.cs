@@ -26,7 +26,8 @@ namespace Shamisen.Conversion.ChannelConverters
         /// <param name="source">The source.</param>
         public MonauralToStrereoSampleConverter(IReadableAudioSource<float, SampleFormat>? source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             if (source.Format.Channels != 1) throw new ArgumentException("Channels must be 1!", nameof(source));
             bufferWrapper = new ResizablePooledBufferWrapper<float>(2048);
             Format = new SampleFormat(2, source.Format.SampleRate);

@@ -7791,21 +7791,25 @@
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.BufferingException"/> class.
             </summary>
-            <param name="message">A <see cref="T:System.String"></see> that describes the error. The content of message is intended to be understood by humans. The caller of this constructor is required to ensure that this string has been localized for the current system culture.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Data.BufferingException.#ctor(System.String,System.Exception)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.BufferingException"/> class.
             </summary>
-            <param name="message">The message.</param>
-            <param name="inner">The inner.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Data.BufferingException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Data.BufferingException"/> class.
             </summary>
-            <param name="info">The data for serializing or deserializing the object.</param>
-            <param name="context">The source and destination for the object.</param>
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Data.BufferingException.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Data.BufferingException"/> class.
+            </summary>
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Data.DataCache`1">
             <summary>
@@ -9028,6 +9032,18 @@
             <param name="parameter">The parameter to call the method with.</param>
             <returns>The reading task that returns the length of buffer filled.</returns>
         </member>
+        <member name="T:Shamisen.ThrowHelper">
+            <summary>
+            Helps throwing exceptions while in-lining aggressively.
+            </summary>
+        </member>
+        <member name="M:Shamisen.ThrowHelper.Throw``1(``0)">
+            <summary>
+            Throws the specified exception.
+            </summary>
+            <typeparam name="T">The type of exception.</typeparam>
+            <param name="exception">The exception.</param>
+        </member>
         <member name="T:Shamisen.Filters.Attenuator">
             <summary>
             Modifies the velocity of <see cref="P:Shamisen.Filters.Attenuator.Source"/>
@@ -9557,62 +9573,28 @@
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Source">
-            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Format">
             <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Length">
-            <summary>
-            Gets the remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The remaining length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.TotalLength">
-            <summary>
-            Gets the total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> continues infinitely.
-            </summary>
-            <value>
-            The total length of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Position">
-            <summary>
-            Gets the position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.<br />
-            The <c>null</c> means that the <see cref="T:Shamisen.IAudioSource`2" /> doesn't support this property.
-            </summary>
-            <value>
-            The position of the <see cref="T:Shamisen.IAudioSource`2" /> in frames.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.SkipSupport">
-            <summary>
-            Gets the skip support of the <see cref="T:Shamisen.IAudioSource`2" />.
-            </summary>
-            <value>
-            The skip support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="P:Shamisen.Filters.Buffering.BlockSizeReservoir`2.SeekSupport">
-            <summary>
-            Gets the seek support of the <see cref="T:Shamisen.IAudioSource`2" />.
-            </summary>
-            <value>
-            The seek support.
-            </value>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Read(System.Span{`0})">
-            <summary>
-            Reads the audio to the specified buffer.
-            </summary>
-            <param name="buffer">The buffer.</param>
-            <returns>
-            The length of the data written.
-            </returns>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Filters.Buffering.BlockSizeReservoir`2.Dispose(System.Boolean)">
             <summary>
@@ -12937,18 +12919,6 @@
             <param name="value">The value to deconstruct.</param>
             <param name="hasValue">The value which indicates whether the <paramref name="result"/> is valid.</param>
             <param name="result">The result.</param>
-        </member>
-        <member name="T:System.ThrowHelper">
-            <summary>
-            Helps throwing exceptions while in-lining aggressively.
-            </summary>
-        </member>
-        <member name="M:System.ThrowHelper.Throw``1(``0)">
-            <summary>
-            Throws the specified exception.
-            </summary>
-            <typeparam name="T">The type of exception.</typeparam>
-            <param name="exception">The exception.</param>
         </member>
         <member name="T:System.PointerExtensions">
             <summary>

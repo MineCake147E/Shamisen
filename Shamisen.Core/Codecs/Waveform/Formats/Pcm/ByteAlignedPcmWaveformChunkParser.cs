@@ -29,8 +29,10 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
         /// </exception>
         public ByteAlignedPcmWaveformChunkParser(IChunkReader source, IWaveFormat format)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            Format = format ?? throw new ArgumentNullException(nameof(format));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
+            ArgumentNullException.ThrowIfNull(format);
+            Format = format;
             ChunkId = source.ChunkId;
             BlockSizeDivisor = new UInt64Divisor((ulong)format.BlockSize);
             SkipSupport = (Source as ISkipSupport).WithFraction(BlockSizeDivisor, 1);

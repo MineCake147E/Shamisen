@@ -86,7 +86,8 @@ namespace Shamisen.Filters
         /// <exception cref="ArgumentNullException">contents</exception>
         private SimplePlaylistSource(List<IReadableAudioSource<TSample, TFormat>> contents)
         {
-            Contents = contents ?? throw new ArgumentNullException(nameof(contents));
+            ArgumentNullException.ThrowIfNull(contents);
+            Contents = contents;
             _ = contents.All(a => a.Format.Equals(contents.First().Format)) ? 0 : throw new ArgumentException("All sources", nameof(contents));
             ShuffledContents = new(contents);
             Format = contents.First().Format;

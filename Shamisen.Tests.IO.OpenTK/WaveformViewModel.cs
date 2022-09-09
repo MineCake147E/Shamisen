@@ -12,8 +12,10 @@ namespace Shamisen.Tests.IO.OpenTK
     {
         public WaveformViewModel(string name, Func<SampleFormat, IFrequencyGeneratorSource> generateFunc)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            GenerateFunc = generateFunc ?? throw new ArgumentNullException(nameof(generateFunc));
+            ArgumentNullException.ThrowIfNull(name);
+            Name = name;
+            ArgumentNullException.ThrowIfNull(generateFunc);
+            GenerateFunc = generateFunc;
         }
 
         public string Name { get; }

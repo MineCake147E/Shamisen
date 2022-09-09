@@ -23,7 +23,8 @@ namespace Shamisen.IO
         /// <exception cref="ArgumentNullException">source</exception>
         public CSCoreInteroperatingWaveSource(ShamisenWaveSource source)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
+            Source = source;
             var format = source.Format;
             WaveFormat = ConvertToCSCoreWaveFormat(format);
         }

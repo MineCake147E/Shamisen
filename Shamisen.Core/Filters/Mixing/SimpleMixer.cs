@@ -19,8 +19,10 @@ namespace Shamisen.Filters.Mixing
         /// <param name="itemB"></param>
         public SimpleMixer(IMixerItem itemA, IMixerItem itemB)
         {
-            ItemA = itemA ?? throw new ArgumentNullException(nameof(itemA));
-            ItemB = itemB ?? throw new ArgumentNullException(nameof(itemB));
+            ArgumentNullException.ThrowIfNull(itemA);
+            ItemA = itemA;
+            ArgumentNullException.ThrowIfNull(itemB);
+            ItemB = itemB;
             if (!ItemA.Source.Format.Equals(ItemB.Source.Format)) throw new ArgumentException($"The itemA's Format is not same as itemB's Format!");
             Format = ItemA.Source.Format;
         }
