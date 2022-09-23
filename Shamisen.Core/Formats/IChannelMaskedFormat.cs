@@ -14,6 +14,6 @@ namespace Shamisen.Formats
         /// <summary>
         /// Gets the value which indicates how the speakers are used.
         /// </summary>
-        Speakers ChannelCombination { get; }
+        StandardSpeakerChannels ChannelCombination { get; }
     }
 }

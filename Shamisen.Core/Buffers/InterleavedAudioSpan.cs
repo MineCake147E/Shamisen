@@ -214,10 +214,10 @@ namespace Shamisen.Buffers
         /// <exception cref="NotSupportedException">Always</exception>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("GetHashCode() on Span will always throw an exception.")]
-#pragma warning disable CS0809
+#pragma warning disable CS0809, S3877
         public override int GetHashCode() => throw new NotSupportedException();
 
-#pragma warning restore CS0809
+#pragma warning restore CS0809, S3877
 
         #endregion Equality
     }

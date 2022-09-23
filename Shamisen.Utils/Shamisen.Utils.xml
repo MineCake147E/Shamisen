@@ -463,6 +463,23 @@
             The big endian
             </summary>
         </member>
+        <member name="T:Shamisen.ThrowHelper">
+            <summary>
+            Helps throwing exceptions while in-lining aggressively.
+            </summary>
+        </member>
+        <member name="M:Shamisen.ThrowHelper.Throw``1(``0)">
+            <summary>
+            Throws the specified exception.
+            </summary>
+            <typeparam name="T">The type of exception.</typeparam>
+            <param name="exception">The exception.</param>
+        </member>
+        <member name="M:Shamisen.ThrowHelper.ThrowIndexOutOfRangeException">
+            <summary>
+            Throws a new instance of <see cref="T:System.IndexOutOfRangeException"/>.
+            </summary>
+        </member>
         <member name="T:Shamisen.FastMath">
             <summary>
             Contains some mathematical functions for Floating-Point numbers.
@@ -737,6 +754,58 @@
             Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
             </returns>
             <inheritdoc cref="M:System.MathF.Cbrt(System.Single)"/>
+        </member>
+        <member name="T:Shamisen.Mathematics.MathHelper">
+            <summary>
+            Helps some calculations.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Mathematics.MathHelper.DoublePI">
+            <summary>
+            The double pi.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.MinimizeDivisor(System.Int32,System.Int32)">
+            <summary>
+            Minimizes the divisor.
+            </summary>
+            <param name="mul">The multiplier.</param>
+            <param name="div">The divisor.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.MinimizeDivisor(System.UInt64,System.UInt64)">
+            <summary>
+            Minimizes the divisor.
+            </summary>
+            <param name="mul">The multiplier.</param>
+            <param name="div">The divisor.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.Int32,System.Int32)">
+            <summary>
+            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
+            </summary>
+            <param name="a">a.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.UInt32,System.UInt32)">
+            <summary>
+            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
+            </summary>
+            <param name="a">a.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.UInt64,System.UInt64)">
+            <summary>
+            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
+            </summary>
+            <param name="a">a.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
         </member>
         <member name="T:Shamisen.MathI">
             <summary>
@@ -1183,6 +1252,47 @@
             <param name="n">The modulus.</param>
             <returns>The Modular Multiplicative Inverse of <paramref name="a"/>.</returns>
         </member>
+        <member name="M:Shamisen.MathI.ReciprocalUInt64(System.UInt64,System.UInt64@)">
+            <summary>
+            Calculates the (2^64) / <paramref name="value"/> and its remainder.
+            </summary>
+            <param name="value">The value to divide 2^64 by.</param>
+            <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
+            <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReciprocalUInt64(DivideSharp.UInt64Divisor,System.UInt64@)">
+            <summary>
+            Calculates the (2^64) / <paramref name="value"/> and its remainder.
+            </summary>
+            <param name="value">The value to divide 2^64 by.</param>
+            <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
+            <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReciprocalUInt32(System.UInt32,System.UInt32@)">
+            <summary>
+            Calculates the (2^32) / <paramref name="value"/> and its remainder.
+            </summary>
+            <param name="value">The value to divide 2^32 by.</param>
+            <param name="remainder">The remainder (2^32) % <paramref name="value"/>.</param>
+            <returns>The quotient (2^32) / <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.ReciprocalUIntPtr(System.UIntPtr,System.UIntPtr@)">
+            <summary>
+            Calculates the (<see cref="P:System.UIntPtr.MaxValue"/> + 1) / <paramref name="value"/> and its remainder.
+            </summary>
+            <param name="value">The value to divide 2^32 by.</param>
+            <param name="remainder">The remainder (<see cref="P:System.UIntPtr.MaxValue"/> + 1) % <paramref name="value"/>.</param>
+            <returns>The quotient (<see cref="P:System.UIntPtr.MaxValue"/> + 1) / <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.BigDivConstant(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Divides a 128-bit number consists of two 64-bit number <paramref name="hi"/> and <paramref name="lo"/> by a constant <paramref name="divisor"/>.
+            </summary>
+            <param name="hi">The higher part of 128-bit numerator.</param>
+            <param name="lo">The lower part of 128-bit numerator.</param>
+            <param name="divisor">The divisor. Assumed to be a constant number.</param>
+            <returns>The lower 64-bit quotient.</returns>
+        </member>
         <member name="M:Shamisen.MathI.TrailingZeroCount(System.UInt32)">
             <summary>
             Counts the consecutive zero bits on the right.
@@ -1320,6 +1430,13 @@
             <param name="index">The index counting from MSB.</param>
             <param name="value">The value.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.ToInt32(System.Boolean)">
+            <summary>
+            Returns zero when <paramref name="condition"/> is false, otherwise 1.
+            </summary>
+            <param name="condition">The condition to test.</param>
+            <returns>1 if <paramref name="condition"/> is true, otherwise 0.</returns>
         </member>
         <member name="M:Shamisen.MathI.ZeroIfFalse(System.Boolean,System.UInt32)">
             <summary>
@@ -1521,62 +1638,24 @@
             Contains some utility functions for manipulating <c>ref</c> values.
             </summary>
         </member>
-        <member name="M:Shamisen.MathR.Add``1(``0@,System.IntPtr,System.IntPtr)">
+        <member name="M:Shamisen.MathR.IsAddressInRange``1(Shamisen.NativeSpan{``0},``0@)">
             <summary>
-            Adds the p0 and p1 and p2.
+            Determines whether the <paramref name="value"/> is in specified <paramref name="range"/>.
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="p0">The p0.</param>
-            <param name="p1">The p1.</param>
-            <param name="p2">The p2.</param>
-            <returns></returns>
+            <typeparam name="T">The type of <paramref name="value"/>.</typeparam>
+            <param name="range">The range to test.</param>
+            <param name="value">The address to test.</param>
+            <returns>The value which indicates whether the <paramref name="value"/> is in specified <paramref name="range"/>.</returns>
         </member>
-        <member name="M:Shamisen.MathR.Add(System.IntPtr,System.IntPtr)">
+        <member name="M:Shamisen.MathR.IsAddressInRange``1(``0@,System.UIntPtr,``0@)">
             <summary>
-            Adds the <paramref name="right"/> to the <paramref name="left"/>.
+            Determines whether the <paramref name="value"/> is in specified region starts from <paramref name="start"/> with specified <paramref name="length"/>.
             </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.Subtract(System.IntPtr,System.IntPtr)">
-            <summary>
-            Subtracts the <paramref name="right"/> from the <paramref name="left"/>.
-            </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns>left - right.</returns>
-        </member>
-        <member name="M:Shamisen.MathR.Multiply(System.IntPtr,System.IntPtr)">
-            <summary>
-            Multiplies the specified left.
-            </summary>
-            <param name="left">The left.</param>
-            <param name="right">The right.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToRefByte(System.IntPtr)">
-            <summary>
-            Converts the specified <see cref="T:System.IntPtr"/> value to <c>ref <see cref="T:System.Byte"/></c>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToIntPtr(System.Byte@)">
-            <summary>
-            Converts the specified <paramref name="value"/> to <see cref="T:System.IntPtr"/>.
-            </summary>
-            <param name="value">The value.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.MathR.ToPointer(System.IntPtr)">
-            <summary>
-            Converts the specified <paramref name="value"/> to pointer.
-            </summary>
-            <param name="value">The <see cref="T:System.IntPtr"/> getting converted.</param>
-            <returns>
-            The converted pointer.
-            </returns>
+            <typeparam name="T">The type of <paramref name="value"/>.</typeparam>
+            <param name="start"></param>
+            <param name="length"></param>
+            <param name="value">The address to test.</param>
+            <returns>The value which indicates whether the <paramref name="value"/> is in specified region.</returns>
         </member>
         <member name="T:Shamisen.MathX">
             <summary>
@@ -2682,6 +2761,11 @@
         </member>
         <member name="M:Shamisen.Utils.Intrinsics.Ssse3Utils.AlignRight(System.Runtime.Intrinsics.Vector128{System.Single},System.Runtime.Intrinsics.Vector128{System.Single},System.Byte)">
             <inheritdoc cref="M:System.Runtime.Intrinsics.X86.Ssse3.AlignRight(System.Runtime.Intrinsics.Vector128{System.Byte},System.Runtime.Intrinsics.Vector128{System.Byte},System.Byte)"/>
+        </member>
+        <member name="T:Shamisen.Utils.Memory.MutichannelSpan`1">
+            <summary>
+            Represents a tuple of multiple contiguous memory regions of the same length.
+            </summary>
         </member>
         <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1">
             <summary>
@@ -4136,6 +4220,89 @@
             <param name="from">The converting <see cref="T:System.ValueTuple`1"/>.</param>
             <returns>
             The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:Shamisen.Utils.UInt64FractionMultiplier">
+            <summary>
+            Represents the fraction with two <see cref="T:System.UInt64"/> parts.
+            Optimized for multiplying with <see cref="T:System.UInt64"/> numbers.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.UInt64FractionMultiplier.Numerator">
+            <summary>
+            Gets the numerator of this <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.UInt64FractionMultiplier.Denominator">
+            <summary>
+            Gets the denominator of this <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Utils.UInt64FractionMultiplier.MaxNoOverflowInput">
+            <summary>
+            Gets the maximum input number that does not overflow after multiplication.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.#ctor(DivideSharp.UInt64Divisor,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> struct.
+            </summary>
+            <param name="divisor">The divisor.</param>
+            <param name="multiplier">The multiplier.</param>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.#ctor(System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> struct.
+            </summary>
+            <param name="divisor">The divisor.</param>
+            <param name="multiplier">The multiplier.</param>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.Equals(Shamisen.Utils.UInt64FractionMultiplier)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.BigMultiply(System.UInt64)">
+            <summary>
+            Multiplies this <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> with <paramref name="right"/>.
+            </summary>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The product of <paramref name="right"/> and this <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.op_Multiply(Shamisen.Utils.UInt64FractionMultiplier,System.UInt64)">
+            <summary>
+            Multiplies <paramref name="left"/> with <paramref name="right"/>.
+            </summary>
+            <param name="left">The first value to multiply.</param>
+            <param name="right">The second value to multiply.</param>
+            <returns>
+            The product of <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.op_Equality(Shamisen.Utils.UInt64FractionMultiplier,Shamisen.Utils.UInt64FractionMultiplier)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.UInt64FractionMultiplier.op_Inequality(Shamisen.Utils.UInt64FractionMultiplier,Shamisen.Utils.UInt64FractionMultiplier)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Utils.UInt64FractionMultiplier"/> to compare.</param>
+            <returns>
+              <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
             </returns>
         </member>
         <member name="T:Shamisen.Utils.VectorUtils">
@@ -7273,73 +7440,381 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.SystemExtensions.Memory.NativeSpan`1">
-            <summary>
-            Represents a continuous region of memory.
-            </summary>
-            <typeparam name="T">The type of contents.</typeparam>
+        <member name="T:Shamisen.NativeSpan`1">
+            <typeparam name="T">The type of items in the <see cref="T:Shamisen.NativeSpan`1"/>.</typeparam>
+            <inheritdoc cref="T:System.Span`1"/>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.#ctor(`0*,System.IntPtr)">
+        <member name="P:Shamisen.NativeSpan`1.Length">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> struct.
+            The length of this <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.NativeSpan`1.IsEmpty">
+            <summary>
+            Returns a value that indicates whether the current <see cref="T:Shamisen.NativeSpan`1"/> is empty.
+            </summary>
+            <inheritdoc cref="P:System.Span`1.IsEmpty"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.GetHeadSpan">
+            <summary>
+            Creates a new <see cref="T:System.Span`1"/> object that represents the current <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.NativeSpan`1.FitsInSpan">
+            <summary>
+            Returns a value that indicates whether the current <see cref="T:Shamisen.NativeSpan`1"/>'s contents can fit into <see cref="T:System.Span`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.NativeSpan`1.Empty">
+            <summary>
+            Returns an empty <see cref="T:Shamisen.NativeSpan`1"/> object.
+            </summary>
+            <value>An empty <see cref="T:Shamisen.NativeSpan`1"/> object.</value>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.#ctor(`0@,System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.NativeSpan`1"/> struct.
             </summary>
             <param name="headPointer">The head pointer.</param>
             <param name="length">The length.</param>
         </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Length">
+        <member name="M:Shamisen.NativeSpan`1.#ctor(System.Void*,System.IntPtr)">
             <summary>
-            The length of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
+            Initializes a new instance of the <see cref="T:Shamisen.NativeSpan`1"/> struct.
+            </summary>
+            <param name="headPointer">The head pointer.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.#ctor(`0[])">
+            <summary>
+            Creates a new <see cref="T:Shamisen.NativeSpan`1"/> object over the entirety of a specified <paramref name="array"/>.
+            </summary>
+            <param name="array">The array from which to create the <see cref="T:Shamisen.NativeSpan`1"/> object.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.NativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.#ctor(System.ArraySegment{`0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.NativeSpan`1"/> object over the entirety of a specified <paramref name="array"/>.
+            </summary>
+            <param name="array">The array from which to create the <see cref="T:Shamisen.NativeSpan`1"/> object.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.NativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.#ctor(`0[],System.IntPtr,System.IntPtr)">
+            <summary>
+            Creates a new <see cref="T:Shamisen.NativeSpan`1"/> object that includes a specified number of elements of an array starting at a specified index.
+            </summary>
+            <param name="array">The source array.</param>
+            <param name="start">The index of the first element to include in the new <see cref="T:Shamisen.NativeSpan`1"/>.</param>
+            <param name="length">The number of elements to include in the new <see cref="T:Shamisen.NativeSpan`1"/>.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.NativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.#ctor(System.Span{`0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.NativeSpan`1"/> object over the entirety of a specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The memory region from which to create the <see cref="T:Shamisen.NativeSpan`1"/> object.</param>
+            <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.NativeSpan`1"/>.</remarks>
+        </member>
+        <member name="P:Shamisen.NativeSpan`1.Item(System.IntPtr)">
+            <inheritdoc cref="P:System.Span`1.Item(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.ElementAtUnchecked(System.IntPtr)">
+            <inheritdoc cref="P:System.Span`1.Item(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.GetPinnableReference">
+            <inheritdoc cref="M:System.Span`1.GetPinnableReference"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.Slice(System.IntPtr)">
+            <inheritdoc cref="M:System.Span`1.Slice(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.Slice(System.IntPtr,System.IntPtr)">
+            <inheritdoc cref="M:System.Span`1.Slice(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.Fill(`0)">
+            <summary>
+            Fills the elements of this span with a specified <paramref name="value"/>.
+            </summary>
+            <inheritdoc cref="M:System.Span`1.Fill(`0)"/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.Clear">
+            <summary>
+            Clears the contents of this <see cref="T:Shamisen.NativeSpan`1"/> object.
             </summary>
         </member>
-        <member name="P:Shamisen.SystemExtensions.Memory.NativeSpan`1.Item(System.IntPtr)">
+        <member name="M:Shamisen.NativeSpan`1.CopyTo(Shamisen.NativeSpan{`0})">
             <summary>
-            Returns the <paramref name="index"/>th element of this <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/>.
+            Copies the content of this <see cref="T:Shamisen.NativeSpan`1"/> into a <paramref name="destination"/> <see cref="T:Shamisen.NativeSpan`1"/>.
             </summary>
-            <param name="index"></param>
-            <returns></returns>
+            <param name="destination">The destination <see cref="T:Shamisen.NativeSpan`1"/> object.</param>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Slice(System.IntPtr)">
+        <member name="M:Shamisen.NativeSpan`1.CopyTo(System.Span{`0})">
             <summary>
-            Slices the <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> with the specified start.
+            Copies the content of this <see cref="T:Shamisen.NativeSpan`1"/> into a <paramref name="destination"/> <see cref="T:System.Span`1"/>.
             </summary>
-            <param name="start">The start.</param>
-            <returns></returns>
+            <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.Equals(System.Object)">
+        <member name="M:Shamisen.NativeSpan`1.TryCopyTo(Shamisen.NativeSpan{`0})">
             <summary>
-            Indicates whether the current object is equal to another object of the same type.
+            Attempts to copy the current <see cref="T:Shamisen.NativeSpan`1"/> to a destination <see cref="T:Shamisen.NativeSpan`1"/> and returns a value that indicates whether the copy operation succeeded.
             </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>false</c>.
-            </returns>
+            <inheritdoc cref="M:System.Span`1.TryCopyTo(System.Span{`0})"/>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.GetHashCode">
+        <member name="M:Shamisen.NativeSpan`1.TryCopyTo(System.Span{`0})">
             <summary>
-            Returns the hash code for this instance.
+            Attempts to copy the current <see cref="T:Shamisen.NativeSpan`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
             </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
+            <inheritdoc cref="M:System.Span`1.TryCopyTo(System.Span{`0})"/>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Equality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
+        <member name="M:Shamisen.NativeSpan`1.IsOverlapped(Shamisen.NativeSpan{`0},Shamisen.NativeSpan{`0})">
             <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are equal.
+            Determines whether the specified <paramref name="left"/> and <paramref name="right"/> shares the same region.
             </summary>
-            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <param name="left">The first checking <see cref="T:Shamisen.NativeSpan`1"/>.</param>
+            <param name="right">The second checking <see cref="T:Shamisen.NativeSpan`1"/>.</param>
+            <returns>The value which indicates whether the specified <paramref name="left"/> and <paramref name="right"/> shares the same region.</returns>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.op_Equality(Shamisen.NativeSpan{`0},Shamisen.NativeSpan{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.NativeSpan`1"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.NativeSpan`1"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.NativeSpan`1"/> to compare.</param>
             <returns>
               <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.SystemExtensions.Memory.NativeSpan`1.op_Inequality(Shamisen.SystemExtensions.Memory.NativeSpan{`0},Shamisen.SystemExtensions.Memory.NativeSpan{`0})">
+        <member name="M:Shamisen.NativeSpan`1.op_Inequality(Shamisen.NativeSpan{`0},Shamisen.NativeSpan{`0})">
             <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> objects are not equal.
+            Indicates whether the values of two specified <see cref="T:Shamisen.NativeSpan`1"/> objects are not equal.
             </summary>
-            <param name="left">The first <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.SystemExtensions.Memory.NativeSpan`1"/> to compare.</param>
+            <param name="left">The first <see cref="T:Shamisen.NativeSpan`1"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.NativeSpan`1"/> to compare.</param>
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.op_Implicit(System.Span{`0})~Shamisen.NativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Span`1"/> to <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.op_Implicit(`0[])~Shamisen.NativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Array"/> to <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.op_Implicit(System.ArraySegment{`0})~Shamisen.NativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.ArraySegment`1"/> to <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeSpan`1.op_Implicit(Shamisen.NativeSpan{`0})~Shamisen.ReadOnlyNativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.NativeSpan`1"/> to <see cref="T:System.ReadOnlySpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="T:Shamisen.ReadOnlyNativeSpan`1">
+            <typeparam name="T">The type of items in the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</typeparam>
+            <inheritdoc cref="T:System.ReadOnlySpan`1"/>
+        </member>
+        <member name="P:Shamisen.ReadOnlyNativeSpan`1.Length">
+            <summary>
+            The length of this <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.ReadOnlyNativeSpan`1.IsEmpty">
+            <summary>
+            Returns a value that indicates whether the current <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> is empty.
+            </summary>
+            <inheritdoc cref="P:System.ReadOnlySpan`1.IsEmpty"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.GetHeadReadOnlySpan">
+            <summary>
+            Creates a new <see cref="T:System.ReadOnlySpan`1"/> object that represents the current <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.ReadOnlyNativeSpan`1.FitsInReadOnlySpan">
+            <summary>
+            Returns a value that indicates whether the current <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>'s contents can fit into <see cref="T:System.ReadOnlySpan`1"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.ReadOnlyNativeSpan`1.Empty">
+            <summary>
+            Returns an empty <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.
+            </summary>
+            <value>An empty <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</value>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(Shamisen.NativeSpan{`0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object over the entirety of a specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The memory region from which to create the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</param>
+            <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0@,System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> struct.
+            </summary>
+            <param name="headPointer">The head pointer.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(System.Void*,System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> struct.
+            </summary>
+            <param name="headPointer">The head pointer.</param>
+            <param name="length">The length.</param>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0[])">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object over the entirety of a specified <paramref name="array"/>.
+            </summary>
+            <param name="array">The array from which to create the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(System.ArraySegment{`0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object over the entirety of a specified <paramref name="array"/>.
+            </summary>
+            <param name="array">The array from which to create the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0[],System.IntPtr,System.IntPtr)">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object that includes a specified number of elements of an array starting at a specified index.
+            </summary>
+            <param name="array">The source array.</param>
+            <param name="start">The index of the first element to include in the new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <param name="length">The number of elements to include in the new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <exception cref="T:System.ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+            <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(System.ReadOnlySpan{`0})">
+            <summary>
+            Creates a new <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object over the entirety of a specified <paramref name="span"/>.
+            </summary>
+            <param name="span">The memory region from which to create the <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> object.</param>
+            <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</remarks>
+        </member>
+        <member name="P:Shamisen.ReadOnlyNativeSpan`1.Item(System.IntPtr)">
+            <inheritdoc cref="P:System.ReadOnlySpan`1.Item(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.ElementAtUnchecked(System.IntPtr)">
+            <inheritdoc cref="P:System.ReadOnlySpan`1.Item(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.GetPinnableReference">
+            <inheritdoc cref="M:System.ReadOnlySpan`1.GetPinnableReference"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.Slice(System.IntPtr)">
+            <inheritdoc cref="M:System.ReadOnlySpan`1.Slice(System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.Slice(System.IntPtr,System.IntPtr)">
+            <inheritdoc cref="M:System.ReadOnlySpan`1.Slice(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.CopyTo(Shamisen.NativeSpan{`0})">
+            <summary>
+            Copies the content of this <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> into a <paramref name="destination"/> <see cref="T:Shamisen.NativeSpan`1"/>.
+            </summary>
+            <param name="destination">The destination <see cref="T:Shamisen.NativeSpan`1"/> object.</param>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.CopyTo(System.Span{`0})">
+            <summary>
+            Copies the content of this <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> into a <paramref name="destination"/> <see cref="T:System.Span`1"/>.
+            </summary>
+            <param name="destination">The destination <see cref="T:System.ReadOnlySpan`1"/> object.</param>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.TryCopyTo(Shamisen.NativeSpan{`0})">
+            <inheritdoc cref="M:System.ReadOnlySpan`1.TryCopyTo(System.Span{`0})"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.TryCopyTo(System.Span{`0})">
+            <inheritdoc cref="M:System.ReadOnlySpan`1.TryCopyTo(System.Span{`0})"/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.IsOverlapped(Shamisen.ReadOnlyNativeSpan{`0},Shamisen.ReadOnlyNativeSpan{`0})">
+            <summary>
+            Determines whether the specified <paramref name="left"/> and <paramref name="right"/> shares the same region.
+            </summary>
+            <param name="left">The first checking <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <param name="right">The second checking <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.</param>
+            <returns>The value which indicates whether the specified <paramref name="left"/> and <paramref name="right"/> shares the same region.</returns>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.op_Equality(Shamisen.ReadOnlyNativeSpan{`0},Shamisen.ReadOnlyNativeSpan{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.op_Inequality(Shamisen.ReadOnlyNativeSpan{`0},Shamisen.ReadOnlyNativeSpan{`0})">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.op_Implicit(System.ReadOnlySpan{`0})~Shamisen.ReadOnlyNativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.ReadOnlySpan`1"/> to <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.op_Implicit(`0[])~Shamisen.ReadOnlyNativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.Array"/> to <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.ReadOnlyNativeSpan`1.op_Implicit(System.ArraySegment{`0})~Shamisen.ReadOnlyNativeSpan{`0}">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.ArraySegment`1"/> to <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <returns>
+            The result of the conversion.
             </returns>
         </member>
         <member name="T:Shamisen.SpanExtensions">
@@ -7350,9 +7825,47 @@
             Provides some extension functions.
             </summary>
         </member>
+        <member name="M:Shamisen.SpanExtensions.CreateNativeSpan``1(``0@,System.IntPtr)">
+            <inheritdoc cref="M:Shamisen.NativeSpan`1.#ctor(`0@,System.IntPtr)"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.CreateReadOnlyNativeSpan``1(``0@,System.IntPtr)">
+            <inheritdoc cref="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0@,System.IntPtr)"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.GetReference``1(Shamisen.NativeSpan{``0})">
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.GetReference``1(Shamisen.ReadOnlyNativeSpan{``0})">
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AsBytes``1(Shamisen.NativeSpan{``0})">
+            <summary>
+            Casts a <see cref="T:Shamisen.NativeSpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
+            </summary>
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.Span{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AsBytes``1(Shamisen.ReadOnlyNativeSpan{``0})">
+            <summary>
+            Casts a <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>
+            </summary>
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.ReadOnlySpan{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.Cast``2(Shamisen.NativeSpan{``0})">
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.Cast``2(System.Span{``0})"/>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.Cast``2(Shamisen.ReadOnlyNativeSpan{``0})">
+            <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.Cast``2(System.ReadOnlySpan{``0})"/>
+        </member>
         <member name="M:Shamisen.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
             <summary>
-            Quickly (but slower than <see cref="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.QuickFill``1(Shamisen.NativeSpan{``0},``0)">
+            <summary>
+            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
             </summary>
             <typeparam name="TSample">The type of the sample.</typeparam>
             <param name="span">The span to fill.</param>
@@ -7425,15 +7938,6 @@
             <param name="span">The span.</param>
             <param name="maxLength">The maximum length multiplied by <paramref name="maxLength"/>.</param>
             <param name="divisor">The number to divide.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
-            <summary>
-            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
-            <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
         <member name="M:Shamisen.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
@@ -7530,7 +8034,21 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Single},System.Single)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Double},System.Double)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
@@ -7544,7 +8062,21 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Byte},System.Byte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt16},System.UInt16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
@@ -7558,7 +8090,21 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt32},System.UInt32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt64},System.UInt64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
@@ -7572,7 +8118,21 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.SByte},System.SByte)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int16},System.Int16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
@@ -7586,7 +8146,21 @@
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int32},System.Int32)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
         <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
+            <summary>
+            Fills the specified memory region faster, with the given <paramref name="value"/>.
+            </summary>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int64},System.Int64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
@@ -7603,6 +8177,15 @@
             <returns></returns>
         </member>
         <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="span">The <see cref="T:System.Span`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -7674,6 +8257,15 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.Int32Divisor)">
+            <summary>
+            Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="memory">The <see cref="T:System.Memory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="memory"/> with the specified length.
@@ -7729,6 +8321,15 @@
             <returns></returns>
         </member>
         <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlySpan">The <see cref="T:System.ReadOnlySpan`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -7800,6 +8401,15 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.Int32Divisor)">
+            <summary>
+            Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="readOnlyMemory">The <see cref="T:System.ReadOnlyMemory`1"/> to slice.</param>
+            <param name="channelsDivisor">The divisor set to align width.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the specified length.
@@ -7845,6 +8455,60 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(Shamisen.NativeSpan{``0},System.IntPtr)">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the specified length.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="length">The length to read.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.Span{``0})">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:Shamisen.NativeSpan`1"/></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:Shamisen.NativeSpan`1"/></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlySpan{``0})">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:Shamisen.NativeSpan`1"/></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlyMemory{``0})">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:Shamisen.NativeSpan`1"/></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},Shamisen.NativeSpan{``0})">
+            <summary>
+            Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+            </summary>
+            <typeparam name="T">The type of <see cref="T:Shamisen.NativeSpan`1"/></typeparam>
+            <param name="nativeSpan">The <see cref="T:Shamisen.NativeSpan`1"/> to slice.</param>
+            <param name="criterion">The criterion.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.Memory{``0},System.Span{``0})">
             <summary>
             Copies the contents of this <see cref="T:System.Memory`1"/> into a destination <see cref="T:System.Span`1"/>.
@@ -7881,6 +8545,15 @@
             <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
             <returns></returns>
         </member>
+        <member name="M:Shamisen.SpanExtensions.CopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of this <see cref="T:Shamisen.NativeSpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:Shamisen.NativeSpan`1"/> to copy from.</param>
+            <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
             <summary>
             Attempts to copy the current <see cref="T:System.Memory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
@@ -7914,6 +8587,15 @@
             </summary>
             <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
             <param name="source">The <see cref="T:System.ReadOnlySpan`1"/> to copy from.</param>
+            <param name="destination">The target of the copy operation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+            <summary>
+            Copies the contents of current <see cref="T:Shamisen.NativeSpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of destination <see cref="T:System.Memory`1"/></typeparam>
+            <param name="source">The <see cref="T:Shamisen.NativeSpan`1"/> to copy from.</param>
             <param name="destination">The target of the copy operation.</param>
             <returns></returns>
         </member>

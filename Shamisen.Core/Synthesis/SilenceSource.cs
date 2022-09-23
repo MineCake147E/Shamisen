@@ -82,7 +82,7 @@ namespace Shamisen.Synthesis
                         qbuffer.FastFill(qoffset);
                         break;
                     default:
-                        buffer.QuickFill(offset);
+                        buffer.Fill(offset);
                         break;
                 }
             }

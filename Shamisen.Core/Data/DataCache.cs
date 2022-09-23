@@ -176,7 +176,7 @@ namespace Shamisen.Data
             {
                 foreach (var item in buffers)
                 {
-                    item.WriteHead.Span.QuickFill(default);
+                    item.WriteHead.Span.Clear();
                 }
             }
         }

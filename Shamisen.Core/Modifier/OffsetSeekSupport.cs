@@ -36,24 +36,6 @@ namespace Shamisen.Modifier
         public ulong Offset { get; }
 
         /// <summary>
-        /// Seeks the <see cref="IAudioSource{TSample, TFormat}" /> with the specified offset in frames.
-        /// </summary>
-        /// <param name="offset">The offset in frames.</param>
-        /// <param name="origin">The origin.</param>
-        public void Seek(long offset, SeekOrigin origin)
-        {
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    SeekSupport.SeekTo((ulong)offset + Offset);
-                    break;
-                default:
-                    SeekSupport.Seek(offset, origin);
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Seeks the <see cref="IAudioSource{TSample, TFormat}" /> to the specified index in frames from the end of stream.
         /// </summary>
         /// <param name="offset">The offset.</param>

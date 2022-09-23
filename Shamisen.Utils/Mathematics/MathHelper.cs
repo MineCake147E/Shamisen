@@ -51,10 +51,7 @@ namespace Shamisen.Mathematics
         /// <returns></returns>
         public static int Gcd(int a, int b) => GcdInternalI32(a, b);
 
-        private static int GcdInternalI32(int m, int n)
-        {
-            return (int)Gcd((uint)m, (uint)n);
-        }
+        private static int GcdInternalI32(int m, int n) => (int)Gcd((uint)m, (uint)n);
 
         /// <summary>
         /// Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
@@ -115,6 +112,5 @@ namespace Shamisen.Mathematics
                 b >>= MathI.TrailingZeroCount(b);
             }
         }
-
     }
 }

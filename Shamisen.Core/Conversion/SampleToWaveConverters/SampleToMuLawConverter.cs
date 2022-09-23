@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using Shamisen.Utils;
 
 #if NETCOREAPP3_1_OR_GREATER

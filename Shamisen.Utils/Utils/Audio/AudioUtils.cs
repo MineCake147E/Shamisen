@@ -26,7 +26,6 @@ namespace Shamisen.Utils
     /// </summary>
     public static partial class AudioUtils
     {
-
         #region FastAdd
 
         /// <summary>
@@ -1032,7 +1031,7 @@ namespace Shamisen.Utils
                     DuplicateMonauralToOctaple(destination, source);
                     return;
                 case 12:
-                    //There were no system that has 384-bits-wide hardware vector system I ever heard.
+                    //SVE is not supported in .NET 6.
                     DuplicateMonauralTo12Channels(destination, source);
                     return;
                 case 16:
@@ -1214,7 +1213,6 @@ namespace Shamisen.Utils
                     return Fallback.DeinterleaveChannelsSingleFallback(destination, source, channels, chlen);
             }
         }
-
 
         /// <summary>
         /// Deinterleaves <paramref name="buffer"/> to <paramref name="left"/> and <paramref name="right"/>.

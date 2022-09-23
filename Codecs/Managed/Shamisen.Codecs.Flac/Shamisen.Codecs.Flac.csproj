@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;flac</PackageTags>
@@ -53,6 +53,9 @@
 
   </ItemGroup>
   <ItemGroup>
-      <None Include="README.md" Pack="true" PackagePath=""/>
+      <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Composing\" />
   </ItemGroup>
 </Project>

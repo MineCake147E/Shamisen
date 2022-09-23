@@ -11,13 +11,6 @@ namespace Shamisen
     public interface ISeekSupport : ISkipSupport
     {
         /// <summary>
-        /// Seeks the <see cref="IAudioSource{TSample, TFormat}"/> with the specified offset in frames.
-        /// </summary>
-        /// <param name="offset">The offset in frames.</param>
-        /// <param name="origin">The origin.</param>
-        void Seek(long offset, SeekOrigin origin);
-
-        /// <summary>
         /// Seeks the <see cref="IAudioSource{TSample, TFormat}"/> to the specified index in frames.
         /// </summary>
         /// <param name="index">The index in frames.</param>
@@ -34,5 +27,40 @@ namespace Shamisen
         /// </summary>
         /// <param name="offset">The offset.</param>
         void SeekLast(ulong offset);
+    }
+
+    /// <summary>
+    /// Contains some utility functions for <see cref="ISeekSupport"/>.
+    /// </summary>
+    public static class SeekSupportUtils
+    {
+        /// <inheritdoc cref="IClassicSeekSupport.Seek(long, SeekOrigin)"/>
+        public static void Seek(this ISeekSupport seekSupport, long offset, SeekOrigin origin)
+        {
+            if (seekSupport is IClassicSeekSupport classicSeekSupport)
+            {
+                classicSeekSupport.Seek(offset, origin);
+            }
+            else
+            {
+                switch (origin)
+                {
+                    case SeekOrigin.Begin:
+                        seekSupport.SeekTo((ulong)offset);
+                        break;
+                    case SeekOrigin.Current when offset > 0:
+                        seekSupport.Skip((ulong)offset);
+                        break;
+                    case SeekOrigin.Current when offset < 0:
+                        seekSupport.StepBack((ulong)-offset);
+                        break;
+                    case SeekOrigin.End:
+                        seekSupport.SeekLast((ulong)offset);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }

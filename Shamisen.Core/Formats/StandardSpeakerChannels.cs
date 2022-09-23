@@ -3,10 +3,10 @@
 namespace Shamisen
 {
     /// <summary>
-    /// Represents a mask of channels' combination.
+    /// Represents a mask of channels' combination according to the KSAUDIO_CHANNEL_CONFIG structure.
     /// </summary>
     [Flags]
-    public enum Speakers : uint
+    public enum StandardSpeakerChannels : uint
     {
         #region Standard Masks
 
@@ -233,15 +233,15 @@ namespace Shamisen
     }
 
     /// <summary>
-    /// Contains some utility functions for <see cref="Speakers"/>.
+    /// Contains some utility functions for <see cref="StandardSpeakerChannels"/>.
     /// </summary>
-    public static class SpeakersUtils
+    public static class StandardSpeakerChannelsUtils
     {
         /// <summary>
         /// Counts the number of channels of specified <paramref name="speakers"/>.
         /// </summary>
         /// <param name="speakers">The speakers.</param>
-        /// <returns></returns>
-        public static int CountChannels(this Speakers speakers) => MathI.PopCount((ulong)(uint)speakers);
+        /// <returns>The number of channels.</returns>
+        public static int CountChannels(this StandardSpeakerChannels speakers) => MathI.PopCount((ulong)(uint)speakers);
     }
 }

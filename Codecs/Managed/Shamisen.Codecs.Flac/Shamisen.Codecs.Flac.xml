@@ -11,57 +11,57 @@
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Monaural">
             <summary>
-            The <see cref="F:Shamisen.Speakers.Monaural"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.Monaural"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.OrdinalStereo">
             <summary>
-            The <see cref="F:Shamisen.Speakers.SideStereo"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.SideStereo"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FrontThree">
             <summary>
-            The <see cref="F:Shamisen.Speakers.FrontThree"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.FrontThree"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Quad">
             <summary>
-            The <see cref="F:Shamisen.Speakers.Quad"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.Quad"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FrontFive">
             <summary>
-            The <see cref="F:Shamisen.Speakers.FrontFive"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.FrontFive"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.FivePointOne">
             <summary>
-            The <see cref="F:Shamisen.Speakers.FrontFivePointOne"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.FrontFivePointOne"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.DolbySixPointOne">
             <summary>
-            The <see cref="F:Shamisen.Speakers.DolbySixPointOne"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.DolbySixPointOne"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.SevenPointOne">
             <summary>
-            The <see cref="F:Shamisen.Speakers.SevenPointOne"/>.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.SevenPointOne"/>.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.LeftAndDifference">
             <summary>
-            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with raw left and (left - right).
+            The <see cref="F:Shamisen.StandardSpeakerChannels.SideStereo"/> but with raw left and (left - right).
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.RightAndDifference">
             <summary>
-            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with (left - right) and raw right.
+            The <see cref="F:Shamisen.StandardSpeakerChannels.SideStereo"/> but with (left - right) and raw right.
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.CenterAndDifference">
             <summary>
-            The <see cref="F:Shamisen.Speakers.SideStereo"/> but with (left + right) >> 1 and (left - right).
+            The <see cref="F:Shamisen.StandardSpeakerChannels.SideStereo"/> but with (left + right) >> 1 and (left - right).
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1011">

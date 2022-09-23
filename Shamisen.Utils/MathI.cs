@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
+using DivideSharp;
+
 #endif
 #if NET5_0_OR_GREATER
 
@@ -36,7 +38,7 @@ namespace Shamisen
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static int FloorStep(int value, int step) => value - (value % step);
+        public static int FloorStep(int value, int step) => value - value % step;
 
         /// <summary>
         /// Aligns the specified value.
@@ -516,7 +518,6 @@ namespace Shamisen
             var q = value >> 31;
             return (uint)((value + q) ^ q);
         }
-
 
         /// <summary>
         /// Returns the absolute value of the specified value.
@@ -1499,6 +1500,103 @@ namespace Shamisen
         }
         #endregion
 
+        #region Reciprocal
+
+        /// <summary>
+        /// Calculates the (2^64) / <paramref name="value"/> and its remainder.
+        /// </summary>
+        /// <param name="value">The value to divide 2^64 by.</param>
+        /// <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
+        /// <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ReciprocalUInt64(ulong value, out ulong remainder)
+        {
+            var (q, r) = Math.DivRem(~0ul, value);
+            var k = ++r < value;
+            var kk = Unsafe.As<bool, byte>(ref k) - 1ul;
+            q -= kk;
+            r = ~kk & r;
+            remainder = r;
+            return q;
+        }
+
+        /// <summary>
+        /// Calculates the (2^64) / <paramref name="value"/> and its remainder.
+        /// </summary>
+        /// <param name="value">The value to divide 2^64 by.</param>
+        /// <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
+        /// <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong ReciprocalUInt64(UInt64Divisor value, out ulong remainder)
+        {
+            var d = value.Divisor;
+            var r = value.DivRem(~0ul, out var q);
+            var k = ++r < d;
+            var kk = Unsafe.As<bool, byte>(ref k) - 1ul;
+            q -= kk;
+            r = ~kk & r;
+            remainder = r;
+            return q;
+        }
+
+        /// <summary>
+        /// Calculates the (2^32) / <paramref name="value"/> and its remainder.
+        /// </summary>
+        /// <param name="value">The value to divide 2^32 by.</param>
+        /// <param name="remainder">The remainder (2^32) % <paramref name="value"/>.</param>
+        /// <returns>The quotient (2^32) / <paramref name="value"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static uint ReciprocalUInt32(uint value, out uint remainder)
+        {
+            var (q, r) = Math.DivRem(uint.MaxValue, value);
+            var k = ++r < value;
+            var kk = Unsafe.As<bool, byte>(ref k) - 1u;
+            q -= kk;
+            r = ~kk & r;
+            remainder = r;
+            return q;
+        }
+
+        /// <summary>
+        /// Calculates the (<see cref="nuint.MaxValue"/> + 1) / <paramref name="value"/> and its remainder.
+        /// </summary>
+        /// <param name="value">The value to divide 2^32 by.</param>
+        /// <param name="remainder">The remainder (<see cref="nuint.MaxValue"/> + 1) % <paramref name="value"/>.</param>
+        /// <returns>The quotient (<see cref="nuint.MaxValue"/> + 1) / <paramref name="value"/>.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static nuint ReciprocalUIntPtr(nuint value, out nuint remainder)
+        {
+            var (q, r) = Math.DivRem(nuint.MaxValue, value);
+            var k = ++r < value;
+            var kk = Unsafe.As<bool, byte>(ref k) - (nuint)1;
+            q -= kk;
+            r = ~kk & r;
+            remainder = r;
+            return q;
+        }
+
+        #endregion
+
+        #region BigDiv
+
+        /// <summary>
+        /// Divides a 128-bit number consists of two 64-bit number <paramref name="hi"/> and <paramref name="lo"/> by a constant <paramref name="divisor"/>.
+        /// </summary>
+        /// <param name="hi">The higher part of 128-bit numerator.</param>
+        /// <param name="lo">The lower part of 128-bit numerator.</param>
+        /// <param name="divisor">The divisor. Assumed to be a constant number.</param>
+        /// <returns>The lower 64-bit quotient.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ulong BigDivConstant(ulong hi, ulong lo, ulong divisor)
+        {
+            var hiq = ReciprocalUInt64(divisor, out var hir);
+            lo += hir * hi;
+            hi = hiq * hi;
+            hi += lo / divisor;
+            return hi;
+        }
+        #endregion
+
         #region TrailingZeroCount
 
         /// <summary>
@@ -1967,6 +2065,14 @@ namespace Shamisen
         #endregion ZeroHighBits
 
         #region ZeroIfFalse
+
+        /// <summary>
+        /// Returns zero when <paramref name="condition"/> is false, otherwise 1.
+        /// </summary>
+        /// <param name="condition">The condition to test.</param>
+        /// <returns>1 if <paramref name="condition"/> is true, otherwise 0.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int ToInt32(bool condition) => Unsafe.As<bool, byte>(ref condition);
 
         /// <summary>
         /// Returns zero when <paramref name="condition"/> is false, otherwise <paramref name="value"/>.

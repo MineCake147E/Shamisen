@@ -12,57 +12,57 @@ namespace Shamisen.Codecs.Flac
     public enum FlacChannelAssignments : byte
     {
         /// <summary>
-        /// The <see cref="Speakers.Monaural"/>.
+        /// The <see cref="StandardSpeakerChannels.Monaural"/>.
         /// </summary>
         Monaural = 0b0000,
 
         /// <summary>
-        /// The <see cref="Speakers.SideStereo"/>.
+        /// The <see cref="StandardSpeakerChannels.SideStereo"/>.
         /// </summary>
         OrdinalStereo = 0b0001,
 
         /// <summary>
-        /// The <see cref="Speakers.FrontThree"/>.
+        /// The <see cref="StandardSpeakerChannels.FrontThree"/>.
         /// </summary>
         FrontThree = 0b0010,
 
         /// <summary>
-        /// The <see cref="Speakers.Quad"/>.
+        /// The <see cref="StandardSpeakerChannels.Quad"/>.
         /// </summary>
         Quad = 0b0011,
 
         /// <summary>
-        /// The <see cref="Speakers.FrontFive"/>.
+        /// The <see cref="StandardSpeakerChannels.FrontFive"/>.
         /// </summary>
         FrontFive = 0b0100,
 
         /// <summary>
-        /// The <see cref="Speakers.FrontFivePointOne"/>.
+        /// The <see cref="StandardSpeakerChannels.FrontFivePointOne"/>.
         /// </summary>
         FivePointOne = 0b0101,
 
         /// <summary>
-        /// The <see cref="Speakers.DolbySixPointOne"/>.
+        /// The <see cref="StandardSpeakerChannels.DolbySixPointOne"/>.
         /// </summary>
         DolbySixPointOne = 0b0110,
 
         /// <summary>
-        /// The <see cref="Speakers.SevenPointOne"/>.
+        /// The <see cref="StandardSpeakerChannels.SevenPointOne"/>.
         /// </summary>
         SevenPointOne = 0b0111,
 
         /// <summary>
-        /// The <see cref="Speakers.SideStereo"/> but with raw left and (left - right).
+        /// The <see cref="StandardSpeakerChannels.SideStereo"/> but with raw left and (left - right).
         /// </summary>
         LeftAndDifference = 0b1000,
 
         /// <summary>
-        /// The <see cref="Speakers.SideStereo"/> but with (left - right) and raw right.
+        /// The <see cref="StandardSpeakerChannels.SideStereo"/> but with (left - right) and raw right.
         /// </summary>
         RightAndDifference = 0b1001,
 
         /// <summary>
-        /// The <see cref="Speakers.SideStereo"/> but with (left + right) >> 1 and (left - right).
+        /// The <see cref="StandardSpeakerChannels.SideStereo"/> but with (left + right) >> 1 and (left - right).
         /// </summary>
         CenterAndDifference = 0b1010,
 

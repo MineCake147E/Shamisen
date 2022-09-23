@@ -11,3 +11,4 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("Shamisen.TestUtils")]
 [assembly: InternalsVisibleTo("Shamisen.Core.Tests.CoreFx.*")]
 [assembly: InternalsVisibleTo("Shamisen.Benchmarks")]
+[assembly: InternalsVisibleTo("Shamisen.Core")]

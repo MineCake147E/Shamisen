@@ -17,6 +17,215 @@ namespace Shamisen
     /// </summary>
     public static partial class SpanExtensions
     {
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static bool FastFillIfPossible<T>(Span<T> span, T value = default)
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                return false;
+            }
+            switch(default(T)){
+                case float _:
+                    {
+                        var dwValue = value is float v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, float>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case double _:
+                    {
+                        var dwValue = value is double v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, double>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case byte _:
+                    {
+                        var dwValue = value is byte v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case ushort _:
+                    {
+                        var dwValue = value is ushort v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case uint _:
+                    {
+                        var dwValue = value is uint v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, uint>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case ulong _:
+                    {
+                        var dwValue = value is ulong v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, ulong>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case sbyte _:
+                    {
+                        var dwValue = value is sbyte v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, sbyte>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case short _:
+                    {
+                        var dwValue = value is short v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case int _:
+                    {
+                        var dwValue = value is int v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case long _:
+                    {
+                        var dwValue = value is long v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static bool IsFastFillPossible<T>()
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                return false;
+            }
+            switch(default(T)){
+                case float _:
+                case double _:
+                case byte _:
+                case ushort _:
+                case uint _:
+                case ulong _:
+                case sbyte _:
+                case short _:
+                case int _:
+                case long _:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static bool FastFillIfPossible<T>(NativeSpan<T> span, T value = default)
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                return false;
+            }
+            switch(default(T)){
+                case float _:
+                    {
+                        var dwValue = value is float v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, float>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<float>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case double _:
+                    {
+                        var dwValue = value is double v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, double>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<double>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case byte _:
+                    {
+                        var dwValue = value is byte v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, byte>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<byte>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case ushort _:
+                    {
+                        var dwValue = value is ushort v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, ushort>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<ushort>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case uint _:
+                    {
+                        var dwValue = value is uint v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, uint>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<uint>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case ulong _:
+                    {
+                        var dwValue = value is ulong v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, ulong>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<ulong>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case sbyte _:
+                    {
+                        var dwValue = value is sbyte v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, sbyte>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<sbyte>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case short _:
+                    {
+                        var dwValue = value is short v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, short>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<short>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case int _:
+                    {
+                        var dwValue = value is int v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, int>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<int>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                case long _:
+                    {
+                        var dwValue = value is long v ? v : default;
+                        ref var tHead = ref Unsafe.As<T, long>(ref SpanExtensions.GetReference(span));
+                        var nspan = new NativeSpan<long>(ref tHead, span.Length);
+                        FastFill(nspan, dwValue);
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
 #region FastFill
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
@@ -27,17 +236,8 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<float> span, float value = default)
-        {
-            if(Vector<float>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this Span<float> span, float value = default) => VectorFill(span, value);
+
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -47,17 +247,7 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<double> span, double value = default)
-        {
-            if(Vector<double>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this NativeSpan<float> span, float value = default) => VectorFill(span, value);
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -67,17 +257,8 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<byte> span, byte value = default)
-        {
-            if(Vector<byte>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this Span<double> span, double value = default) => VectorFill(span, value);
+
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -87,17 +268,7 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<ushort> span, ushort value = default)
-        {
-            if(Vector<ushort>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this NativeSpan<double> span, double value = default) => VectorFill(span, value);
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -107,17 +278,8 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<uint> span, uint value = default)
-        {
-            if(Vector<uint>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this Span<byte> span, byte value = default) => VectorFill(span, value);
+
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -127,17 +289,7 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<ulong> span, ulong value = default)
-        {
-            if(Vector<ulong>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this NativeSpan<byte> span, byte value = default) => VectorFill(span, value);
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -147,17 +299,8 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<sbyte> span, sbyte value = default)
-        {
-            if(Vector<sbyte>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this Span<ushort> span, ushort value = default) => VectorFill(span, value);
+
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -167,17 +310,7 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<short> span, short value = default)
-        {
-            if(Vector<short>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this NativeSpan<ushort> span, ushort value = default) => VectorFill(span, value);
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -187,17 +320,8 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<int> span, int value = default)
-        {
-            if(Vector<int>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this Span<uint> span, uint value = default) => VectorFill(span, value);
+
         /// <summary>
         /// Fills the specified memory region faster, with the given <paramref name="value"/>.
         /// </summary>
@@ -207,17 +331,114 @@ namespace Shamisen
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
-        public static void FastFill(this Span<long> span, long value = default)
-        {
-            if(Vector<long>.Count > span.Length)
-            {
-                span.Fill(value);
-            }
-            else
-            {
-                VectorFill(span, value);
-            }
-        }
+        public static void FastFill(this NativeSpan<uint> span, uint value = default) => VectorFill(span, value);
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this Span<ulong> span, ulong value = default) => VectorFill(span, value);
+
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this NativeSpan<ulong> span, ulong value = default) => VectorFill(span, value);
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this Span<sbyte> span, sbyte value = default) => VectorFill(span, value);
+
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this NativeSpan<sbyte> span, sbyte value = default) => VectorFill(span, value);
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this Span<short> span, short value = default) => VectorFill(span, value);
+
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this NativeSpan<short> span, short value = default) => VectorFill(span, value);
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this Span<int> span, int value = default) => VectorFill(span, value);
+
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this NativeSpan<int> span, int value = default) => VectorFill(span, value);
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this Span<long> span, long value = default) => VectorFill(span, value);
+
+        /// <summary>
+        /// Fills the specified memory region faster, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_SPANEXT_TT_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static void FastFill(this NativeSpan<long> span, long value = default) => VectorFill(span, value);
+
+
 #endregion FastFill
 #region Extensions for Span<T>
         /// <summary>
@@ -239,6 +460,16 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static Span<T> SliceAlign<T>(this Span<T> span, UInt32Divisor channelsDivisor) => span.Slice(0, (int)channelsDivisor.Floor((uint)span.Length));
+
+        /// <summary>
+        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
 
         /// <summary>
         /// Slices the <paramref name="span"/> with the specified length.
@@ -316,6 +547,16 @@ namespace Shamisen
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, UInt32Divisor channelsDivisor) => memory.Slice(0, (int)channelsDivisor.Floor((uint)memory.Length));
 
         /// <summary>
+        /// Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static Memory<T> SliceAlign<T>(this Memory<T> memory, Int32Divisor channelsDivisor) => memory.Slice(0, channelsDivisor.AbsFloor(memory.Length));
+
+        /// <summary>
         /// Slices the <paramref name="memory"/> with the specified length.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -389,6 +630,16 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, UInt32Divisor channelsDivisor) => readOnlySpan.Slice(0, (int)channelsDivisor.Floor((uint)readOnlySpan.Length));
+
+        /// <summary>
+        /// Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, Int32Divisor channelsDivisor) => readOnlySpan.Slice(0, channelsDivisor.AbsFloor(readOnlySpan.Length));
 
         /// <summary>
         /// Slices the <paramref name="readOnlySpan"/> with the specified length.
@@ -466,6 +717,16 @@ namespace Shamisen
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, UInt32Divisor channelsDivisor) => readOnlyMemory.Slice(0, (int)channelsDivisor.Floor((uint)readOnlyMemory.Length));
 
         /// <summary>
+        /// Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
+        /// <param name="channelsDivisor">The divisor set to align width.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, Int32Divisor channelsDivisor) => readOnlyMemory.Slice(0, channelsDivisor.AbsFloor(readOnlyMemory.Length));
+
+        /// <summary>
         /// Slices the <paramref name="readOnlyMemory"/> with the specified length.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -519,6 +780,72 @@ namespace Shamisen
         public static ReadOnlyMemory<T> AlignWith<T>(this ReadOnlyMemory<T> readOnlyMemory, ReadOnlyMemory<T> criterion) => readOnlyMemory.Slice(0, criterion.Length);
 
 #endregion Extensions for ReadOnlyMemory<T>
+#region Extensions for NativeSpan<T>
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the specified length.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="length">The length to read.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> SliceWhile<T>(this NativeSpan<T> nativeSpan, nint length) => nativeSpan.Slice(0, length);
+
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="NativeSpan{T}"/></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, Span<T> criterion) => nativeSpan.Slice(0, criterion.Length);
+
+
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="NativeSpan{T}"/></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, Memory<T> criterion) => nativeSpan.Slice(0, criterion.Length);
+
+
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="NativeSpan{T}"/></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, ReadOnlySpan<T> criterion) => nativeSpan.Slice(0, criterion.Length);
+
+
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="NativeSpan{T}"/></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, ReadOnlyMemory<T> criterion) => nativeSpan.Slice(0, criterion.Length);
+
+
+        /// <summary>
+        /// Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="NativeSpan{T}"/></typeparam>
+        /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
+        /// <param name="criterion">The criterion.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, NativeSpan<T> criterion) => nativeSpan.Slice(0, criterion.Length);
+
+#endregion Extensions for NativeSpan<T>
 #region CopyTo alternatives
         /// <summary>
         /// Copies the contents of this <see cref="Memory{T}"/> into a destination <see cref="Span{T}"/>.
@@ -559,6 +886,16 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void CopyTo<T>(this ReadOnlySpan<T> source, Memory<T> destination) => source.CopyTo(destination.Span);
+
+        /// <summary>
+        /// Copies the contents of this <see cref="NativeSpan{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
+        /// <param name="source">The <see cref="NativeSpan{T}"/> to copy from.</param>
+        /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void CopyTo<T>(this NativeSpan<T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
 #endregion CopyTo alternatives
 #region TryCopyTo alternatives
@@ -601,6 +938,16 @@ namespace Shamisen
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool TryCopyTo<T>(this ReadOnlySpan<T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
+
+        /// <summary>
+        /// Copies the contents of current <see cref="NativeSpan{T}"/> into a destination <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of destination <see cref="Memory{T}"/></typeparam>
+        /// <param name="source">The <see cref="NativeSpan{T}"/> to copy from.</param>
+        /// <param name="destination">The target of the copy operation.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static bool TryCopyTo<T>(this NativeSpan<T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
 #endregion TryCopyTo alternatives
     }

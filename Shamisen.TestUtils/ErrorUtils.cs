@@ -189,8 +189,8 @@ namespace Shamisen.TestUtils
             var ymm9 = Vector256<ulong>.Zero;
             var ymm8 = Vector256<ulong>.Zero;
             var ymm7 = Vector256<ulong>.Zero;
-            var olen = length - 31;
-            for (i = 0; i < olen; i += 32)
+            var olen = length - 8 * Vector128<uint>.Count + 1;
+            for (i = 0; i < olen; i += 8 * Vector128<uint>.Count)
             {
                 var ymm0 = Avx2.ConvertToVector256Int64(Unsafe.As<uint, Vector128<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector128<uint>.Count))).AsUInt64();
                 ymm8 = Avx2.Add(ymm8, ymm0);
@@ -229,8 +229,8 @@ namespace Shamisen.TestUtils
             ymm13 = Avx2.Add(ymm14, ymm15);
             ymm8 = Avx2.Add(ymm8, ymm9);
             ymm9 = Avx2.Add(ymm10, ymm11);
-            olen = length - 7;
-            for (; i < olen; i += 8)
+            olen = length - 2 * Vector128<uint>.Count + 1;
+            for (; i < olen; i += 2 * Vector128<uint>.Count)
             {
                 var ymm0 = Avx2.ConvertToVector256Int64(Unsafe.As<uint, Vector128<uint>>(ref Unsafe.Add(ref rsi, i + 0 * Vector128<uint>.Count))).AsUInt64();
                 ymm8 = Avx2.Add(ymm8, ymm0);

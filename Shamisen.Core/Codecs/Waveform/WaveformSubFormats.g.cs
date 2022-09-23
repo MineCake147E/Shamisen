@@ -17,7 +17,7 @@ namespace Shamisen.Codecs.Waveform
         /// </summary>
         public static readonly Guid Unknown = AudioEncoding.Unknown.ToGuid();
         /// <summary>
-        /// Microsoft PCM Format
+        /// Microsoft Linear PCM Format
         /// </summary>
         public static readonly Guid LinearPcm = AudioEncoding.LinearPcm.ToGuid();
         /// <summary>
@@ -25,7 +25,7 @@ namespace Shamisen.Codecs.Waveform
         /// </summary>
         public static readonly Guid MsAdpcm = AudioEncoding.MsAdpcm.ToGuid();
         /// <summary>
-        /// IEEE 754 Single Precision Floating-Point Number
+        /// IEEE 754 Binary Floating-Point PCM
         /// </summary>
         public static readonly Guid IeeeFloat = AudioEncoding.IeeeFloat.ToGuid();
         /// <summary>

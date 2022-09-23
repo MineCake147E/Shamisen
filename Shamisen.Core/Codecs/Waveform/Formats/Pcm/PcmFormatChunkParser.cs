@@ -40,7 +40,7 @@ namespace Shamisen.Codecs.Waveform.Formats.LinearPcm
                 if (cbSize > 0)  //When the format is LPCM, the cbSize must be 0 or 22
                 {
                     var validBitsPerSample = source.ReadUInt16LittleEndian();
-                    var channelMask = (Speakers)source.ReadUInt32LittleEndian();
+                    var channelMask = (StandardSpeakerChannels)source.ReadUInt32LittleEndian();
                     var guid = source.ReadStruct<Guid>();
                     if (source.RemainingBytes > 0)
                     {

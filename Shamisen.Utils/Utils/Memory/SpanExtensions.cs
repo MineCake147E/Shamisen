@@ -19,22 +19,163 @@ using Shamisen.Utils.Intrinsics;
 
 namespace Shamisen
 {
+#pragma warning disable RCS1224 // Make method an extension method.
     /// <summary>
     /// Provides some extension functions.
     /// </summary>
     public static partial class SpanExtensions
     {
+        #region CreateNativeSpan
+        /// <inheritdoc cref="NativeSpan{T}.NativeSpan(ref T, nint)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<T> CreateNativeSpan<T>(ref T head, nint length) => new(ref head, length);
 
-        #region QuickFill
+        /// <inheritdoc cref="ReadOnlyNativeSpan{T}.ReadOnlyNativeSpan(ref T, nint)"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlyNativeSpan<T> CreateReadOnlyNativeSpan<T>(ref T head, nint length) => new(ref head, length);
+        #endregion
+
+        #region GetReference
+        /// <inheritdoc cref="MemoryMarshal.GetReference{T}(Span{T})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+
+        public static ref T GetReference<T>(NativeSpan<T> span) => ref span.Head;
+
+        /// <inheritdoc cref="MemoryMarshal.GetReference{T}(Span{T})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ref T GetReference<T>(ReadOnlyNativeSpan<T> span) => ref span.Head;
+        #endregion
+
+        #region Cast
 
         /// <summary>
-        /// Quickly (but slower than <see cref="FastFill(Span{float}, float)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+        /// Casts a <see cref="NativeSpan{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
+        /// </summary>
+        /// <inheritdoc cref="MemoryMarshal.AsBytes{T}(Span{T})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<byte> AsBytes<T>(NativeSpan<T> span) where T : unmanaged => CreateNativeSpan(ref Unsafe.As<T, byte>(ref span.Head), checked(span.Length * Unsafe.SizeOf<T>()));
+
+        /// <summary>
+        /// Casts a <see cref="ReadOnlyNativeSpan{T}"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>
+        /// </summary>
+        /// <inheritdoc cref="MemoryMarshal.AsBytes{T}(ReadOnlySpan{T})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlyNativeSpan<byte> AsBytes<T>(ReadOnlyNativeSpan<T> span) where T : unmanaged => CreateReadOnlyNativeSpan(ref Unsafe.As<T, byte>(ref span.Head), checked(span.Length * Unsafe.SizeOf<T>()));
+
+        /// <inheritdoc cref="MemoryMarshal.Cast{TFrom, TTo}(Span{TFrom})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static NativeSpan<TTo> Cast<TFrom, TTo>(NativeSpan<TFrom> span) where TFrom : unmanaged where TTo : unmanaged
+        {
+            if (Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<TTo>())
+            {
+                return CreateNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length));
+            }
+            if (Unsafe.SizeOf<TTo>() == Unsafe.SizeOf<byte>())
+            {
+                return CreateNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length * Unsafe.SizeOf<TFrom>()));
+            }
+            if (Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<byte>())
+            {
+                return CreateNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length / Unsafe.SizeOf<TTo>()));
+            }
+            if (Unsafe.SizeOf<TFrom>() > Unsafe.SizeOf<TTo>() && Unsafe.SizeOf<TFrom>() % Unsafe.SizeOf<TTo>() == 0)
+            {
+                return CreateNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length / (Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>())));
+            }
+            var t = Math.BigMul((ulong)span.Length, (ulong)Unsafe.SizeOf<TFrom>(), out var low);
+            return CreateNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked((nint)MathI.BigDivConstant(t, low, (ulong)Unsafe.SizeOf<TTo>())));
+        }
+
+        /// <inheritdoc cref="MemoryMarshal.Cast{TFrom, TTo}(ReadOnlySpan{TFrom})"/>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static ReadOnlyNativeSpan<TTo> Cast<TFrom, TTo>(ReadOnlyNativeSpan<TFrom> span) where TFrom : unmanaged where TTo : unmanaged
+        {
+            if (Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<TTo>())
+            {
+                return CreateReadOnlyNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length));
+            }
+            if (Unsafe.SizeOf<TTo>() == Unsafe.SizeOf<byte>())
+            {
+                return CreateReadOnlyNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length * Unsafe.SizeOf<TFrom>()));
+            }
+            if (Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<byte>())
+            {
+                return CreateReadOnlyNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length / Unsafe.SizeOf<TTo>()));
+            }
+            if (Unsafe.SizeOf<TFrom>() > Unsafe.SizeOf<TTo>() && Unsafe.SizeOf<TFrom>() % Unsafe.SizeOf<TTo>() == 0)
+            {
+                return CreateReadOnlyNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked(span.Length / (Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>())));
+            }
+            var t = Math.BigMul((ulong)span.Length, (ulong)Unsafe.SizeOf<TFrom>(), out var low);
+            return CreateReadOnlyNativeSpan(ref Unsafe.As<TFrom, TTo>(ref span.Head), checked((nint)MathI.BigDivConstant(t, low, (ulong)Unsafe.SizeOf<TTo>())));
+        }
+        #endregion
+
+        #region QuickFill
+        /// <summary>
+        /// Quickly (but sometimes slower than <see cref="FastFill(Span{float}, float)"/>) fills the specified memory region, with the given <paramref name="value"/>.
         /// </summary>
         /// <typeparam name="TSample">The type of the sample.</typeparam>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static void QuickFill<TSample>(this Span<TSample> span, TSample value)
+        {
+            var v = value;
+            if (!Vector.IsHardwareAccelerated)
+            {
+                span.Fill(v);
+                return;
+            }
+            if (IsFastFillPossible<TSample>() && FastFillIfPossible<TSample>(span, v)) return;
+            switch (Unsafe.SizeOf<TSample>())
+            {
+                case 1:
+                    {
+                        var dwValue = Unsafe.As<TSample, byte>(ref v);
+                        ref var tHead = ref Unsafe.As<TSample, byte>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        VectorFill(nspan, dwValue);
+                    }
+                    return;
+                case 2:
+                    {
+                        var dwValue = Unsafe.As<TSample, ushort>(ref v);
+                        ref var tHead = ref Unsafe.As<TSample, ushort>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        VectorFill(nspan, dwValue);
+                    }
+                    return;
+                case 4:
+                    {
+                        var dwValue = Unsafe.As<TSample, float>(ref v);
+                        ref var tHead = ref Unsafe.As<TSample, float>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        VectorFill(nspan, dwValue);
+                    }
+                    return;
+                case 8:
+                    {
+                        var dwValue = Unsafe.As<TSample, ulong>(ref v);
+                        ref var tHead = ref Unsafe.As<TSample, ulong>(ref MemoryMarshal.GetReference(span));
+                        var nspan = MemoryMarshal.CreateSpan(ref tHead, span.Length);
+                        VectorFill(nspan, dwValue);
+                    }
+                    return;
+            }
+            span.Fill(v);
+        }
+
+        /// <summary>
+        /// Quickly (but sometimes slower than <see cref="FastFill(NativeSpan{float}, float)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="TSample">The type of the sample.</typeparam>
+        /// <param name="span">The span to fill.</param>
+        /// <param name="value">The value to fill with.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void QuickFill<TSample>(this NativeSpan<TSample> span, TSample value) => span.Fill(value);
+
+        private static void CopyFill<TSample>(Span<TSample> span, TSample value)
         {
             if (span.Length < 32)
             {
@@ -65,84 +206,65 @@ namespace Shamisen
                 return;
             }
             ref var rdi = ref MemoryMarshal.GetReference(dst);
-            var vv = new Vector<T>(value);
-            nint i = 0, length = dst.Length;
+            nint length = dst.Length;
+            FillWithReference(value, ref rdi, length);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void VectorFill<T>(NativeSpan<T> dst, T value) where T : unmanaged
+        {
+            if (!Vector.IsHardwareAccelerated)
+            {
+                dst.Fill(value);
+                return;
+            }
+            ref var rdi = ref GetReference(dst);
+            var length = dst.Length;
+            FillWithReference(value, ref rdi, length);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static void FillWithReference<T>(T value, ref T rdi, nint length) where T : unmanaged
+        {
+            nint i = 0;
             nint olen;
-#if NETCOREAPP3_1_OR_GREATER
-            if (Avx2.IsSupported)
+            var qv = value;
+            if (length >= Vector<T>.Count)
             {
-                olen = length - 32 * Vector<T>.Count + 1;
-                for (; i < olen; i += 32 * Vector<T>.Count)
+                var vv = new Vector<T>(qv);
+                olen = length - 8 * Vector<T>.Count + 1;
+                ref var rdx = ref Unsafe.Add(ref rdi, 7 * Vector<T>.Count);
+                for (; i < olen; i += 8 * Vector<T>.Count)
+                {
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 0) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 1) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 2) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 3) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 4) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 5) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 6) * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - (7 - 7) * Vector<T>.Count)) = vv;
+                }
+                rdx = ref Unsafe.Add(ref rdi, Vector<T>.Count);
+                olen = length - 2 * Vector<T>.Count + 1;
+                for (; i < olen; i += 2 * Vector<T>.Count)
+                {
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - 1 * Vector<T>.Count)) = vv;
+                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdx, i - 0 * Vector<T>.Count)) = vv;
+                }
+                olen = length - Vector<T>.Count + 1;
+                if (i < olen)
                 {
                     Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 4 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 5 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 6 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 7 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 8 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 9 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 10 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 11 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 12 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 13 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 14 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 15 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 16 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 17 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 18 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 19 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 20 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 21 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 22 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 23 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 24 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 25 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 26 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 27 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 28 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 29 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 30 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 31 * Vector<T>.Count)) = vv;
                 }
+                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, length - 1 * Vector<T>.Count)) = vv;
             }
-            else if (Sse.IsSupported)
+            else
             {
-                olen = length - 16 * Vector<T>.Count + 1;
-                for (; i < olen; i += 16 * Vector<T>.Count)
+                for (; i < length; i++)
                 {
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 4 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 5 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 6 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 7 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 8 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 9 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 10 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 11 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 12 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 13 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 14 * Vector<T>.Count)) = vv;
-                    Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 15 * Vector<T>.Count)) = vv;
+                    Unsafe.Add(ref rdi, i) = qv;
                 }
-            }
-#endif
-            olen = length - 4 * Vector<T>.Count + 1;
-            for (; i < olen; i += 4 * Vector<T>.Count)
-            {
-                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 0 * Vector<T>.Count)) = vv;
-                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 1 * Vector<T>.Count)) = vv;
-                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 2 * Vector<T>.Count)) = vv;
-                Unsafe.As<T, Vector<T>>(ref Unsafe.Add(ref rdi, i + 3 * Vector<T>.Count)) = vv;
-            }
-            for (; i < length; i++)
-            {
-                Unsafe.Add(ref rdi, i) = vv[0];
             }
         }
         #endregion
@@ -158,17 +280,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The <see cref="Span{T}"/> to move its elements.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void ShiftRight(this Span<int> span)
-        {
-            unsafe
-            {
-                ref var q = ref MemoryMarshal.GetReference(span);
-                for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
-                {
-                    Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
-                }
-            }
-        }
+        public static void ShiftRight(this Span<int> span) => span.SliceWhile(span.Length - 1).CopyTo(span.Slice(1));
 
         /// <summary>
         /// Moves the elements of specified <paramref name="span"/> right by 1 element.
@@ -176,17 +288,7 @@ namespace Shamisen
         /// <typeparam name="TSample"></typeparam>
         /// <param name="span">The <see cref="Span{T}"/> to move its elements.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void ShiftRight<TSample>(this Span<TSample> span)
-        {
-            unsafe
-            {
-                ref var q = ref MemoryMarshal.GetReference(span);
-                for (var i = (IntPtr)(span.Length - 1); i.ToPointer() > IntPtr.Zero.ToPointer(); i -= 1)
-                {
-                    Unsafe.Add(ref q, i) = Unsafe.Add(ref q, i - 1);
-                }
-            }
-        }
+        public static void ShiftRight<TSample>(this Span<TSample> span) => span.SliceWhile(span.Length - 1).CopyTo(span.Slice(1));
 
         #endregion MoveByOffset
 
@@ -268,15 +370,6 @@ namespace Shamisen
             return (divisor > 0 || span.Length * divisor > maxLength) ? span.SliceWhile(maxLength / divisor) : span;
         }
         #endregion
-        /// <summary>
-        /// Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
-        /// <param name="channelsDivisor">The divisor set to align width.</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
 
         /// <summary>
         /// Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
@@ -829,9 +922,7 @@ namespace Shamisen
             }
             for (; i < length; i += 3)
             {
-                var t = Unsafe.Add(ref rdi, i);
-                Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rdi, i + 2);
-                Unsafe.Add(ref rdi, i + 2) = t;
+                (Unsafe.Add(ref rdi, i + 2), Unsafe.Add(ref rdi, i)) = (Unsafe.Add(ref rdi, i), Unsafe.Add(ref rdi, i + 2));
             }
         }
         #endregion
@@ -1064,5 +1155,6 @@ namespace Shamisen
         }
         #endregion
         #endregion ReverseEndianness
+#pragma warning restore RCS1224 // Make method an extension method.
     }
 }

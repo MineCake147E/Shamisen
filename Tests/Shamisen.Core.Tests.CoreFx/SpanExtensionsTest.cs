@@ -31,6 +31,19 @@ namespace Shamisen.Core.Tests.CoreFx
         }
 
         [Test]
+        public void QuickFillFillsCorrectlyDateTime()
+        {
+            Span<DateTime> span = new DateTime[131071];
+            var value = DateTime.Now;
+            span.QuickFill(value);
+            for (var i = 0; i < span.Length; i++)
+            {
+                if (span[i] != value) Assert.Fail("The QuickFill doesn't fill correctly!");
+            }
+            Assert.Pass();
+        }
+
+        [Test]
         public void QuickFillFillsCorrectlyInt24()
         {
             Span<Int24> span = new Int24[699049];

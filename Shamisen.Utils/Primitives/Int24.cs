@@ -8,10 +8,10 @@ using System.Text;
 namespace Shamisen
 {
     /// <summary>
-	/// An simple representation of 24bit signed integer.
-	/// </summary>
-	/// <seealso cref="System.IEquatable{T}" />
-	[StructLayout(LayoutKind.Explicit, Size = 3)]
+    /// An simple representation of 24bit signed integer.
+    /// </summary>
+    /// <seealso cref="System.IEquatable{T}" />
+    [StructLayout(LayoutKind.Explicit, Size = 3)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct Int24 : IComparable<Int24>, IEquatable<Int24>
     {
@@ -28,9 +28,9 @@ namespace Shamisen
         private readonly byte head;
 
         /// <summary>
-		/// Represents the largest possible value of an System.Int24. This field is constant.
-		/// </summary>
-		public static readonly Int24 MaxValue = (Int24)8388607;
+        /// Represents the largest possible value of an System.Int24. This field is constant.
+        /// </summary>
+        public static readonly Int24 MaxValue = (Int24)8388607;
 
         /// <summary>
         /// Represents the smallest possible value of System.Int24. This field is constant.

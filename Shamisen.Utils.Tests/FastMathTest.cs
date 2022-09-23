@@ -54,7 +54,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2);
                         Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = (float)Math.Sin(x10);
@@ -77,7 +77,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = FastMath.Sin(s2);
                         Unsafe.Add(ref x10, 3) = FastMath.Sin(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = FastMath.Sin(x10);
@@ -129,7 +129,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2 * Math.PI);
                         Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3 * Math.PI);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = (float)Math.Sin(x10 * Math.PI);
@@ -152,7 +152,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = FastMath.SinPi(s2);
                         Unsafe.Add(ref x10, 3) = FastMath.SinPi(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = FastMath.SinPi(x10);
@@ -199,7 +199,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = MathF.Sin(s2);
                         Unsafe.Add(ref x10, 3) = MathF.Sin(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = MathF.Sin(x10);
@@ -222,7 +222,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = FastMath.FastSin(s2);
                         Unsafe.Add(ref x10, 3) = FastMath.FastSin(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = FastMath.FastSin(x10);
@@ -268,7 +268,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2 * Math.PI);
                         Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3 * Math.PI);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = (float)Math.Sin(x10 * Math.PI);
@@ -291,7 +291,7 @@ namespace Shamisen.Utils.Tests
                         Unsafe.Add(ref x10, 2) = FastMath.FastSinPi(s2);
                         Unsafe.Add(ref x10, 3) = FastMath.FastSinPi(s3);
                     }
-                    for (; i < a.Length; i++)
+                    for (; i < length; i++)
                     {
                         ref var x10 = ref Unsafe.Add(ref x9, i);
                         x10 = FastMath.FastSinPi(x10);
@@ -341,7 +341,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = (float)Math.Cos(s2);
                          Unsafe.Add(ref x10, 3) = (float)Math.Cos(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = (float)Math.Cos(x10);
@@ -364,7 +364,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.Cos(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.Cos(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.Cos(x10);
@@ -411,7 +411,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = MathF.Cos(s2);
                          Unsafe.Add(ref x10, 3) = MathF.Cos(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = MathF.Cos(x10);
@@ -434,7 +434,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.FastCos(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.FastCos(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.FastCos(x10);
@@ -484,7 +484,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = (float)Math.Pow(2.0, s2);
                          Unsafe.Add(ref x10, 3) = (float)Math.Pow(2.0, s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = (float)Math.Pow(2.0, x10);
@@ -507,7 +507,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.Exp2(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.Exp2(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.Exp2(x10);
@@ -554,7 +554,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = (float)Math.Pow(2.0, s2);
                          Unsafe.Add(ref x10, 3) = (float)Math.Pow(2.0, s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = (float)Math.Pow(2.0, x10);
@@ -577,7 +577,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.FastExp2(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.FastExp2(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.FastExp2(x10);
@@ -625,7 +625,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.Log2AsNormal(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.Log2AsNormal(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.Log2AsNormal(x10);
@@ -674,7 +674,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.Log2(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.Log2(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.Log2(x10);
@@ -720,7 +720,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.FastLog2AsNormal(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.FastLog2AsNormal(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.FastLog2AsNormal(x10);
@@ -768,7 +768,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.FastLog2(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.FastLog2(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.FastLog2(x10);
@@ -795,7 +795,7 @@ namespace Shamisen.Utils.Tests
                 Unsafe.Add(ref x10, 2) = (float)Math.Log2(s2);
                 Unsafe.Add(ref x10, 3) = (float)Math.Log2(s3);
             }
-            for (; i < a.Length; i++)
+            for (; i < length; i++)
             {
                 ref var x10 = ref Unsafe.Add(ref x9, i);
                 x10 = (float)Math.Log2(x10);
@@ -828,7 +828,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.Cbrt(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.Cbrt(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.Cbrt(x10);
@@ -861,7 +861,7 @@ namespace Shamisen.Utils.Tests
                          Unsafe.Add(ref x10, 2) = FastMath.FastCbrt(s2);
                          Unsafe.Add(ref x10, 3) = FastMath.FastCbrt(s3);
                      }
-                     for (; i < a.Length; i++)
+                     for (; i < length; i++)
                      {
                          ref var x10 = ref Unsafe.Add(ref x9, i);
                          x10 = FastMath.FastCbrt(x10);
@@ -887,7 +887,7 @@ namespace Shamisen.Utils.Tests
                 Unsafe.Add(ref x10, 2) = (float)Math.Cbrt(s2);
                 Unsafe.Add(ref x10, 3) = (float)Math.Cbrt(s3);
             }
-            for (; i < a.Length; i++)
+            for (; i < length; i++)
             {
                 ref var x10 = ref Unsafe.Add(ref x9, i);
                 x10 = (float)Math.Cbrt(x10);

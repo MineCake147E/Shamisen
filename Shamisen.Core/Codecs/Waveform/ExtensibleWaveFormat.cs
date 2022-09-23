@@ -26,7 +26,7 @@ namespace Shamisen.Codecs.Waveform
         private readonly ushort validBitsPerSample;
 
         [FieldOffset(20)]
-        private readonly Speakers channelMask;
+        private readonly StandardSpeakerChannels channelMask;
 
         [FieldOffset(24)]
         private readonly Guid subFormat;
@@ -43,7 +43,7 @@ namespace Shamisen.Codecs.Waveform
         /// <param name="channelMask">The channel mask.</param>
         /// <param name="subFormat">The sub format.</param>
         /// <param name="extraData">The extra data.</param>
-        public ExtensibleWaveFormat(StandardWaveFormat format, ushort extensionSize, ushort validBitsPerSample, Speakers channelMask, Guid subFormat, ReadOnlyMemory<byte> extraData)
+        public ExtensibleWaveFormat(StandardWaveFormat format, ushort extensionSize, ushort validBitsPerSample, StandardSpeakerChannels channelMask, Guid subFormat, ReadOnlyMemory<byte> extraData)
         {
             this.format = format;
             this.extensionSize = extensionSize;
@@ -83,7 +83,7 @@ namespace Shamisen.Codecs.Waveform
         /// <value>
         /// The channel combination.
         /// </value>
-        public Speakers ChannelCombination => channelMask;
+        public StandardSpeakerChannels ChannelCombination => channelMask;
 
         /// <summary>
         /// Gets the sub format.

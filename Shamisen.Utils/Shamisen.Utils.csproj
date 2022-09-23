@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net6.0</TargetFrameworks>
+      <TargetFrameworks>net7.0</TargetFrameworks>
       <RootNamespace>Shamisen</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -10,17 +10,11 @@
       <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
-    <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0'">
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">
         <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="DivideSharp" Version="0.0.5" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-        <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-        <PackageReference Include="System.Buffers" Version="4.5.1" />
-        <PackageReference Include="System.Memory" Version="4.5.5" />
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="True" PackagePath="\" />
@@ -52,7 +46,7 @@
             <Generator>TextTemplatingFileGenerator</Generator>
         </None>
         <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
-          <LastGenOutput>SpanExtensionsTemplate.cs</LastGenOutput>
+          <LastGenOutput>SpanExtensionsTemplate.g.cs</LastGenOutput>
           <Generator>TextTemplatingFileGenerator</Generator>
         </None>
         <None Update="Utils\Tuples\Tuples.g.tt">
@@ -98,7 +92,7 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="Utils\Memory\SpanExtensionsTemplate.cs">
+      <Compile Update="Utils\Memory\SpanExtensionsTemplate.g.cs">
         <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>

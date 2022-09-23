@@ -2993,7 +2993,7 @@
             Represents an "extensible" wave format.
             </summary>
         </member>
-        <member name="M:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.#ctor(Shamisen.Codecs.Waveform.StandardWaveFormat,System.UInt16,System.UInt16,Shamisen.Speakers,System.Guid,System.ReadOnlyMemory{System.Byte})">
+        <member name="M:Shamisen.Codecs.Waveform.ExtensibleWaveFormat.#ctor(Shamisen.Codecs.Waveform.StandardWaveFormat,System.UInt16,System.UInt16,Shamisen.StandardSpeakerChannels,System.Guid,System.ReadOnlyMemory{System.Byte})">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.Codecs.Waveform.ExtensibleWaveFormat"/> struct.
             </summary>
@@ -4752,7 +4752,7 @@
         </member>
         <member name="F:Shamisen.Codecs.Waveform.WaveformSubFormats.LinearPcm">
             <summary>
-            Microsoft PCM Format
+            Microsoft Linear PCM Format
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Waveform.WaveformSubFormats.MsAdpcm">
@@ -4762,7 +4762,7 @@
         </member>
         <member name="F:Shamisen.Codecs.Waveform.WaveformSubFormats.IeeeFloat">
             <summary>
-            IEEE 754 Single Precision Floating-Point Number
+            IEEE 754 Binary Floating-Point PCM
             </summary>
         </member>
         <member name="F:Shamisen.Codecs.Waveform.WaveformSubFormats.Vselp">
@@ -5317,6 +5317,53 @@
             <summary>
             The <see cref="P:Shamisen.Units.Sample"/> is a smallest unit of the multi-channel discrete(digital) audio data.<br/>
             The <see cref="P:Shamisen.Units.Sample"/> besides channel-by-channel, so the length of frame in bytes is the size of the sample itself, multiplied by the number of channels.
+            </summary>
+        </member>
+        <member name="T:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator">
+            <summary>
+            Converts monaural audio to stereo.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="newChannels">The number of channels of output.</param>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Source">
+            <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralSampleDuplicator.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
         <member name="T:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter">
@@ -7106,6 +7153,21 @@
             The seek support.
             </value>
         </member>
+        <member name="T:Shamisen.IClassicSeekSupport">
+            <summary>
+            Defines a base infrastructure that contains seek support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.IDataSource`1"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IClassicSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
+            </summary>
+            <param name="offset">
+            The offset in frames.
+            For <see cref="F:System.IO.SeekOrigin.Begin"/> and <see cref="F:System.IO.SeekOrigin.End"/>, the value will be treated as unsigned number.
+            </param>
+            <param name="origin">The origin.</param>
+        </member>
         <member name="T:Shamisen.IDataSink`1">
             <summary>
             Defines a base infrastructure for writing data.
@@ -7322,13 +7384,6 @@
             Defines a base infrastructure that contains seek support of <see cref="T:Shamisen.IAudioSource`2"/> or <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.ISeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2"/> with the specified offset in frames.
-            </summary>
-            <param name="offset">The offset in frames.</param>
-            <param name="origin">The origin.</param>
-        </member>
         <member name="M:Shamisen.ISeekSupport.SeekTo(System.UInt64)">
             <summary>
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames.
@@ -7346,6 +7401,14 @@
             Seeks the <see cref="T:Shamisen.IAudioSource`2"/> to the specified index in frames from the end of stream.
             </summary>
             <param name="offset">The offset.</param>
+        </member>
+        <member name="T:Shamisen.SeekSupportUtils">
+            <summary>
+            Contains some utility functions for <see cref="T:Shamisen.ISeekSupport"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.SeekSupportUtils.Seek(Shamisen.ISeekSupport,System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc cref="M:Shamisen.IClassicSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)"/>
         </member>
         <member name="T:Shamisen.ISkipSupport">
             <summary>
@@ -7375,6 +7438,11 @@
             Defines a base infrastructure of a raw audio data filter.
             </summary>
             <seealso cref="T:Shamisen.IAggregator`3" />
+        </member>
+        <member name="T:Shamisen.Core.SeekResult">
+            <summary>
+            Represents a result of seek operation.
+            </summary>
         </member>
         <member name="T:Shamisen.Data.Binary.DataReaderExtensions">
             <summary>
@@ -9032,18 +9100,6 @@
             <param name="parameter">The parameter to call the method with.</param>
             <returns>The reading task that returns the length of buffer filled.</returns>
         </member>
-        <member name="T:Shamisen.ThrowHelper">
-            <summary>
-            Helps throwing exceptions while in-lining aggressively.
-            </summary>
-        </member>
-        <member name="M:Shamisen.ThrowHelper.Throw``1(``0)">
-            <summary>
-            Throws the specified exception.
-            </summary>
-            <typeparam name="T">The type of exception.</typeparam>
-            <param name="exception">The exception.</param>
-        </member>
         <member name="T:Shamisen.Filters.Attenuator">
             <summary>
             Modifies the velocity of <see cref="P:Shamisen.Filters.Attenuator.Source"/>
@@ -10329,7 +10385,7 @@
         </member>
         <member name="T:Shamisen.ChannelMaskUtils">
             <summary>
-            Provides several utilities for manipulating <see cref="T:Shamisen.Speakers"/>.
+            Provides several utilities for manipulating <see cref="T:Shamisen.StandardSpeakerChannels"/>.
             </summary>
         </member>
         <member name="M:Shamisen.ChannelMaskUtils.GetChannelMasks``1(Shamisen.IAudioFormat{``0})">
@@ -10338,7 +10394,7 @@
             </summary>
             <typeparam name="TSample">The type of sample.</typeparam>
             <param name="format">The format.</param>
-            <returns>The matching <see cref="T:Shamisen.Speakers"/> combination.</returns>
+            <returns>The matching <see cref="T:Shamisen.StandardSpeakerChannels"/> combination.</returns>
         </member>
         <member name="T:Shamisen.DoublePrecisionSampleFormat">
             <summary>
@@ -11381,237 +11437,237 @@
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="T:Shamisen.Speakers">
+        <member name="T:Shamisen.StandardSpeakerChannels">
             <summary>
-            Represents a mask of channels' combination.
+            Represents a mask of channels' combination according to the KSAUDIO_CHANNEL_CONFIG structure.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.None">
+        <member name="F:Shamisen.StandardSpeakerChannels.None">
             <summary>
             Invalid.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontLeft">
             <summary>
             The speaker placed in left front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontRight">
             <summary>
             The speaker placed in right front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontCenter">
             <summary>
             The speaker placed in front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontCenterLowFrequency">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontCenterLowFrequency">
             <summary>
             The subwoofer speaker placed in front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.RearLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.RearLeft">
             <summary>
             The speaker placed in left rear of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.RearRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.RearRight">
             <summary>
             The speaker placed in right rear of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontLeftOfCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontLeftOfCenter">
             <summary>
-            The speaker placed between <see cref="F:Shamisen.Speakers.FrontCenter"/> and <see cref="F:Shamisen.Speakers.FrontLeft"/>, of the listener.
+            The speaker placed between <see cref="F:Shamisen.StandardSpeakerChannels.FrontCenter"/> and <see cref="F:Shamisen.StandardSpeakerChannels.FrontLeft"/>, of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontRightOfCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontRightOfCenter">
             <summary>
-            The speaker placed between <see cref="F:Shamisen.Speakers.FrontCenter"/> and <see cref="F:Shamisen.Speakers.FrontRight"/>, of the listener.
+            The speaker placed between <see cref="F:Shamisen.StandardSpeakerChannels.FrontCenter"/> and <see cref="F:Shamisen.StandardSpeakerChannels.FrontRight"/>, of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.RearCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.RearCenter">
             <summary>
             The speaker placed behind the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SideLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.SideLeft">
             <summary>
             The speaker placed to the left of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SideRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.SideRight">
             <summary>
             The speaker placed to the right of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.RearLowFrequency">
+        <member name="F:Shamisen.StandardSpeakerChannels.RearLowFrequency">
             <summary>
             The subwoofer speaker placed behind the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopFrontLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopFrontLeft">
             <summary>
             The speaker placed at the upper left front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopFrontCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopFrontCenter">
             <summary>
             The speaker placed at the upper front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopFrontRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopFrontRight">
             <summary>
             The speaker placed at the upper right front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopRearLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopRearLeft">
             <summary>
             The speaker placed at the upper left rear of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopRearCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopRearCenter">
             <summary>
             The speaker placed at the upper rear of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopRearRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopRearRight">
             <summary>
             The speaker placed at the upper right rear of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopSideLeft">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopSideLeft">
             <summary>
             The speaker placed at the upper left of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopSideCenter">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopSideCenter">
             <summary>
             The speaker placed above the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopSideRight">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopSideRight">
             <summary>
             The speaker placed at the upper right of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.Monaural">
+        <member name="F:Shamisen.StandardSpeakerChannels.Monaural">
             <summary>
             The representation of single speaker.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontStereo">
             <summary>
             The ordinal Stereo combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SideStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.SideStereo">
             <summary>
             The side Stereo combination suitable for headphones.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.RearStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.RearStereo">
             <summary>
             The rear Stereo combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopFrontStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopFrontStereo">
             <summary>
             The top front Stereo combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopSideStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopSideStereo">
             <summary>
             The top side Stereo combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TopRearStereo">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopRearStereo">
             <summary>
             The top rear Stereo combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.TwoPointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.TwoPointOne">
             <summary>
             The 2.1ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontThree">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontThree">
             <summary>
             The 3ch surround combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.ThreePointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.ThreePointOne">
             <summary>
             The 3.1ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.Quad">
+        <member name="F:Shamisen.StandardSpeakerChannels.Quad">
             <summary>
             The 4ch surround combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontFive">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontFive">
             <summary>
             The 5ch surround combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SideFive">
+        <member name="F:Shamisen.StandardSpeakerChannels.SideFive">
             <summary>
             The 5ch surround combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FourPointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.FourPointOne">
             <summary>
             The 4.1ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.FrontFivePointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.FrontFivePointOne">
             <summary>
             The standard 5.1ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SideFivePointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.SideFivePointOne">
             <summary>
             The side 5.1ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.Hexagonal">
+        <member name="F:Shamisen.StandardSpeakerChannels.Hexagonal">
             <summary>
             The hexagonal 6ch combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.ShamisenSixPointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.ShamisenSixPointOne">
             <summary>
             The 6.1ch combination with top-side center.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.DolbySixPointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.DolbySixPointOne">
             <summary>
             The 6.1ch combination with rear center.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SevenSurround">
+        <member name="F:Shamisen.StandardSpeakerChannels.SevenSurround">
             <summary>
             The 7ch surround combination.
             </summary>
         </member>
-        <member name="F:Shamisen.Speakers.SevenPointOne">
+        <member name="F:Shamisen.StandardSpeakerChannels.SevenPointOne">
             <summary>
             The 7.1ch combination.
             </summary>
         </member>
-        <member name="T:Shamisen.SpeakersUtils">
+        <member name="T:Shamisen.StandardSpeakerChannelsUtils">
             <summary>
-            Contains some utility functions for <see cref="T:Shamisen.Speakers"/>.
+            Contains some utility functions for <see cref="T:Shamisen.StandardSpeakerChannels"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.SpeakersUtils.CountChannels(Shamisen.Speakers)">
+        <member name="M:Shamisen.StandardSpeakerChannelsUtils.CountChannels(Shamisen.StandardSpeakerChannels)">
             <summary>
             Counts the number of channels of specified <paramref name="speakers"/>.
             </summary>
             <param name="speakers">The speakers.</param>
-            <returns></returns>
+            <returns>The number of channels.</returns>
         </member>
         <member name="T:Shamisen.WaveFormat">
             <summary>
@@ -11817,58 +11873,6 @@
             The denominator.
             </summary>
         </member>
-        <member name="T:Shamisen.Mathematics.MathHelper">
-            <summary>
-            Helps some calculations.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Mathematics.MathHelper.DoublePI">
-            <summary>
-            The double pi.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Mathematics.MathHelper.MinimizeDivisor(System.Int32,System.Int32)">
-            <summary>
-            Minimizes the divisor.
-            </summary>
-            <param name="mul">The multiplier.</param>
-            <param name="div">The divisor.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
-        </member>
-        <member name="M:Shamisen.Mathematics.MathHelper.MinimizeDivisor(System.UInt64,System.UInt64)">
-            <summary>
-            Minimizes the divisor.
-            </summary>
-            <param name="mul">The multiplier.</param>
-            <param name="div">The divisor.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">div</exception>
-        </member>
-        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.Int32,System.Int32)">
-            <summary>
-            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
-            </summary>
-            <param name="a">a.</param>
-            <param name="b">The b.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.UInt32,System.UInt32)">
-            <summary>
-            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
-            </summary>
-            <param name="a">a.</param>
-            <param name="b">The b.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Mathematics.MathHelper.Gcd(System.UInt64,System.UInt64)">
-            <summary>
-            Calculates a greatest common divisor for <paramref name="a"/> and <paramref name="b"/>.
-            </summary>
-            <param name="a">a.</param>
-            <param name="b">The b.</param>
-            <returns></returns>
-        </member>
         <member name="T:Shamisen.Modifier.FractionalSeekSupport">
             <summary>
             Implements an <see cref="T:Shamisen.ISkipSupport"/> with fraction and source.
@@ -11893,36 +11897,17 @@
             <param name="multiplier">The multiplier.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
-        <member name="M:Shamisen.Modifier.FractionalSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> with the specified offset in frames.
-            </summary>
-            <param name="offset">The offset in frames.</param>
-            <param name="origin">The origin.</param>
-        </member>
         <member name="M:Shamisen.Modifier.FractionalSeekSupport.SeekLast(System.UInt64)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames from the end of stream.
-            </summary>
-            <param name="offset">The offset.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Modifier.FractionalSeekSupport.SeekTo(System.UInt64)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> to the specified index in frames.
-            </summary>
-            <param name="index">The index in frames.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Modifier.FractionalSeekSupport.Skip(System.UInt64)">
-            <summary>
-            Skips the source the specified step in frames.
-            </summary>
-            <param name="step">The number of frames to skip.</param>
+            <inheritdoc/>
         </member>
         <member name="M:Shamisen.Modifier.FractionalSeekSupport.StepBack(System.UInt64)">
-            <summary>
-            Steps this data source the specified step back in frames.
-            </summary>
-            <param name="step">The number of frames to step back.</param>
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Modifier.FractionalSkipSupport">
             <summary>
@@ -11974,13 +11959,6 @@
             <value>
             The offset.
             </value>
-        </member>
-        <member name="M:Shamisen.Modifier.OffsetSeekSupport.Seek(System.Int64,System.IO.SeekOrigin)">
-            <summary>
-            Seeks the <see cref="T:Shamisen.IAudioSource`2" /> with the specified offset in frames.
-            </summary>
-            <param name="offset">The offset in frames.</param>
-            <param name="origin">The origin.</param>
         </member>
         <member name="M:Shamisen.Modifier.OffsetSeekSupport.SeekLast(System.UInt64)">
             <summary>

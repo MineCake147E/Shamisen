@@ -8,15 +8,19 @@ namespace Shamisen
     /// <summary>
     /// Helps throwing exceptions while in-lining aggressively.
     /// </summary>
-    internal static class ThrowHelper
+    public static class ThrowHelper
     {
         /// <summary>
         /// Throws the specified exception.
         /// </summary>
         /// <typeparam name="T">The type of exception.</typeparam>
         /// <param name="exception">The exception.</param>
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Throw<T>(this T exception) where T : Exception => throw exception;
+
+        /// <summary>
+        /// Throws a new instance of <see cref="IndexOutOfRangeException"/>.
+        /// </summary>
+        public static void ThrowIndexOutOfRangeException() => throw new IndexOutOfRangeException();
 
     }
 }

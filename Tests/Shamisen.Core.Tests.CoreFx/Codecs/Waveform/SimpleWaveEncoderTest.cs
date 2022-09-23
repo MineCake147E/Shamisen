@@ -59,7 +59,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
             var src = new DummySource<byte, IWaveFormat>(
                 new ExtensibleWaveFormat(
                     new StandardWaveFormat(AudioEncoding.Extensible, channels, sampleRate, 2u * channels * sampleRate, (ushort)(2u * channels), (ushort)16u)
-                    , 24, (ushort)16u, Speakers.SideStereo, AudioEncoding.LinearPcm.ToGuid(), default));
+                    , 24, (ushort)16u, StandardSpeakerChannels.SideStereo, AudioEncoding.LinearPcm.ToGuid(), default));
 
             var truncate = new LengthTruncationSource<byte, IWaveFormat>(src, length);
             using var ms = new MemoryStream();
