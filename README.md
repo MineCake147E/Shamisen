@@ -4,7 +4,7 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/minecake147e/shamisen/badge)](https://www.codefactor.io/repository/github/minecake147e/shamisen)
 [![.NET](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml/badge.svg)](https://github.com/MineCake147E/Shamisen/actions/workflows/dotnet.yml)  
-A Cross-Platform Audio Library for .NET 6.
+A Cross-Platform Audio Library for .NET 7.
 
 ## Usage of Shamisen
 
@@ -99,8 +99,6 @@ Legends:
 
 - Currently, **_Unity IS NOT SUPPORTED AT ALL!_**
 - Requires [DivideSharp](https://github.com/MineCake147E/DivideSharp) for frequently appearing divide-by-number-of-channels operations.
-- Faster resampling is only available with `.NET Core 3.1` or `.NET 5 or later`.
-  - Unfortunately, older versions doesn't support Hardware Intrinsics.
 - The most processing in this library fully depends on SINGLE core.
   - Because `Span<T>` does not support multi-thread processing at all.
 
