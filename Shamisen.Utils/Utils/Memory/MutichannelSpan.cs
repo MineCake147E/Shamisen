@@ -12,6 +12,5 @@ namespace Shamisen.Utils.Memory
     public readonly ref struct MutichannelSpan<T> where T : unmanaged
     {
         private readonly ref T head;
-
     }
 }

@@ -112,7 +112,6 @@ namespace Shamisen.Codecs.Flac
                     Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
                     xmm1 = Sse2.UnpackLow(xmm1, xmm3);
                     Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
-
                 }
                 olen = length - 3;
                 for (; i < olen; i += 4)
@@ -278,7 +277,6 @@ namespace Shamisen.Codecs.Flac
                     Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 8)) = xmm0;
                     xmm1 = Sse2.UnpackLow(xmm1, xmm3);
                     Unsafe.As<int, Vector128<int>>(ref Unsafe.Add(ref rB, i * 2 + 12)) = xmm1;
-
                 }
                 olen = length - 3;
                 for (; i < olen; i += 4)

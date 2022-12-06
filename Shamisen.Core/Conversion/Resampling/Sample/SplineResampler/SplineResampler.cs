@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #if NETCOREAPP3_1_OR_GREATER
@@ -7,7 +6,6 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif
 #if NET5_0_OR_GREATER
-using System.Runtime.Intrinsics.Arm;
 #endif
 
 using Shamisen.Filters;
@@ -26,7 +24,7 @@ namespace Shamisen.Conversion.Resampling.Sample
     public sealed partial class SplineResampler : ResamplerBase
     {
         private const int CacheThreshold = 512;
-        private ResizableBufferWrapper<float> bufferWrapper;
+        private readonly ResizableBufferWrapper<float> bufferWrapper;
         private int conversionGradient = 0;
         private int framesReserved = 1;
         private int rearrangedCoeffsIndex = 0;
@@ -39,9 +37,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// Z: The coefficient for value3 ((-(3 * xP3) + 4 * xP2 + x) * 0.5f)<br/>
         /// W: The coefficient for value4 ((xP3 - xP2) * 0.5f)<br/>
         /// </summary>
-        private Vector4[] preCalculatedCatmullRomCoefficients;
+        private readonly Vector4[] preCalculatedCatmullRomCoefficients;
 
-        private float[][] sampleCache;
+        private readonly float[][] sampleCache;
 
         private bool isEndOfStream = false;
 
@@ -56,7 +54,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         public SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate)
             : this(source, destinationSampleRate, IntrinsicsUtils.X86Intrinsics)
         {
-
         }
 
         internal SplineResampler(IReadableAudioSource<float, SampleFormat> source, int destinationSampleRate, X86Intrinsics x86Intrinsics)
@@ -97,17 +94,17 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                     else
                     {
-                        var coeffs = new Vector4[(rateMul / 2)];
+                        var coeffs = new Vector4[rateMul / 2];
                         GenerateCoeffs(coeffs, rateMulInverse);
-                        var h = RearrangeCoefficentsCachedWrappedEven(coeffs, rateMul, acc);
-                        return (ResampleStrategy.CachedWrappedEven, coeffs, h.initialPosition, h.initialDirection);
+                        var (initialPosition, initialDirection) = RearrangeCoefficentsCachedWrappedEven(coeffs, rateMul, acc);
+                        return (ResampleStrategy.CachedWrappedEven, coeffs, initialPosition, initialDirection);
                     }
                 }
             }
             return (ResampleStrategy.Direct, Array.Empty<Vector4>(), 0, 1);
         }
         /// <summary>
-        /// [WIP] Rearranges coefficients for <see cref="ResampleStrategy.CachedDirect"/>.
+        /// Rearranges coefficients for <see cref="ResampleStrategy.CachedDirect"/>.
         ///
         /// </summary>
         /// <param name="coeffs"></param>
@@ -298,8 +295,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             xmm5 = Vector128.CreateScalarUnsafe(1);
             for (; i < length; i++)
             {
-                Vector128<float> xmm12;
-                xmm12 = xmm0;
+                var xmm12 = xmm0;
                 var xmm7 = Sse2.ConvertToVector128Single(xmm6);
                 xmm7 = Sse.MultiplyScalar(xmm7, xmm4);
                 var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
@@ -366,8 +362,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             xmm5 = Vector128.CreateScalarUnsafe(1);
             for (; i < length; i++)
             {
-                Vector128<float> xmm12;
-                xmm12 = xmm0;
+                var xmm12 = xmm0;
                 var xmm7 = Sse2.ConvertToVector128Single(xmm6);
                 xmm7 = Sse.MultiplyScalar(xmm7, xmm4);
                 var xmm8 = Sse.Shuffle(xmm7, xmm7, 0b00_00_00_00);
@@ -499,14 +494,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 #endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Abs(int value)
-        {
-            //TODO: get outside
-            var mask = value >> 31;
-            return (uint)((value + mask) ^ mask);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector4 CalculateCatmullRomCoeffs(float x)
         {
             //Horner's Method for Catmull-Rom Coeffs
@@ -562,8 +549,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             var v = sampleLengthOut * RateDiv + conversionGradient;
             var h = RateMulDivisor.DivRem((uint)v, out var b);
             var samplesRequired = (int)b + 3 + (h > 0 ? 1 : 0);
-            var internalBufferLengthRequired = samplesRequired * channels;
-            return internalBufferLengthRequired;
+            return samplesRequired * channels;
         }
 
         private void ExpandBuffer(int internalBufferLengthRequired)
@@ -571,7 +557,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             var lengthReserved = framesReserved * Channels;
             Span<float> a = stackalloc float[lengthReserved];
 
-            if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer.Slice(0, lengthReserved).CopyTo(a);
+            if (bufferWrapper.Buffer.Length > lengthReserved) bufferWrapper.Buffer[..lengthReserved].CopyTo(a);
             bufferWrapper.Resize(internalBufferLengthRequired);
             a.CopyTo(bufferWrapper.Buffer);
         }
@@ -595,9 +581,9 @@ namespace Shamisen.Conversion.Resampling.Sample
                 ExpandBuffer(internalBufferLengthRequired);
             }
             //Resampling start
-            var srcBuffer = bufferWrapper.Buffer.Slice(0, internalBufferLengthRequired);
+            var srcBuffer = bufferWrapper.Buffer[..internalBufferLengthRequired];
             var lengthReserved = channels * framesReserved;
-            var readBuffer = srcBuffer.Slice(lengthReserved).SliceAlign(ChannelsDivisor);
+            var readBuffer = srcBuffer[lengthReserved..].SliceAlign(ChannelsDivisor);
             var rr = Source.Read(readBuffer);
 
             #endregion Initialize and Read
@@ -653,7 +639,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     lastInputSampleIndex = ResampleCachedWrappedEven(buffer, channels, srcBuffer);
                     break;
             }
-            var reservingRegion = srcBuffer.Slice(lastInputSampleIndex * channels);
+            var reservingRegion = srcBuffer[(lastInputSampleIndex * channels)..];
             reservingRegion.CopyTo(srcBuffer);
             framesReserved = (int)((uint)reservingRegion.Length / ChannelsDivisor);
 #if false   //For Test purpose only

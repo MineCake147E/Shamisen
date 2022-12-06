@@ -5670,7 +5670,7 @@
         </member>
         <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.RearrangeCoefficentsCachedDirect(System.Span{System.Numerics.Vector4},System.Int32,System.Int32)">
              <summary>
-             [WIP] Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedDirect"/>.
+             Rearranges coefficients for <see cref="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.CachedDirect"/>.
             
              </summary>
              <param name="coeffs"></param>

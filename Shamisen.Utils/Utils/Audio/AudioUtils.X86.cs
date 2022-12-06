@@ -1741,7 +1741,7 @@ namespace Shamisen.Utils
                         eax >>= 24;
                         var xmm0 = (float)eax;
                         edx = 0x3f80_0000u + edx;
-                        var xmm1 = BinaryExtensions.UInt32BitsToSingle(edx) - 1.0f;
+                        var xmm1 = BitConverter.UInt32BitsToSingle(edx) - 1.0f;
                         var xmm2 = ymm13.GetElement(0);
                         xmm2 *= xmm1;
                         xmm2 += ymm12.GetElement(0);
@@ -1857,7 +1857,7 @@ namespace Shamisen.Utils
                         eax >>= 24;
                         var xmm0 = (float)eax;
                         edx = 0x3f80_0000u + edx;
-                        var xmm1 = BinaryExtensions.UInt32BitsToSingle(edx) - 1.0f;
+                        var xmm1 = BitConverter.UInt32BitsToSingle(edx) - 1.0f;
                         var xmm2 = xmm13.GetElement(0);
                         xmm2 *= xmm1;
                         xmm2 += xmm12.GetElement(0);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,26 +15,38 @@ namespace Shamisen
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 3)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly struct UInt24 : IEquatable<UInt24>, IComparable<UInt24>
+    public readonly partial struct UInt24 : IEquatable<UInt24>, IComparable<UInt24>
     {
+        /// <summary>
+        /// In Big-Endianed systems, "middle-tail" becomes like "head-middle"
+        /// </summary>
         [FieldOffset(0)]
-        private readonly byte tail;
-
-        [FieldOffset(1)]
-        private readonly byte middle;
+        private readonly ushort midtail;
 
         [FieldOffset(2)]
         private readonly byte head;
 
+        private byte Tail
+        {
+            get => (byte)midtail;
+            init => midtail = (ushort)((midtail & 0xff00) | value);
+        }
+
+        private byte Middle
+        {
+            get => (byte)(midtail >> 8);
+            init => midtail = (ushort)((value << 8) | ((byte)midtail));
+        }
+
         /// <summary>
-		/// Represents the largest possible value of an System.Int24. This field is constant.
-		/// </summary>
-		public static readonly UInt24 MaxValue = (UInt24)16777215;
+        /// Represents the largest possible value of an System.Int24. This field is constant.
+        /// </summary>
+        public static UInt24 MaxValue => (UInt24)16777215;
 
         /// <summary>
         /// Represents the smallest possible value of System.Int24. This field is constant.
         /// </summary>
-        public static readonly UInt24 MinValue = (UInt24)0;
+        public static UInt24 MinValue => (UInt24)0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UInt24"/> struct.
@@ -42,11 +55,30 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public UInt24(uint value)
         {
-            tail = (byte)value;        //mov [rcx], dl
-            value >>= 8;                        //sar edx, 0x8
-            middle = (byte)value;      //mov [rcx+0x1], dl
-            value >>= 8;                        //sar edx, 0x8
-            head = (byte)value;        //mov [rcx+0x2], dl
+            Unsafe.SkipInit(out this);
+            if (BitConverter.IsLittleEndian)
+            {
+                midtail = (ushort)value;
+                head = (byte)(value >> 16);
+            }
+            else
+            {
+                head = (byte)value;
+                midtail = (ushort)(value >> 8);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UInt24"/> struct.
+        /// </summary>
+        /// <param name="midtail">The first 2 bytes of the value.</param>
+        /// <param name="head">The last byte of the value.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public UInt24(ushort midtail, byte head)
+        {
+            Unsafe.SkipInit(out this);
+            this.midtail = midtail;
+            this.head = head;
         }
 
         /// <summary>
@@ -58,9 +90,10 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public UInt24(byte head, byte middle, byte tail)
         {
+            Unsafe.SkipInit(out this);
             this.head = head;
-            this.middle = middle;
-            this.tail = tail;
+            Middle = middle;
+            Tail = tail;
         }
 
         /// <summary>
@@ -75,12 +108,20 @@ namespace Shamisen
         {
             unchecked
             {
-                uint eax = value.head;
-                eax <<= 8;
-                eax |= value.middle;
-                eax <<= 8;
-                eax |= value.tail;
-                return eax;
+                if (BitConverter.IsLittleEndian)
+                {
+                    var eax = (uint)value.head << 16;
+                    var ebx = (uint)value.midtail;
+                    eax |= ebx;
+                    return eax >> 8;
+                }
+                else
+                {
+                    var eax = (uint)value.midtail << 16;
+                    var ebx = (uint)value.head << 8;
+                    eax |= ebx;
+                    return BinaryPrimitives.ReverseEndianness(eax);
+                }
             }
         }
 
@@ -131,7 +172,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(UInt24 other) => tail == other.tail && middle == other.middle && head == other.head;
+        public bool Equals(UInt24 other) => Tail == other.Tail && Middle == other.Middle && head == other.head;
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -139,7 +180,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        public override int GetHashCode() => HashCode.Combine(tail, middle, head);
+        public override int GetHashCode() => HashCode.Combine(Tail, Middle, head);
 
         /// <summary>
         /// Determines whether one specified <see cref="UInt24"/> is less than another specified <see cref="UInt24"/>.
@@ -191,7 +232,7 @@ namespace Shamisen
         /// <param name="value">The value to reverse endianness.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static UInt24 ReverseEndianness(UInt24 value) => new(value.tail, value.middle, value.head);
+        public static UInt24 ReverseEndianness(UInt24 value) => new(value.Tail, value.Middle, value.head);
 
         /// <summary>
         /// Compares the value of this instance to a specified <see cref="UInt24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="UInt24"/> value.

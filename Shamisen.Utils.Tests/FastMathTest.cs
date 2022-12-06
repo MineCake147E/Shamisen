@@ -194,10 +194,10 @@ namespace Shamisen.Utils.Tests
                         var s1 = Unsafe.Add(ref x9, i + 1);
                         var s2 = Unsafe.Add(ref x9, i + 2);
                         var s3 = Unsafe.Add(ref x9, i + 3);
-                        x10 = MathF.Sin(s0);
-                        Unsafe.Add(ref x10, 1) = MathF.Sin(s1);
-                        Unsafe.Add(ref x10, 2) = MathF.Sin(s2);
-                        Unsafe.Add(ref x10, 3) = MathF.Sin(s3);
+                        x10 = (float)Math.Sin(s0);
+                        Unsafe.Add(ref x10, 1) = (float)Math.Sin(s1);
+                        Unsafe.Add(ref x10, 2) = (float)Math.Sin(s2);
+                        Unsafe.Add(ref x10, 3) = (float)Math.Sin(s3);
                     }
                     for (; i < length; i++)
                     {

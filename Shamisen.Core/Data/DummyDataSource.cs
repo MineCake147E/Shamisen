@@ -47,6 +47,5 @@ namespace Shamisen.Data
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
     }
 }

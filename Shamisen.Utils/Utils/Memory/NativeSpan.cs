@@ -107,7 +107,6 @@ namespace Shamisen
             CheckArrayTypeMismatch(array);
             head = ref MemoryMarshal.GetArrayDataReference(array);
             Length = (nint)array.LongLength;
-
         }
 
         /// <summary>
@@ -119,7 +118,6 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public NativeSpan(ArraySegment<T> array) : this(array.Array, array.Offset, array.Count)
         {
-
         }
 
         /// <summary>
@@ -223,71 +221,60 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         public void Fill(T value)
         {
-            // Check possibility for FastFill
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || !(SpanExtensions.IsFastFillPossible<T>() && SpanExtensions.FastFillIfPossible(this, value)))
+            if (IsEmpty) return;
+            switch (default(T))
             {
-                if (Length < 32)
+                case float _:
+                    SpanUtils.FillWithReference(Unsafe.As<T, float>(ref value), ref Unsafe.As<T, float>(ref Head), Length);
+                    return;
+                case double _:
+                    SpanUtils.FillWithReference(Unsafe.As<T, double>(ref value), ref Unsafe.As<T, double>(ref Head), Length);
+                    return;
+            }
+            if (Vector.IsHardwareAccelerated)
+            {
+                if (Unsafe.SizeOf<T>() == 1)
                 {
-                    FillShort(value);
+                    SpanUtils.FillWithReferencePreloaded(new(Unsafe.As<T, byte>(ref value)), ref Unsafe.As<T, byte>(ref Head), Length);
                     return;
                 }
-                switch (Unsafe.SizeOf<T>())
+                else if (Unsafe.SizeOf<T>() == 2)
                 {
-                    case 1:
-                        {
-                            var dwValue = Unsafe.As<T, byte>(ref value);
-                            ref var tHead = ref Unsafe.As<T, byte>(ref Head);
-                            var nspan = SpanExtensions.CreateNativeSpan(ref tHead, Length);
-                            SpanExtensions.VectorFill(nspan, dwValue);
-                        }
-                        return;
-                    case 2:
-                        {
-                            var dwValue = Unsafe.As<T, ushort>(ref value);
-                            ref var tHead = ref Unsafe.As<T, ushort>(ref Head);
-                            var nspan = SpanExtensions.CreateNativeSpan(ref tHead, Length);
-                            SpanExtensions.VectorFill(nspan, dwValue);
-                        }
-                        return;
-                    case 4:
-                        {
-                            var dwValue = Unsafe.As<T, float>(ref value);
-                            ref var tHead = ref Unsafe.As<T, float>(ref Head);
-                            var nspan = SpanExtensions.CreateNativeSpan(ref tHead, Length);
-                            SpanExtensions.VectorFill(nspan, dwValue);
-                        }
-                        return;
-                    case 8:
-                        {
-                            var dwValue = Unsafe.As<T, ulong>(ref value);
-                            ref var tHead = ref Unsafe.As<T, ulong>(ref Head);
-                            var nspan = SpanExtensions.CreateNativeSpan(ref tHead, Length);
-                            SpanExtensions.VectorFill(nspan, dwValue);
-                        }
-                        return;
+                    SpanUtils.FillWithReferencePreloaded(new(Unsafe.As<T, ushort>(ref value)), ref Unsafe.As<T, ushort>(ref Head), Length);
+                    return;
                 }
-                //QuickFill
-                QuickFill(value);
-            }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private void QuickFill(T value)
-        {
-            var headSpan = GetHeadSpan();
-            headSpan.Fill(value);
-            if (!FitsInSpan)
-            {
-                var filled = new NativeSpan<T>(headSpan);
-                var remaining = Slice(filled.Length);
-                do
+                else if (Unsafe.SizeOf<T>() == 3)
                 {
-                    filled.CopyTo(remaining);
-                    remaining = remaining.Slice(filled.Length);
-                    filled = this.SliceWhile(filled.Length << 1);
-                } while (remaining.Length >= filled.Length);
-                filled.Slice(filled.Length - remaining.Length).CopyTo(remaining);
+                    SpanUtils.FillWithReference3BytesVectorized(ref Unsafe.As<T, byte>(ref value), ref Unsafe.As<T, byte>(ref Head), Length);
+                    return;
+                }
+                else if (Unsafe.SizeOf<T>() == 4)
+                {
+                    SpanUtils.FillWithReferencePreloaded(new(Unsafe.As<T, uint>(ref value)), ref Unsafe.As<T, uint>(ref Head), Length);
+                    return;
+                }
+                else if (Unsafe.SizeOf<T>() == 5)
+                {
+                    SpanUtils.FillWithReference5BytesVectorized(ref Unsafe.As<T, byte>(ref value), ref Unsafe.As<T, byte>(ref Head), Length);
+                    return;
+                }
+                else if (Unsafe.SizeOf<T>() == 8)
+                {
+                    SpanUtils.FillWithReferencePreloaded(new(Unsafe.As<T, ulong>(ref value)), ref Unsafe.As<T, ulong>(ref Head), Length);
+                    return;
+                }
+                else if (Unsafe.SizeOf<T>() == 16)
+                {
+                    SpanUtils.FillWithReferenceVector4(Unsafe.As<T, Vector4>(ref value), ref Unsafe.As<T, Vector4>(ref Head), Length);
+                    return;
+                }
+                else if (Unsafe.SizeOf<T>() is > 16 && Unsafe.SizeOf<T>() == Vector<byte>.Count)
+                {
+                    SpanUtils.FillWithReferenceVectorFit(Unsafe.As<T, Vector<byte>>(ref value), ref Unsafe.As<T, Vector<byte>>(ref Head), Length);
+                    return;
+                }
             }
+            SpanUtils.FillWithReferenceNBytes(ref Unsafe.As<T, byte>(ref value), (nuint)Unsafe.SizeOf<T>(), ref Unsafe.As<T, byte>(ref Head), (nuint)Length * (nuint)Unsafe.SizeOf<T>());
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -316,7 +303,8 @@ namespace Shamisen
         /// <summary>
         /// Clears the contents of this <see cref="NativeSpan{T}"/> object.
         /// </summary>
-        public void Clear() => Fill(default!);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public void Clear() => SpanUtils.FillWithReference((byte)0, ref Unsafe.As<T, byte>(ref Head), Length * Unsafe.SizeOf<T>());
         #endregion
 
         /// <summary>

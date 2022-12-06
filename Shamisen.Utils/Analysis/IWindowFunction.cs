@@ -22,6 +22,5 @@ namespace Shamisen.Analysis
         /// </summary>
         /// <param name="destination">The destination.</param>
         void Generate(Span<double> destination);
-
     }
 }

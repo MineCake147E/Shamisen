@@ -614,7 +614,7 @@ namespace Shamisen.Utils
                         w0 >>= 24;
                         var s0 = (float)w0;
                         w1 = 0x3f80_0000u + w1;
-                        var s1 = BinaryExtensions.UInt32BitsToSingle(w1) - 1.0f;
+                        var s1 = BitConverter.UInt32BitsToSingle(w1) - 1.0f;
                         var s2 = v13_ns[0];
                         s2 *= s1;
                         s2 += v12_ns[0];

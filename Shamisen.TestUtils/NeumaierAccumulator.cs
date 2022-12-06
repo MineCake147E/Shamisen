@@ -32,6 +32,5 @@ namespace Shamisen.TestUtils
         }
 
         public static NeumaierAccumulator operator -(NeumaierAccumulator left, double right) => left + -right;
-
     }
 }

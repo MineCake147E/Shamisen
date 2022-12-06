@@ -34,13 +34,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 #if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -55,7 +50,6 @@ namespace Shamisen.Codecs.Flac.Parsing
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly partial struct FlacCrc16 : IEquatable<FlacCrc16>
     {
-        private readonly ushort state;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FlacCrc16"/> struct.
@@ -64,7 +58,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public FlacCrc16(ushort state)
         {
-            this.state = state;
+            this.State = state;
         }
 
         /// <summary>
@@ -76,7 +70,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         public ushort State
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get => state;
+            get;
         }
 
         #region Operator overloads
@@ -89,7 +83,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// The result of the conversion.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static implicit operator ushort(FlacCrc16 crc16) => crc16.state;
+        public static implicit operator ushort(FlacCrc16 crc16) => crc16.State;
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="right"/>.
@@ -186,7 +180,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)state << 8) ^ (GetTable0At(value ^ (byte)(state >> 8)))));
+        public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)State << 8) ^ (GetTable0At(value ^ (byte)(State >> 8)))));
 
         /// <summary>
         /// Calculates the next value of CRC-16-IBM with <paramref name="value"/>.
@@ -243,7 +237,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
             #endregion License notice
 
-            var t = left.state;
+            var t = left.State;
             t ^= (ushort)(value >> 48);
             t = (ushort)(
                 GetTable7At((byte)(t >> 8)) ^ GetTable6At((byte)t) ^
@@ -336,7 +330,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             var olen = length - 127;
             for (; i < olen; i += 128)
             {
-                //Since we has no access to alignments, we can't use prefetch.
+                //Since we have no access to alignments, we can't use prefetch.
                 var xmm8 = Pclmulqdq.CarrylessMultiply(xmm0, xmm15, 0x11);
                 xmm0 = Pclmulqdq.CarrylessMultiply(xmm0, xmm15, 0x00);
                 var xmm9 = Pclmulqdq.CarrylessMultiply(xmm1, xmm15, 0x11);
@@ -471,7 +465,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public bool Equals(FlacCrc16 other) => state == other.state;
+        public bool Equals(FlacCrc16 other) => State == other.State;
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -480,7 +474,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public override int GetHashCode() => HashCode.Combine(state);
+        public override int GetHashCode() => HashCode.Combine(State);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="FlacCrc16"/> objects are equal.
@@ -504,7 +498,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool operator !=(FlacCrc16 left, FlacCrc16 right) => !(left == right);
 
-        private string GetDebuggerDisplay() => $"{state}";
+        private string GetDebuggerDisplay() => $"{State}";
 
         /// <summary>
         /// Converts to string.

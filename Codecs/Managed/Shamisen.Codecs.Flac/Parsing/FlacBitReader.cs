@@ -237,7 +237,6 @@ namespace Shamisen.Codecs.Flac.Parsing
             {
                 var bbal = bhead.SliceWhile(RemainingUnalignedBits / 8);
                 if (ReadBytes(bbal).Length < bbal.Length) return ReadResult.WaitingForSource;
-
             }
             if (bhead.IsEmpty)
             {

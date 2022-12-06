@@ -76,7 +76,7 @@ namespace Shamisen.Analysis
             Perform(destination, Mode, cache);
             if (Mode == FftMode.Forward)
             {
-                var scale = BinaryExtensions.UInt32BitsToSingle(0x30000000u + ((uint)MathI.LeadingZeroCount((uint)destination.Length) << 23));
+                var scale = BitConverter.UInt32BitsToSingle(0x30000000u + ((uint)MathI.LeadingZeroCount((uint)destination.Length) << 23));
                 var ds = MemoryMarshal.Cast<ComplexF, float>(destination);
                 ds.FastScalarMultiply(scale);
             }

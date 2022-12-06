@@ -84,6 +84,5 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
                 Unsafe.Add(ref x10, i) = FastMath.FastSin(Unsafe.Add(ref x9, i));
             }
         }
-
     }
 }

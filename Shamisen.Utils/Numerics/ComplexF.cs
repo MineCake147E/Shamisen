@@ -410,7 +410,6 @@ namespace Shamisen
 #if NET5_0_OR_GREATER
                 if (AdvSimd.IsSupported)
                 {
-
                 }
 #endif
                 return new(value.Real, -value.Imaginary);

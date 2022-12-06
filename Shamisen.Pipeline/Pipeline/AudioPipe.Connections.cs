@@ -16,7 +16,6 @@ namespace Shamisen.Pipeline
         /// </summary>
         public class Faucet
         {
-
         }
 
         /// <summary>
@@ -24,7 +23,6 @@ namespace Shamisen.Pipeline
         /// </summary>
         public class Inlet
         {
-
         }
     }
 }

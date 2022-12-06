@@ -26,7 +26,6 @@ namespace Shamisen.TestUtils
 
         public double AverageUlpError { get; }
 
-
         public ulong TotalUlpError { get; }
         public ulong ValuesTested { get; }
     }

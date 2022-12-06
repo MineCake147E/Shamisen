@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Formats
 {
-
     /// <summary>
     /// Represents a format of a 32-bit Ranged Linear PCM sample source.<br/>
     /// The samples is not scaled appropriately to the maximum values of 32-bit signed integer if <see cref="EffectiveBitDepth"/> is not 32.<br/>

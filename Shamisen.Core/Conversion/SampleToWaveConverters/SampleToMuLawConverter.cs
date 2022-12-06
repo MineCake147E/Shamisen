@@ -29,6 +29,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     /// </summary>
     public sealed class SampleToMuLawConverter : SampleToWaveConverterBase
     {
+        private const uint SignMaskNegated = 0x7fff_ffffu;
+        private const float MuLawAbsoluteOffset = 0.0040283203125f;
+        private const float MuLawExponentOffset = 0.00390625f;
+        private const uint MuLawMaxValue = 0x03f8_0000u;
         private float[] readBuffer;
         /// <summary>
         /// Initializes a new instance of the <see cref="SampleToMuLawConverter"/> class.
@@ -88,10 +92,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessAvx2(Span<float> wrote, Span<byte> dest)
         {
-            var ymm15 = Vector256.Create(0x7fff_ffffu);
-            var ymm14 = Vector256.Create(0.0040283203125f);
-            var ymm13 = Vector256.Create(0.00390625f).AsUInt32();
-            var ymm12 = Vector256.Create(0x03f8_0000u);
+            var ymm15 = Vector256.Create(SignMaskNegated);
+            var ymm14 = Vector256.Create(MuLawAbsoluteOffset);
+            var ymm13 = Vector256.Create(MuLawExponentOffset).AsUInt32();
+            var ymm12 = Vector256.Create(MuLawMaxValue);
             var ymm11 = Vector256.Create(~0u);
             var perm = Vector256.Create(0, 4, 1, 5, 2, 6, 3, 7);
             ref var dst = ref MemoryMarshal.GetReference(dest);
@@ -183,10 +187,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ProcessStandardVectorized(Span<float> wrote, Span<byte> dest)
         {
-            var v15_ns = new Vector<uint>(0x7fff_ffffu);
-            var v14_ns = new Vector<float>(0.0040283203125f);
-            var v13_ns = new Vector<float>(0.00390625f).AsUInt32();
-            var v12_ns = new Vector<uint>(0x03f8_0000u);
+            var v15_ns = new Vector<uint>(SignMaskNegated);
+            var v14_ns = new Vector<float>(MuLawAbsoluteOffset);
+            var v13_ns = new Vector<float>(MuLawExponentOffset).AsUInt32();
+            var v12_ns = new Vector<uint>(MuLawMaxValue);
             var v11_nb = new Vector<uint>(~0u).AsByte();
             var v10_ns = new Vector<int>(0);
             ref var dst = ref MemoryMarshal.GetReference(dest);
@@ -252,12 +256,12 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         internal static byte ConvertSingleToMuLaw(float value)
         {
             var a = Math.Abs(value);
-            var u = BinaryExtensions.SingleToUInt32Bits(value) & 0x8000_0000u;
-            a += 0.0040283203125f;
+            var u = BitConverter.SingleToUInt32Bits(value) & 0x8000_0000u;
+            a += MuLawAbsoluteOffset;
             u >>= 24;
-            a = FastMath.MaxUnsignedInputs(a, 0.00390625f);
+            a = FastMath.MaxUnsignedInputs(a, MuLawExponentOffset);
             a = FastMath.MinUnsignedInputs(a, 0.96875f);
-            var q = BinaryExtensions.SingleToUInt32Bits(a);
+            var q = BitConverter.SingleToUInt32Bits(a);
             q -= 0x3b80_0000u;
             q >>= 19;
             q |= u;

@@ -95,7 +95,6 @@ namespace Shamisen.Codecs.Flac
         /// <value>
         /// The size.
         /// </value>
-
         public uint Size
         {
             [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

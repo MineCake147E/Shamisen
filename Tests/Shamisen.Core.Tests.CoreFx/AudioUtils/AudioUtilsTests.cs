@@ -16,7 +16,6 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
     [TestFixture]
     public partial class AudioUtilsTests
     {
-
         [Test]
         public void FastAddAddsCorrectly()
         {
@@ -250,7 +249,6 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 exp[i] = MathF.Log2(q);
             }
         }
-
 
         internal static (double maxError, NeumaierAccumulator sumError) CheckLog2(double maxerror, Span<float> sSrc, Span<float> sDst, NeumaierAccumulator sumError)
         {

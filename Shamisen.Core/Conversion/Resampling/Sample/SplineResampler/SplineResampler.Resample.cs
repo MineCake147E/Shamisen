@@ -14,7 +14,6 @@ namespace Shamisen.Conversion.Resampling.Sample
 {
     public sealed partial class SplineResampler
     {
-
         #region Resample
         #region CachedDirect
 
@@ -185,7 +184,6 @@ namespace Shamisen.Conversion.Resampling.Sample
                 Unsafe.Add(ref dst, i++) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                 psx = 0;
                 isx++;
-
             }
             for (; i < length - 3; i += 4)
             {

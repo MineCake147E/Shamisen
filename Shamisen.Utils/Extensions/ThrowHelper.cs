@@ -21,6 +21,5 @@ namespace Shamisen
         /// Throws a new instance of <see cref="IndexOutOfRangeException"/>.
         /// </summary>
         public static void ThrowIndexOutOfRangeException() => throw new IndexOutOfRangeException();
-
     }
 }

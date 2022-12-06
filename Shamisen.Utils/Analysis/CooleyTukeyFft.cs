@@ -108,7 +108,7 @@ namespace Shamisen.Analysis
             Perform(span, mode);
             if (mode == FftMode.Forward)
             {
-                var scale = BinaryExtensions.UInt32BitsToSingle(0x30000000u + ((uint)MathI.LeadingZeroCount((uint)span.Length) << 23));
+                var scale = BitConverter.UInt32BitsToSingle(0x30000000u + ((uint)MathI.LeadingZeroCount((uint)span.Length) << 23));
                 var ds = MemoryMarshal.Cast<ComplexF, float>(span);
                 ds.FastScalarMultiply(scale);
             }

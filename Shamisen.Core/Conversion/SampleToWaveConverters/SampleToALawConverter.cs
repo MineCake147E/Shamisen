@@ -327,14 +327,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static byte ConvertSingleToALaw(float value)
         {
-            var w = BinaryExtensions.SingleToUInt32Bits(value);
+            var w = BitConverter.SingleToUInt32Bits(value);
             var s = w & 0x80000000u;
             w &= ~0x80000000u;
             w = MathI.Min(w, 0x3f780000u);
             var q = w < 0x3c000000u;
             w |= s;
             var f = q ? s | 0x3c000000u : 0u;
-            w = BinaryExtensions.SingleToUInt32Bits(BinaryExtensions.UInt32BitsToSingle(w) + BinaryExtensions.UInt32BitsToSingle(f));
+            w = BitConverter.SingleToUInt32Bits(BitConverter.UInt32BitsToSingle(w) + BitConverter.UInt32BitsToSingle(f));
             w += !q ? 0x00800000 : 0u;
             w -= 0x3c000000u;
             s = w & 0x80000000u;

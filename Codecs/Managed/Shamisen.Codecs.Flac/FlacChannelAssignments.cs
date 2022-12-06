@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shamisen.Codecs.Flac
+﻿namespace Shamisen.Codecs.Flac
 {
     /// <summary>
     /// Represents a channel assignment of FLAC file.
@@ -69,27 +63,27 @@ namespace Shamisen.Codecs.Flac
         /// <summary>
         /// The Reserved space with bit pattern 1011.
         /// </summary>
-        Reserved1011 = 0b1011,
+        ReservedB = 0b1011,
 
         /// <summary>
         /// The Reserved space with bit pattern 1100.
         /// </summary>
-        Reserved1100 = 0b1100,
+        ReservedC = 0b1100,
 
         /// <summary>
         /// The Reserved space with bit pattern 1101.
         /// </summary>
-        Reserved1101 = 0b1101,
+        ReservedD = 0b1101,
 
         /// <summary>
         /// The Reserved space with bit pattern 1110.
         /// </summary>
-        Reserved1110 = 0b1110,
+        ReservedE = 0b1110,
 
         /// <summary>
         /// The Reserved space with bit pattern 1111.
         /// </summary>
-        Reserved1111 = 0b1111,
+        ReservedF = 0b1111,
     }
 
     /// <summary>

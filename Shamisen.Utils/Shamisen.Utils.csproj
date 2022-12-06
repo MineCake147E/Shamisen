@@ -45,8 +45,8 @@
             <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
         </None>
-        <None Update="Utils\Memory\SpanExtensionsTemplate.tt">
-          <LastGenOutput>SpanExtensionsTemplate.g.cs</LastGenOutput>
+        <None Update="Utils\Memory\SpanUtilsTemplate.tt">
+          <LastGenOutput>SpanUtilsTemplate.g.cs</LastGenOutput>
           <Generator>TextTemplatingFileGenerator</Generator>
         </None>
         <None Update="Utils\Tuples\Tuples.g.tt">
@@ -92,8 +92,8 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="Utils\Memory\SpanExtensionsTemplate.g.cs">
-        <DependentUpon>SpanExtensionsTemplate.tt</DependentUpon>
+      <Compile Update="Utils\Memory\SpanUtilsTemplate.g.cs">
+        <DependentUpon>SpanUtilsTemplate.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </Compile>

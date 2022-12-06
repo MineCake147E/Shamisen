@@ -66,9 +66,9 @@ namespace Shamisen.Data
                 {
                     //
                 }
-                if (array is { } a)
+                if (array is not null)
                 {
-                    ArrayPool<T>.Shared.Return(a);
+                    ArrayPool<T>.Shared.Return(array);
                 }
                 disposedValue = true;
             }

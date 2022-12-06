@@ -467,7 +467,6 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0_OR_GREATER
                 if (AdvSimd.IsSupported)
                 {
                     var v0_4s = value.AsVector128();
@@ -489,20 +488,6 @@ namespace Shamisen.Utils
                     xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
                     return xmm0.AsVector4();
                 }
-#elif NETCOREAPP3_1_OR_GREATER
-                if (Avx.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
-                    xmm0 = Avx.Permute(xmm0, 0x1B);
-                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
-                }
-                if (Sse.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector4, Vector128<float>>(ref value);
-                    xmm0 = Sse.Shuffle(xmm0, xmm0, 0b00_01_10_11);
-                    return Unsafe.As<Vector128<float>, Vector4>(ref xmm0);
-                }
-#endif
                 return new(value.W, value.Z, value.Y, value.X);
             }
         }

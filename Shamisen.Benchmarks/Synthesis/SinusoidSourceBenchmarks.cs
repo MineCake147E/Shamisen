@@ -33,7 +33,6 @@ namespace Shamisen.Benchmarks.Synthesis
             {
                 Frequency = 1000
             };
-
         }
 
         [Benchmark]

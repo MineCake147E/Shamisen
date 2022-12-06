@@ -104,7 +104,6 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
         [TestCase(8191)]
         public void SinCalculatesAccurately(int sampleRate, double frequency = 1.0)
         {
-
             PrepareArraysAndAngularVelocity(sampleRate, frequency, out var dst, out var exp, out var omega);
             var t0 = SinusoidSource.GenerateMonauralBlockStandard(dst, omega, Fixed64.Zero);
             var t1 = GenerateMonauralBlockIeee754(exp, omega, Fixed64.Zero);

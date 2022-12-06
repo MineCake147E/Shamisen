@@ -28,7 +28,7 @@ namespace Shamisen.Utils
 
         public void Resize(int newSize)
         {
-            Filled.Span.Fill(default);
+            Filled.Span.Clear();
             ArrayPool<TSample>.Shared.Return(array);
             ActualBuffer = array = ArrayPool<TSample>.Shared.Rent(newSize);
         }

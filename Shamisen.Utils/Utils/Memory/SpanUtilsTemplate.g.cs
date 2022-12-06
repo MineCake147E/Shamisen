@@ -15,7 +15,7 @@ namespace Shamisen
     /// <summary>
     /// Provides some extension functions.
     /// </summary>
-    public static partial class SpanExtensions
+    public static partial class SpanUtils
     {
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static bool FastFillIfPossible<T>(Span<T> span, T value = default)
@@ -145,7 +145,7 @@ namespace Shamisen
                 case float _:
                     {
                         var dwValue = value is float v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, float>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, float>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<float>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -153,7 +153,7 @@ namespace Shamisen
                 case double _:
                     {
                         var dwValue = value is double v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, double>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, double>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<double>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -161,7 +161,7 @@ namespace Shamisen
                 case byte _:
                     {
                         var dwValue = value is byte v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, byte>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, byte>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<byte>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -169,7 +169,7 @@ namespace Shamisen
                 case ushort _:
                     {
                         var dwValue = value is ushort v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, ushort>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, ushort>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<ushort>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -177,7 +177,7 @@ namespace Shamisen
                 case uint _:
                     {
                         var dwValue = value is uint v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, uint>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, uint>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<uint>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -185,7 +185,7 @@ namespace Shamisen
                 case ulong _:
                     {
                         var dwValue = value is ulong v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, ulong>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, ulong>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<ulong>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -193,7 +193,7 @@ namespace Shamisen
                 case sbyte _:
                     {
                         var dwValue = value is sbyte v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, sbyte>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, sbyte>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<sbyte>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -201,7 +201,7 @@ namespace Shamisen
                 case short _:
                     {
                         var dwValue = value is short v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, short>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, short>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<short>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -209,7 +209,7 @@ namespace Shamisen
                 case int _:
                     {
                         var dwValue = value is int v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, int>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, int>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<int>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }
@@ -217,7 +217,7 @@ namespace Shamisen
                 case long _:
                     {
                         var dwValue = value is long v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, long>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, long>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<long>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }

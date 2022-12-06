@@ -52,6 +52,5 @@ namespace Shamisen.Benchmarks.Codecs.Flac
 
         [Benchmark]
         public FlacCrc16 Pclmulqdq() => FlacCrc16.CalculateCrc16Pclmulqdq(new FlacCrc16(0), srcBuffer.AsSpan());
-
     }
 }

@@ -52,7 +52,6 @@ namespace Shamisen.Benchmarks.Synthesis
             {
                 Frequency = Frequency
             };
-
         }
 
         [Benchmark]

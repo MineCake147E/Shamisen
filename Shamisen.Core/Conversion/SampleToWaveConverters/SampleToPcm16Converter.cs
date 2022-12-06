@@ -52,7 +52,6 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         public SampleToPcm16Converter(IReadableAudioSource<float, SampleFormat> source, bool doDeltaSigmaModulation = true, Endianness endianness = Endianness.Little)
             : this(source, true, IntrinsicsUtils.X86Intrinsics, IntrinsicsUtils.ArmIntrinsics, doDeltaSigmaModulation, endianness)
         {
-
         }
 
         /// <summary>

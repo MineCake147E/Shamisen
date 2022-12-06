@@ -42,7 +42,7 @@ namespace Shamisen
             if (i < data.Length)
             {
                 _ = sb.Append($"{i:X16}: ");
-                a.AsSpan().Fill(0);
+                a.AsSpan().Clear();
                 data.Slice(i).CopyTo(a);
                 _ = sb.AppendLine(string.Join(" ", a.Take(data.Length - i).Select(g => $"{g:X02}")));
             }

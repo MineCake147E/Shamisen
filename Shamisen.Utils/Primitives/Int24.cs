@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,34 +10,49 @@ using System.Text;
 namespace Shamisen
 {
     /// <summary>
-    /// An simple representation of 24bit signed integer.
+    /// An simple representation of 24bit signed integer.<br/>
+    /// Byte order can be different between platforms.<br/>
+    /// Little-endian: LLMMHH<br/>
+    /// Big-endian: HHMMLL
     /// </summary>
     /// <seealso cref="System.IEquatable{T}" />
     [StructLayout(LayoutKind.Explicit, Size = 3)]
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly struct Int24 : IComparable<Int24>, IEquatable<Int24>
+    public readonly partial struct Int24 : IComparable<Int24>, IEquatable<Int24>, IMinMaxValue<Int24>
     {
         private const int NegativeValueOrMask = -0x80_0000;
         private const int Mask = -0x7F80_0001;
 
+        /// <summary>
+        /// In Big-Endianed systems, "middle-tail" becomes like "head-middle"
+        /// </summary>
         [FieldOffset(0)]
-        private readonly byte tail;
-
-        [FieldOffset(1)]
-        private readonly byte middle;
+        private readonly ushort midtail;
 
         [FieldOffset(2)]
         private readonly byte head;
 
+        private byte Tail
+        {
+            get => (byte)midtail;
+            init => midtail = (ushort)((midtail & 0xff00) | value);
+        }
+
+        private byte Middle
+        {
+            get => (byte)(midtail >> 8);
+            init => midtail = (ushort)((value << 8) | ((byte)midtail));
+        }
+
         /// <summary>
         /// Represents the largest possible value of an System.Int24. This field is constant.
         /// </summary>
-        public static readonly Int24 MaxValue = (Int24)8388607;
+        public static Int24 MaxValue => (Int24)8388607;
 
         /// <summary>
         /// Represents the smallest possible value of System.Int24. This field is constant.
         /// </summary>
-        public static readonly Int24 MinValue = (Int24)(-8388608);
+        public static Int24 MinValue => (Int24)(-8388608);
 
         private bool IsNegative => (head & 0x80) == 0x80;
 
@@ -46,13 +63,54 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public Int24(int value)
         {
-            value <<= 8;                        //shl edx, 0x8
-            value >>= 8;                        //sar edx, 0x8
-            tail = (byte)(value & 0xff);        //mov [rcx], dl
-            value >>= 8;                        //sar edx, 0x8
-            middle = (byte)(value & 0xff);      //mov [rcx+0x1], dl
-            value >>= 8;                        //sar edx, 0x8
-            head = (byte)(value & 0xff);        //mov [rcx+0x2], dl
+            Unsafe.SkipInit(out this);
+            var sign = value >> 31;
+            sign &= unchecked((int)0xFF80_0000);
+            value &= 0x007f_ffff;
+            value |= sign;
+            if (BitConverter.IsLittleEndian)
+            {
+                midtail = (ushort)value;
+                head = (byte)(value >> 16);
+            }
+            else
+            {
+                head = (byte)value;
+                midtail = (ushort)(value >> 8);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Int24"/> struct.
+        /// </summary>
+        /// <param name="value">The raw <see cref="uint"/> value. Mask:0x00ffffff</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public Int24(uint value)
+        {
+            Unsafe.SkipInit(out this);
+            if (BitConverter.IsLittleEndian)
+            {
+                midtail = (ushort)value;
+                head = (byte)(value >> 16);
+            }
+            else
+            {
+                head = (byte)value;
+                midtail = (ushort)(value >> 8);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Int24"/> struct.
+        /// </summary>
+        /// <param name="midtail">The first 2 bytes of the value.</param>
+        /// <param name="head">The last byte of the value.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public Int24(ushort midtail, byte head)
+        {
+            Unsafe.SkipInit(out this);
+            this.midtail = midtail;
+            this.head = head;
         }
 
         /// <summary>
@@ -64,9 +122,10 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public Int24(byte head, byte middle, byte tail)
         {
+            Unsafe.SkipInit(out this);
             this.head = head;
-            this.middle = middle;
-            this.tail = tail;
+            Middle = middle;
+            Tail = tail;
         }
 
         /// <summary>
@@ -81,13 +140,20 @@ namespace Shamisen
         {
             unchecked
             {
-                uint eax = value.head;
-                eax <<= 8;
-                eax |= value.middle;
-                eax <<= 8;
-                eax |= value.tail;
-                eax <<= 8;
-                return (int)eax >> 8;
+                if (BitConverter.IsLittleEndian)
+                {
+                    var eax = (uint)value.head << 24;
+                    var ebx = (uint)value.midtail << 8;
+                    eax |= ebx;
+                    return (int)eax >> 8;
+                }
+                else
+                {
+                    var eax = (uint)value.midtail << 8;
+                    var ebx = (uint)value.head;
+                    eax |= ebx;
+                    return (int)BinaryPrimitives.ReverseEndianness(eax) >> 8;
+                }
             }
         }
 
@@ -120,16 +186,6 @@ namespace Shamisen
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public override string ToString() => ((int)this).ToString();
-
-        /// <summary>
-        /// Implements the operator -.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Int24 operator -(Int24 value) => new(-(int)value);
 
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Int24"/> objects are not equal.
@@ -192,7 +248,7 @@ namespace Shamisen
         /// <param name="value">The value to reverse endianness.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Int24 ReverseEndianness(Int24 value) => new(value.tail, value.middle, value.head);
+        public static Int24 ReverseEndianness(Int24 value) => new(value.Tail, value.Middle, value.head);
 
         /// <summary>
         /// Compares the value of this instance to a specified <see cref="Int24"/> value and returns an integer that indicates whether this instance is less than, equal to, or greater than the specified <see cref="Int24"/> value.
@@ -222,8 +278,8 @@ namespace Shamisen
         /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public bool Equals(Int24 other) => tail == other.tail &&
-                   middle == other.middle &&
+        public bool Equals(Int24 other) => Tail == other.Tail &&
+                   Middle == other.Middle &&
                    head == other.head;
 
         /// <summary>
@@ -236,8 +292,8 @@ namespace Shamisen
         public override int GetHashCode()
         {
             var hashCode = -428595538;
-            hashCode = hashCode * -1521134295 + tail.GetHashCode();
-            hashCode = hashCode * -1521134295 + middle.GetHashCode();
+            hashCode = hashCode * -1521134295 + Tail.GetHashCode();
+            hashCode = hashCode * -1521134295 + Middle.GetHashCode();
             hashCode = hashCode * -1521134295 + head.GetHashCode();
             return hashCode;
         }

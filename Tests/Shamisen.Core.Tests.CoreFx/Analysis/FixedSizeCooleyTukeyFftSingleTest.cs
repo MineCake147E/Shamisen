@@ -14,7 +14,6 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
     [TestFixture]
     public class FixedSizeCooleyTukeyFftSingleTest
     {
-
         [TestCase(2048)]
         [TestCase(4096)]
         public void FftSingleConsistency(int size)

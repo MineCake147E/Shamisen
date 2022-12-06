@@ -50,7 +50,7 @@ namespace Shamisen.Data
         /// <param name="sink">The sink to write to.</param>
         /// <param name="value">The value to write.</param>
         public static void WriteSingleLittleEndian(this IDataSink<byte> sink, float value)
-            => sink.WriteInt32LittleEndian(BinaryExtensions.SingleToInt32Bits(value));
+            => sink.WriteInt32LittleEndian(BitConverter.SingleToInt32Bits(value));
 
         /// <summary>
         /// Writes the <see cref="float"/> value to the specified <paramref name="sink"/> with BIG endian.
@@ -58,7 +58,7 @@ namespace Shamisen.Data
         /// <param name="sink">The sink to write to.</param>
         /// <param name="value">The value to write.</param>
         public static void WriteSingleBigEndian(this IDataSink<byte> sink, float value)
-            => sink.WriteInt32BigEndian(BinaryExtensions.SingleToInt32Bits(value));
+            => sink.WriteInt32BigEndian(BitConverter.SingleToInt32Bits(value));
 
         /// <summary>
         /// Writes the <see cref="float"/> value to the specified <paramref name="sink"/> with little endian.

@@ -43,6 +43,5 @@ namespace Shamisen.Benchmarks.Numerics.ComplexUtilsBenchmarks
         public void MultiplyAllFallback() => ComplexUtils.Fallback.MultiplyAllFallback(y, x, new ComplexF(0.28f, 1.45f));
         [Benchmark]
         public void MultiplyAllAvx() => ComplexUtils.X86.MultiplyAllAvx(y, x, new ComplexF(0.28f, 1.45f));
-
     }
 }

@@ -70,7 +70,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
             else
             {
-
                 ProcessEMoreThan24Standard(buffer, source, effectiveBitDepth);
             }
         }

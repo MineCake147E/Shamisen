@@ -64,27 +64,27 @@
             The <see cref="F:Shamisen.StandardSpeakerChannels.SideStereo"/> but with (left + right) >> 1 and (left - right).
             </summary>
         </member>
-        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1011">
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.ReservedB">
             <summary>
             The Reserved space with bit pattern 1011.
             </summary>
         </member>
-        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1100">
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.ReservedC">
             <summary>
             The Reserved space with bit pattern 1100.
             </summary>
         </member>
-        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1101">
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.ReservedD">
             <summary>
             The Reserved space with bit pattern 1101.
             </summary>
         </member>
-        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1110">
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.ReservedE">
             <summary>
             The Reserved space with bit pattern 1110.
             </summary>
         </member>
-        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.Reserved1111">
+        <member name="F:Shamisen.Codecs.Flac.FlacChannelAssignments.ReservedF">
             <summary>
             The Reserved space with bit pattern 1111.
             </summary>

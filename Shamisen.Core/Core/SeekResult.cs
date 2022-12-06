@@ -16,7 +16,6 @@ namespace Shamisen.Core
         {
             None = 0,
             OutOfRange = 1,
-
         }
     }
 }

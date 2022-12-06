@@ -121,7 +121,7 @@ namespace Shamisen
                     return Sse41.Max(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(MathI.Max(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
+                return BitConverter.UInt32BitsToSingle(MathI.Max(BitConverter.SingleToUInt32Bits(x), BitConverter.SingleToUInt32Bits(y)));
             }
         }
         #endregion
@@ -219,10 +219,12 @@ namespace Shamisen
                     return Sse41.Min(xmm0.AsUInt32(), xmm1.AsUInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(MathI.Min(BinaryExtensions.SingleToUInt32Bits(x), BinaryExtensions.SingleToUInt32Bits(y)));
+                return BitConverter.UInt32BitsToSingle(MathI.Min(BitConverter.SingleToUInt32Bits(x), BitConverter.SingleToUInt32Bits(y)));
             }
         }
         #endregion
+
+        #region Round
 
         /// <summary>
         /// Rounds a single-precision floating-point value to the nearest integral value,
@@ -244,6 +246,7 @@ namespace Shamisen
 #endif
             }
         }
+        #endregion
 
         #region FastMultiplyAdd
 
@@ -276,34 +279,6 @@ namespace Shamisen
         }
 
         /// <summary>
-        /// Returns z - (x * y), sometimes rounded as one ternary operation.
-        /// </summary>
-        /// <param name="x">The number to be multiplied with y.</param>
-        /// <param name="y">The number to be multiplied with x.</param>
-        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
-        /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static float FastMultiplyAddNegated(float x, float y, float z)
-        {
-            unchecked
-            {
-#if NET5_0_OR_GREATER
-                if (AdvSimd.IsSupported)
-                {
-                    return AdvSimd.FusedMultiplySubtractScalar(Vector64.CreateScalarUnsafe(z), Vector64.CreateScalarUnsafe(x), Vector64.CreateScalarUnsafe(y)).GetElement(0);
-                }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-                if (Fma.IsSupported)
-                {
-                    return Fma.MultiplyAddNegatedScalar(Vector128.CreateScalarUnsafe(x), Vector128.CreateScalarUnsafe(y), Vector128.CreateScalarUnsafe(z)).GetElement(0);
-                }
-#endif
-                return z - x * y;
-            }
-        }
-
-        /// <summary>
         /// Returns (x * y) + z, sometimes rounded as one ternary operation.
         /// </summary>
         /// <param name="x">The number to be multiplied with y.</param>
@@ -328,6 +303,34 @@ namespace Shamisen
                 }
 #endif
                 return x * y + z;
+            }
+        }
+
+        /// <summary>
+        /// Returns z - (x * y), sometimes rounded as one ternary operation.
+        /// </summary>
+        /// <param name="x">The number to be multiplied with y.</param>
+        /// <param name="y">The number to be multiplied with x.</param>
+        /// <param name="z">The number to be added to the result of x multiplied by y.</param>
+        /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static float FastMultiplyAddNegated(float x, float y, float z)
+        {
+            unchecked
+            {
+#if NET5_0_OR_GREATER
+                if (AdvSimd.IsSupported)
+                {
+                    return AdvSimd.FusedMultiplySubtractScalar(Vector64.CreateScalarUnsafe(z), Vector64.CreateScalarUnsafe(x), Vector64.CreateScalarUnsafe(y)).GetElement(0);
+                }
+#endif
+#if NETCOREAPP3_1_OR_GREATER
+                if (Fma.IsSupported)
+                {
+                    return Fma.MultiplyAddNegatedScalar(Vector128.CreateScalarUnsafe(x), Vector128.CreateScalarUnsafe(y), Vector128.CreateScalarUnsafe(z)).GetElement(0);
+                }
+#endif
+                return z - x * y;
             }
         }
 
@@ -626,13 +629,13 @@ namespace Shamisen
         public static float Log2AsNormal(float x)
         {
             x = Math.Abs(x);
-            var y = MathI.AndNot(BinaryExtensions.UInt32BitsToSingle(0x7f80_0000u), x);
+            var y = MathI.AndNot(BitConverter.UInt32BitsToSingle(0x7f80_0000u), x);
             const float One = 1.0f;
             x = MathI.SubtractInteger(x, One);
             y = MathI.AddInteger(One, y);
             y -= One;
             var z = Log2C8;
-            var ix = BinaryExtensions.SingleToInt32Bits(x);
+            var ix = BitConverter.SingleToInt32Bits(x);
             z = z * y + Log2C7;
             z = z * y + Log2C6;
             z = z * y + Log2C5;
@@ -664,13 +667,13 @@ namespace Shamisen
             x = Math.Abs(x);
             var v = (double)x;
             const double One = 1.0;
-            var p = MathI.AndNot(BinaryExtensions.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
+            var p = MathI.AndNot(BitConverter.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
             v = MathI.SubtractInteger(v, One);
             p = MathI.AddInteger(One, p);
             p -= One;
             var y = (float)p;
             var z = Log2C8;
-            var ix = BinaryExtensions.DoubleToInt64Bits(v);
+            var ix = BitConverter.DoubleToInt64Bits(v);
             z = z * y + Log2C7;
             ix >>= 52;
             z = z * y + Log2C6;
@@ -686,7 +689,7 @@ namespace Shamisen
             nisz &= 0x7F80_0000u;
             nisz |= nisnan;
             z = z * y + Log2C2;
-            x = MathI.Or(x, BinaryExtensions.UInt32BitsToSingle(nisz));
+            x = MathI.Or(x, BitConverter.UInt32BitsToSingle(nisz));
             z = z * y + Log2C1;
             var w = y - y * y;
             z = z * y + Log2C0;
@@ -710,13 +713,13 @@ namespace Shamisen
         public static float FastLog2AsNormal(float x)
         {
             x = Math.Abs(x);
-            var y = MathI.AndNot(BinaryExtensions.UInt32BitsToSingle(0x7f80_0000u), x);
+            var y = MathI.AndNot(BitConverter.UInt32BitsToSingle(0x7f80_0000u), x);
             const float One = 1.0f;
             x = MathI.SubtractInteger(x, One);
             y = MathI.AddInteger(One, y);
             y -= One;
             var z = Log2C8;
-            var ix = BinaryExtensions.SingleToInt32Bits(x);
+            var ix = BitConverter.SingleToInt32Bits(x);
             z = FastMultiplyAdd(z, y, Log2C7);
             z = FastMultiplyAdd(z, y, Log2C6);
             z = FastMultiplyAdd(z, y, Log2C5);
@@ -750,13 +753,13 @@ namespace Shamisen
             x = Math.Abs(x);
             var v = (double)x;
             const double One = 1.0;
-            var p = MathI.AndNot(BinaryExtensions.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
+            var p = MathI.AndNot(BitConverter.UInt64BitsToDouble(0x7ff0_0000_0000_0000ul), v);
             v = MathI.SubtractInteger(v, One);
             p = MathI.AddInteger(One, p);
             p -= One;
             var y = (float)p;
             var z = Log2C8;
-            var ix = BinaryExtensions.DoubleToInt64Bits(v);
+            var ix = BitConverter.DoubleToInt64Bits(v);
             z = FastMultiplyAdd(z, y, Log2C7);
             ix >>= 52;
             z = FastMultiplyAdd(z, y, Log2C6);
@@ -772,7 +775,7 @@ namespace Shamisen
             nisz &= 0x7F80_0000u;
             nisz |= nisnan;
             z = FastMultiplyAdd(z, y, Log2C2);
-            x = MathI.Or(x, BinaryExtensions.UInt32BitsToSingle(nisz));
+            x = MathI.Or(x, BitConverter.UInt32BitsToSingle(nisz));
             z = FastMultiplyAdd(z, y, Log2C1);
             var w = FastMultiplyAddNegated(y, y, y);
             z = FastMultiplyAdd(z, y, Log2C0);

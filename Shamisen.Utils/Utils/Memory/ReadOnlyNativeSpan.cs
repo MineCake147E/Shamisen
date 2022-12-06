@@ -75,7 +75,7 @@ namespace Shamisen
                 this = default;
                 return;
             }
-            this = new(ref SpanExtensions.GetReference(span), span.Length);
+            this = new(ref SpanUtils.GetReference(span), span.Length);
         }
 
         /// <summary>
@@ -122,7 +122,6 @@ namespace Shamisen
             CheckArrayTypeMismatch(array);
             head = ref MemoryMarshal.GetArrayDataReference(array);
             Length = (nint)array.LongLength;
-
         }
 
         /// <summary>
@@ -134,7 +133,6 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public ReadOnlyNativeSpan(ArraySegment<T> array) : this(array.Array, array.Offset, array.Count)
         {
-
         }
 
         /// <summary>

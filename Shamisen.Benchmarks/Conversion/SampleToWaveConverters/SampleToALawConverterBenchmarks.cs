@@ -56,7 +56,6 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         [Benchmark]
         public void Dummy() => Thread.SpinWait((int)Math.Ceiling(srcBuffer.Length / 128.0));
 
-
         [Benchmark]
         public void ProcessStandardVectorized() => SampleToALawConverter.ProcessStandardVectorized(srcBuffer, dstBuffer);
 

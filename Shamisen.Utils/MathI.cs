@@ -483,6 +483,27 @@ namespace Shamisen
             }
         }
         #endregion
+
+        #region GetShortestBitLength
+
+        /// <inheritdoc cref="IBinaryInteger{TSelf}.GetShortestBitLength"/>
+        public static int GetShortestBitLength(int value)
+        {
+            var y = value >> 31;
+            value ^= y;
+            value = -BitOperations.LeadingZeroCount((uint)value);
+            return y + value + 32;
+        }
+
+        /// <inheritdoc cref="IBinaryInteger{TSelf}.GetShortestBitLength"/>
+        public static int GetShortestBitLength(long value)
+        {
+            var y = value >> 63;
+            value ^= y;
+            var lzcnt = -BitOperations.LeadingZeroCount((ulong)value);
+            return (int)(y + lzcnt + 64);
+        }
+        #endregion
         #endregion
 
         #region Abs
@@ -584,7 +605,7 @@ namespace Shamisen
                     return Sse.Xor(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) ^ BinaryExtensions.SingleToUInt32Bits(right));
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(left) ^ BitConverter.SingleToUInt32Bits(right));
             }
         }
 
@@ -646,7 +667,7 @@ namespace Shamisen
                     return Sse.And(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) & BinaryExtensions.SingleToUInt32Bits(right));
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(left) & BitConverter.SingleToUInt32Bits(right));
             }
         }
 
@@ -708,7 +729,7 @@ namespace Shamisen
                     return Sse.Or(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) | BinaryExtensions.SingleToUInt32Bits(right));
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(left) | BitConverter.SingleToUInt32Bits(right));
             }
         }
 
@@ -771,7 +792,7 @@ namespace Shamisen
                     return Sse.AndNot(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right)).GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(~BinaryExtensions.SingleToUInt32Bits(left) & BinaryExtensions.SingleToUInt32Bits(right));
+                return BitConverter.UInt32BitsToSingle(~BitConverter.SingleToUInt32Bits(left) & BitConverter.SingleToUInt32Bits(right));
             }
         }
 
@@ -833,7 +854,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) + right);
+                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(left) + right);
             }
         }
 
@@ -860,7 +881,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(right) + left);
+                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(right) + left);
             }
         }
 
@@ -887,7 +908,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsUInt32(), Vector128.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) + right);
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(left) + right);
             }
         }
 
@@ -914,7 +935,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(right) + left);
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(right) + left);
             }
         }
 
@@ -941,7 +962,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) + BinaryExtensions.SingleToInt32Bits(right));
+                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(left) + BitConverter.SingleToInt32Bits(right));
             }
         }
 
@@ -968,7 +989,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) + right);
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) + right);
             }
         }
 
@@ -995,7 +1016,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(right) + left);
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(right) + left);
             }
         }
 
@@ -1022,7 +1043,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(left) + right);
+                return BitConverter.UInt64BitsToDouble(BitConverter.DoubleToUInt64Bits(left) + right);
             }
         }
 
@@ -1049,7 +1070,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(right) + left);
+                return BitConverter.UInt64BitsToDouble(BitConverter.DoubleToUInt64Bits(right) + left);
             }
         }
 
@@ -1076,7 +1097,7 @@ namespace Shamisen
                     return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) + BinaryExtensions.DoubleToInt64Bits(right));
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) + BitConverter.DoubleToInt64Bits(right));
             }
         }
         #endregion
@@ -1106,7 +1127,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) - right);
+                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(left) - right);
             }
         }
 
@@ -1133,7 +1154,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(left - BinaryExtensions.SingleToInt32Bits(right));
+                return BitConverter.Int32BitsToSingle(left - BitConverter.SingleToInt32Bits(right));
             }
         }
 
@@ -1160,7 +1181,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsUInt32(), Vector128.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(BinaryExtensions.SingleToUInt32Bits(left) - right);
+                return BitConverter.UInt32BitsToSingle(BitConverter.SingleToUInt32Bits(left) - right);
             }
         }
 
@@ -1187,7 +1208,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt32BitsToSingle(left - BinaryExtensions.SingleToUInt32Bits(right));
+                return BitConverter.UInt32BitsToSingle(left - BitConverter.SingleToUInt32Bits(right));
             }
         }
 
@@ -1214,7 +1235,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(left) - BinaryExtensions.SingleToInt32Bits(right));
+                return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(left) - BitConverter.SingleToInt32Bits(right));
             }
         }
 
@@ -1241,7 +1262,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) - right);
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) - right);
             }
         }
 
@@ -1268,7 +1289,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(left - BinaryExtensions.DoubleToInt64Bits(right));
+                return BitConverter.Int64BitsToDouble(left - BitConverter.DoubleToInt64Bits(right));
             }
         }
 
@@ -1295,7 +1316,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsUInt64(), Vector128.CreateScalarUnsafe(right)).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt64BitsToDouble(BinaryExtensions.DoubleToUInt64Bits(left) - right);
+                return BitConverter.UInt64BitsToDouble(BitConverter.DoubleToUInt64Bits(left) - right);
             }
         }
 
@@ -1322,7 +1343,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left), Vector128.CreateScalarUnsafe(right).AsUInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.UInt64BitsToDouble(left - BinaryExtensions.DoubleToUInt64Bits(right));
+                return BitConverter.UInt64BitsToDouble(left - BitConverter.DoubleToUInt64Bits(right));
             }
         }
 
@@ -1349,7 +1370,7 @@ namespace Shamisen
                     return Sse2.Subtract(Vector128.CreateScalarUnsafe(left).AsInt64(), Vector128.CreateScalarUnsafe(right).AsInt64()).AsDouble().GetElement(0);
                 }
 #endif
-                return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(left) - BinaryExtensions.DoubleToInt64Bits(right));
+                return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(left) - BitConverter.DoubleToInt64Bits(right));
             }
         }
         #endregion
@@ -1377,7 +1398,7 @@ namespace Shamisen
                 return Sse2.ShiftRightArithmetic(Vector128.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
             }
 #endif
-            return BinaryExtensions.Int32BitsToSingle(BinaryExtensions.SingleToInt32Bits(value) >> count);
+            return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(value) >> count);
         }
 
         /// <summary>
@@ -1401,7 +1422,7 @@ namespace Shamisen
                 return Sse2.ShiftRightArithmetic(Vector128.CreateScalarUnsafe(value).AsInt32(), count).AsSingle().GetElement(0);
             }
 #endif
-            return BinaryExtensions.Int64BitsToDouble(BinaryExtensions.DoubleToInt64Bits(value) >> count);
+            return BitConverter.Int64BitsToDouble(BitConverter.DoubleToInt64Bits(value) >> count);
         }
         #endregion
         #endregion
@@ -2183,7 +2204,7 @@ namespace Shamisen
         /// <returns></returns>
         public static int SingleToInt32BitsTwosComplement(float value)
         {
-            var f = BinaryExtensions.SingleToInt32Bits(value);
+            var f = BitConverter.SingleToInt32Bits(value);
             var g = f >> 31;
             g = (int)((uint)g >> 1);
             f ^= g;

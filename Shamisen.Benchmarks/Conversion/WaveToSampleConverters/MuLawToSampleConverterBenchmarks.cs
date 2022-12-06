@@ -15,7 +15,6 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class MuLawToSampleConverterBenchmarks
     {
-
         private class Config : ManualConfig
         {
             public Config()

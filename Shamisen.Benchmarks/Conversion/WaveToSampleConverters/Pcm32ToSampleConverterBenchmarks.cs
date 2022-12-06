@@ -55,6 +55,5 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
 
         [Benchmark]
         public void ReversedAvx2() => Pcm32ToSampleConverter.ProcessReversedAvx2(bufferDst);
-
     }
 }

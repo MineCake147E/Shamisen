@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 using Shamisen.Conversion.WaveToSampleConverters;
 using Shamisen.Filters;
@@ -67,6 +65,7 @@ namespace Shamisen
         {
             8 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm8ToSampleConverter(source),
             8 when source.Format.Encoding == AudioEncoding.Alaw => new ALawToSampleConverter(source),
+            8 when source.Format.Encoding == AudioEncoding.Mulaw => new MuLawToSampleConverter(source),
             16 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm16ToSampleConverter(source),
             32 when source.Format.Encoding == AudioEncoding.LinearPcm => new Pcm32ToSampleConverter(source),
             32 when source.Format.Encoding == AudioEncoding.IeeeFloat => new Float32ToSampleConverter(source),

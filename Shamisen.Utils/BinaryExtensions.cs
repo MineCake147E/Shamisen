@@ -224,6 +224,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static int SingleToInt32Bits(float value) => BitConverter.SingleToInt32Bits(value);
 
@@ -233,6 +234,7 @@ namespace Shamisen
         /// <param name="value">The integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static float Int32BitsToSingle(int value) => BitConverter.Int32BitsToSingle(value);
 
@@ -271,6 +273,7 @@ namespace Shamisen
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static uint SingleToUInt32Bits(float value) => BitConverter.SingleToUInt32Bits(value);
 
@@ -280,6 +283,7 @@ namespace Shamisen
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value) => BitConverter.UInt32BitsToSingle(value);
 
@@ -337,6 +341,7 @@ namespace Shamisen
         /// <param name="value">The double-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted double-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static long DoubleToInt64Bits(double value) => BitConverter.DoubleToInt64Bits(value);
 
@@ -346,9 +351,9 @@ namespace Shamisen
         /// <param name="value">The integer to convert.</param>
         /// <returns>A double-precision floating-point value that represents the converted integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static double Int64BitsToDouble(long value) => BitConverter.Int64BitsToDouble(value);
-
 
 #if NET6_0_OR_GREATER
 
@@ -358,6 +363,7 @@ namespace Shamisen
         /// <param name="value">The double-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static ulong DoubleToUInt64Bits(double value) => BitConverter.DoubleToUInt64Bits(value);
 
@@ -367,6 +373,7 @@ namespace Shamisen
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static double UInt64BitsToDouble(ulong value) => BitConverter.UInt64BitsToDouble(value);
 

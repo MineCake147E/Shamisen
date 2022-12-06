@@ -564,15 +564,6 @@
             <param name="z">The number to be added to the result of x multiplied by y.</param>
             <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
         </member>
-        <member name="M:Shamisen.FastMath.FastMultiplyAddNegated(System.Single,System.Single,System.Single)">
-            <summary>
-            Returns z - (x * y), sometimes rounded as one ternary operation.
-            </summary>
-            <param name="x">The number to be multiplied with y.</param>
-            <param name="y">The number to be multiplied with x.</param>
-            <param name="z">The number to be added to the result of x multiplied by y.</param>
-            <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
-        </member>
         <member name="M:Shamisen.FastMath.FastMultiplyAdd(System.Double,System.Double,System.Double)">
             <summary>
             Returns (x * y) + z, sometimes rounded as one ternary operation.
@@ -581,6 +572,15 @@
             <param name="y">The number to be multiplied with x.</param>
             <param name="z">The number to be added to the result of x multiplied by y.</param>
             <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
+        </member>
+        <member name="M:Shamisen.FastMath.FastMultiplyAddNegated(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns z - (x * y), sometimes rounded as one ternary operation.
+            </summary>
+            <param name="x">The number to be multiplied with y.</param>
+            <param name="y">The number to be multiplied with x.</param>
+            <param name="z">The number to be added to the result of x multiplied by y.</param>
+            <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
         </member>
         <member name="M:Shamisen.FastMath.FastMultiplyAddNegated(System.Double,System.Double,System.Double)">
             <summary>
@@ -958,6 +958,12 @@
             <param name="a">The value to be negated.</param>
             <param name="b">The value to be performed bitwise <c>and</c> operation with negated <paramref name="a"/>.</param>
             <returns>The and product of <paramref name="b"/> and negated <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.GetShortestBitLength(System.Int32)">
+            <inheritdoc cref="M:System.Numerics.IBinaryInteger`1.GetShortestBitLength"/>
+        </member>
+        <member name="M:Shamisen.MathI.GetShortestBitLength(System.Int64)">
+            <inheritdoc cref="M:System.Numerics.IBinaryInteger`1.GetShortestBitLength"/>
         </member>
         <member name="M:Shamisen.MathI.Abs(System.Int64)">
             <summary>
@@ -5177,323 +5183,6 @@
             Returns <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining"/> when the target framework doesn't support <see cref="F:System.Runtime.CompilerServices.MethodImplOptions.AggressiveOptimization"/>.
             </summary>
         </member>
-        <member name="T:Shamisen.Primitives.Angle128">
-            <summary>
-            Represents an angle in 128-bit mixed-point value.<br/>
-            Can be used for some extremely-high-precision needs of angle and frequency.
-            </summary>
-        </member>
-        <member name="F:Shamisen.Primitives.Angle128.low">
-            <summary>
-            The lower part.<br/>
-            Must be between 0 and 1.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Int32,System.Double)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
-            </summary>
-            <param name="sampleRate">The sample rate.</param>
-            <param name="frequency">The frequency.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.#ctor(System.Double)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
-            </summary>
-            <param name="multiplesOfPi">The multiples of pi.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.#ctor(Shamisen.Fixed64,System.Double)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.Angle128"/> struct.
-            </summary>
-            <param name="high">The high part.</param>
-            <param name="low">The low part.</param>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.High">
-            <summary>
-            Gets the higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </summary>
-            <value>
-            The higher part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.Low">
-            <summary>
-            Gets the lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </summary>
-            <value>
-            The lower part of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.Value">
-            <summary>
-            Gets the value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </summary>
-            <value>
-            The value in multiple of pi of this <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.ValueInTurns">
-            <summary>
-            Gets the value in turns.
-            </summary>
-            <value>
-            The value in turns.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.ValueInRadians">
-            <summary>
-            Gets the value in radians.
-            </summary>
-            <value>
-            The value in radians.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.Angle128.ValueInDegrees">
-            <summary>
-            Gets the value in degrees.
-            </summary>
-            <value>
-            The value in degrees.
-            </value>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.op_Addition(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
-            <summary>
-            Adds specified <see cref="T:Shamisen.Primitives.Angle128"/> value and <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </summary>
-            <param name="left">The first value to add.</param>
-            <param name="right">The second value to add.</param>
-            <returns>
-            The result of adding <paramref name="left"/> and <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.op_Subtraction(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
-            <summary>
-            Subtracts specified <see cref="T:Shamisen.Primitives.Angle128"/> value from <see cref="T:Shamisen.Primitives.Angle128"/> value.
-            </summary>
-            <param name="left">The value to be subtracted by <paramref name="right"/>.</param>
-            <param name="right">The value to subtract from <paramref name="left"/>/</param>
-            <returns>
-            The result of subtracting <paramref name="left"/> and <paramref name="right"/>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.ToString">
-            <summary>
-            Converts to string.
-            </summary>
-            <returns>
-            The value in string.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.op_Equality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
-            <returns>
-              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.op_Inequality(Shamisen.Primitives.Angle128,Shamisen.Primitives.Angle128)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.Primitives.Angle128"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.Primitives.Angle128"/> to compare.</param>
-            <returns>
-              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.Equals(System.Object)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="obj">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.Equals(Shamisen.Primitives.Angle128)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.Angle128.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>
-            A 32-bit signed integer that is the hash code for this instance.
-            </returns>
-        </member>
-        <member name="T:Shamisen.Primitives.AngleCounter">
-            <summary>
-            Implements a extreme-precision angle counter.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.AngleCounter.Angle">
-            <summary>
-            Gets the current angle.
-            </summary>
-            <value>
-            The angle.
-            </value>
-        </member>
-        <member name="P:Shamisen.Primitives.AngleCounter.Omega">
-            <summary>
-            Gets the omega.
-            </summary>
-            <value>
-            The omega.
-            </value>
-        </member>
-        <member name="T:Shamisen.Primitives.DisposableArray`1">
-            <summary>
-            Provides a disposable array.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
-            </summary>
-            <param name="length">The length.</param>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
-            <summary>
-            Gets or sets the <typeparamref name="T"/> value at the specified index.
-            </summary>
-            <value>
-            The <typeparamref name="T"/> value.
-            </value>
-            <param name="index">The index.</param>
-            <returns></returns>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
-            <summary>
-            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
-            <summary>
-            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
-            <summary>
-            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
-            <summary>
-            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
-            <summary>
-            Compares to.
-            </summary>
-            <param name="other">The other.</param>
-            <param name="comparer">The comparer.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
-            <summary>
-            Determines whether this instance contains the object.
-            </summary>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-            <returns>
-            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
-            <summary>
-            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
-            </summary>
-            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
-            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
-            <summary>
-            Indicates whether the current object is equal to another object of the same type.
-            </summary>
-            <param name="other">An object to compare with this object.</param>
-            <param name="comparer">The comparer.</param>
-            <returns>
-              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
-            </summary>
-            <returns>
-            An enumerator that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <param name="comparer">The comparer.</param>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
-            <summary>
-            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
-            </summary>
-            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
-            <returns>
-            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
-            <summary>
-            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
-            </summary>
-            <param name="index">The zero-based index at which item should be inserted.</param>
-            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
-            <summary>
-            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </summary>
-            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-            <returns>
-            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
-            <summary>
-            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
-            </summary>
-            <param name="index">The zero-based index of the item to remove.</param>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through a collection.
-            </summary>
-            <returns>
-            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
-            <summary>
-            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
         <member name="T:Shamisen.DataLength">
             <summary>
             Represents a length of some data.
@@ -5664,6 +5353,148 @@
             <returns>
             The result of the operator.
             </returns>
+        </member>
+        <member name="T:Shamisen.Primitives.DisposableArray`1">
+            <summary>
+            Provides a disposable array.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+            <param name="length">The length.</param>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the <typeparamref name="T"/> value at the specified index.
+            </summary>
+            <value>
+            The <typeparamref name="T"/> value.
+            </value>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Primitives.DisposableArray`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Add(`0)">
+            <summary>
+            Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CompareTo(System.Object,System.Collections.IComparer)">
+            <summary>
+            Compares to.
+            </summary>
+            <param name="other">The other.</param>
+            <param name="comparer">The comparer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Contains(`0)">
+            <summary>
+            Determines whether this instance contains the object.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+            </summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Equals(System.Object,System.Collections.IEqualityComparer)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <param name="comparer">The comparer.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            An enumerator that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.GetHashCode(System.Collections.IEqualityComparer)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="comparer">The comparer.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            <returns>
+            The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+            </summary>
+            <param name="index">The zero-based index at which item should be inserted.</param>
+            <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </summary>
+            <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            <returns>
+            true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Shamisen.Primitives.DisposableArray`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Primitives.DisposableArray`1.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
         </member>
         <member name="T:Shamisen.Fixed16">
             <summary>
@@ -6526,16 +6357,24 @@
         </member>
         <member name="T:Shamisen.Int24">
             <summary>
-            An simple representation of 24bit signed integer.
+            An simple representation of 24bit signed integer.<br/>
+            Byte order can be different between platforms.<br/>
+            Little-endian: LLMMHH<br/>
+            Big-endian: HHMMLL
             </summary>
             <seealso cref="T:System.IEquatable`1" />
         </member>
-        <member name="F:Shamisen.Int24.MaxValue">
+        <member name="F:Shamisen.Int24.midtail">
+            <summary>
+            In Big-Endianed systems, "middle-tail" becomes like "head-middle"
+            </summary>
+        </member>
+        <member name="P:Shamisen.Int24.MaxValue">
             <summary>
             Represents the largest possible value of an System.Int24. This field is constant.
             </summary>
         </member>
-        <member name="F:Shamisen.Int24.MinValue">
+        <member name="P:Shamisen.Int24.MinValue">
             <summary>
             Represents the smallest possible value of System.Int24. This field is constant.
             </summary>
@@ -6545,6 +6384,19 @@
             Initializes a new instance of the <see cref="T:Shamisen.Int24"/> struct.
             </summary>
             <param name="value">The source <see cref="T:System.Int32"/> value. Mask:0x807fffff</param>
+        </member>
+        <member name="M:Shamisen.Int24.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Int24"/> struct.
+            </summary>
+            <param name="value">The raw <see cref="T:System.UInt32"/> value. Mask:0x00ffffff</param>
+        </member>
+        <member name="M:Shamisen.Int24.#ctor(System.UInt16,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.Int24"/> struct.
+            </summary>
+            <param name="midtail">The first 2 bytes of the value.</param>
+            <param name="head">The last byte of the value.</param>
         </member>
         <member name="M:Shamisen.Int24.#ctor(System.Byte,System.Byte,System.Byte)">
             <summary>
@@ -6588,15 +6440,6 @@
             </summary>
             <returns>
             A <see cref="T:System.String" /> that represents this instance.
-            </returns>
-        </member>
-        <member name="M:Shamisen.Int24.op_UnaryNegation(Shamisen.Int24)">
-            <summary>
-            Implements the operator -.
-            </summary>
-            <param name="value">The value.</param>
-            <returns>
-            The result of the operator.
             </returns>
         </member>
         <member name="M:Shamisen.Int24.op_Inequality(Shamisen.Int24,Shamisen.Int24)">
@@ -6690,6 +6533,201 @@
             <returns>
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
+        </member>
+        <member name="P:Shamisen.Int24.AdditiveIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Int24.MultiplicativeIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Int24.NegativeOne">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Int24.One">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Int24.Radix">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Int24.Zero">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Abs(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsCanonical(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsComplexNumber(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsEvenInteger(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsFinite(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsImaginaryNumber(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsInfinity(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsInteger(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsNaN(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsNegativeInfinity(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsNormal(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsOddInteger(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsPositive(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsPositiveInfinity(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsPow2(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsRealNumber(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsSubnormal(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.IsZero(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Log2(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.MaxMagnitude(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.MaxMagnitudeNumber(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.MinMagnitude(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.MinMagnitudeNumber(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_OnesComplement(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_ExclusiveOr(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_BitwiseAnd(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_BitwiseOr(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_UnsignedRightShift(Shamisen.Int24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_LeftShift(Shamisen.Int24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_UnaryPlus(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_UnaryNegation(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Increment(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Decrement(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Multiply(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Division(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Modulus(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Addition(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_Subtraction(Shamisen.Int24,Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.op_RightShift(Shamisen.Int24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Parse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Parse(System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.Parse(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.PopCount(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TrailingZeroCount(Shamisen.Int24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TryParse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TryParse(System.ReadOnlySpan{System.Char},System.IFormatProvider,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TryParse(System.String,System.IFormatProvider,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.System#Numerics#IBinaryInteger{Shamisen#Int24}#TryReadBigEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.System#Numerics#IBinaryInteger{Shamisen#Int24}#TryReadLittleEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.Int24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.CompareTo(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.GetByteCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.GetShortestBitLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.ToString(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.TryFormat(System.Span{System.Char},System.Int32@,System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.System#Numerics#IBinaryInteger{Shamisen#Int24}#TryWriteBigEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.System#Numerics#IBinaryInteger{Shamisen#Int24}#TryWriteLittleEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Int24.System#Numerics#INumberBase{Shamisen#Int24}#IsNegative(Shamisen.Int24)">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.OffsetSByte">
             <summary>
@@ -7179,12 +7217,17 @@
             Represents an unsigned 24-bit number.
             </summary>
         </member>
-        <member name="F:Shamisen.UInt24.MaxValue">
+        <member name="F:Shamisen.UInt24.midtail">
+            <summary>
+            In Big-Endianed systems, "middle-tail" becomes like "head-middle"
+            </summary>
+        </member>
+        <member name="P:Shamisen.UInt24.MaxValue">
             <summary>
             Represents the largest possible value of an System.Int24. This field is constant.
             </summary>
         </member>
-        <member name="F:Shamisen.UInt24.MinValue">
+        <member name="P:Shamisen.UInt24.MinValue">
             <summary>
             Represents the smallest possible value of System.Int24. This field is constant.
             </summary>
@@ -7194,6 +7237,13 @@
             Initializes a new instance of the <see cref="T:Shamisen.UInt24"/> struct.
             </summary>
             <param name="value">The source <see cref="T:System.UInt32"/> value. Mask:0x00ffffff</param>
+        </member>
+        <member name="M:Shamisen.UInt24.#ctor(System.UInt16,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.UInt24"/> struct.
+            </summary>
+            <param name="midtail">The first 2 bytes of the value.</param>
+            <param name="head">The last byte of the value.</param>
         </member>
         <member name="M:Shamisen.UInt24.#ctor(System.Byte,System.Byte,System.Byte)">
             <summary>
@@ -7334,6 +7384,198 @@
             Converts to string.
             </summary>
             <returns></returns>
+        </member>
+        <member name="P:Shamisen.UInt24.One">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.UInt24.Radix">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.UInt24.Zero">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.UInt24.AdditiveIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.UInt24.MultiplicativeIdentity">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Abs(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsCanonical(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsComplexNumber(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsEvenInteger(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsFinite(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsImaginaryNumber(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsInfinity(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsInteger(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsNaN(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsNegative(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsNegativeInfinity(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsNormal(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsOddInteger(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsPositive(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsPositiveInfinity(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsPow2(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsRealNumber(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsSubnormal(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.IsZero(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Log2(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.MaxMagnitude(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.MaxMagnitudeNumber(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.MinMagnitude(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.MinMagnitudeNumber(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Parse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Parse(System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.Parse(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.PopCount(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TrailingZeroCount(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryParse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryParse(System.ReadOnlySpan{System.Char},System.IFormatProvider,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryParse(System.String,System.IFormatProvider,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryReadBigEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryReadLittleEndian(System.ReadOnlySpan{System.Byte},System.Boolean,Shamisen.UInt24@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.CompareTo(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.GetByteCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.GetShortestBitLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.ToString(System.String,System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryFormat(System.Span{System.Char},System.Int32@,System.ReadOnlySpan{System.Char},System.IFormatProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryWriteBigEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.TryWriteLittleEndian(System.Span{System.Byte},System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_OnesComplement(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_ExclusiveOr(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_BitwiseAnd(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_BitwiseOr(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_UnsignedRightShift(Shamisen.UInt24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_RightShift(Shamisen.UInt24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_LeftShift(Shamisen.UInt24,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_UnaryPlus(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_UnaryNegation(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Increment(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Decrement(Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Multiply(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Division(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Modulus(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Addition(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.UInt24.op_Subtraction(Shamisen.UInt24,Shamisen.UInt24)">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.VectorB4">
             <summary>
@@ -7817,7 +8059,7 @@
             The result of the conversion.
             </returns>
         </member>
-        <member name="T:Shamisen.SpanExtensions">
+        <member name="T:Shamisen.SpanUtils">
             <summary>
             Provides some extension functions.
             </summary>
@@ -7825,66 +8067,50 @@
             Provides some extension functions.
             </summary>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CreateNativeSpan``1(``0@,System.IntPtr)">
+        <member name="M:Shamisen.SpanUtils.CreateNativeSpan``1(``0@,System.IntPtr)">
             <inheritdoc cref="M:Shamisen.NativeSpan`1.#ctor(`0@,System.IntPtr)"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CreateReadOnlyNativeSpan``1(``0@,System.IntPtr)">
+        <member name="M:Shamisen.SpanUtils.CreateReadOnlyNativeSpan``1(``0@,System.IntPtr)">
             <inheritdoc cref="M:Shamisen.ReadOnlyNativeSpan`1.#ctor(`0@,System.IntPtr)"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.GetReference``1(Shamisen.NativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.GetReference``1(Shamisen.NativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.GetReference``1(Shamisen.ReadOnlyNativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.GetReference``1(Shamisen.ReadOnlyNativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.GetReference``1(System.Span{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AsBytes``1(Shamisen.NativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AsBytes``1(Shamisen.NativeSpan{``0})">
             <summary>
             Casts a <see cref="T:Shamisen.NativeSpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>NativeSpan&lt;byte&gt;</c>
             </summary>
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.Span{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AsBytes``1(Shamisen.ReadOnlyNativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AsBytes``1(Shamisen.ReadOnlyNativeSpan{``0})">
             <summary>
             Casts a <see cref="T:Shamisen.ReadOnlyNativeSpan`1"/> of one primitive type, <typeparamref name="T"/>, to a <c>ReadOnlyNativeSpan&lt;byte&gt;</c>
             </summary>
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.AsBytes``1(System.ReadOnlySpan{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.Cast``2(Shamisen.NativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.Cast``2(Shamisen.NativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.Cast``2(System.Span{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.Cast``2(Shamisen.ReadOnlyNativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.Cast``2(Shamisen.ReadOnlyNativeSpan{``0})">
             <inheritdoc cref="M:System.Runtime.InteropServices.MemoryMarshal.Cast``2(System.ReadOnlySpan{``0})"/>
         </member>
-        <member name="M:Shamisen.SpanExtensions.QuickFill``1(System.Span{``0},``0)">
-            <summary>
-            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.QuickFill``1(Shamisen.NativeSpan{``0},``0)">
-            <summary>
-            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
-            </summary>
-            <typeparam name="TSample">The type of the sample.</typeparam>
-            <param name="span">The span to fill.</param>
-            <param name="value">The value to fill with.</param>
-        </member>
-        <member name="M:Shamisen.SpanExtensions.ShiftRight(System.Span{System.Int32})">
+        <member name="M:Shamisen.SpanUtils.ShiftRight(System.Span{System.Int32})">
             <summary>
             Moves the elements of specified <paramref name="span"/> right by 1 element.
             </summary>
             <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ShiftRight``1(System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.ShiftRight``1(System.Span{``0})">
             <summary>
             Moves the elements of specified <paramref name="span"/> right by 1 element.
             </summary>
             <typeparam name="TSample"></typeparam>
             <param name="span">The <see cref="T:System.Span`1"/> to move its elements.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.Skip``1(System.Span{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.Skip``1(System.Span{``0},System.Int32)">
             <summary>
             Skips the specified step.
             </summary>
@@ -7893,7 +8119,7 @@
             <param name="step">The step.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhileIfLongerThan``1(System.Span{``0},System.Int32)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -7902,7 +8128,7 @@
             <param name="maxLength">The maximum length.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhileIfLongerThan``1(System.ReadOnlySpan{``0},System.Int32)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -7911,7 +8137,7 @@
             <param name="maxLength">The maximum length.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
+        <member name="M:Shamisen.SpanUtils.SliceWhileIfLongerThan``1(System.Span{``0},System.UInt64)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -7920,7 +8146,7 @@
             <param name="maxLength">The maximum length.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhileIfLongerThanWithLazyDivide``1(System.Span{``0},System.Int32,System.Int32)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -7930,7 +8156,7 @@
             <param name="divisor">The number to divide.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhileIfLongerThanWithLazyDivide``1(System.ReadOnlySpan{``0},System.Int32,System.Int32)">
             <summary>
             Slices the specified <paramref name="span"/> to the specified <paramref name="maxLength"/> / <paramref name="divisor"/> if the <paramref name="span"/> is longer than the <paramref name="maxLength"/>.
             </summary>
@@ -7940,7 +8166,7 @@
             <param name="divisor">The number to divide.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceFromEnd``1(System.Span{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceFromEnd``1(System.Span{``0},System.Int32)">
             <summary>
             Slices the <paramref name="span"/> back from the end of <paramref name="span"/> with specified <paramref name="length"/>.
             </summary>
@@ -7949,225 +8175,241 @@
             <param name="length">The length to slice back.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed64})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{Shamisen.Fixed64})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int64})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Int64})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Double})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Double})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt64})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.UInt64})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed32})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{Shamisen.Fixed32})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt32})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.UInt32})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Single})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Single})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int32})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Int32})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Int24})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{Shamisen.Int24})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{Shamisen.Fixed16})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{Shamisen.Fixed16})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.UInt16})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.UInt16})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Half})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Half})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.ReverseEndianness(System.Span{System.Int16})">
+        <member name="M:Shamisen.SpanUtils.ReverseEndianness(System.Span{System.Int16})">
             <summary>
             Reverses the endianness of each elements in specified <paramref name="span"/>.
             </summary>
             <param name="span">The span.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Single},System.Single)">
+        <member name="M:Shamisen.SpanUtils.QuickFill``1(System.Span{``0},``0)">
+            <summary>
+            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanUtils.FastFill(System.Span{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanUtils.QuickFill``1(Shamisen.NativeSpan{``0},``0)">
+            <summary>
+            Quickly (but sometimes slower than <see cref="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Single},System.Single)"/>) fills the specified memory region, with the given <paramref name="value"/>.
+            </summary>
+            <typeparam name="TSample">The type of the sample.</typeparam>
+            <param name="span">The span to fill.</param>
+            <param name="value">The value to fill with.</param>
+        </member>
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Single},System.Single)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Single},System.Single)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Double},System.Double)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Double},System.Double)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Double},System.Double)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Double},System.Double)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Byte},System.Byte)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Byte},System.Byte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Byte},System.Byte)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Byte},System.Byte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt16},System.UInt16)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.UInt16},System.UInt16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt16},System.UInt16)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.UInt16},System.UInt16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt32},System.UInt32)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.UInt32},System.UInt32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt32},System.UInt32)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.UInt32},System.UInt32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.UInt64},System.UInt64)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.UInt64},System.UInt64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.UInt64},System.UInt64)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.UInt64},System.UInt64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.SByte},System.SByte)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.SByte},System.SByte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.SByte},System.SByte)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.SByte},System.SByte)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int16},System.Int16)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Int16},System.Int16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int16},System.Int16)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Int16},System.Int16)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int32},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Int32},System.Int32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int32},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Int32},System.Int32)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(System.Span{System.Int64},System.Int64)">
+        <member name="M:Shamisen.SpanUtils.FastFill(System.Span{System.Int64},System.Int64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.FastFill(Shamisen.NativeSpan{System.Int64},System.Int64)">
+        <member name="M:Shamisen.SpanUtils.FastFill(Shamisen.NativeSpan{System.Int64},System.Int64)">
             <summary>
             Fills the specified memory region faster, with the given <paramref name="value"/>.
             </summary>
             <param name="span">The span to fill.</param>
             <param name="value">The value to fill with.</param>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Span{``0},System.Int32)">
             <summary>
             Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channels"/>.
             </summary>
@@ -8176,7 +8418,7 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Span{``0},DivideSharp.UInt32Divisor)">
             <summary>
             Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8185,7 +8427,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Span{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="span"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8194,7 +8436,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Span{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhile``1(System.Span{``0},System.Int32)">
             <summary>
             Slices the <paramref name="span"/> with the specified length.
             </summary>
@@ -8203,7 +8445,7 @@
             <param name="length">The length to read.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Span{``0},System.Span{``0})">
             <summary>
             Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8212,7 +8454,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Span{``0},System.Memory{``0})">
             <summary>
             Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8221,7 +8463,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Span{``0},System.ReadOnlySpan{``0})">
             <summary>
             Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8230,7 +8472,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Span{``0},System.ReadOnlyMemory{``0})">
             <summary>
             Slices the <paramref name="span"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8239,7 +8481,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Memory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channels"/>.
             </summary>
@@ -8248,7 +8490,7 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Memory{``0},DivideSharp.UInt32Divisor)">
             <summary>
             Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8257,7 +8499,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.Memory{``0},DivideSharp.Int32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.Memory{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="memory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8266,7 +8508,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.Memory{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhile``1(System.Memory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="memory"/> with the specified length.
             </summary>
@@ -8275,7 +8517,7 @@
             <param name="length">The length to read.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Memory{``0},System.Span{``0})">
             <summary>
             Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8284,7 +8526,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Memory{``0},System.Memory{``0})">
             <summary>
             Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8293,7 +8535,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlySpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Memory{``0},System.ReadOnlySpan{``0})">
             <summary>
             Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8302,7 +8544,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.Memory{``0},System.ReadOnlyMemory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.Memory{``0},System.ReadOnlyMemory{``0})">
             <summary>
             Slices the <paramref name="memory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8311,7 +8553,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlySpan{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channels"/>.
             </summary>
@@ -8320,7 +8562,7 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.UInt32Divisor)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8329,7 +8571,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.Int32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlySpan{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8338,7 +8580,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhile``1(System.ReadOnlySpan{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the specified length.
             </summary>
@@ -8347,7 +8589,7 @@
             <param name="length">The length to read.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlySpan{``0},System.Span{``0})">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8356,7 +8598,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlySpan{``0},System.Memory{``0})">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8365,7 +8607,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8374,7 +8616,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlyMemory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlySpan{``0},System.ReadOnlyMemory{``0})">
             <summary>
             Slices the <paramref name="readOnlySpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8383,7 +8625,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlyMemory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channels"/>.
             </summary>
@@ -8392,7 +8634,7 @@
             <param name="channels">The align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.UInt32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.UInt32Divisor)">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8401,7 +8643,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.Int32Divisor)">
+        <member name="M:Shamisen.SpanUtils.SliceAlign``1(System.ReadOnlyMemory{``0},DivideSharp.Int32Divisor)">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> aligned with the multiple of <paramref name="channelsDivisor"/>.
             </summary>
@@ -8410,7 +8652,7 @@
             <param name="channelsDivisor">The divisor set to align width.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
+        <member name="M:Shamisen.SpanUtils.SliceWhile``1(System.ReadOnlyMemory{``0},System.Int32)">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the specified length.
             </summary>
@@ -8419,7 +8661,7 @@
             <param name="length">The length to read.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlyMemory{``0},System.Span{``0})">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8428,7 +8670,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlyMemory{``0},System.Memory{``0})">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8437,7 +8679,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlySpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlySpan{``0})">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8446,7 +8688,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">
             <summary>
             Slices the <paramref name="readOnlyMemory"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8455,7 +8697,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.SliceWhile``1(Shamisen.NativeSpan{``0},System.IntPtr)">
+        <member name="M:Shamisen.SpanUtils.SliceWhile``1(Shamisen.NativeSpan{``0},System.IntPtr)">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the specified length.
             </summary>
@@ -8464,7 +8706,7 @@
             <param name="length">The length to read.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(Shamisen.NativeSpan{``0},System.Span{``0})">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8473,7 +8715,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8482,7 +8724,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlySpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlySpan{``0})">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8491,7 +8733,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlyMemory{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(Shamisen.NativeSpan{``0},System.ReadOnlyMemory{``0})">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8500,7 +8742,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.AlignWith``1(Shamisen.NativeSpan{``0},Shamisen.NativeSpan{``0})">
+        <member name="M:Shamisen.SpanUtils.AlignWith``1(Shamisen.NativeSpan{``0},Shamisen.NativeSpan{``0})">
             <summary>
             Slices the <paramref name="nativeSpan"/> with the length of specified <paramref name="criterion"/>.
             </summary>
@@ -8509,7 +8751,7 @@
             <param name="criterion">The criterion.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.Memory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.CopyTo``1(System.Memory{``0},System.Span{``0})">
             <summary>
             Copies the contents of this <see cref="T:System.Memory`1"/> into a destination <see cref="T:System.Span`1"/>.
             </summary>
@@ -8518,7 +8760,7 @@
             <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.CopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
             <summary>
             Copies the contents of this <see cref="T:System.ReadOnlyMemory`1"/> into a destination <see cref="T:System.Span`1"/>.
             </summary>
@@ -8527,7 +8769,7 @@
             <param name="destination">The destination <see cref="T:System.Span`1"/> object.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.Span{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.CopyTo``1(System.Span{``0},System.Memory{``0})">
             <summary>
             Copies the contents of this <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>
@@ -8536,7 +8778,7 @@
             <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.CopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
             <summary>
             Copies the contents of this <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>
@@ -8545,7 +8787,7 @@
             <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.CopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.CopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
             <summary>
             Copies the contents of this <see cref="T:Shamisen.NativeSpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>
@@ -8554,7 +8796,7 @@
             <param name="destination">The destination <see cref="T:System.Memory`1"/> object.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.TryCopyTo``1(System.Memory{``0},System.Span{``0})">
             <summary>
             Attempts to copy the current <see cref="T:System.Memory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
             </summary>
@@ -8563,7 +8805,7 @@
             <param name="destination">The target of the copy operation.</param>
             <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
+        <member name="M:Shamisen.SpanUtils.TryCopyTo``1(System.ReadOnlyMemory{``0},System.Span{``0})">
             <summary>
             Attempts to copy the current <see cref="T:System.ReadOnlyMemory`1"/> to a destination <see cref="T:System.Span`1"/> and returns a value that indicates whether the copy operation succeeded.
             </summary>
@@ -8572,7 +8814,7 @@
             <param name="destination">The target of the copy operation.</param>
             <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.Span{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.TryCopyTo``1(System.Span{``0},System.Memory{``0})">
             <summary>
             Copies the contents of current <see cref="T:System.Span`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>
@@ -8581,7 +8823,7 @@
             <param name="destination">The target of the copy operation.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.TryCopyTo``1(System.ReadOnlySpan{``0},System.Memory{``0})">
             <summary>
             Copies the contents of current <see cref="T:System.ReadOnlySpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>
@@ -8590,7 +8832,7 @@
             <param name="destination">The target of the copy operation.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.SpanExtensions.TryCopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
+        <member name="M:Shamisen.SpanUtils.TryCopyTo``1(Shamisen.NativeSpan{``0},System.Memory{``0})">
             <summary>
             Copies the contents of current <see cref="T:Shamisen.NativeSpan`1"/> into a destination <see cref="T:System.Memory`1"/>.
             </summary>

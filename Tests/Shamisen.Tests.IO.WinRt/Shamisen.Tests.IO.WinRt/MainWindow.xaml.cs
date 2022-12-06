@@ -118,6 +118,5 @@ namespace Shamisen.Tests.IO.WinRt
             ingraph?.Start();
             input?.Start();
         }
-
     }
 }

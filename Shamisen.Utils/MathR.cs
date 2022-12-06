@@ -13,7 +13,6 @@ namespace Shamisen
     /// </summary>
     public static class MathR
     {
-
         /// <summary>
         /// Determines whether the <paramref name="value"/> is in specified <paramref name="range"/>.
         /// </summary>

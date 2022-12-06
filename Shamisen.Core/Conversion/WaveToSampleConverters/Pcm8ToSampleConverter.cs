@@ -433,7 +433,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 v3_4s = AdvSimd.Or(v3_4s, v0_4s);
                 v3_4s = AdvSimd.Add(v3_4s.AsSingle(), v1_4s).AsUInt32();
                 AdvSimdUtils.Arm64.StorePair(ref Unsafe.Add(ref x10, i + 2 * 4), v2_4s.AsSingle(), v3_4s.AsSingle());
-
             }
             for (; i < length; i++)
             {

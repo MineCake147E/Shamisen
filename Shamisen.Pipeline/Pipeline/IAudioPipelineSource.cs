@@ -19,6 +19,5 @@ namespace Shamisen.Pipeline
         where TSample : unmanaged
         where TFormat : IAudioFormat<TSample>
     {
-
     }
 }

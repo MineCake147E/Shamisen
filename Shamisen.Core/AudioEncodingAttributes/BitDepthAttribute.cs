@@ -18,7 +18,6 @@ namespace Shamisen
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
     public sealed class FixedBitDepthAttribute : BitDepthAttribute
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FixedBitDepthAttribute"/> class.
         /// </summary>

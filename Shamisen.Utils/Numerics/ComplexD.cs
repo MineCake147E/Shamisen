@@ -150,7 +150,6 @@ namespace Shamisen
                 }
 #endif
                 return new(-value.Value);
-
             }
         }
         #endregion

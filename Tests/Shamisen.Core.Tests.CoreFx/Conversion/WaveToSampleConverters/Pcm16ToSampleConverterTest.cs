@@ -19,7 +19,6 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
     [TestFixture]
     public class Pcm16ToSampleConverterTest
     {
-
         private static void CheckResultNormal(Span<short> spanI, Span<float> spanF)
         {
             const float M = 1 / 32768.0f;
@@ -110,6 +109,5 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             Pcm16ToSampleConverter.ProcessReversed(y, spanF);
             CheckResultReversed(spanI, spanF);
         }
-
     }
 }

@@ -54,6 +54,5 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
 
         [Benchmark]
         public void StandardVariable() => AudioUtils.FastMixStandardVariable(bufferDst.AsSpan(), bufferA.AsSpan(), ScaleA, bufferB.AsSpan(), ScaleB);
-
     }
 }

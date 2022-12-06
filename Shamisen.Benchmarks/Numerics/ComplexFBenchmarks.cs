@@ -11,7 +11,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 
-
 namespace Shamisen.Benchmarks.Numerics
 {
     [SimpleJob(RuntimeMoniker.HostProcess)]

@@ -585,7 +585,6 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// <param name="srcBuffer"></param>
         /// <param name="coeffPtr"></param>
         /// <param name="x"></param>
-
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static int ResampleCachedDirectStereoQuadrupleRateX64(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)

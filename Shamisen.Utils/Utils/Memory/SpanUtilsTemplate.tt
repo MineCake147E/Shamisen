@@ -5,6 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".g.cs" #>
 <#    var typesVectorable = new string[]{"float","double","byte","ushort","uint","ulong","sbyte","short","int","long"};#>
+<#    var typesFastFillInQuickFill = new string[]{"float","double"};#>
 <#    var typesMemoryReadable = new string[]{"Span","Memory","ReadOnlySpan","ReadOnlyMemory","NativeSpan"};#>
 <#    var typesMemoryWritable = new string[]{"Span","Memory","NativeSpan"};#>
 <#    var typesMemoryReadOnly = new string[]{"ReadOnlySpan","ReadOnlyMemory"};#>
@@ -27,7 +28,7 @@ namespace Shamisen
     /// <summary>
     /// Provides some extension functions.
     /// </summary>
-    public static partial class SpanExtensions
+    public static partial class SpanUtils
     {
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         private static bool FastFillIfPossible<T>(Span<T> span, T value = default)
@@ -86,7 +87,7 @@ namespace Shamisen
                 case <#=item#> _:
                     {
                         var dwValue = value is <#=item#> v ? v : default;
-                        ref var tHead = ref Unsafe.As<T, <#=item#>>(ref SpanExtensions.GetReference(span));
+                        ref var tHead = ref Unsafe.As<T, <#=item#>>(ref SpanUtils.GetReference(span));
                         var nspan = new NativeSpan<<#=item#>>(ref tHead, span.Length);
                         FastFill(nspan, dwValue);
                     }

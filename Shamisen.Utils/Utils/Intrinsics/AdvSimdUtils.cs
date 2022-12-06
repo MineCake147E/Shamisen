@@ -23,7 +23,6 @@ namespace Shamisen.Utils.Intrinsics
         {
             /// <inheritdoc cref="AdvSimd.Arm64.IsSupported"/>
             public static bool IsSupported => AdvSimd.Arm64.IsSupported;
-
         }
     }
 }

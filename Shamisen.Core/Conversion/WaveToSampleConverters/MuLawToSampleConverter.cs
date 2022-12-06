@@ -476,26 +476,13 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static float ConvertMuLawToSingle(byte value)
         {
-            unchecked
-            {
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                var v = (uint)(sbyte)~value;
-                var y = (v & 0x8000_0000u) + 0x3b84_0000u;
-                var f = BitConverter.Int32BitsToSingle((int)y);
-                v <<= 19;
-                v &= 0x83f8_0000;
-                v += 0x3b84_0000;
-                return BitConverter.Int32BitsToSingle((int)v) - f;
-#else
-                uint v = (uint)(sbyte)~value;
-                var y = (v & 0x8000_0000u) + 0x3b84_0000u;
-                var f = Unsafe.As<uint, float>(ref y);
-                v <<= 19;
-                v &= 0x83f8_0000;
-                v += 0x3b84_0000;
-                return Unsafe.As<uint, float>(ref v) - f;
-#endif
-            }
+            var v = (uint)(sbyte)~value;
+            var y = (v & 0x8000_0000u) + 0x3b84_0000u;
+            var f = BitConverter.Int32BitsToSingle((int)y);
+            v <<= 19;
+            v &= 0x83f8_0000;
+            v += 0x3b84_0000;
+            return BitConverter.Int32BitsToSingle((int)v) - f;
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

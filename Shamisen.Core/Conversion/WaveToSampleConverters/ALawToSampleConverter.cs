@@ -1,12 +1,10 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if NETCOREAPP3_1_OR_GREATER
 
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
-using System.Security.Cryptography;
 
 #endif
 #if NET5_0_OR_GREATER
@@ -24,8 +22,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
     /// </summary>
     public sealed class ALawToSampleConverter : WaveToSampleConverterBase
     {
-        private const float Multiplier = 1 / 32768.0f;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ALawToSampleConverter"/> class.
         /// </summary>
@@ -360,45 +356,16 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static float ConvertALawToSingle(byte value)
         {
             var q = (uint)(sbyte)(value ^ 0xd5);
-            var s = q & 0x80000000u;
+            _ = q & 0x80000000u;
             q <<= 19;
             q &= 0x83f80000u;
             var e = q | 0x00040000;
             var r = q + 0x00800000u;
-            var f = BinaryExtensions.UInt32BitsToSingle(r) + BinaryExtensions.UInt32BitsToSingle(e);
-            r = BinaryExtensions.SingleToUInt32Bits(f);
+            var f = BitConverter.UInt32BitsToSingle(r) + BitConverter.UInt32BitsToSingle(e);
+            r = BitConverter.SingleToUInt32Bits(f);
             e = q | 0x3C000000;
             r += 0x3B800000;
-            return BinaryExtensions.UInt32BitsToSingle(r) - BinaryExtensions.UInt32BitsToSingle(e);
-        }
-
-        internal ReadResult ReadOld(Span<float> buffer)
-        {
-            buffer = buffer.SliceAlign(2);
-            var internalBufferLengthRequired = buffer.Length;
-            var bytebuf = MemoryMarshal.Cast<float, byte>(buffer);
-            var srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired);
-            var readBuffer = srcBuffer.SliceAlign(Format.Channels);
-            var rr = Source.Read(readBuffer);
-            if (rr.HasData)
-            {
-                unchecked
-                {
-                    var rb = readBuffer.SliceWhile(rr.Length);
-                    var wb = buffer.SliceWhile(rb.Length);
-                    for (var i = 0; i < rb.Length; i++)
-                    {
-                        var v = rb[i];
-                        var h = ConvertALawToInt16(v);
-                        wb[i] = h * Multiplier;
-                    }
-                    return wb.Length;
-                }
-            }
-            else
-            {
-                return rr;
-            }
+            return BitConverter.UInt32BitsToSingle(r) - BitConverter.UInt32BitsToSingle(e);
         }
 
         /// <summary>
@@ -408,7 +375,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <param name="value"></param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [Obsolete($"Use {nameof(ConvertALawToSingle)} instead!")]
         internal static short ConvertALawToInt16(byte value)
         {
             unchecked

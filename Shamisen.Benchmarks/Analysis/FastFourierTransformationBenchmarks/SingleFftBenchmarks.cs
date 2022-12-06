@@ -15,7 +15,6 @@ using Shamisen.Analysis;
 
 namespace Shamisen.Benchmarks.Analysis
 {
-
     [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]

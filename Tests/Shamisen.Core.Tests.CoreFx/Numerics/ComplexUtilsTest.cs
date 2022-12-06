@@ -66,7 +66,6 @@ namespace Shamisen.Core.Tests.CoreFx.Numerics
         }
         private static class MultiplyAllTestUtils
         {
-
             internal static void PrepareArrays(int length, ComplexF value, out ComplexF[] src, out ComplexF[] exp, out ComplexF[] dst)
             {
                 src = new ComplexF[length];

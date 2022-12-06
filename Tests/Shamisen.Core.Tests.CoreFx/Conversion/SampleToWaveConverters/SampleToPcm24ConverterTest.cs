@@ -16,7 +16,6 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
     [TestFixture]
     public class SampleToPcm24ConverterTest
     {
-
         [TestCase(4095)]
         [TestCase(4096)]
         [TestCase(4097)]

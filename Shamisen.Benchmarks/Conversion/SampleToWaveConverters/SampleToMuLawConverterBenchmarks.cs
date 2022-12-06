@@ -55,6 +55,5 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
 
         [Benchmark(Baseline = true)]
         public void ProcessAvx2() => SampleToMuLawConverter.ProcessAvx2(srcBuffer, dstBuffer);
-
     }
 }
