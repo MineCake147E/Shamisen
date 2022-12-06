@@ -55,7 +55,7 @@ This library provides utility features independent from [Shamisen.Core](https://
   - Int32
   - UInt32
   - IntPtr
-- AndNot(~A ^ B)
+- AndNot(~A & B)
   - Int32
   - Int64
   - UInt32
