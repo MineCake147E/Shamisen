@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 using Shamisen.Utils;
 
@@ -18,28 +13,28 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region CachedDirect
 
         #region Monaural
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private ResampleFunc GetFuncCachedDirectMonaural(in UnifiedResampleArgs args) =>
+            GetFuncCachedDirectMonauralX86(args);
+
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private int ResampleCachedDirectMonaural(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci) =>
-#if NETCOREAPP3_1_OR_GREATER
-            ResampleCachedDirectMonauralX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
-#else
-            ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
-#endif
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
+        internal static ResampleResult ResampleCachedDirectVectorFitChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint isx = 0;
-            nint psx = x;
-            nint nrci = rci;
-            nint nram = ram;
+            nint psx = args.ConversionGradient;
+            nint nrci = args.RearrangedCoeffsIndex;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             nint length = buffer.Length - Vector<float>.Count + 1;
-            nint vfacc = facc * Vector<float>.Count;
+            var vfacc = facc * Vector<float>.Count;
             for (; i < length; i += Vector<float>.Count)
             {
-                x += acc;
+                psx += acc;
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
                 var ymm0 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx));
                 var ymm4 = new Vector<float>(cutmullCoeffs.X);
@@ -50,43 +45,44 @@ namespace Shamisen.Conversion.Resampling.Sample
                 var ymm3 = Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref src, isx + 3 * Vector<float>.Count));
                 var ymm7 = new Vector<float>(cutmullCoeffs.W);
                 isx += vfacc;
-                var j = ++nrci < nram;
+                var j = ++nrci < ram;
                 nint z = Unsafe.As<bool, byte>(ref j);
                 var value1 = ymm0 * ymm4;
                 nrci &= -z;
                 var value2 = ymm1 * ymm5;
-                var h = x >= ram;
+                var h = psx >= ram;
                 int y = Unsafe.As<bool, byte>(ref h);
                 value1 += ymm2 * ymm6;
                 value2 += ymm3 * ymm7;
                 isx += y * Vector<float>.Count;
                 value1 += value2;
-                x -= -y & ram;
+                psx -= -y & ram;
                 Unsafe.As<float, Vector<float>>(ref Unsafe.Add(ref dst, i)) = value1;
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)(isx / Vector<float>.Count);
+            return new((int)(isx / Vector<float>.Count), (int)psx, (int)nrci);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
-            => (facc, acc, ram) switch
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe ResampleFunc GetFuncCachedDirectMonauralStandard(in UnifiedResampleArgs args)
+            => new((args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
-                (0, 1, 2) => ResampleCachedDirectMonauralDoubleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, 4) => ResampleCachedDirectMonauralQuadrupleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, _) => ResampleCachedDirectMonauralIntegerMultipleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram),
-                (0, _, _) => ResampleCachedDirectMonauralUpAnyRateStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci),
-                _ => ResampleCachedDirectMonauralAnyRateStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci)
-            };
+                (0, 1, 2) => &ResampleCachedDirectMonauralDoubleRateStandard,
+                (0, 1, 4) => &ResampleCachedDirectMonauralQuadrupleRateStandard,
+                (0, 1, _) => &ResampleCachedDirectMonauralIntegerMultipleRateStandard,
+                (0, _, _) => &ResampleCachedDirectMonauralUpAnyRateStandard,
+                _ => &ResampleCachedDirectMonauralAnyRateStandard
+            });
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralAnyRateStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
+        internal static ResampleResult ResampleCachedDirectMonauralAnyRateStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
-            nint nrci = rci;
-            nint nram = ram;
+            nint psx = args.ConversionGradient;
+            nint nrci = args.RearrangedCoeffsIndex;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
@@ -105,24 +101,25 @@ namespace Shamisen.Conversion.Resampling.Sample
                 isx += y;
                 psx -= -y & nram;
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralUpAnyRateStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
-            nint nrci = rci;
-            nint nram = ram;
+            nint psx = args.ConversionGradient;
+            nint nrci = args.RearrangedCoeffsIndex;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            _ = args.IndexIncrement;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
-            for (i = 0; i < length; i++)
+            for (; i < length; i++)
             {
                 psx += acc;
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, nrci);
@@ -136,42 +133,42 @@ namespace Shamisen.Conversion.Resampling.Sample
                 isx += y;
                 psx -= -y & nram;
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralIntegerMultipleRateStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram)
+        internal static ResampleResult ResampleCachedDirectMonauralIntegerMultipleRateStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            nint nram = args.RateMul;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
+            nint i;
             for (i = 0; i < length; i++)
             {
                 values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx++);
-                var h = psx >= ram;
+                var h = psx >= nram;
                 int y = Unsafe.As<bool, byte>(ref h);
                 Unsafe.Add(ref dst, i) = VectorUtils.FastDotProduct(values, cutmullCoeffs);
                 isx += y;
-                psx -= -y & ram;
+                psx -= -y & nram;
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralDoubleRateStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        internal static ResampleResult ResampleCachedDirectMonauralDoubleRateStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             var c0 = Unsafe.Add(ref coeffPtr, 0);
@@ -214,16 +211,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                     isx++;
                 }
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectMonauralQuadrupleRateStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        internal static ResampleResult ResampleCachedDirectMonauralQuadrupleRateStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 values;
@@ -231,7 +227,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             var c1 = Unsafe.Add(ref coeffPtr, 1);
             var c2 = Unsafe.Add(ref coeffPtr, 2);
             var c3 = Unsafe.Add(ref coeffPtr, 3);
-            for (i = 0; psx != 0 && psx < 4; i++, psx++)
+            nint i;
+            for (i = 0; psx is not 0 and < 4; i++, psx++)
             {
                 values = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref src, isx));
                 var cutmullCoeffs = Unsafe.Add(ref coeffPtr, psx);
@@ -265,46 +262,47 @@ namespace Shamisen.Conversion.Resampling.Sample
                     isx++;
                 }
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
         #endregion
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private int ResampleCachedDirect2Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci) =>
-#if NETCOREAPP3_1_OR_GREATER
-            ResampleCachedDirect2ChannelsX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
-#else
-            ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
-#endif
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private ResampleFunc GetFuncCachedDirect2Channels(in UnifiedResampleArgs args)
+            => GetFuncCachedDirect2ChannelsX86(args);
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private int ResampleCachedDirect3Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci) => ResampleCachedDirect3ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private int ResampleCachedDirect4Channels(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci) => ResampleCachedDirect4ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private unsafe ResampleFunc GetFuncCachedDirect3Channels(in UnifiedResampleArgs args)
+            => new(&ResampleCachedDirect3ChannelsStandard);
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private unsafe ResampleFunc GetFuncCachedDirect4Channels(in UnifiedResampleArgs args)
+            => new(&ResampleCachedDirect4ChannelsStandard);
 
         #region Generic
 
-        private static int ResampleCachedDirectGeneric(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, int channels, ref int x, int ram, int acc, int facc, ref int rci)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static ResampleFunc GetFuncCachedDirectGeneric(in UnifiedResampleArgs args)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                return ResampleCachedDirectGenericX86(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
+                return GetFuncCachedDirectGenericX86(args);
 #endif
             }
         }
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectGenericStandard(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, int channels, ref int x, int ram, int acc, int facc, ref int rci)
+        internal static ResampleResult ResampleCachedDirectGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            nint nrci = rci;
-            nint nchannels = channels;
+            nint psx = args.ConversionGradient;
+            nint nrci = args.RearrangedCoeffsIndex;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint nchannels = args.Channels;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             var length = buffer.Length - nchannels + 1;
-            var rch = channels & 0x3;
+            var rch = nchannels & 0x3;
             unsafe
             {
                 fixed (float* rsi = srcBuffer)
@@ -350,9 +348,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
         #endregion
@@ -361,14 +357,17 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region Direct
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleDirectMonauralStandard(Span<float> buffer, Span<float> srcBuffer, ref int x, int ram, int acc, int facc, float rmi)
+        internal static ResampleResult ResampleDirectMonauralStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            var rmi = args.RateMulInverse;
             var spsx = psx;
-            nint nram = ram;
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
@@ -416,18 +415,20 @@ namespace Shamisen.Conversion.Resampling.Sample
                 x2 = x3;
                 x3 = nx3;
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleDirectVectorFitStandard(Span<float> buffer, Span<float> srcBuffer, ref int x, int ram, int acc, int facc, float rmi)
+        internal static ResampleResult ResampleDirectVectorFitStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            var rmi = args.RateMulInverse;
             var spsx = psx;
-            nint nram = ram;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             nint length = vBuffer.Length;
@@ -486,36 +487,24 @@ namespace Shamisen.Conversion.Resampling.Sample
                 x2 = x3;
                 x3 = nx3;
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
-        /// <summary>
-        /// Performs resampling no matter how many channels to process.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="srcBuffer"></param>
-        /// <param name="channels"></param>
-        /// <param name="x"></param>
-        /// <param name="ram"></param>
-        /// <param name="acc"></param>
-        /// <param name="facc"></param>
-        /// <param name="rmi"></param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleDirectGeneric(Span<float> buffer, Span<float> srcBuffer, int channels, ref int x, int ram, int acc, int facc, float rmi)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static ResampleFunc GetFuncDirectGeneric(in UnifiedResampleArgs args)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                return ResampleDirectGenericX86(buffer, srcBuffer, channels, ref x, ram, acc, facc, rmi);
+                return GetFuncDirectGenericX86(args);
 #endif
             }
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleDirectGenericStandard(Span<float> buffer, Span<float> srcBuffer, int channels, ref int x, int ram, int acc, int facc, float rmi)
+        internal static ResampleResult ResampleDirectGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
+            (var channels, var x, var ram, var acc, var facc, var rmi) = (args.Channels, args.ConversionGradient, args.RateMul, args.GradientIncrement, args.IndexIncrement, args.RateMulInverse);
             nint i = 0;
             nint isx = 0;
             var psx = x;
@@ -600,8 +589,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            x = psx;
-            return (int)isx;
+            return new((int)isx, psx);
         }
 
         #endregion

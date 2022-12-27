@@ -41,12 +41,12 @@
         </member>
         <member name="F:Shamisen.AudioEncoding.Alaw">
             <summary>
-            A-law format by Microsoft Corporation
+            A-law PCM from ITU-T Recommendation G.711.
             </summary>
         </member>
         <member name="F:Shamisen.AudioEncoding.Mulaw">
             <summary>
-            μ-law format by Microsoft Corporation
+            μ-law PCM from ITU-T Recommendation G.711.
             </summary>
         </member>
         <member name="F:Shamisen.AudioEncoding.OkiAdpcm">
@@ -535,9 +535,9 @@
             </summary>
         </member>
         <member name="F:Shamisen.AudioEncoding.Extensible">
-             <summary>
-            
-             </summary>
+            <summary>
+            Format that are expressed in form of <see cref="T:Shamisen.Formats.IExtensibleWaveFormat"/>.
+            </summary>
         </member>
         <member name="T:Shamisen.AudioEncodingAttribute">
             <summary>
@@ -5429,6 +5429,46 @@
             The source.
             </value>
         </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.ConversionGradient">
+            <summary>
+            First member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.RearrangedCoeffsIndex">
+            <summary>
+            Second member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>. Tied with <see cref="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.ConversionGradient"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.RateMul">
+            <summary>
+            Third member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.RearrangedCoeffsDirection">
+            <summary>
+            4th member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>. Tied with <see cref="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.RateMul"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.GradientIncrement">
+            <summary>
+            5th member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.Channels">
+            <summary>
+            6th member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>. Tied with <see cref="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.GradientIncrement"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.IndexIncrement">
+            <summary>
+            7th member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs.RateMulInverse">
+            <summary>
+            8th member of <see cref="T:Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs"/>.
+            </summary>
+        </member>
         <member name="T:Shamisen.Conversion.Resampling.Sample.ResamplerBase">
             <summary>
             The base of resampler.
@@ -5720,44 +5760,17 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleDirectGeneric(System.Span{System.Single},System.Span{System.Single},System.Int32,System.Int32@,System.Int32,System.Int32,System.Int32,System.Single)">
-            <summary>
-            Performs resampling no matter how many channels to process.
-            </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="channels"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
-            <param name="facc"></param>
-            <param name="rmi"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@,System.Int32,System.Int32,System.Int32@)">
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
             <summary>
             For arbitrary sampling frequency ratio larger than 1
             </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <param name="ram"></param>
-            <param name="acc"></param>
-            <param name="rci"></param>
-            <returns></returns>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(System.Span{System.Single},System.Span{System.Single},System.Numerics.Vector4@,System.Int32@)">
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
             <summary>
             This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
             It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
             TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
             </summary>
-            <param name="buffer"></param>
-            <param name="srcBuffer"></param>
-            <param name="coeffPtr"></param>
-            <param name="x"></param>
-            <returns></returns>
         </member>
         <member name="F:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleStrategy.Direct">
             <summary>
@@ -5773,6 +5786,51 @@
             <summary>
             Pre-Calculated and Wrapped
             </summary>
+        </member>
+        <member name="T:Shamisen.Conversion.SampleRateReinterpretationSource">
+            <summary>
+            Makes the <see cref="P:Shamisen.IAudioFormat`1.SampleRate"/> appear to be specified sample rate.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.Source">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleRateReinterpretationSource.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat},System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.Conversion.SampleRateReinterpretationSource"/> class.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="destinationSampleRate">The target sample rate.</param>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.TotalLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.SkipSupport">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.Conversion.SampleRateReinterpretationSource.SeekSupport">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleRateReinterpretationSource.Read(System.Span{System.Single})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleRateReinterpretationSource.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleRateReinterpretationSource.Finalize">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleRateReinterpretationSource.Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.Conversion.SampleToWaveConverters.SampleToALawConverter">
             <summary>
@@ -10768,6 +10826,44 @@
               <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:Shamisen.Formats.IPcmAudioFormat">
+            <summary>
+            Defines a base structure of PCM audio formats.<br/>
+            </summary>
+        </member>
+        <member name="P:Shamisen.Formats.IPcmAudioFormat.Encoding">
+            <summary>
+            Gets the value indicates how the samples are encoded.
+            </summary>
+            <value>
+            The sample encoding.
+            </value>
+        </member>
+        <member name="T:Shamisen.Formats.PcmAudioEncoding">
+            <summary>
+            Defines known PCM sample encoding types.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.LinearPcm">
+            <summary>
+            Linear PCM
+            </summary>
+        </member>
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.IeeeFloat">
+            <summary>
+            IEEE 754 Single Precision Floating-Point Number
+            </summary>
+        </member>
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.Alaw">
+            <summary>
+            A-law PCM from ITU-T Recommendation G.711.
+            </summary>
+        </member>
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.Mulaw">
+            <summary>
+            μ-law PCM from ITU-T Recommendation G.711.
+            </summary>
+        </member>
         <member name="T:Shamisen.IAudioFormat`1">
             <summary>
             Defines a base structure of audio formats.<br/>
@@ -10806,7 +10902,7 @@
         </member>
         <member name="T:Shamisen.IInterleavedAudioFormat`1">
             <summary>
-            Defines a base structure of audio formats.<br/>
+            Defines a base structure of channel-interleaved audio formats.<br/>
             <typeparamref name="TSample"/> must not be affected by the number of <see cref="P:Shamisen.IAudioFormat`1.Channels"/>.
             </summary>
         </member>
@@ -12391,16 +12487,10 @@
         <member name="P:Shamisen.Synthesis.SilenceWaveSource.Format">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Synthesis.SilenceWaveSource.Position">
-            <summary>
-            Gets or sets where the <see cref="T:Shamisen.IAudioSource`2"/> is.
-            Some implementation could not support this property.
-            </summary>
-        </member>
-        <member name="P:Shamisen.Synthesis.SilenceWaveSource.SkipSupport">
+        <member name="P:Shamisen.Synthesis.SilenceWaveSource.Shamisen#IAudioSource{System#Byte,Shamisen#IWaveFormat}#SkipSupport">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Synthesis.SilenceWaveSource.SeekSupport">
+        <member name="P:Shamisen.Synthesis.SilenceWaveSource.Shamisen#IAudioSource{System#Byte,Shamisen#IWaveFormat}#SeekSupport">
             <inheritdoc/>
         </member>
         <member name="M:Shamisen.Synthesis.SilenceWaveSource.Read(System.Span{System.Byte})">
@@ -12897,25 +12987,6 @@
             <param name="value">The value to deconstruct.</param>
             <param name="hasValue">The value which indicates whether the <paramref name="result"/> is valid.</param>
             <param name="result">The result.</param>
-        </member>
-        <member name="T:System.PointerExtensions">
-            <summary>
-            Provides some extensions for <code>ref T</code>s,  <code>void*</code>s, and <see cref="T:System.IntPtr"/>s.
-            </summary>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.IntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.IntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.IntPtr"/> value.</returns>
-        </member>
-        <member name="M:System.PointerExtensions.Increment(System.UIntPtr)">
-            <summary>
-            Increments the specified <see cref="T:System.UIntPtr"/> value.
-            </summary>
-            <param name="value">The value to increment.</param>
-            <returns>The incremented <see cref="T:System.UIntPtr"/> value.</returns>
         </member>
     </members>
 </doc>

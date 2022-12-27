@@ -28,18 +28,11 @@ namespace Shamisen.Synthesis
         /// <inheritdoc/>
         public IWaveFormat Format { get; }
 
-        /// <summary>
-        /// Gets or sets where the <see cref="IAudioSource{TSample,TFormat}"/> is.
-        /// Some implementation could not support this property.
-        /// </summary>
-        [Obsolete("Not Supported", true)]
-        public long Position { get; set; }
+        /// <inheritdoc/>
+        ISkipSupport? IAudioSource<byte, IWaveFormat>.SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public ISeekSupport? SeekSupport => throw new NotImplementedException();
+        ISeekSupport? IAudioSource<byte, IWaveFormat>.SeekSupport => null;
 
         ulong? IAudioSource<byte, IWaveFormat>.Length => null;
 

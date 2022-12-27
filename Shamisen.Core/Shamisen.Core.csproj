@@ -107,7 +107,7 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.g.cs">
+      <Compile Update="Conversion\Resampling\Sample\SplineResampler.Resample.Standard.g.cs">
         <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -161,7 +161,7 @@
         <LastGenOutput>WaveformSubFormats.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>
-      <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.tt">
+      <None Update="Conversion\Resampling\Sample\SplineResampler.Resample.Standard.tt">
         <LastGenOutput>SplineResampler.Resample.Standard.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>

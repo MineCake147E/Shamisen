@@ -12,15 +12,18 @@ namespace Shamisen.Conversion.Resampling.Sample
     {
         #region WrappedOdd
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddMonauralStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedOddMonauralStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            var isx = 0;
-            var psx = x;
-            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint isx = 0;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             nint i = 0, length = buffer.Length;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var rsi = ref MemoryMarshal.GetReference(srcBuffer);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
             if (red < 0)
@@ -81,18 +84,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                     red = 1;
                 }
             }
-            return (isx, psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedOddVectorFitChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            var isx = 0;
-            var psx = x;
+            nint isx = 0;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             nint i = 0, length = vBuffer.Length;
@@ -172,30 +178,33 @@ namespace Shamisen.Conversion.Resampling.Sample
                     red = 1;
                 }
             }
-            return (isx, psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGeneric(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static ResampleFunc GetFuncCachedWrappedOddGeneric(in UnifiedResampleArgs args)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                return ResampleCachedWrappedOddGenericX86(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+                return GetFuncCachedWrappedOddGenericX86(args);
 #endif
             }
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGenericStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedOddGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nchannels = channels;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint nchannels = args.Channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             var rewc = rew * nchannels;
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -264,21 +273,24 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            return ((int)isx, (int)psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
         #endregion
 
         #region WrappedEven
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenMonauralStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedEvenMonauralStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            var isx = 0;
-            var psx = x;
+            nint isx = 0;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             nint i = 0, length = buffer.Length;
             ref var rsi = ref MemoryMarshal.GetReference(srcBuffer);
             ref var rdi = ref MemoryMarshal.GetReference(buffer);
@@ -339,18 +351,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                     rec = 0;
                 }
             }
-            return (isx, psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenVectorFitChannelsStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedEvenVectorFitChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
-            var isx = 0;
-            var psx = x;
+            nint isx = 0;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             var vBuffer = MemoryMarshal.Cast<float, Vector<float>>(buffer);
             var vSrcBuffer = MemoryMarshal.Cast<float, Vector<float>>(srcBuffer);
             nint i = 0, length = vBuffer.Length;
@@ -428,29 +443,33 @@ namespace Shamisen.Conversion.Resampling.Sample
                     rec = 0;
                 }
             }
-            return (isx, psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGeneric(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static ResampleFunc GetFuncCachedWrappedEvenGeneric(in UnifiedResampleArgs args)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
-                return ResampleCachedWrappedEvenGenericX86(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+                return GetFuncCachedWrappedEvenGenericX86(args);
 #endif
             }
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericStandard(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedEvenGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nchannels = channels;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint nchannels = args.Channels;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
-            var rew = cspan.Length;
+            nint rec = args.RearrangedCoeffsIndex;
+            nint red = args.RearrangedCoeffsDirection;
+            nint rew = cspan.Length;
             var rewc = rew * nchannels;
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -520,7 +539,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            return ((int)isx, (int)psx, rec, red);
+            return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
         #endregion

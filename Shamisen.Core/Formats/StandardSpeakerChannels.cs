@@ -31,9 +31,9 @@ namespace Shamisen
         FrontCenter = 0b100,
 
         /// <summary>
-        /// The subwoofer speaker placed in front of the listener.
+        /// The first subwoofer speaker placed somewhere depending on environment.
         /// </summary>
-        FrontCenterLowFrequency = 0b1000,
+        LowFrequency = 0b1000,
 
         /// <summary>
         /// The speaker placed in left rear of the listener.
@@ -71,9 +71,9 @@ namespace Shamisen
         SideRight = 0b100_0000_0000,
 
         /// <summary>
-        /// The subwoofer speaker placed behind the listener.
+        /// The speaker placed above the listener.
         /// </summary>
-        RearLowFrequency = 0b1000_0000_0000,
+        TopSideCenter = 0b1000_0000_0000,
 
         /// <summary>
         /// The speaker placed at the upper left front of the listener.
@@ -111,14 +111,29 @@ namespace Shamisen
         TopSideLeft = 0b100_0000_0000_0000_0000,
 
         /// <summary>
-        /// The speaker placed above the listener.
-        /// </summary>
-        TopSideCenter = 0b1000_0000_0000_0000_0000,
-
-        /// <summary>
         /// The speaker placed at the upper right of the listener.
         /// </summary>
-        TopSideRight = 0b1_0000_0000_0000_0000_0000,
+        TopSideRight = 0b1000_0000_0000_0000_0000,
+
+        /// <summary>
+        /// The speaker placed at the lower left front of the listener.
+        /// </summary>
+        BottomFrontLeft = 0b1_0000_0000_0000_0000_0000,
+
+        /// <summary>
+        /// The speaker placed at the lower front of the listener.
+        /// </summary>
+        BottomFrontCenter = 0b10_0000_0000_0000_0000_0000,
+
+        /// <summary>
+        /// The speaker placed at the lower right front of the listener.
+        /// </summary>
+        BottomFrontRight = 0b100_0000_0000_0000_0000_0000,
+
+        /// <summary>
+        /// The second subwoofer speaker placed somewhere depending on environment.
+        /// </summary>
+        LowFrequency2 = 0b1000_0000_0000_0000_0000_0000,
 
         #endregion Standard Masks
 
@@ -128,6 +143,7 @@ namespace Shamisen
         /// The representation of single speaker.
         /// </summary>
         Monaural = FrontCenter,
+        #region Stereo Pairs
 
         /// <summary>
         /// The ordinal Stereo combination.
@@ -160,9 +176,15 @@ namespace Shamisen
         TopRearStereo = TopRearLeft | TopRearRight,
 
         /// <summary>
+        /// The bottom front Stereo combination.
+        /// </summary>
+        BottomFrontStereo = BottomFrontLeft | BottomFrontRight,
+        #endregion
+
+        /// <summary>
         /// The 2.1ch combination.
         /// </summary>
-        TwoPointOne = FrontStereo | FrontCenterLowFrequency,
+        TwoPointOne = FrontStereo | LowFrequency,
 
         /// <summary>
         /// The 3ch surround combination.
@@ -172,7 +194,7 @@ namespace Shamisen
         /// <summary>
         /// The 3.1ch combination.
         /// </summary>
-        ThreePointOne = FrontStereo | FrontCenter | FrontCenterLowFrequency,
+        ThreePointOne = FrontStereo | FrontCenter | LowFrequency,
 
         /// <summary>
         /// The 4ch surround combination.
@@ -192,7 +214,7 @@ namespace Shamisen
         /// <summary>
         /// The 4.1ch combination.
         /// </summary>
-        FourPointOne = FrontStereo | FrontCenterLowFrequency | RearLeft | RearRight,
+        FourPointOne = FrontStereo | LowFrequency | RearLeft | RearRight,
 
         /// <summary>
         /// The standard 5.1ch combination.

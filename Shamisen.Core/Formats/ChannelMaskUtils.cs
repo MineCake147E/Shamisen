@@ -25,16 +25,16 @@ namespace Shamisen
                     1 => StandardSpeakerChannels.Monaural,
                     //Assuming Speaker Stereo
                     2 => StandardSpeakerChannels.FrontStereo,
-                    //Assuming 2.1ch Stereo
-                    3 => StandardSpeakerChannels.FrontStereo | StandardSpeakerChannels.FrontCenterLowFrequency,
-                    //Assuming 3.1ch Stereo
-                    4 => StandardSpeakerChannels.ThreePointOne,
-                    //Assuming 4.1ch Surround
-                    5 => StandardSpeakerChannels.FrontStereo | StandardSpeakerChannels.RearLeft | StandardSpeakerChannels.RearRight | StandardSpeakerChannels.FrontCenterLowFrequency,
+                    //Assuming 3ch Stereo
+                    3 => StandardSpeakerChannels.FrontThree,
+                    //Assuming 4ch Surround
+                    4 => StandardSpeakerChannels.Quad,
+                    //Assuming 5ch Surround
+                    5 => StandardSpeakerChannels.FrontFive,
                     //Assuming 5.1ch Surround
                     6 => StandardSpeakerChannels.FrontFivePointOne,
                     //Assuming 6.1ch Surround
-                    7 => StandardSpeakerChannels.FrontStereo | StandardSpeakerChannels.SideStereo | StandardSpeakerChannels.RearStereo | StandardSpeakerChannels.FrontCenterLowFrequency,
+                    7 => StandardSpeakerChannels.FrontFivePointOne | StandardSpeakerChannels.RearCenter,
                     //Assuming 7.1ch Surround
                     8 => StandardSpeakerChannels.SevenPointOne,
                     //Assuming 8.1ch Surround

@@ -43,12 +43,12 @@ namespace Shamisen
         IbmCvsd = 0x0005,
 
         /// <summary>
-        /// A-law format by Microsoft Corporation
+        /// A-law PCM from ITU-T Recommendation G.711.
         /// </summary>
         Alaw = 0x0006,
 
         /// <summary>
-        /// μ-law format by Microsoft Corporation
+        /// μ-law PCM from ITU-T Recommendation G.711.
         /// </summary>
         Mulaw = 0x0007,
 
@@ -538,7 +538,7 @@ namespace Shamisen
         InterwavVsc112 = 0x7150,
 
         /// <summary>
-        ///
+        /// Format that are expressed in form of <see cref="IExtensibleWaveFormat"/>.
         /// </summary>
         Extensible = unchecked((ushort)0xFFFEu),
     }

@@ -1,20 +1,13 @@
 ﻿#if NETCOREAPP3_1_OR_GREATER
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 using Shamisen.Optimization;
 using Shamisen.Utils;
-using Shamisen.Utils.Intrinsics;
 
 namespace Shamisen.Conversion.Resampling.Sample
 {
@@ -24,47 +17,48 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region X86
         #region CachedDirect
         #region Monaural
-        private int ResampleCachedDirectMonauralX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
-            => (facc, acc, ram) switch
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private unsafe ResampleFunc GetFuncCachedDirectMonauralX86(in UnifiedResampleArgs args)
+            => (args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
                 (0, 1, 2) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
-                => ResampleCachedDirectMonauralDoubleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, 2) => ResampleCachedDirectMonauralDoubleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
+                => new(&ResampleCachedDirectMonauralDoubleRateSse41),
+                (0, 1, 2) => new(&ResampleCachedDirectMonauralDoubleRateStandard),
                 (0, 1, 4) when Sse41.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse41)
-                => ResampleCachedDirectMonauralQuadrupleRateSse41(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, 4) => ResampleCachedDirectMonauralQuadrupleRateStandard(buffer, srcBuffer, ref coeffPtr, ref x),
-                (0, 1, _) => ResampleCachedDirectMonauralIntegerMultipleRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram),
+                => new(&ResampleCachedDirectMonauralQuadrupleRateSse41),
+                (0, 1, 4) => new(&ResampleCachedDirectMonauralQuadrupleRateStandard),
+                (0, 1, _) => new(&ResampleCachedDirectMonauralIntegerMultipleRateX86),
                 (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectMonauralUpAnyRateX86(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci),
+                => GetFuncCachedDirectMonauralUpAnyRateX86(args),
                 (_, _, _) when Sse3.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse3)
-                => ResampleCachedDirectMonauralAnyRateSse3(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
-                _ => ResampleCachedDirectMonauralStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
+                => new(&ResampleCachedDirectMonauralAnyRateSse3),
+                _ => GetFuncCachedDirectMonauralStandard(args),
             };
-        private static int ResampleCachedDirectMonauralUpAnyRateX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
-        {
-            if (ram - ram / 4 < acc && Sse2.IsSupported)
-            {
-                return ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci);
-            }
-            else
-            {
-                return ResampleCachedDirectMonauralUpAnyRateGenericSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci);
-            }
-        }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        private static unsafe ResampleFunc GetFuncCachedDirectMonauralUpAnyRateX86(in UnifiedResampleArgs args)
+        {
+            var ram = args.RateMul;
+            var acc = args.GradientIncrement;
+            return ram - ram / 4 < acc && Sse2.IsSupported
+                ? (new(&ResampleCachedDirectMonauralUpAnyRateUnrolledSse2))
+                : (new(&ResampleCachedDirectMonauralUpAnyRateGenericSse));
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
-            nint slen = srcBuffer.Length - 3;
+            _ = srcBuffer.Length - 3;
             nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            nint nacc = acc;
+            nint psx = args.ConversionGradient;
+            nint nram = args.RateMul;
+            nint nacc = args.GradientIncrement;
             var nracc = nram - nacc;
             var nram16 = nram * 16;
-            nint nrci = rci * 16;
+            nint nrci = args.RearrangedCoeffsIndex * 16;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -152,32 +146,24 @@ namespace Shamisen.Conversion.Resampling.Sample
                 Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
                 psx -= nram & y;
             }
-            rci = (int)((nuint)nrci / 16);
-            x = (int)psx;
-            return (int)((nuint)isx);
+            return new((int)(nuint)isx, (int)psx, (int)((nuint)nrci / 16));
         }
 
         /// <summary>
         /// For arbitrary sampling frequency ratio larger than 1
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="srcBuffer"></param>
-        /// <param name="coeffPtr"></param>
-        /// <param name="x"></param>
-        /// <param name="ram"></param>
-        /// <param name="acc"></param>
-        /// <param name="rci"></param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralUpAnyRateGenericSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateGenericSse(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint slen = srcBuffer.Length - 3;
             nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            nint nrci = rci;
+            nint psx = args.ConversionGradient;
+            nint nrci = args.RearrangedCoeffsIndex;
+            nint nram = args.RateMul;
+            nint acc = args.GradientIncrement;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -201,19 +187,19 @@ namespace Shamisen.Conversion.Resampling.Sample
                 if (isx >= slen) continue;
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralIntegerMultipleRateX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralIntegerMultipleRateX86(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint slen = srcBuffer.Length - 3;
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -229,19 +215,21 @@ namespace Shamisen.Conversion.Resampling.Sample
                 if (isx >= slen) continue;
                 xmm7 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralAnyRateSse3(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralAnyRateSse3(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            nint nrci = rci;
+            nint psx = args.ConversionGradient;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint nram = args.RateMul;
+            nint nrci = args.RearrangedCoeffsIndex;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -266,17 +254,16 @@ namespace Shamisen.Conversion.Resampling.Sample
                 xmm0 = Sse.AddScalar(xmm0, xmm7);
                 Unsafe.Add(ref dst, i) = xmm0.GetElement(0);
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralDoubleRateSse41(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralDoubleRateSse41(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x & 1;
+            nint psx = args.ConversionGradient & 1;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -344,16 +331,16 @@ namespace Shamisen.Conversion.Resampling.Sample
                 isx++;
                 xmm6 = Unsafe.As<float, Vector128<float>>(ref Unsafe.Add(ref src, isx));
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectMonauralQuadrupleRateSse41(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectMonauralQuadrupleRateSse41(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint length = buffer.Length;
             nint isx = 0;
-            nint psx = x & 3;
+            nint psx = args.ConversionGradient & 3;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
             ref var src = ref MemoryMarshal.GetReference(srcBuffer);
             ref var dst = ref MemoryMarshal.GetReference(buffer);
@@ -410,35 +397,36 @@ namespace Shamisen.Conversion.Resampling.Sample
                     isx++;
                 }
             }
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
         #endregion
         #region Stereo
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private int ResampleCachedDirect2ChannelsX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
-            => (facc, acc, ram) switch
+        private unsafe ResampleFunc GetFuncCachedDirect2ChannelsX86(in UnifiedResampleArgs args)
+            => (args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
                 (0, 1, 2) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoDoubleRateSse(buffer, srcBuffer, ref coeffPtr, ref x),
+                => new(&ResampleCachedDirectStereoDoubleRateSse),
                 (0, 1, 4) when Sse.X64.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse | X86IntrinsicsMask.X64)
-                => ResampleCachedDirectStereoQuadrupleRateX64(buffer, srcBuffer, ref coeffPtr, ref x),
+                => new(&ResampleCachedDirectStereoQuadrupleRateX64),
                 (0, 1, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoIntegerRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram),
+                => new(&ResampleCachedDirectStereoIntegerRateSse),
                 (0, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoUpAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, ref rci),
+                => new(&ResampleCachedDirectStereoUpAnyRateSse),
                 (_, _, _) when Sse.IsSupported && X86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse)
-                => ResampleCachedDirectStereoAnyRateSse(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
-                _ => ResampleCachedDirect2ChannelsStandard(buffer, srcBuffer, ref coeffPtr, ref x, ram, acc, facc, ref rci),
+                => new(&ResampleCachedDirectStereoAnyRateSse),
+                _ => new(&ResampleCachedDirect2ChannelsStandard),
             };
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoUpAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, ref int rci)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectStereoUpAnyRateSse(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nrci = rci;
-            nint nram = ram;
+            nint psx = args.ConversionGradient;
+            nint acc = args.GradientIncrement;
+            nint nram = args.RateMul;
+            nint nrci = args.RearrangedCoeffsIndex;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -461,24 +449,24 @@ namespace Shamisen.Conversion.Resampling.Sample
                 vl = Sse.Add(vl, vr);
                 Unsafe.Add(ref vBuffer, i) = vl.AsDouble().GetElement(0);
                 psx += acc;
-                if (psx >= ram)
+                if (psx >= nram)
                 {
-                    psx -= ram;
+                    psx -= nram;
                     isx++;
                     vx = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx));
                     vz = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
                 }
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoIntegerRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectStereoIntegerRateSse(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            nint ram = args.RateMul;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -507,15 +495,15 @@ namespace Shamisen.Conversion.Resampling.Sample
                 }
             }
 
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoDoubleRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectStereoDoubleRateSse(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -573,24 +561,19 @@ namespace Shamisen.Conversion.Resampling.Sample
                 psx &= 1;
             }
 
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
         /// <summary>
         /// This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
         /// It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
         /// TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="srcBuffer"></param>
-        /// <param name="coeffPtr"></param>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoQuadrupleRateX64(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectStereoQuadrupleRateX64(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
+            nint psx = args.ConversionGradient;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -681,17 +664,19 @@ namespace Shamisen.Conversion.Resampling.Sample
                     xmm15 = Unsafe.As<double, Vector128<float>>(ref Unsafe.Add(ref vSrcBuffer, isx + 2));
                 }
             }
-            x = (int)psx;
-
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static int ResampleCachedDirectStereoAnyRateSse(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static ResampleResult ResampleCachedDirectStereoAnyRateSse(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nrci = rci;
-            nint nram = ram;
+            nint psx = args.ConversionGradient;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint ram = args.RateMul;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
+            nint nrci = args.RearrangedCoeffsIndex;
+            var nram = ram;
             ref var vBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(buffer));
             ref var vSrcBuffer = ref Unsafe.As<float, double>(ref MemoryMarshal.GetReference(srcBuffer));
             ref var coeff = ref Unsafe.As<Vector4, Vector128<float>>(ref coeffPtr);
@@ -720,32 +705,28 @@ namespace Shamisen.Conversion.Resampling.Sample
                 isx += b;
                 psx -= nram & (-b);
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
 
         #endregion
         #region Generic
-        private static int ResampleCachedDirectGenericX86(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, int channels, ref int x, int ram, int acc, int facc, ref int rci)
-        {
-            if (Avx2.IsSupported)
-            {
-                return ResampleCachedDirectGenericAvx2(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
-            }
-            return ResampleCachedDirectGenericStandard(buffer, srcBuffer, ref coeffPtr, channels, ref x, ram, acc, facc, ref rci);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe ResampleFunc GetFuncCachedDirectGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? (new(&ResampleCachedDirectGenericAvx2)) : (new(&ResampleCachedDirectGenericStandard));
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleCachedDirectGenericAvx2(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, int channels, ref int x, int ram, int acc, int facc, ref int rci)
+        internal static ResampleResult ResampleCachedDirectGenericAvx2(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
             nint isx = 0;
-            nint psx = x;
-            nint nram = ram;
-            nint nrci = rci;
+            nint psx = args.ConversionGradient;
+            var channels = args.Channels;
             nint nchannels = channels;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint nram = args.RateMul;
+            nint nrci = args.RearrangedCoeffsIndex;
+            ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
             var length = buffer.Length - nchannels + 1;
-            var rch = channels & 0x3;
+            var rch = (int)nchannels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
 
             unsafe
@@ -821,35 +802,29 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            rci = (int)nrci;
-            x = (int)psx;
-            return (int)isx;
+            return new((int)isx, (int)psx, (int)nrci);
         }
         #endregion
         #endregion
 
         #region CachedWrappedEven
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe ResampleFunc GetFuncCachedWrappedEvenGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? (new(&ResampleCachedWrappedEvenGenericAvx2)) : (new(&ResampleCachedWrappedEvenGenericStandard));
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericX86(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
-        {
-            if (Avx2.IsSupported)
-            {
-                return ResampleCachedWrappedEvenGenericAvx2(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
-            }
-            return ResampleCachedWrappedEvenGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
-        }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedEvenGenericAvx2(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedEvenGenericAvx2(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nchannels = channels;
+            nint psx = args.ConversionGradient;
+            nint nchannels = args.Channels;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint ram = args.RateMul;
+            var rec = args.RearrangedCoeffsIndex;
+            var red = args.RearrangedCoeffsDirection;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
             var rew = cspan.Length;
             var rewc = rew * nchannels;
-            var rch = channels & 0x3;
+            var rch = (int)nchannels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -1077,27 +1052,23 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region CachedWrappedOdd
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe ResampleFunc GetFuncCachedWrappedOddGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? new(&ResampleCachedWrappedOddGenericAvx2) : new(&ResampleCachedWrappedOddGenericStandard);
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGenericX86(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
-        {
-            if (Avx2.IsSupported)
-            {
-                return ResampleCachedWrappedOddGenericAvx2(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
-            }
-            return ResampleCachedWrappedOddGenericStandard(buffer, srcBuffer, cspan, channels, x, ram, acc, facc, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
-        }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static (int inputSampleIndex, int x, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) ResampleCachedWrappedOddGenericAvx2(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int channels, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        internal static ResampleResult ResampleCachedWrappedOddGenericAvx2(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
-            nint psx = x;
-            nint nchannels = channels;
+            nint psx = args.ConversionGradient;
+            nint nchannels = args.Channels;
+            nint acc = args.GradientIncrement;
+            nint facc = args.IndexIncrement;
+            nint ram = args.RateMul;
+            var rec = args.RearrangedCoeffsIndex;
+            var red = args.RearrangedCoeffsDirection;
             ref var coeffPtr = ref MemoryMarshal.GetReference(cspan);
-            var rec = rearrangedCoeffsIndex;
-            var red = rearrangedCoeffsDirection;
             var rew = cspan.Length;
             var rewc = rew * nchannels;
-            var rch = channels & 0x3;
+            var rch = (int)nchannels & 0x3;
             var mask = Sse2.CompareGreaterThan(Vector128.Create(rch), Vector128.Create(0, 1, 2, 3)).AsSingle();
             nint i = 0, length = buffer.Length - nchannels + 1;
             unsafe
@@ -1111,22 +1082,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            var vy0 = y0.AsVector128().ToVector256Unsafe();
+                            var vy1 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b01_01_01_01).ToVector256Unsafe();
+                            var vy2 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b10_10_10_10).ToVector256Unsafe();
+                            var vy3 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b11_11_11_11).ToVector256Unsafe();
+                            vy0 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b00_00_00_00).ToVector256Unsafe();
+                            vy0 = vy0.WithUpper(vy0.GetLower());
+                            vy1 = vy1.WithUpper(vy1.GetLower());
+                            vy2 = vy2.WithUpper(vy2.GetLower());
+                            vy3 = vy3.WithUpper(vy3.GetLower());
                             var head = rsi + isx * nchannels;
                             var head2 = head + nchannels * 2;
                             nint nch = 0;
                             var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
-                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
-                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
-                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                var v0 = Avx.Multiply(vy0, *(Vector256<float>*)(head + nch));
+                                var v2 = Avx.Multiply(vy2, *(Vector256<float>*)(head2 + nch));
                                 v0 = Avx.Add(v0, v2);
-                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
-                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                var v1 = Avx.Multiply(vy1, *(Vector256<float>*)(head + nchannels + nch));
+                                var v3 = Avx.Multiply(vy3, *(Vector256<float>*)(head2 + nchannels + nch));
                                 v1 = Avx.Add(v1, v3);
                                 v0 = Avx.Add(v0, v1);
                                 *(Vector256<float>*)(rdi + i + nch) = v0;
@@ -1134,32 +1109,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                             cholen = nchannels - 3;
                             for (; nch < cholen; nch += 4)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
-                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
-                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
-                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
-                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
-                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                var v0 = Sse.Multiply(vy0.GetLower(), *(Vector128<float>*)(head + nch));
+                                var v2 = Sse.Multiply(vy2.GetLower(), *(Vector128<float>*)(head2 + nch));
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
-                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                var v1 = Sse.Multiply(vy1.GetLower(), *(Vector128<float>*)(head + nchannels + nch));
+                                var v3 = Sse.Multiply(vy3.GetLower(), *(Vector128<float>*)(head2 + nchannels + nch));
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 *(Vector128<float>*)(rdi + i + nch) = v0;
                             }
                             if (nch < nchannels)
                             {
-                                var vy0 = y0.AsVector128();
                                 var v0 = Avx.MaskLoad(head + nch, mask);
                                 var v2 = Avx.MaskLoad(head2 + nch, mask);
                                 var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
                                 var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
-                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Multiply(v0, vy0.GetLower());
+                                v2 = Sse.Multiply(v2, vy2.GetLower());
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Multiply(v1, vy1.GetLower());
+                                v3 = Sse.Multiply(v3, vy3.GetLower());
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 Avx.MaskStore(rdi + i + nch, mask, v0);
@@ -1183,22 +1152,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = Unsafe.Add(ref coeffPtr, rec++);
+                            var vy0 = y0.AsVector128().ToVector256Unsafe();
+                            var vy1 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b01_01_01_01).ToVector256Unsafe();
+                            var vy2 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b10_10_10_10).ToVector256Unsafe();
+                            var vy3 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b11_11_11_11).ToVector256Unsafe();
+                            vy0 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b00_00_00_00).ToVector256Unsafe();
+                            vy0 = vy0.WithUpper(vy0.GetLower());
+                            vy1 = vy1.WithUpper(vy1.GetLower());
+                            vy2 = vy2.WithUpper(vy2.GetLower());
+                            vy3 = vy3.WithUpper(vy3.GetLower());
                             var head = rsi + isx * nchannels;
                             var head2 = head + nchannels * 2;
                             nint nch = 0;
                             var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
-                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
-                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
-                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                var v0 = Avx.Multiply(vy0, *(Vector256<float>*)(head + nch));
+                                var v2 = Avx.Multiply(vy2, *(Vector256<float>*)(head2 + nch));
                                 v0 = Avx.Add(v0, v2);
-                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
-                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                var v1 = Avx.Multiply(vy1, *(Vector256<float>*)(head + nchannels + nch));
+                                var v3 = Avx.Multiply(vy3, *(Vector256<float>*)(head2 + nchannels + nch));
                                 v1 = Avx.Add(v1, v3);
                                 v0 = Avx.Add(v0, v1);
                                 *(Vector256<float>*)(rdi + i + nch) = v0;
@@ -1206,32 +1179,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                             cholen = nchannels - 3;
                             for (; nch < cholen; nch += 4)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
-                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
-                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
-                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
-                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
-                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                var v0 = Sse.Multiply(vy0.GetLower(), *(Vector128<float>*)(head + nch));
+                                var v2 = Sse.Multiply(vy2.GetLower(), *(Vector128<float>*)(head2 + nch));
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
-                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                var v1 = Sse.Multiply(vy1.GetLower(), *(Vector128<float>*)(head + nchannels + nch));
+                                var v3 = Sse.Multiply(vy3.GetLower(), *(Vector128<float>*)(head2 + nchannels + nch));
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 *(Vector128<float>*)(rdi + i + nch) = v0;
                             }
                             if (nch < nchannels)
                             {
-                                var vy0 = y0.AsVector128();
                                 var v0 = Avx.MaskLoad(head + nch, mask);
                                 var v2 = Avx.MaskLoad(head2 + nch, mask);
                                 var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
                                 var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
-                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Multiply(v0, vy0.GetLower());
+                                v2 = Sse.Multiply(v2, vy2.GetLower());
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Multiply(v1, vy1.GetLower());
+                                v3 = Sse.Multiply(v3, vy3.GetLower());
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 Avx.MaskStore(rdi + i + nch, mask, v0);
@@ -1252,22 +1219,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                         for (; i < olen; i += nchannels)
                         {
                             var y0 = VectorUtils.ReverseElements(Unsafe.Add(ref coeffPtr, rec--));
+                            var vy0 = y0.AsVector128().ToVector256Unsafe();
+                            var vy1 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b01_01_01_01).ToVector256Unsafe();
+                            var vy2 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b10_10_10_10).ToVector256Unsafe();
+                            var vy3 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b11_11_11_11).ToVector256Unsafe();
+                            vy0 = Sse.Shuffle(vy0.GetLower(), vy0.GetLower(), 0b00_00_00_00).ToVector256Unsafe();
+                            vy0 = vy0.WithUpper(vy0.GetLower());
+                            vy1 = vy1.WithUpper(vy1.GetLower());
+                            vy2 = vy2.WithUpper(vy2.GetLower());
+                            vy3 = vy3.WithUpper(vy3.GetLower());
                             var head = rsi + isx * nchannels;
                             var head2 = head + nchannels * 2;
                             nint nch = 0;
                             var cholen = nchannels - 7;
                             for (; nch < cholen; nch += 8)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
-                                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
-                                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
-                                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
+                                var v0 = Avx.Multiply(vy0, *(Vector256<float>*)(head + nch));
+                                var v2 = Avx.Multiply(vy2, *(Vector256<float>*)(head2 + nch));
                                 v0 = Avx.Add(v0, v2);
-                                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
-                                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
+                                var v1 = Avx.Multiply(vy1, *(Vector256<float>*)(head + nchannels + nch));
+                                var v3 = Avx.Multiply(vy3, *(Vector256<float>*)(head2 + nchannels + nch));
                                 v1 = Avx.Add(v1, v3);
                                 v0 = Avx.Add(v0, v1);
                                 *(Vector256<float>*)(rdi + i + nch) = v0;
@@ -1275,32 +1246,26 @@ namespace Shamisen.Conversion.Resampling.Sample
                             cholen = nchannels - 3;
                             for (; nch < cholen; nch += 4)
                             {
-                                var vy0 = y0.AsVector128();
-                                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
-                                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
-                                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
-                                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
-                                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
-                                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
+                                var v0 = Sse.Multiply(vy0.GetLower(), *(Vector128<float>*)(head + nch));
+                                var v2 = Sse.Multiply(vy2.GetLower(), *(Vector128<float>*)(head2 + nch));
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
-                                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
+                                var v1 = Sse.Multiply(vy1.GetLower(), *(Vector128<float>*)(head + nchannels + nch));
+                                var v3 = Sse.Multiply(vy3.GetLower(), *(Vector128<float>*)(head2 + nchannels + nch));
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 *(Vector128<float>*)(rdi + i + nch) = v0;
                             }
                             if (nch < nchannels)
                             {
-                                var vy0 = y0.AsVector128();
                                 var v0 = Avx.MaskLoad(head + nch, mask);
                                 var v2 = Avx.MaskLoad(head2 + nch, mask);
                                 var v1 = Avx.MaskLoad(head + nchannels + nch, mask);
                                 var v3 = Avx.MaskLoad(head2 + nchannels + nch, mask);
-                                v0 = Sse.Multiply(v0, Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                                v2 = Sse.Multiply(v2, Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
+                                v0 = Sse.Multiply(v0, vy0.GetLower());
+                                v2 = Sse.Multiply(v2, vy2.GetLower());
                                 v0 = Sse.Add(v0, v2);
-                                v1 = Sse.Multiply(v1, Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                                v3 = Sse.Multiply(v3, Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
+                                v1 = Sse.Multiply(v1, vy1.GetLower());
+                                v3 = Sse.Multiply(v3, vy3.GetLower());
                                 v1 = Sse.Add(v1, v3);
                                 v0 = Sse.Add(v0, v1);
                                 Avx.MaskStore(rdi + i + nch, mask, v0);
@@ -1325,23 +1290,18 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region Direct
         #region Generic
-        private static int ResampleDirectGenericX86(Span<float> buffer, Span<float> srcBuffer, int channels, ref int x, int ram, int acc, int facc, float rmi)
-        {
-            if (Avx2.IsSupported)
-            {
-                return ResampleDirectGenericAvx2(buffer, srcBuffer, channels, ref x, ram, acc, facc, rmi);
-            }
-            return ResampleDirectGenericStandard(buffer, srcBuffer, channels, ref x, ram, acc, facc, rmi);
-        }
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static unsafe ResampleFunc GetFuncDirectGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? new(&ResampleDirectGenericAvx2) : new(&ResampleDirectGenericStandard);
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        private static int ResampleDirectGenericAvx2(Span<float> buffer, Span<float> srcBuffer, int channels, ref int x, int ram, int acc, int facc, float rmi)
+        internal static ResampleResult ResampleDirectGenericAvx2(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
+            (var channels, var x, var ram, var acc, var facc, var rmi) = (args.Channels, args.ConversionGradient, args.RateMul, args.GradientIncrement, args.IndexIncrement, args.RateMulInverse);
             nint i = 0;
             nint isx = 0;
-            var psx = x;
+            nint psx = x;
             var spsx = psx;
-            var nram = ram;
+            nint nram = ram;
             nint nchannels = channels;
             var length = buffer.Length - nchannels + 1;
             Vector4 c0 = C0, c1 = C1, c2 = C2, c3 = C3;
@@ -1449,8 +1409,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                     }
                 }
             }
-            x = psx;
-            return (int)isx;
+            return new((int)isx, (int)psx);
         }
         #endregion
         #endregion

@@ -99,13 +99,13 @@ namespace Shamisen
         public static bool operator ==(SampleFormat left, SampleFormat right) => left.Equals(right);
 
         /// <summary>
-		/// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are different.
-		/// </summary>
-		/// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
-		/// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
-		/// <returns>
-		///   <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
-		/// </returns>
+        /// Indicates whether the values of two specified <see cref="SampleFormat"/> objects are different.
+        /// </summary>
+        /// <param name="left">The first <see cref="SampleFormat"/> to compare.</param>
+        /// <param name="right">The second <see cref="SampleFormat"/> to compare.</param>
+        /// <returns>
+        ///   <c>true</c> if the value of int1 is not the same as the value of int2; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator !=(SampleFormat left, SampleFormat right) => !(left == right);
     }
 }

@@ -333,3 +333,6 @@ dotnet_style_allow_statement_immediately_after_block_experimental=true:suggestio
 dotnet_diagnostic.RCS1123.severity = none
 # S907: "goto" statement should not be used
 dotnet_diagnostic.S907.severity = none
+
+# CS1572: XML comment param tag for nonexistent parameter
+dotnet_diagnostic.CS1572.severity = error

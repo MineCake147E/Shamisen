@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Shamisen
 {
     /// <summary>
-    /// Defines a base structure of audio formats.<br/>
+    /// Defines a base structure of channel-interleaved audio formats.<br/>
     /// <typeparamref name="TSample"/> must not be affected by the number of <see cref="IAudioFormat{TSample}.Channels"/>.
     /// </summary>
     public interface IInterleavedAudioFormat<TSample> : IAudioFormat<TSample>
