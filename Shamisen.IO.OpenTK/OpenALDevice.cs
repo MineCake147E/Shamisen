@@ -13,7 +13,7 @@ namespace Shamisen.IO
     /// <summary>
     /// Represents a device for OpenAL.
     /// </summary>
-    public sealed class OpenALDevice : IAudioOutputDevice<OpenALOutput, OpenALOutputConfiguration>, IEquatable<OpenALDevice>, IFormatSupportStatusSupport<OpenALOutputConfiguration>
+    public sealed class OpenALDevice : IAudioOutputDevice<OpenALOutput, OpenALOutputConfiguration, OpenALOutputConfigurationBuilder>, IEquatable<OpenALDevice>, IFormatSupportStatusSupport<OpenALOutputConfiguration>
     {
         private readonly HashSet<string> extensions;
         private readonly int maxSampleRate;
@@ -27,7 +27,12 @@ namespace Shamisen.IO
         /// </summary>
         public string Name { get; }
 
-        IFormatSupportStatusSupport<OpenALOutputConfiguration>? IAudioOutputDevice<OpenALOutput, OpenALOutputConfiguration>.FormatSupportStatusSupport { get; }
+        IFormatSupportStatusSupport<OpenALOutputConfiguration>? IAudioOutputDevice<OpenALOutput, OpenALOutputConfiguration, OpenALOutputConfigurationBuilder>.FormatSupportStatusSupport => this;
+
+        /// <inheritdoc/>
+        public IWaveFormat? PreferredFormat { get; }
+        /// <inheritdoc/>
+        public OpenALOutputConfiguration PreferredConfiguration { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenALDevice"/> class.
@@ -108,7 +113,7 @@ namespace Shamisen.IO
             var alf2check = ConvertToALFormat(format);
             if (supportedFormats.Contains(alf2check))
             {
-                return FormatSupportStatus.SupportedByHardware;
+                return new(FormatPropertySupportStatus.SupportedByBackend);
             }
             return format.Channels > 2
                            ? FormatSupportStatus.NotSupported
@@ -116,7 +121,12 @@ namespace Shamisen.IO
                            {
                                AudioEncoding.LinearPcm => format.BitDepth switch
                                {
-                                   24 or 32 => FormatSupportStatus.SupportedByBinding,
+                                   24 or 32 => new(FormatPropertySupportStatus.SupportedByBinding),
+                                   _ => FormatSupportStatus.NotSupported,
+                               },
+                               AudioEncoding.IeeeFloat => format.BitDepth switch
+                               {
+                                   32 => new(FormatPropertySupportStatus.SupportedByBinding),
                                    _ => FormatSupportStatus.NotSupported,
                                },
                                _ => FormatSupportStatus.NotSupported,
@@ -125,7 +135,7 @@ namespace Shamisen.IO
         /// <inheritdoc/>
         public FormatSupportStatus CheckSupportStatus(IWaveFormat format, OpenALOutputConfiguration configuration = default) => CheckSupportStatus(format);
         /// <inheritdoc/>
-        public OpenALOutput CreateSoundOut(OpenALOutputConfiguration configuration) => new(this, configuration.Latency?.Value ?? TimeSpan.Zero);
+        public AudioDeviceCreationResult<OpenALOutput> CreateSoundOut(OpenALOutputConfiguration configuration) => new(new(this, configuration.Latency?.Value ?? TimeSpan.Zero));
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

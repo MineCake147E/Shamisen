@@ -23,7 +23,7 @@ namespace Shamisen.IO.Devices
         /// </summary>
         BestPossible,
         /// <summary>
-        /// The initializer should set the property to a minimum value greater than the specified value.<br/>
+        /// If the value is set, the initializer should set the property to a minimum value greater than or equal to the specified value.<br/>
         /// The initializer can compromise the setting if it's impossible to meet at least the minimum necessary conditions.
         /// </summary>
         BestEffort,

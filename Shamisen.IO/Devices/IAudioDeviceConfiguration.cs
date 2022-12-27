@@ -15,20 +15,20 @@ namespace Shamisen.IO
     {
         /// <summary>
         /// The <see cref="ConfigurationProperty{T}"/> for the latency.<br/>
-        /// Returns <see langword="null"/> if it's not supported.
+        /// Returns <see langword="null"/> if it's not supported or if it's not specified at the moment of building.
         /// </summary>
         ConfigurationProperty<TimeSpan>? Latency { get; }
 
         /// <summary>
         /// The <see cref="ConfigurationProperty{T}"/> for the exclusivity.<br/>
-        /// Returns <see langword="null"/> if it's not supported.
+        /// Returns <see langword="null"/> if it's not supported or if it's not specified at the moment of building.
         /// </summary>
         ConfigurationProperty<IOExclusivity>? Exclusivity { get; }
     }
     /// <summary>
     /// Defines a base structure of audio device's mutable initialization configuration.
     /// </summary>
-    public interface IMutableAudioDeviceConfiguration<out TAudioDeviceConfiguration> where TAudioDeviceConfiguration : IAudioDeviceConfiguration
+    public interface IAudioDeviceConfigurationBuilder<out TAudioDeviceConfiguration> where TAudioDeviceConfiguration : IAudioDeviceConfiguration
     {
         /// <summary>
         /// The <see cref="ConfigurationProperty{T}"/> for the latency.<br/>
@@ -45,7 +45,7 @@ namespace Shamisen.IO
         /// <summary>
         /// Generates a <typeparamref name="TAudioDeviceConfiguration"/> instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new instance of <typeparamref name="TAudioDeviceConfiguration"/>.</returns>
         TAudioDeviceConfiguration GenerateConfiguration();
     }
 }

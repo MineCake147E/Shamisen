@@ -31,6 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
     </ItemGroup>
 </Project>

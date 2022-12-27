@@ -37,6 +37,12 @@
             Gets the name of this <see cref="T:Shamisen.IO.OpenALDevice"/>.
             </summary>
         </member>
+        <member name="P:Shamisen.IO.OpenALDevice.PreferredFormat">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenALDevice.PreferredConfiguration">
+            <inheritdoc/>
+        </member>
         <member name="M:Shamisen.IO.OpenALDevice.#ctor(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALDevice"/> class.
@@ -130,25 +136,11 @@
             Obsolete: Use <see cref="F:Shamisen.IO.OpenALDeviceEnumerator.Instance"/> instead.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevices(Shamisen.IO.DataFlow)">
-            <summary>
-            Enumerates devices of specified <paramref name="dataFlow" />.
-            </summary>
-            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow" /> kind to enumerate devices of.</param>
-            <returns>
-            The <see cref="T:System.Collections.Generic.IEnumerable`1" /> of audio devices.
-            </returns>
-            <exception cref="T:System.NotSupportedException">
-            </exception>
+        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevices">
+            <inheritdoc/>
         </member>
-        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevicesAsync(Shamisen.IO.DataFlow)">
-            <summary>
-            Enumerates devices of specified <paramref name="dataFlow" /> asynchronously.
-            </summary>
-            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow" /> kind to enumerate devices of.</param>
-            <returns>
-            The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> of audio devices.
-            </returns>
+        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevicesAsync">
+            <inheritdoc/>
         </member>
         <member name="T:Shamisen.IO.OpenALException">
             <summary>
@@ -264,7 +256,7 @@
             
              </summary>
         </member>
-        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor(Shamisen.IO.Devices.ConfigurationProperty{System.TimeSpan})">
+        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor(System.Nullable{Shamisen.IO.Devices.ConfigurationProperty{System.TimeSpan}})">
              <summary>
             
              </summary>
@@ -274,6 +266,20 @@
             <inheritdoc/>
         </member>
         <member name="P:Shamisen.IO.OpenALOutputConfiguration.Exclusivity">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.OpenALOutputConfigurationBuilder">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.OpenALOutputConfigurationBuilder.Latency">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenALOutputConfigurationBuilder.Exclusivity">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.OpenALOutputConfigurationBuilder.GenerateConfiguration">
             <inheritdoc/>
         </member>
     </members>

@@ -24,7 +24,7 @@ namespace Shamisen.IO
         ///
         /// </summary>
         /// <param name="latency"></param>
-        public OpenALOutputConfiguration(ConfigurationProperty<TimeSpan> latency)
+        public OpenALOutputConfiguration(ConfigurationProperty<TimeSpan>? latency)
         {
             Latency = latency;
         }

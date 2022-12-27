@@ -8,7 +8,7 @@ namespace Shamisen.IO
     /// Defines a base infrastructure of a sound output.
     /// </summary>
     /// <seealso cref="IDisposable" />
-    public interface ISoundOut : IDisposable, IPlaybackController
+    public interface ISoundOut : ISoundInterface, IPlaybackController
     {
     }
 }

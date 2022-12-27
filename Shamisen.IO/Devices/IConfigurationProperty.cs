@@ -11,9 +11,10 @@
         /// </summary>
         ConfigurationPropertyPriority Priority { get; }
         /// <summary>
-        /// Gets the value.
+        /// Gets the value.<br/>
+        /// Returns <see langword="null"/> if not specified.
         /// </summary>
-        T Value { get; }
+        T? Value { get; }
     }
 
     /// <summary>
@@ -23,21 +24,17 @@
     /// <typeparam name="T">The type for <see cref="Value"/>.</typeparam>
     public interface IMutableConfigurationProperty<T> : IConfigurationProperty<T>
     {
+#pragma warning disable CS0108 // メンバーは継承されたメンバーを非表示にします。キーワード new がありません
+#pragma warning disable S2376 // Write-only properties should not be used
         /// <summary>
         /// Gets or sets the priority for this setting.
         /// </summary>
-#pragma warning disable CS0108 // メンバーは継承されたメンバーを非表示にします。キーワード new がありません
-#pragma warning disable S2376 // Write-only properties should not be used
         ConfigurationPropertyPriority Priority { set; }
-#pragma warning restore S2376 // Write-only properties should not be used
-#pragma warning restore CS0108 // メンバーは継承されたメンバーを非表示にします。キーワード new がありません
-
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets or sets the value.<br/>
+        /// Returns <see langword="null"/> if not specified.
         /// </summary>
-#pragma warning disable CS0108 // メンバーは継承されたメンバーを非表示にします。キーワード new がありません
-#pragma warning disable S2376 // Write-only properties should not be used
-        T Value { set; }
+        T? Value { set; }
 #pragma warning restore S2376 // Write-only properties should not be used
 #pragma warning restore CS0108 // メンバーは継承されたメンバーを非表示にします。キーワード new がありません
     }

@@ -10,6 +10,8 @@ using Android.Views;
 using Android.Widget;
 
 using Encoding = Android.Media.Encoding;
+using static Android.Graphics.ImageDecoder;
+using System.Numerics;
 
 namespace Shamisen.IO.Android
 {
@@ -19,16 +21,11 @@ namespace Shamisen.IO.Android
     /// <seealso cref="ISoundOut" />
     public sealed class AudioTrackOutput : ISoundOut
     {
-        private const Speakers SpeakersNotSupported = Speakers.RearLowFrequency
-                    | Speakers.TopFrontLeft | Speakers.TopFrontCenter | Speakers.TopFrontRight
-                    | Speakers.TopRearLeft | Speakers.TopRearCenter | Speakers.TopRearRight
-                    | Speakers.TopSideLeft | Speakers.TopSideCenter | Speakers.TopSideRight;
-
         private bool disposedValue = false;
 
-        private ManualResetEventSlim fillFlag = new ManualResetEventSlim(false);
+        private ManualResetEventSlim? fillFlag = new ManualResetEventSlim(false);
 
-        private AudioTrack track;
+        private AudioTrack? track;
 
         private IWaveSource Source { get; set; }
 
@@ -60,7 +57,7 @@ namespace Shamisen.IO.Android
         private CancellationTokenSource cancellationTokenSource;
         private volatile bool running = true;
 
-        private Task procTask;
+        private Task? procTask;
 
         /// <summary>
         /// Initializes an instance of <see cref="AudioTrackOutput"/>.
@@ -71,7 +68,7 @@ namespace Shamisen.IO.Android
         /// The value which indicates how long does the <see cref="AudioTrack"/> takes while delivering the audio data to the hardware.<br/>
         /// Must be greater than <see cref="TimeSpan.Zero"/>, otherwise, it throws <see cref="ArgumentOutOfRangeException"/>.
         /// </param>
-        public AudioTrackOutput(AudioUsageKind usageKind, AudioContentType contentType, TimeSpan latency)
+        public AudioTrackOutput(AudioUsageKind usageKind, AudioContentType contentType, TimeSpan latency, IWaveSource source)
         {
             if (latency <= TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(latency), $"The {nameof(latency)} must be greater than {TimeSpan.Zero}!");
@@ -79,16 +76,6 @@ namespace Shamisen.IO.Android
             ContentType = contentType;
             Latency = latency;
             cancellationTokenSource = new CancellationTokenSource();
-        }
-
-        /// <summary>
-        /// Initializes the <see cref="ISoundOut" /> for playing a <paramref name="source" />.
-        /// </summary>
-        /// <param name="source">The source to play.</param>
-        public void Initialize(IWaveSource source)
-        {
-            AudioAttributes attributes;
-            AudioFormat format;
             int latencyInFrames = (int)(source.Format.SampleRate * Latency.TotalSeconds / 2.0);
             bufferSizeInBytes = latencyInFrames * source.Format.GetFrameSizeInBytes();
             buffer = new byte[bufferSizeInBytes];
@@ -98,13 +85,13 @@ namespace Shamisen.IO.Android
             {
                 _ = attributesBuilder
                     .SetUsage(UsageKind)
-                    .SetContentType(ContentType);
-                attributes = attributesBuilder.Build();
+                    ?.SetContentType(ContentType);
+                var attributes = attributesBuilder.Build() ?? throw new NullReferenceException();
                 _ = formatBuilder
                     .SetEncoding(ConvertEncoding(source.Format))
-                    .SetSampleRate(source.Format.SampleRate)
-                    .SetChannelMask(ConvertChannelMask(source.Format));
-                format = formatBuilder.Build();
+                    ?.SetSampleRate(source.Format.SampleRate)
+                    ?.SetChannelMask(ConvertChannels(source.Format));
+                var format = formatBuilder.Build() ?? throw new NullReferenceException();
                 _ = trackBuilder
                     .SetAudioAttributes(attributes)
                     .SetAudioFormat(format)
@@ -122,8 +109,8 @@ namespace Shamisen.IO.Android
         {
             if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot pause without playing!");
             PlaybackState = PlaybackState.Paused;
-            track.Pause();
-            fillFlag.Reset();
+            track?.Pause();
+            fillFlag?.Reset();
         }
 
         /// <summary>
@@ -134,8 +121,8 @@ namespace Shamisen.IO.Android
             if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException($"Cannot start playback without stopping or initializing!");
             PlaybackState = PlaybackState.Playing;
             running = true;
-            track.Play();
-            fillFlag.Set();
+            track?.Play();
+            fillFlag?.Set();
             procTask = Task.Run(() => Process(cancellationTokenSource.Token), cancellationTokenSource.Token);
         }
 
@@ -147,8 +134,8 @@ namespace Shamisen.IO.Android
         {
             if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException($"Cannot resume without pausing!");
             PlaybackState = PlaybackState.Playing;
-            track.Play();
-            fillFlag.Set();
+            track?.Play();
+            fillFlag?.Set();
         }
 
         /// <summary>
@@ -159,15 +146,16 @@ namespace Shamisen.IO.Android
             if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException($"Cannot stop without playing!");
             PlaybackState = PlaybackState.Stopped;
             running = false;
-            track.Stop();
-            fillFlag.Set();
-            procTask.Dispose();
+            track?.Stop();
+            fillFlag?.Set();
+            procTask?.Dispose();
         }
 
         private void Process(CancellationToken token)
         {
             while (running)
             {
+                if (track is null) break;
                 if (PlaybackState == PlaybackState.Playing && track.PlayState != PlayState.Playing)
                 {
                     track.Play();
@@ -179,7 +167,7 @@ namespace Shamisen.IO.Android
                     span = span.Slice(0, rr.Length);
                     try
                     {
-                        track.Write(buffer, 0, span.Length, WriteMode.Blocking);
+                        track?.Write(buffer, 0, span.Length, WriteMode.Blocking);
                     }
                     catch (Exception e)
                     {
@@ -188,7 +176,7 @@ namespace Shamisen.IO.Android
                     }
                 }
                 token.ThrowIfCancellationRequested();
-                fillFlag.Wait();
+                fillFlag?.Wait();
                 token.ThrowIfCancellationRequested();
             }
         }
@@ -218,41 +206,63 @@ namespace Shamisen.IO.Android
             throw new NotSupportedException($"The given format ({format.ToString()}) is not supported!");
         }
 
-        private ChannelOut ConvertChannelMask(IWaveFormat format)
+        private ChannelOut ConvertChannels(IWaveFormat format)
+        {
+            if(format is IChannelMaskedFormat channelMaskedFormat)
+            {
+                var speakers = channelMaskedFormat.ChannelCombination;
+                return ConvertChannelMask(format, speakers);
+            }
+            else
+            {
+
+                return ConvertUnknownChannels(format);
+
+            }
+        }
+
+        private static ChannelOut ConvertUnknownChannels(IWaveFormat format) =>
+#pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
+#pragma warning disable RCS1130
+            format.Channels switch
+            {
+                1 => ChannelOut.Mono,
+                2 => ChannelOut.Stereo,
+                3 => ChannelOut.Stereo | ChannelOut.FrontCenter,
+                4 => ChannelOut.Quad,
+                5 => ChannelOut.Quad | ChannelOut.BackCenter,
+                6 => ChannelOut.FivePointOne,
+                7 => ChannelOut.FivePointOne | ChannelOut.BackCenter,
+                8 => ChannelOut.C7point1Surround,
+                _ => ChannelOut.Default,
+            };
+#pragma warning restore RCS1130
+#pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
+
+
+        private static ChannelOut ConvertChannelMask(IWaveFormat format, StandardSpeakerChannels speakers)
         {
 #pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
-            var speakers = format.GetChannelMasks();
+#pragma warning disable RCS1130
             switch (speakers)
             {
-                case Speakers.None:
-                    throw new NotSupportedException($"The given format ({format.ToString()}) is not supported!");
-                case Speakers.Monaural:
+                case StandardSpeakerChannels.None:
+                    throw new ArgumentOutOfRangeException($"The given format ({format}) is not supported!");
+                case StandardSpeakerChannels.Monaural:
                     return ChannelOut.Mono;
-                case Speakers.FrontStereo:
+                case StandardSpeakerChannels.FrontStereo:
+                case StandardSpeakerChannels.SideStereo:    //SideStereo alone might be selected for Headphones.
                     return ChannelOut.Stereo;
-                case Speakers.ThreePointOne:
+                case StandardSpeakerChannels.ThreePointOne:
                     return ChannelOut.Stereo | ChannelOut.FrontCenter | ChannelOut.LowFrequency;
-                case Speakers.FrontFivePointOne:
+                case StandardSpeakerChannels.FrontFivePointOne:
                     return ChannelOut.FivePointOne;
-                case Speakers.SevenPointOne:
+                case StandardSpeakerChannels.SevenPointOne:
                     return ChannelOut.SevenPointOne;
                 default:
-                    if ((speakers & SpeakersNotSupported) > 0)
-                        throw new NotSupportedException($"The given format ({format.ToString()}) is not supported!");
-                    ChannelOut result = ChannelOut.None;
-                    if ((speakers & Speakers.FrontLeft) > 0) result |= ChannelOut.FrontLeft;
-                    if ((speakers & Speakers.FrontRight) > 0) result |= ChannelOut.FrontRight;
-                    if ((speakers & Speakers.FrontCenter) > 0) result |= ChannelOut.FrontCenter;
-                    if ((speakers & Speakers.FrontCenterLowFrequency) > 0) result |= ChannelOut.LowFrequency;
-                    if ((speakers & Speakers.RearLeft) > 0) result |= ChannelOut.BackLeft;
-                    if ((speakers & Speakers.RearRight) > 0) result |= ChannelOut.BackRight;
-                    if ((speakers & Speakers.FrontLeftOfCenter) > 0) result |= ChannelOut.FrontLeftOfCenter;
-                    if ((speakers & Speakers.FrontRightOfCenter) > 0) result |= ChannelOut.FrontRightOfCenter;
-                    if ((speakers & Speakers.RearCenter) > 0) result |= ChannelOut.BackCenter;
-                    if ((speakers & Speakers.SideLeft) > 0) result |= ChannelOut.SideLeft;
-                    if ((speakers & Speakers.SideRight) > 0) result |= ChannelOut.SideRight;
-                    return result;
+                    return (ChannelOut)((uint)speakers << 2);   //Exploiting the fact that ChannelOut is designed to have 2 bits of padding at LSB compared to the KSAUDIO_CHANNEL_CONFIG for all defined channels.
             }
+#pragma warning restore RCS1130
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
         }
 
@@ -275,16 +285,15 @@ namespace Shamisen.IO.Android
                 {
                     //
                 }
-                fillFlag.Reset();
+                fillFlag?.Reset();
                 cancellationTokenSource.Cancel();
-                fillFlag.Set();
-                procTask.Dispose();
-                track.Dispose();
+                fillFlag?.Set();
+                procTask?.Dispose();
+                track?.Dispose();
                 track = null;
-                fillFlag.Dispose();
+                fillFlag?.Dispose();
                 fillFlag = null;
                 cancellationTokenSource.Dispose();
-                cancellationTokenSource = null;
                 disposedValue = true;
             }
         }

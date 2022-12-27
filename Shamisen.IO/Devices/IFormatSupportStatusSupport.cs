@@ -16,7 +16,7 @@ namespace Shamisen.IO
         /// </summary>
         /// <param name="format">The format to judge the availability.</param>
         /// <param name="configuration">The configuration.</param>
-        /// <returns>The value which indicates how the <see cref="IWaveFormat"/> can be supported by either binding or backend.</returns>
+        /// <returns>The value which indicates how the <see cref="IWaveFormat"/> can be supported by either frontend or backend.</returns>
         FormatSupportStatus CheckSupportStatus(IWaveFormat format, TAudioDeviceConfiguration? configuration = default);
     }
 }

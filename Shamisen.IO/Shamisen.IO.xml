@@ -32,6 +32,28 @@
             The data.
             </value>
         </member>
+        <member name="T:Shamisen.IO.Devices.AudioDeviceCreationResult`1">
+            <summary>
+            Represents the result of either <see cref="M:Shamisen.IO.IAudioOutputDevice`3.CreateSoundOut(`1)"/> or <see cref="M:Shamisen.IO.IAudioInputDevice`3.CreateSoundIn(`1)"/>.
+            </summary>
+            <typeparam name="TSoundDevice">The type of device.</typeparam>
+        </member>
+        <member name="M:Shamisen.IO.Devices.AudioDeviceCreationResult`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.Devices.AudioDeviceCreationResult`1"/>.
+            </summary>
+            <param name="soundDevice">The created sound device.</param>
+        </member>
+        <member name="P:Shamisen.IO.Devices.AudioDeviceCreationResult`1.SoundDevice">
+            <summary>
+            The created <typeparamref name="TSoundDevice"/>, or <see langword="null"/> if not success.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Devices.AudioDeviceCreationResult`1.IsSuccess">
+            <summary>
+            Gets the value which indicates whether either <see cref="M:Shamisen.IO.IAudioOutputDevice`3.CreateSoundOut(`1)"/> or <see cref="M:Shamisen.IO.IAudioInputDevice`3.CreateSoundIn(`1)"/> is success or not.
+            </summary>
+        </member>
         <member name="T:Shamisen.IO.Devices.ConfigurationPropertyPriority">
             <summary>
             Defines the values for priority of settings.<br/>
@@ -52,7 +74,7 @@
         </member>
         <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.BestEffort">
             <summary>
-            The initializer should set the property to a minimum value greater than the specified value.<br/>
+            If the value is set, the initializer should set the property to a minimum value greater than or equal to the specified value.<br/>
             The initializer can compromise the setting if it's impossible to meet at least the minimum necessary conditions.
             </summary>
         </member>
@@ -87,6 +109,11 @@
             <param name="value">The value.</param>
             <param name="priority">The priority.</param>
         </member>
+        <member name="M:Shamisen.IO.Devices.ConfigurationProperty`1.#ctor(System.Nullable{Shamisen.IO.Devices.MutableConfigurationProperty{`0}})">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/>.
+            </summary>
+        </member>
         <member name="P:Shamisen.IO.Devices.ConfigurationProperty`1.Priority">
             <inheritdoc/>
         </member>
@@ -109,6 +136,12 @@
             Gets or sets the value.
             </summary>
         </member>
+        <member name="M:Shamisen.IO.Devices.MutableConfigurationProperty`1.op_Implicit(System.Nullable{Shamisen.IO.Devices.MutableConfigurationProperty{`0}})~Shamisen.IO.Devices.ConfigurationProperty{`0}">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.IO.Devices.MutableConfigurationProperty`1"/> to <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+        </member>
         <member name="T:Shamisen.IO.Devices.IConfigurationProperty`1">
             <summary>
             Defines a base infrastructure of a configuration property.
@@ -122,7 +155,8 @@
         </member>
         <member name="P:Shamisen.IO.Devices.IConfigurationProperty`1.Value">
             <summary>
-            Gets the value.
+            Gets the value.<br/>
+            Returns <see langword="null"/> if not specified.
             </summary>
         </member>
         <member name="T:Shamisen.IO.Devices.IMutableConfigurationProperty`1">
@@ -139,7 +173,8 @@
         </member>
         <member name="P:Shamisen.IO.Devices.IMutableConfigurationProperty`1.Value">
             <summary>
-            Gets or sets the value.
+            Gets or sets the value.<br/>
+            Returns <see langword="null"/> if not specified.
             </summary>
         </member>
         <member name="T:Shamisen.IO.Devices.ConfigurationUtils">
@@ -160,20 +195,17 @@
             Defines a base structure of an audio device.<br/>
             </summary>
         </member>
+        <member name="P:Shamisen.IO.IAudioDevice.FrontendName">
+            <summary>
+            The name of the frontend.
+            </summary>
+        </member>
         <member name="P:Shamisen.IO.IAudioDevice.Name">
             <summary>
             Gets the name of this audio device.
             </summary>
             <value>
             The name of this audio device.
-            </value>
-        </member>
-        <member name="P:Shamisen.IO.IAudioDevice.DataFlow">
-            <summary>
-            Gets the data flow of this audio device.
-            </summary>
-            <value>
-            The supported data flow of this audio device.
             </value>
         </member>
         <member name="T:Shamisen.IO.IAudioDeviceConfiguration">
@@ -184,98 +216,145 @@
         <member name="P:Shamisen.IO.IAudioDeviceConfiguration.Latency">
             <summary>
             The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the latency.<br/>
-            Returns <see langword="null"/> if it's not supported.
+            Returns <see langword="null"/> if it's not supported or if it's not specified at the moment of building.
             </summary>
         </member>
         <member name="P:Shamisen.IO.IAudioDeviceConfiguration.Exclusivity">
             <summary>
             The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the exclusivity.<br/>
-            Returns <see langword="null"/> if it's not supported.
+            Returns <see langword="null"/> if it's not supported or if it's not specified at the moment of building.
             </summary>
         </member>
-        <member name="T:Shamisen.IO.IMutableAudioDeviceConfiguration`1">
+        <member name="T:Shamisen.IO.IAudioDeviceConfigurationBuilder`1">
             <summary>
             Defines a base structure of audio device's mutable initialization configuration.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.IMutableAudioDeviceConfiguration`1.Latency">
+        <member name="P:Shamisen.IO.IAudioDeviceConfigurationBuilder`1.Latency">
             <summary>
             The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the latency.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.IMutableAudioDeviceConfiguration`1.Exclusivity">
+        <member name="P:Shamisen.IO.IAudioDeviceConfigurationBuilder`1.Exclusivity">
             <summary>
             The <see cref="T:Shamisen.IO.Devices.ConfigurationProperty`1"/> for the exclusivity.<br/>
             Returns <see langword="null"/> if it's not supported.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IMutableAudioDeviceConfiguration`1.GenerateConfiguration">
+        <member name="M:Shamisen.IO.IAudioDeviceConfigurationBuilder`1.GenerateConfiguration">
             <summary>
             Generates a <typeparamref name="TAudioDeviceConfiguration"/> instance.
             </summary>
-            <returns></returns>
+            <returns>A new instance of <typeparamref name="TAudioDeviceConfiguration"/>.</returns>
         </member>
         <member name="T:Shamisen.IO.IAudioDeviceEnumerator">
             <summary>
             Defines a base infrastructure of an audio device enumerator.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IAudioDeviceEnumerator.EnumerateDevices(Shamisen.IO.DataFlow)">
+        <member name="T:Shamisen.IO.IAudioInputDeviceEnumerator`4">
             <summary>
-            Enumerates devices of specified <paramref name="dataFlow"/>.
+            Defines a base infrastructure of an audio input device enumerator.
             </summary>
-            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow"/> kind to enumerate devices of.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio devices.</returns>
+            <typeparam name="TAudioInputDevice">The type of audio input device objects.</typeparam>
+            <typeparam name="TSoundIn">The type of <see cref="T:Shamisen.IO.ISoundIn"/> to be generated by devices.</typeparam>
+            <typeparam name="TAudioDeviceConfiguration">The type of <see cref="T:Shamisen.IO.IAudioDeviceConfiguration"/> to generate <see cref="T:Shamisen.IO.ISoundIn"/>.</typeparam>
+            <typeparam name="TAudioDeviceConfigurationBuilder">The type of <see cref="T:Shamisen.IO.IAudioDeviceConfigurationBuilder`1"/> to generate <typeparamref name="TAudioDeviceConfiguration"/>.</typeparam>
         </member>
-        <member name="M:Shamisen.IO.IAudioDeviceEnumerator.EnumerateDevicesAsync(Shamisen.IO.DataFlow)">
+        <member name="M:Shamisen.IO.IAudioInputDeviceEnumerator`4.EnumerateDevices">
             <summary>
-            Enumerates devices of specified <paramref name="dataFlow"/> asynchronously.
+            Enumerates audio devices that supports audio input.
             </summary>
-            <param name="dataFlow">The <see cref="T:Shamisen.IO.DataFlow"/> kind to enumerate devices of.</param>
-            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio devices.</returns>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio input devices.</returns>
         </member>
-        <member name="T:Shamisen.IO.IAudioInputDevice`2">
+        <member name="M:Shamisen.IO.IAudioInputDeviceEnumerator`4.EnumerateDevicesAsync">
+            <summary>
+            Asynchronously enumerates audio devices that supports audio input.
+            </summary>
+            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio input devices.</returns>
+        </member>
+        <member name="T:Shamisen.IO.IAudioOutputDeviceEnumerator`4">
+            <summary>
+            Defines a base infrastructure of an audio output device enumerator.
+            </summary>
+            <typeparam name="TAudioOutputDevice">The type of audio output device objects.</typeparam>
+            <typeparam name="TSoundOut">The type of <see cref="T:Shamisen.IO.ISoundOut"/> to be generated by devices.</typeparam>
+            <typeparam name="TAudioDeviceConfiguration">The type of <see cref="T:Shamisen.IO.IAudioDeviceConfiguration"/> to generate <see cref="T:Shamisen.IO.ISoundOut"/>.</typeparam>
+            <typeparam name="TAudioDeviceConfigurationBuilder">The type of <see cref="T:Shamisen.IO.IAudioDeviceConfigurationBuilder`1"/> to generate <typeparamref name="TAudioDeviceConfiguration"/>.</typeparam>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDeviceEnumerator`4.EnumerateDevices">
+            <summary>
+            Enumerates audio devices that supports audio output.
+            </summary>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of audio output devices.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDeviceEnumerator`4.EnumerateDevicesAsync">
+            <summary>
+            Asynchronously enumerates audio devices that supports audio output.
+            </summary>
+            <returns>The <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of audio output devices.</returns>
+        </member>
+        <member name="T:Shamisen.IO.IAudioInputDevice`3">
             <summary>
             Defines a base structure of audio input device.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.IAudioInputDevice`2.FormatSupportStatusSupport">
+        <member name="P:Shamisen.IO.IAudioInputDevice`3.FormatSupportStatusSupport">
             <summary>
-            Gets the <see cref="T:Shamisen.IO.IFormatSupportStatusSupport`1"/> for this <see cref="T:Shamisen.IO.IAudioInputDevice`2"/>.
+            Gets the <see cref="T:Shamisen.IO.IFormatSupportStatusSupport`1"/> for this <see cref="T:Shamisen.IO.IAudioInputDevice`3"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IAudioInputDevice`2.CreateSoundIn(System.TimeSpan)">
+        <member name="P:Shamisen.IO.IAudioInputDevice`3.PreferredConfiguration">
+            <summary>
+            Gets the <typeparamref name="TAudioDeviceConfiguration"/> that represents the preferred configuration.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAudioInputDevice`3.CreateAudioDeviceConfigurationBuilder">
+            <summary>
+            Creates a new instance of <typeparamref name="TAudioDeviceConfigurationBuilder"/>.
+            </summary>
+            <returns>A new instance of <typeparamref name="TAudioDeviceConfigurationBuilder"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioInputDevice`3.CreateSoundIn(`1)">
             <summary>
             Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that records audio to this device.
             </summary>
-            <param name="latency">The desired latency for input.</param>
-            <returns>The <typeparamref name="TSoundIn"/> instance.</returns>
+            <param name="configuration">The <typeparamref name="TAudioDeviceConfiguration"/> for initializing input.</param>
+            <returns>The <see cref="T:Shamisen.IO.Devices.AudioDeviceCreationResult`1"/> that represents the result of creation.</returns>
         </member>
-        <member name="M:Shamisen.IO.IAudioInputDevice`2.CreateSoundIn(System.TimeSpan,Shamisen.IO.IOExclusivity)">
-            <summary>
-            Creates the <see cref="T:Shamisen.IO.ISoundIn"/> that records audio to this device with the specified <paramref name="mode"/>.
-            </summary>
-            <param name="latency">The latency.</param>
-            <param name="mode">The share mode.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Shamisen.IO.IAudioOutputDevice`2">
+        <member name="T:Shamisen.IO.IAudioOutputDevice`3">
             <summary>
             Defines a base structure of audio output device.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.IAudioOutputDevice`2.FormatSupportStatusSupport">
+        <member name="P:Shamisen.IO.IAudioOutputDevice`3.FormatSupportStatusSupport">
             <summary>
-            Gets the <see cref="T:Shamisen.IO.IFormatSupportStatusSupport`1"/> for this <see cref="T:Shamisen.IO.IAudioOutputDevice`2"/>.
+            Gets the <see cref="T:Shamisen.IO.IFormatSupportStatusSupport`1"/> for this <see cref="T:Shamisen.IO.IAudioOutputDevice`3"/>.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.IAudioOutputDevice`2.CreateSoundOut(`1)">
+        <member name="P:Shamisen.IO.IAudioOutputDevice`3.PreferredFormat">
+            <summary>
+            Gets the preferred <see cref="T:Shamisen.IWaveFormat"/>, or <see langword="null"/> if not supported.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IAudioOutputDevice`3.PreferredConfiguration">
+            <summary>
+            Gets the <typeparamref name="TAudioDeviceConfiguration"/> that represents the preferred configuration.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDevice`3.CreateAudioDeviceConfigurationBuilder">
+            <summary>
+            Creates a new instance of <typeparamref name="TAudioDeviceConfigurationBuilder"/>.
+            </summary>
+            <returns>A new instance of <typeparamref name="TAudioDeviceConfigurationBuilder"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.IAudioOutputDevice`3.CreateSoundOut(`1)">
             <summary>
             Creates the <see cref="T:Shamisen.IO.ISoundOut"/> that outputs audio to this device.
             </summary>
             <param name="configuration">The configuration for output.</param>
-            <returns>The <typeparamref name="TSoundOut"/> instance.</returns>
+            <returns>The <see cref="T:Shamisen.IO.Devices.AudioDeviceCreationResult`1"/> that represents the result of creation.</returns>
         </member>
         <member name="T:Shamisen.IO.IFormatSupportStatusSupport`1">
             <summary>
@@ -288,11 +367,41 @@
             </summary>
             <param name="format">The format to judge the availability.</param>
             <param name="configuration">The configuration.</param>
-            <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by either binding or backend.</returns>
+            <returns>The value which indicates how the <see cref="T:Shamisen.IWaveFormat"/> can be supported by either frontend or backend.</returns>
         </member>
         <member name="T:Shamisen.IO.ISoundOutputDevice">
             <summary>
             Defines a base structure of an audio output device.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.FormatPropertySupportStatus">
+            <summary>
+            Represents the support status of certain values in format in certain device.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatPropertySupportStatus.Unchecked">
+            <summary>
+            The <see cref="T:Shamisen.IO.IAudioDevice"/> had no ability to check the support status for specified values.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatPropertySupportStatus.NotSupported">
+            <summary>
+            The specified values is not supported by both device and binding.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatPropertySupportStatus.SupportedByBinding">
+            <summary>
+            The specified values is supported by the frontend, but frontend certainly performs additional conversion, which may result in lower quality.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatPropertySupportStatus.SupportedByBackend">
+            <summary>
+            The specified values is supported by the backend, but backend may perform additional conversion, which may result in lower quality.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.FormatPropertySupportStatus.SupportedByHardware">
+            <summary>
+            The specified values is certainly supported by the hardware and does not require any additional conversion.
             </summary>
         </member>
         <member name="T:Shamisen.IO.FormatSupportStatus">
@@ -300,25 +409,50 @@
             Represents the support status of certain format in certain device.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.FormatSupportStatus.Unchecked">
+        <member name="P:Shamisen.IO.FormatSupportStatus.SampleRate">
             <summary>
-            The value which indicates the <see cref="T:Shamisen.IO.IAudioDevice"/> had no ability to check the support status.
+            Gets the <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.SampleRate"/> property.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.FormatSupportStatus.NotSupported">
+        <member name="P:Shamisen.IO.FormatSupportStatus.Channels">
             <summary>
-            The <see cref="T:Shamisen.IWaveFormat"/> is not supported by both device and binding.
+            Gets the <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.Channels"/> property.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.FormatSupportStatus.SupportedByBinding">
+        <member name="P:Shamisen.IO.FormatSupportStatus.BitDepth">
             <summary>
-            The <see cref="T:Shamisen.IWaveFormat"/> is supported by the binding, but requires either down-sampling, re-quantization, or both, which may result in lower quality.
+            Gets the <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.BitDepth"/> property.
             </summary>
         </member>
-        <member name="F:Shamisen.IO.FormatSupportStatus.SupportedByHardware">
+        <member name="P:Shamisen.IO.FormatSupportStatus.Encoding">
             <summary>
-            The <see cref="T:Shamisen.IWaveFormat"/> is supported by the hardware and does not require any down-sampling or re-quantization.
+            Gets the <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IWaveFormat.Encoding"/> property.
             </summary>
+        </member>
+        <member name="P:Shamisen.IO.FormatSupportStatus.Unchecked">
+            <summary>
+            Returns the value that specifies all fields to be <see cref="F:Shamisen.IO.FormatPropertySupportStatus.Unchecked"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.FormatSupportStatus.NotSupported">
+            <summary>
+            Returns the value that specifies all fields to be <see cref="F:Shamisen.IO.FormatPropertySupportStatus.Unchecked"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.#ctor(Shamisen.IO.FormatPropertySupportStatus)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.FormatSupportStatus"/>.
+            </summary>
+            <param name="value">The <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for all properties.</param>
+        </member>
+        <member name="M:Shamisen.IO.FormatSupportStatus.#ctor(Shamisen.IO.FormatPropertySupportStatus,Shamisen.IO.FormatPropertySupportStatus,Shamisen.IO.FormatPropertySupportStatus,Shamisen.IO.FormatPropertySupportStatus)">
+            <summary>
+            Initializes a new instance of <see cref="T:Shamisen.IO.FormatSupportStatus"/>.
+            </summary>
+            <param name="sampleRate">The <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.SampleRate"/> property.</param>
+            <param name="channels">The <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.Channels"/> property.</param>
+            <param name="bitDepth">The <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IAudioFormat`1.BitDepth"/> property.</param>
+            <param name="encoding">The <see cref="T:Shamisen.IO.FormatPropertySupportStatus"/> for <see cref="P:Shamisen.IWaveFormat.Encoding"/> property.</param>
         </member>
         <member name="T:Shamisen.IO.IOExclusivity">
             <summary>
@@ -355,6 +489,11 @@
         <member name="P:Shamisen.IO.ISoundIn.Format">
             <summary>
             Gets the <see cref="T:Shamisen.IWaveFormat"/> of this <see cref="T:Shamisen.IO.ISoundIn"/>.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.ISoundInterface">
+            <summary>
+            Defines a base infrastructure of a sound IO interface.
             </summary>
         </member>
         <member name="T:Shamisen.IO.ISoundOut">

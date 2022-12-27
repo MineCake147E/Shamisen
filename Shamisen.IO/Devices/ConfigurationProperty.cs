@@ -23,10 +23,20 @@ namespace Shamisen.IO.Devices
             Priority = priority;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConfigurationProperty{T}"/>.
+        /// </summary>
+        public ConfigurationProperty(MutableConfigurationProperty<T>? mutableConfigurationProperty)
+        {
+            var m = mutableConfigurationProperty ?? default;
+            Value = m.Value;
+            Priority = m.Priority;
+        }
+
         /// <inheritdoc/>
         public ConfigurationPropertyPriority Priority { get; }
         /// <inheritdoc/>
-        public T Value { get; }
+        public T? Value { get; }
     }
 
     /// <summary>
@@ -43,6 +53,12 @@ namespace Shamisen.IO.Devices
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
-        public T Value { get; set; }
+        public T? Value { get; set; }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="MutableConfigurationProperty{T}"/> to <see cref="ConfigurationProperty{T}"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        public static implicit operator ConfigurationProperty<T>(MutableConfigurationProperty<T>? value) => new(value);
     }
 }

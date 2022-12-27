@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using NPlaybackState = NAudio.Wave.PlaybackState;
 using NWaveFormat = NAudio.Wave.WaveFormat;
+using NDataFlow = NAudio.CoreAudioApi.DataFlow;
 
 namespace Shamisen.IO
 {
@@ -69,11 +70,11 @@ namespace Shamisen.IO
         /// <param name="sourceFlow">The <see cref="NAudio.CoreAudioApi.DataFlow"/> to convert.</param>
         /// <returns>The converted <see cref="DataFlow"/> value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static DataFlow AsShamisenDataFlow(this NAudio.CoreAudioApi.DataFlow sourceFlow) => sourceFlow switch
+        public static DataFlow AsShamisenDataFlow(this NDataFlow sourceFlow) => sourceFlow switch
         {
-            NAudio.CoreAudioApi.DataFlow.Render => DataFlow.Render,
-            NAudio.CoreAudioApi.DataFlow.Capture => DataFlow.Capture,
-            NAudio.CoreAudioApi.DataFlow.All => DataFlow.Render | DataFlow.Capture,
+            NDataFlow.Render => DataFlow.Render,
+            NDataFlow.Capture => DataFlow.Capture,
+            NDataFlow.All => DataFlow.Render | DataFlow.Capture,
             _ => DataFlow.None,
         };
         #endregion

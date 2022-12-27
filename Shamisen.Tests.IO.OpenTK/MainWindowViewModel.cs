@@ -142,7 +142,7 @@ namespace Shamisen.Tests.IO.OpenTK
                 //var biquad = new BiQuadFilter(resampler, BiQuadParameter.CreateNotchFilterParameterFromQuality(192000, 440, 3.0));
                 var f2a = new SampleToFloat32Converter(volume);
                 var a2f = new Float32ToSampleConverter(f2a);
-                if (item.CheckSupportStatus(new WaveFormat(SampleRate, 32, 1, AudioEncoding.IeeeFloat), conf) == FormatSupportStatus.SupportedByHardware)
+                if (item.CheckSupportStatus(new WaveFormat(SampleRate, 32, 1, AudioEncoding.IeeeFloat), conf) == FormatPropertySupportStatus.SupportedByBackend)
                 {
                     t.Initialize(new SampleToFloat32Converter(a2f));
                 }

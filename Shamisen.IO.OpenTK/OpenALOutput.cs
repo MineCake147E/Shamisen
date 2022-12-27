@@ -128,10 +128,7 @@ namespace Shamisen.IO
             Source = source;
             sourceFormat = source.Format;
             bufferCreationNeeded = true;
-            if (cancellationTokenSource is not null)
-            {
-                cancellationTokenSource.Cancel();
-            }
+            cancellationTokenSource?.Cancel();
             cancellationTokenSource = new CancellationTokenSource();
             PlaybackState = PlaybackState.Stopped;
         }
@@ -192,7 +189,7 @@ namespace Shamisen.IO
                     foreach (var item in bufferPointers)
                     {
                         var cnt = Source.Read(inbuf.AsSpan());
-                        AL.BufferData(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
+                        AL.BufferData<byte>(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
                     }
                     if (AL.IsExtensionPresent("AL_SOFT_direct_channels_remix"))
                     {
@@ -270,7 +267,7 @@ namespace Shamisen.IO
                     if (size > 0)
                     {
                         var cnt = Source.Read(inbuf.AsSpan().Slice(0, size));
-                        AL.BufferData(buffer, format, inbuf.AsSpan(0, cnt.Length), sourceFormat.SampleRate); CheckErrors();
+                        AL.BufferData<byte>(buffer, format, inbuf.AsSpan(0, cnt.Length), sourceFormat.SampleRate); CheckErrors();
                     }
                     AL.SourceQueueBuffer(src, buffer); CheckErrors();
                 }

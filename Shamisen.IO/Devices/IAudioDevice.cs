@@ -10,19 +10,16 @@ namespace Shamisen.IO
     public interface IAudioDevice : IEquatable<IAudioDevice>
     {
         /// <summary>
+        /// The name of the frontend.
+        /// </summary>
+        static virtual string FrontendName => string.Empty;
+
+        /// <summary>
         /// Gets the name of this audio device.
         /// </summary>
         /// <value>
         /// The name of this audio device.
         /// </value>
         string Name { get; }
-
-        /// <summary>
-        /// Gets the data flow of this audio device.
-        /// </summary>
-        /// <value>
-        /// The supported data flow of this audio device.
-        /// </value>
-        DataFlow DataFlow { get; }
     }
 }
