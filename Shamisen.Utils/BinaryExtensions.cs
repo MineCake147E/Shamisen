@@ -97,8 +97,6 @@ namespace Shamisen
 
         #endregion ConvertToBigEndian
 
-#if NET5_0_OR_GREATER
-
         /// <summary>
         /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
         /// This method poly-fills the <see cref="BinaryPrimitives.ReadDoubleLittleEndian(ReadOnlySpan{byte})"/> method for non-supported frameworks.
@@ -110,26 +108,6 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool TryReadDoubleLittleEndian(ReadOnlySpan<byte> source, out double value)
             => BinaryPrimitives.TryReadDoubleLittleEndian(source, out value);
-
-#else
-        /// <summary>
-        /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as little endian.<br/>
-        /// This method poly-fills the <see cref="BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
-        /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
-        /// <returns><c>true</c> if the span is large enough to contain a <see cref="double"/>; otherwise, <c>false</c>.</returns>
-        /// /// <seealso cref="BinaryPrimitives"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryReadDoubleLittleEndian(ReadOnlySpan<byte> source, out double value)
-        {
-            var cl = BinaryPrimitives.TryReadUInt64LittleEndian(source, out var rax);   //we can assign ref T value as out parameter...
-            value = Unsafe.As<ulong, double>(ref rax);  //assuming ulong and double is stored as same endianness.
-            return cl;
-        }
-#endif
-
-#if NET5_0_OR_GREATER
 
         /// <summary>
         /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
@@ -143,26 +121,6 @@ namespace Shamisen
         public static bool TryReadDoubleBigEndian(ReadOnlySpan<byte> source, out double value)
             => BinaryPrimitives.TryReadDoubleBigEndian(source, out value);
 
-#else
-        /// <summary>
-        /// Reads a <see cref="double"/> from the beginning of a read-only span of bytes, as big endian.<br/>
-        /// This method poly-fills the <see cref="BinaryPrimitives"/>.ReadDoubleLittleEndian(ReadOnlySpan{byte}) method for non-supported frameworks.
-        /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
-        /// <returns><c>true</c> if the span is large enough to contain a <see cref="double"/>; otherwise, <c>false</c>.</returns>
-        /// /// <seealso cref="BinaryPrimitives"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryReadDoubleBigEndian(ReadOnlySpan<byte> source, out double value)
-        {
-            var cl = BinaryPrimitives.TryReadUInt64BigEndian(source, out var rax);   //we can assign ref T value as out parameter...
-            value = Unsafe.As<ulong, double>(ref rax);  //assuming ulong and double is stored as same endianness.
-            return cl;
-        }
-#endif
-
-#if NET5_0_OR_GREATER
-
         /// <summary>
         /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as little endian.
         /// </summary>
@@ -173,24 +131,6 @@ namespace Shamisen
         public static bool TryReadSingleLittleEndian(ReadOnlySpan<byte> source, out float value)
             => BinaryPrimitives.TryReadSingleLittleEndian(source, out value);
 
-#else
-        /// <summary>
-        /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as little endian.
-        /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
-        /// <returns><c>true</c> if the span is large enough to contain a <see cref="float"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryReadSingleLittleEndian(ReadOnlySpan<byte> source, out float value)
-        {
-            var cl = BinaryPrimitives.TryReadUInt32LittleEndian(source, out var eax);
-            value = Unsafe.As<uint, float>(ref eax);  //assuming ulong and double is stored as same endianness.
-            return cl;
-        }
-#endif
-
-#if NET5_0_OR_GREATER
-
         /// <summary>
         /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as big endian.
         /// </summary>
@@ -200,23 +140,6 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         public static bool TryReadSingleBigEndian(ReadOnlySpan<byte> source, out float value)
             => BinaryPrimitives.TryReadSingleBigEndian(source, out value);
-
-#else
-        /// <summary>
-        /// Reads a <see cref="float"/> from the beginning of a read-only span of bytes, as big endian.
-        /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
-        /// <returns><c>true</c> if the span is large enough to contain a <see cref="float"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static bool TryReadSingleBigEndian(ReadOnlySpan<byte> source, out float value)
-        {
-            var cl = BinaryPrimitives.TryReadUInt32BigEndian(source, out var eax);
-            value = Unsafe.As<uint, float>(ref eax);  //assuming ulong and double is stored as same endianness.
-            return cl;
-        }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
 
         /// <summary>
         /// Converts a single-precision floating-point value into an integer.
@@ -238,35 +161,6 @@ namespace Shamisen
         [DebuggerStepThrough]
         public static float Int32BitsToSingle(int value) => BitConverter.Int32BitsToSingle(value);
 
-#else
-        /// <summary>
-        /// Converts a single-precision floating-point value into an integer.
-        /// </summary>
-        /// <param name="value">The single-precision floating-point value to convert.</param>
-        /// <returns>An integer representing the converted single-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static int SingleToInt32Bits(float value)
-        {
-            var v = value;
-            return Unsafe.As<float, int>(ref v);  //assuming ulong and double is stored as same endianness.
-        }
-
-        /// <summary>
-        /// Reinterprets the specified 32-bit integer as a single-precision floating-point value.
-        /// </summary>
-        /// <param name="value">The integer to convert.</param>
-        /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static float Int32BitsToSingle(int value)
-        {
-            var v = value;
-            return Unsafe.As<int, float>(ref v);  //assuming ulong and double is stored as same endianness.
-        }
-#endif
-#if NET6_0_OR_GREATER
-
         /// <summary>
         /// Converts a single-precision floating-point value into an unsigned integer.
         /// </summary>
@@ -286,54 +180,6 @@ namespace Shamisen
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value) => BitConverter.UInt32BitsToSingle(value);
-
-#elif NETCOREAPP3_1_OR_GREATER
-
-        /// <summary>
-        /// Converts a single-precision floating-point value into an unsigned integer.
-        /// </summary>
-        /// <param name="value">The single-precision floating-point value to convert.</param>
-        /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static uint SingleToUInt32Bits(float value) => (uint)BitConverter.SingleToInt32Bits(value);
-
-        /// <summary>
-        /// Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
-        /// </summary>
-        /// <param name="value">The unsigned integer to convert.</param>
-        /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static float UInt32BitsToSingle(uint value) => BitConverter.Int32BitsToSingle((int)value);
-
-#else
-        /// <summary>
-        /// Converts a single-precision floating-point value into an unsigned integer.
-        /// </summary>
-        /// <param name="value">The single-precision floating-point value to convert.</param>
-        /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static uint SingleToUInt32Bits(float value)
-        {
-            var v = value;
-            return Unsafe.As<float, uint>(ref v);  //assuming ulong and double is stored as same endianness.
-        }
-
-        /// <summary>
-        /// Reinterprets the specified 32-bit unsigned integer as a single-precision floating-point value.
-        /// </summary>
-        /// <param name="value">The unsigned integer to convert.</param>
-        /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static float UInt32BitsToSingle(uint value)
-        {
-            var v = value;
-            return Unsafe.As<uint, float>(ref v);  //assuming ulong and double is stored as same endianness.
-        }
-#endif
 
         /// <summary>
         /// Converts a double-precision floating-point value into an integer.
@@ -355,8 +201,6 @@ namespace Shamisen
         [DebuggerStepThrough]
         public static double Int64BitsToDouble(long value) => BitConverter.Int64BitsToDouble(value);
 
-#if NET6_0_OR_GREATER
-
         /// <summary>
         /// Converts a double-precision floating-point value into an unsigned integer.
         /// </summary>
@@ -376,27 +220,5 @@ namespace Shamisen
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static double UInt64BitsToDouble(ulong value) => BitConverter.UInt64BitsToDouble(value);
-
-#else
-
-        /// <summary>
-        /// Converts a double-precision floating-point value into an unsigned integer.
-        /// </summary>
-        /// <param name="value">The double-precision floating-point value to convert.</param>
-        /// <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static ulong DoubleToUInt64Bits(double value) => (ulong)BitConverter.DoubleToInt64Bits(value);
-
-        /// <summary>
-        /// Reinterprets the specified 64-bit unsigned integer as a double-precision floating-point value.
-        /// </summary>
-        /// <param name="value">The unsigned integer to convert.</param>
-        /// <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        [DebuggerStepThrough]
-        public static double UInt64BitsToDouble(ulong value) => BitConverter.Int64BitsToDouble((long)value);
-
-#endif
     }
 }

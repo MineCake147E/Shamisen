@@ -1251,7 +1251,7 @@
         </member>
         <member name="M:Shamisen.MathI.ModularMultiplicativeInverse(System.Int32,System.Int32)">
             <summary>
-            Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.
+            Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.<br/>
             <paramref name="a"/> * x % <paramref name="n"/> = 1.
             </summary>
             <param name="a">The multiplier.</param>
@@ -2772,6 +2772,19 @@
             <summary>
             Represents a tuple of multiple contiguous memory regions of the same length.
             </summary>
+        </member>
+        <member name="T:Shamisen.Utils.UnsafeUtils">
+            <summary>
+            Contains some unsafe utility features.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.UnsafeUtils.MoveMemory(System.Byte@,System.Byte@,System.UIntPtr)">
+            <summary>
+            Copies data from <paramref name="src"/> to <paramref name="dst"/> with specified <paramref name="length"/>.
+            </summary>
+            <param name="dst">The reference to the destination memory region.</param>
+            <param name="src">The reference to the source memory region.</param>
+            <param name="length">The length in bytes to copy.</param>
         </member>
         <member name="T:Shamisen.Utils.Tuples.UnmanagedTupleX2`1">
             <summary>

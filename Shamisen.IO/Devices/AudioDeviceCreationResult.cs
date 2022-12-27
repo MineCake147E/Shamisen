@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Shamisen.IO.Devices
 {
@@ -29,6 +25,7 @@ namespace Shamisen.IO.Devices
         /// <summary>
         /// Gets the value which indicates whether either <see cref="IAudioOutputDevice{TSoundOut, TAudioDeviceConfiguration, TAudioDeviceConfigurationBuilder}.CreateSoundOut(TAudioDeviceConfiguration)"/> or <see cref="IAudioInputDevice{TSoundIn, TAudioDeviceConfiguration, TAudioDeviceConfigurationBuilder}.CreateSoundIn(TAudioDeviceConfiguration)"/> is success or not.
         /// </summary>
+        [MemberNotNullWhen(true, nameof(SoundDevice))]
         public bool IsSuccess => SoundDevice is not null;
     }
 }

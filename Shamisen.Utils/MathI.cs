@@ -1492,7 +1492,7 @@ namespace Shamisen
 
         #region ModularMultiplicativeInverse
         /// <summary>
-        /// Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.
+        /// Calculates and returns Modular Multiplicative Inverse of <paramref name="a"/>.<br/>
         /// <paramref name="a"/> * x % <paramref name="n"/> = 1.
         /// </summary>
         /// <param name="a">The multiplier.</param>

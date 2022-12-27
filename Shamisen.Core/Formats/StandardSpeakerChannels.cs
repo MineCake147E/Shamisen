@@ -253,17 +253,4 @@ namespace Shamisen
 
         #endregion Pre-Combined masks
     }
-
-    /// <summary>
-    /// Contains some utility functions for <see cref="StandardSpeakerChannels"/>.
-    /// </summary>
-    public static class StandardSpeakerChannelsUtils
-    {
-        /// <summary>
-        /// Counts the number of channels of specified <paramref name="speakers"/>.
-        /// </summary>
-        /// <param name="speakers">The speakers.</param>
-        /// <returns>The number of channels.</returns>
-        public static int CountChannels(this StandardSpeakerChannels speakers) => MathI.PopCount((ulong)(uint)speakers);
-    }
 }

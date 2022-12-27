@@ -103,7 +103,7 @@ namespace Shamisen.Tests.IO.OpenTK
             });
             _ = Task.Run(() =>
             {
-                foreach (var item in OpenALDeviceEnumerator.Instance.EnumerateDevices(DataFlow.Render))
+                foreach (var item in OpenALDeviceEnumerator.Instance.EnumerateDevices())
                 {
                     if (item is OpenALDevice device)
                     {
@@ -131,7 +131,12 @@ namespace Shamisen.Tests.IO.OpenTK
             var conf = new OpenALOutputConfiguration(new(TimeSpan.Zero, ConfigurationPropertyPriority.BestEffort));
             foreach (var item in Devices.Where(a => a.Checked).Select(a => a.Device))
             {
-                var t = item.CreateSoundOut(conf);
+                var result = item.CreateSoundOut(conf);
+                if (!result.IsSuccess)
+                {
+                    throw new InvalidProgramException("");
+                }
+                var t = result.SoundDevice;
                 var source = SelectedWaveform.Value.GenerateFunc(new SampleFormat(1, SampleRate));
                 if (source is not ISampleSource ss) throw new InvalidProgramException("");
                 source.Frequency = Frequency.Value;
@@ -142,7 +147,8 @@ namespace Shamisen.Tests.IO.OpenTK
                 //var biquad = new BiQuadFilter(resampler, BiQuadParameter.CreateNotchFilterParameterFromQuality(192000, 440, 3.0));
                 var f2a = new SampleToFloat32Converter(volume);
                 var a2f = new Float32ToSampleConverter(f2a);
-                if (item.CheckSupportStatus(new WaveFormat(SampleRate, 32, 1, AudioEncoding.IeeeFloat), conf) == FormatPropertySupportStatus.SupportedByBackend)
+                var formatSupportStatus = item.CheckSupportStatus(new WaveFormat(SampleRate, 32, 1, AudioEncoding.IeeeFloat), conf);
+                if (formatSupportStatus.Encoding == FormatPropertySupportStatus.SupportedByBackend)
                 {
                     t.Initialize(new SampleToFloat32Converter(a2f));
                 }

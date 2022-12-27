@@ -43,5 +43,12 @@ namespace Shamisen
                     10 => StandardSpeakerChannels.SevenPointOne | StandardSpeakerChannels.TopSideStereo,
                     _ => throw new NotSupportedException($"The given number of channels ({format.Channels}) is not supported!"),
                 };
+
+        /// <summary>
+        /// Counts the number of channels of specified <paramref name="speakers"/>.
+        /// </summary>
+        /// <param name="speakers">The speakers.</param>
+        /// <returns>The number of channels.</returns>
+        public static int CountChannels(this StandardSpeakerChannels speakers) => MathI.PopCount((ulong)(uint)speakers);
     }
 }

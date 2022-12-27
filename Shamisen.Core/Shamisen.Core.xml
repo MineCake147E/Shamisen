@@ -10454,6 +10454,13 @@
             <param name="format">The format.</param>
             <returns>The matching <see cref="T:Shamisen.StandardSpeakerChannels"/> combination.</returns>
         </member>
+        <member name="M:Shamisen.ChannelMaskUtils.CountChannels(Shamisen.StandardSpeakerChannels)">
+            <summary>
+            Counts the number of channels of specified <paramref name="speakers"/>.
+            </summary>
+            <param name="speakers">The speakers.</param>
+            <returns>The number of channels.</returns>
+        </member>
         <member name="T:Shamisen.DoublePrecisionSampleFormat">
             <summary>
             Represents a format of a double-precision sample source.
@@ -11558,9 +11565,9 @@
             The speaker placed in front of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.StandardSpeakerChannels.FrontCenterLowFrequency">
+        <member name="F:Shamisen.StandardSpeakerChannels.LowFrequency">
             <summary>
-            The subwoofer speaker placed in front of the listener.
+            The first subwoofer speaker placed somewhere depending on environment.
             </summary>
         </member>
         <member name="F:Shamisen.StandardSpeakerChannels.RearLeft">
@@ -11598,9 +11605,9 @@
             The speaker placed to the right of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.StandardSpeakerChannels.RearLowFrequency">
+        <member name="F:Shamisen.StandardSpeakerChannels.TopSideCenter">
             <summary>
-            The subwoofer speaker placed behind the listener.
+            The speaker placed above the listener.
             </summary>
         </member>
         <member name="F:Shamisen.StandardSpeakerChannels.TopFrontLeft">
@@ -11638,14 +11645,29 @@
             The speaker placed at the upper left of the listener.
             </summary>
         </member>
-        <member name="F:Shamisen.StandardSpeakerChannels.TopSideCenter">
-            <summary>
-            The speaker placed above the listener.
-            </summary>
-        </member>
         <member name="F:Shamisen.StandardSpeakerChannels.TopSideRight">
             <summary>
             The speaker placed at the upper right of the listener.
+            </summary>
+        </member>
+        <member name="F:Shamisen.StandardSpeakerChannels.BottomFrontLeft">
+            <summary>
+            The speaker placed at the lower left front of the listener.
+            </summary>
+        </member>
+        <member name="F:Shamisen.StandardSpeakerChannels.BottomFrontCenter">
+            <summary>
+            The speaker placed at the lower front of the listener.
+            </summary>
+        </member>
+        <member name="F:Shamisen.StandardSpeakerChannels.BottomFrontRight">
+            <summary>
+            The speaker placed at the lower right front of the listener.
+            </summary>
+        </member>
+        <member name="F:Shamisen.StandardSpeakerChannels.LowFrequency2">
+            <summary>
+            The second subwoofer speaker placed somewhere depending on environment.
             </summary>
         </member>
         <member name="F:Shamisen.StandardSpeakerChannels.Monaural">
@@ -11681,6 +11703,11 @@
         <member name="F:Shamisen.StandardSpeakerChannels.TopRearStereo">
             <summary>
             The top rear Stereo combination.
+            </summary>
+        </member>
+        <member name="F:Shamisen.StandardSpeakerChannels.BottomFrontStereo">
+            <summary>
+            The bottom front Stereo combination.
             </summary>
         </member>
         <member name="F:Shamisen.StandardSpeakerChannels.TwoPointOne">
@@ -11752,18 +11779,6 @@
             <summary>
             The 7.1ch combination.
             </summary>
-        </member>
-        <member name="T:Shamisen.StandardSpeakerChannelsUtils">
-            <summary>
-            Contains some utility functions for <see cref="T:Shamisen.StandardSpeakerChannels"/>.
-            </summary>
-        </member>
-        <member name="M:Shamisen.StandardSpeakerChannelsUtils.CountChannels(Shamisen.StandardSpeakerChannels)">
-            <summary>
-            Counts the number of channels of specified <paramref name="speakers"/>.
-            </summary>
-            <param name="speakers">The speakers.</param>
-            <returns>The number of channels.</returns>
         </member>
         <member name="T:Shamisen.WaveFormat">
             <summary>

@@ -70,7 +70,7 @@ namespace Shamisen.Utils
 
         private static ulong CalculateMaxNoOverflowInput(ulong m, ulong d)
         {
-            var mnoi = 0ul;
+            ulong mnoi;
             if (m > d)
             {
                 var y = MathI.ReciprocalUInt64(m, out var rem);

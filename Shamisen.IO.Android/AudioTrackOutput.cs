@@ -130,7 +130,6 @@ namespace Shamisen.IO.Android
         /// Resumes the audio playback.
         /// </summary>
         public void Resume()
-
         {
             if (PlaybackState != PlaybackState.Paused) throw new InvalidOperationException($"Cannot resume without pausing!");
             PlaybackState = PlaybackState.Playing;

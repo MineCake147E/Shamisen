@@ -8,10 +8,19 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Utils
 {
-    internal static class UnsafeUtils
+    /// <summary>
+    /// Contains some unsafe utility features.
+    /// </summary>
+    public static class UnsafeUtils
     {
+        /// <summary>
+        /// Copies data from <paramref name="src"/> to <paramref name="dst"/> with specified <paramref name="length"/>.
+        /// </summary>
+        /// <param name="dst">The reference to the destination memory region.</param>
+        /// <param name="src">The reference to the source memory region.</param>
+        /// <param name="length">The length in bytes to copy.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void MoveMemory(ref byte dst, ref byte src, nuint length)
+        public static void MoveMemory(ref byte dst, ref byte src, nuint length)
         {
             //check for overlap
             if (Unsafe.AreSame(ref dst, ref src)) return;
