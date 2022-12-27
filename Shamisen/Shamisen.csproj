@@ -44,13 +44,6 @@
         <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.g.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
-        </Compile>
-    </ItemGroup>
-    <ItemGroup>
       <ProjectReference Include="..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
       <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
       <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />

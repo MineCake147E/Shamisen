@@ -6,7 +6,7 @@ This library provides [NAudio](https://github.com/naudio/NAudio) IO interface fo
 
 ### Shamisen.IO.NAudio itself
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md)
 
 ## License for dependencies
 

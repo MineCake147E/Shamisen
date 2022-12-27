@@ -10,9 +10,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../../../Shamisen.Core.targets" />
-    <PropertyGroup>
-      <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
-    </PropertyGroup>
     <ItemGroup>
       <None Include="..\..\..\Shamisen-NuGetIcon.png">
         <Pack>True</Pack>

@@ -6,7 +6,7 @@ This library provides a fully-managed FLAC decoder for [Shamisen](https://github
 
 ### Shamisen.Codecs.Flac itself
 
-[BSD 3-Clause License](LICENSE.md)
+[MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md)
 
 ## License for ported source codes
 

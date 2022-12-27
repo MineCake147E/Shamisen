@@ -6,4 +6,4 @@ This library provides core IO components of [Shamisen](https://github.com/MineCa
 
 ### Shamisen.IO itself
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md)

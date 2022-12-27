@@ -33,4 +33,4 @@ This library provides core components of [Shamisen](https://github.com/MineCake1
 
 ### Shamisen.Core
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md)

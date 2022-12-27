@@ -6,13 +6,13 @@ This library provides [OpenTK](https://github.com/opentk/opentk) IO interface fo
 
 ### Shamisen.IO.OpenTK itself
 
-[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+[MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md)
 
 ## License for dependencies
 
 All license notice below are formatted to fit the markdown format.
 
-### OpenTK
+### [OpenTK](https://github.com/opentk/opentk)
 
 **THE LINK FOR `THIRD_PARTIES.md` DOES NOT WORK HERE!**
 

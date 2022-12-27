@@ -19,10 +19,10 @@ A Cross-Platform Audio Library for .NET 7.
 
 | Name (Backend)                                                                                       | Author (Backend)                          | License (Binding)                                                                      | Windows10 Desktop | Windows10 UWP | Android | Linux | iOS | Mac OSX |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- | :-------------: | :-----------: | :-----: | :---: | :-: | :-----: |
-| [OpenTK (OpenAL)](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
-| [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❎       |   ❎    |  ❎   | ❎  |   ❎    |
-| [NAudio (WaveOut, ASIO, DirectSound, WASAPI)](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
-| [Xamarin.Android (AudioTrack)](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
+| [OpenTK (OpenAL)](https://github.com/opentk/opentk)                                                           | [OpenTK](https://github.com/opentk)       | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❓    |  ❓   | ❓  |   ❓    |
+| [AudioGraph on<br/>.NET 5 or later](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance) | [Microsoft](https://github.com/microsoft) | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❎       |   ❎    |  ❎   | ❎  |   ❎    |
+| [NAudio (WaveOut, ASIO, DirectSound, WASAPI)](https://github.com/naudio/NAudio)                                                           | [NAudio](https://github.com/naudio)       | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ✅        |      ❓       |   ❎    |  ❎   | ❎  |   ❎    |
+| [Xamarin.Android (AudioTrack)](https://github.com/xamarin/xamarin-android)                                        | [Xamarin](https://github.com/xamarin)     | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |       ❎        |      ❎       |   ✅    |  ❎   | ❎  |   ❎    |
 
 ❓: Not Tested or needs more information  
 ✅: Tested  
@@ -83,8 +83,8 @@ Legends:
 
 | Container Name    | Typical File Extensions | Implemented Codec                              | Library contains Decoder/Encoder | License                                                                                | Decoding |  Encoding   |
 | ----------------- | ----------------------- | ---------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- | :------: | :---------: |
-| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ✅<br/>(RF64 as default) |
-| FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [BSD 3-Clause License](https://github.com/MineCake147E/Shamisen/blob/develop/Codecs/Managed/Shamisen.Codecs.Flac/LICENSE.md) |    ✅    | ❎(Planned) |
+| Waveform<br/>RF64 | `.wav`                  | Linear PCM, IEEE 754 Floating-Point PCM, A-Law, μ-law | Shamisen                         | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ✅<br/>(RF64 as default) |
+| FLAC              | `.flac`                 | FLAC                                           | Shamisen.Codecs.Flac | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    | ❎(Planned) |
 
 Legends:  
 ✅: Supported by Shamisen itself  
@@ -114,7 +114,7 @@ Legends:
 
 | Name of Backend                        | Author of Backend                   | License (binding)                                                                      | Target Platform | Status                |
 | -------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------- | --------------- | --------------------- |
-| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Android >10     | Planned |
+| [Oboe](https://github.com/google/oboe) | [Google](https://github.com/google) | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Android >10     | Planned |
 
 #### Managed backends
 
@@ -124,9 +124,9 @@ Legends:
 
 | Name of Backend | Author of Backend | License (binding)                                                                      | Target Platforms | Status  |
 | --------------- | ----------------- | -------------------------------------------------------------------------------------- | ---------------- | ------- |
-| [Silk.NET](https://github.com/dotnet/Silk.NET) OpenAL | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Cross Platform(OpenAL) | Gathering Information |
-| [Silk.NET](https://github.com/dotnet/Silk.NET) XAudio | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Windows-Like(XAudio) | Planned |
-| Xamarin.iOS     | Microsoft         | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | iOS              | Planned |
+| [Silk.NET](https://github.com/dotnet/Silk.NET) OpenAL | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Cross Platform(OpenAL) | Gathering Information |
+| [Silk.NET](https://github.com/dotnet/Silk.NET) XAudio | [.NET Foundation Silk.NET Team](https://github.com/dotnet) | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | Windows-Like(XAudio) | Planned |
+| Xamarin.iOS     | Microsoft         | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) | iOS              | Planned |
 
 ### File Formats and Codecs
 
@@ -138,6 +138,6 @@ Legends:
 
 | Container Name | Typical File Extensions | Target Codec | Planned Library containing Decoder/Encoder          | Planned Library License                                                                | Decoding | Encoding | Status              |
 | -------------- | ----------------------- | ------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------- | :------: | :------: | ------------------- |
-| FLAC           | `.flac`                 | FLAC         | Shamisen.Codecs.Flac                                       | [BSD 3-Clause License](https://github.com/MineCake147E/Shamisen/blob/develop/Codecs/Managed/Shamisen.Codecs.Flac/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
-| Opus           | `.opus`                 | Opus         | Shamisen.Codecs.Opus | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Planned             |
-| Ogg            | `.ogg`                  | Vorbis       | Shamisen.Codecs.Ogg                                 | [Apache License 2.0](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ⭕    |    ⭕    | Planned             |
+| FLAC           | `.flac`                 | FLAC         | Shamisen.Codecs.Flac                                       | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Implemented Decoder |
+| Opus           | `.opus`                 | Opus         | Shamisen.Codecs.Opus | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ✅    |    ✅    | Planned             |
+| Ogg            | `.ogg`                  | Vorbis       | Shamisen.Codecs.Ogg                                 | [MIT License](https://github.com/MineCake147E/Shamisen/blob/develop/LICENSE.md) |    ⭕    |    ⭕    | Planned             |
