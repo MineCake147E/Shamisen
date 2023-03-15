@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230217.4" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230313.1" />
     <PackageReference Include="ReactiveProperty" Version="9.1.2" />
     <PackageReference Include="ReactiveUI" Version="18.4.26" />
     <Manifest Include="$(ApplicationManifest)" />
