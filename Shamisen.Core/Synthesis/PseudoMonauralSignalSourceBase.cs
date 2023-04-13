@@ -45,10 +45,10 @@ namespace Shamisen.Synthesis
         private double Theta { get; set; } = 0;
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport => throw new NotImplementedException();
+        public ISkipSupport? SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport => throw new NotImplementedException();
+        public ISeekSupport? SeekSupport => null;
 
         /// <inheritdoc/>
         public abstract ulong? Length { get; }

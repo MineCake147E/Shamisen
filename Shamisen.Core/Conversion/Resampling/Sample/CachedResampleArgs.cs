@@ -66,6 +66,8 @@ namespace Shamisen.Conversion.Resampling.Sample
     internal readonly struct UnifiedResampleArgs
     {
         [FieldOffset(0)]
+        private readonly Vector256<ulong> values;
+        [FieldOffset(0)]
         private readonly ulong xrci;
         [FieldOffset(1 * sizeof(ulong))]
         private readonly ulong ramrcd;
@@ -171,5 +173,52 @@ namespace Shamisen.Conversion.Resampling.Sample
             this.rmi = rateMulInverse;
         }
 
+        [SkipLocalsInit]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public UnifiedResampleArgs(in UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            Unsafe.SkipInit(out this);
+            var u = constants.values;
+            var t = u.GetLower();
+            ulong xrci = (uint)rearrangedCoeffsIndex;
+            xrci = (xrci << 32) | (uint)conversionGradient;
+            t = t.WithElement(0, xrci);
+            t = t.AsUInt32().WithElement(3, (uint)rearrangedCoeffsDirection).AsUInt64();
+            this = new(u.WithLower(t));
+        }
+
+        [SkipLocalsInit]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private UnifiedResampleArgs(Vector256<ulong> values)
+        {
+            Unsafe.SkipInit(out this);
+            this.values = values;
+        }
+
+        [SkipLocalsInit]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static UnifiedResampleArgs ChangeVariables(in UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            var u = constants.values;
+            var t = u.GetLower();
+            ulong xrci = (uint)rearrangedCoeffsIndex;
+            xrci = (xrci << 32) | (uint)conversionGradient;
+            t = t.WithElement(0, xrci);
+            t = t.AsUInt32().WithElement(3, (uint)rearrangedCoeffsDirection).AsUInt64();
+            return new(u.WithLower(t));
+        }
+
+        [SkipLocalsInit]
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void UpdateVariables(ref UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
+        {
+            var u = constants.values;
+            var t = u.GetLower();
+            ulong xrci = (uint)rearrangedCoeffsIndex;
+            xrci = (xrci << 32) | (uint)conversionGradient;
+            t = t.WithElement(0, xrci);
+            t = t.AsUInt32().WithElement(3, (uint)rearrangedCoeffsDirection).AsUInt64();
+            constants = new(u.WithLower(t));
+        }
     }
 }

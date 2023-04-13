@@ -98,10 +98,10 @@ namespace Shamisen.Codecs.Waveform.Parsing
         public ulong? Position => WaveChunkParser.Position;
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport => throw new NotImplementedException();
+        public ISkipSupport? SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport => throw new NotImplementedException();
+        public ISeekSupport? SeekSupport => null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleWaveParser" /> class.

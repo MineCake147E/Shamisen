@@ -635,6 +635,70 @@ namespace Shamisen.Utils.Tests
             Assert.Pass();
         }
 
+        [Test]
+        public void Log2AsNormalEstrinBruteForceAccuracyCheck()
+        {
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Log2AsNormalEstrin(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Log2AsNormalEstrin(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Log2AsNormalEstrin(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Log2AsNormalEstrin(s3);
+                     }
+                     for (; i < length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Log2AsNormalEstrin(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
+            Assert.Pass();
+        }
+
+        [Test]
+        public void Log2AsNormalCake0BruteForceAccuracyCheck()
+        {
+            var res = ErrorUtils.EvaluateErrors(1.0f, 2.0f,
+                 GenerateLog2Reference,
+                 (a) =>
+                 {
+                     nint i, length = a.Length;
+                     ref var x9 = ref MemoryMarshal.GetReference(a);
+                     var olen = length - 3;
+                     for (i = 0; i < olen; i += 4)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         var s0 = x10;
+                         var s1 = Unsafe.Add(ref x9, i + 1);
+                         var s2 = Unsafe.Add(ref x9, i + 2);
+                         var s3 = Unsafe.Add(ref x9, i + 3);
+                         x10 = FastMath.Log2AsNormalCake0(s0);
+                         Unsafe.Add(ref x10, 1) = FastMath.Log2AsNormalCake0(s1);
+                         Unsafe.Add(ref x10, 2) = FastMath.Log2AsNormalCake0(s2);
+                         Unsafe.Add(ref x10, 3) = FastMath.Log2AsNormalCake0(s3);
+                     }
+                     for (; i < length; i++)
+                     {
+                         ref var x10 = ref Unsafe.Add(ref x9, i);
+                         x10 = FastMath.Log2AsNormalCake0(x10);
+                     }
+                 });
+            ErrorUtils.WriteResult(res);
+            Assert.Pass();
+        }
+
         [TestCase(0.5f)]
         [TestCase(-0.5f)]
         [TestCase(1.0f)]

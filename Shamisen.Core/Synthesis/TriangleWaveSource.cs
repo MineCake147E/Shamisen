@@ -90,7 +90,7 @@ namespace Shamisen.Synthesis
             var ymm13 = Vector256.Create(o * 4);
             var xmm15 = Vector128.Create(0L, o);
             var xmm14 = Sse2.Add(xmm15, ymm13.GetLower());
-            var ymm15 = xmm15.ToVector256Unsafe().WithUpper(xmm14).AsInt32();
+            var ymm15 = Vector256.Create(xmm15, xmm14).AsInt32();
             ymm13 = Avx2.Add(ymm13, ymm13);
             var ymm0 = Vector256.Create(t);
             var ymm1 = Vector256.Create(t + o * 2);

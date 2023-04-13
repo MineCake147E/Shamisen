@@ -137,7 +137,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
             else
             {
-                ProcessNormal(dest, wrote);
+                ConvertPcm16ToSample(dest, wrote);
             }
             if (u != reader.Length) return u;  //The Source doesn't fill whole reader so return here.
             return buffer.Length;
@@ -145,22 +145,27 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
         #region ProcessNormal
 
+        /// <summary>
+        /// Converts 16bit <see cref="AudioEncoding.LinearPcm"/> values to <see cref="float"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="float"/> values.</param>
+        /// <param name="source">The 16bit <see cref="AudioEncoding.LinearPcm"/> values to convert from.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormal(Span<float> buffer, ReadOnlySpan<short> source)
+        public static void ConvertPcm16ToSample(Span<float> destination, ReadOnlySpan<short> source)
         {
 #if NETCOREAPP3_1_OR_GREATER
-            if (buffer.Length >= 128 && Avx2.IsSupported)
+            if (destination.Length >= 128 && Avx2.IsSupported)
             {
-                ProcessNormalAvx2(buffer, source);
+                ProcessNormalAvx2(destination, source);
                 return;
             }
             if (Sse41.IsSupported)
             {
-                ProcessNormalSse41(buffer, source);
+                ProcessNormalSse41(destination, source);
                 return;
             }
 #endif
-            ProcessNormalStandard(buffer, source);
+            ProcessNormalStandard(destination, source);
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -278,7 +283,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// <param name="dest"></param>
         /// <param name="wrote"></param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalAvx2A(Span<float> dest, Span<short> wrote)
+        internal static void ProcessNormalAvx2A(Span<float> dest, ReadOnlySpan<short> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref MemoryMarshal.GetReference(wrote);
@@ -449,7 +454,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         internal static void ProcessReversed(Span<short> wrote, Span<float> dest)
         {
             wrote.ReverseEndianness();
-            ProcessNormal(dest, wrote);
+            ConvertPcm16ToSample(dest, wrote);
         }
 
         #endregion ProcessReversed

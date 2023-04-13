@@ -4,7 +4,7 @@
     <TargetFrameworks>net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;flac</PackageTags>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library;codecs;flac</PackageTags>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
     <Description>FLAC Decoder for Shamisen.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -36,6 +36,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>FlacCrc8.table.tt</DependentUpon>
     </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +62,18 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
     </None>
-
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.Intrinsics.g.cs</LastGenOutput>
+    </None>
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
+    </None>
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.X86.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.X86.g.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
       <None Include="README.md" Pack="true" PackagePath="" />

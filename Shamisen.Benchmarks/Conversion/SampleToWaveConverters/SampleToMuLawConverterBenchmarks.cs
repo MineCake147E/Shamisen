@@ -51,9 +51,9 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         }
 
         [Benchmark]
-        public void ProcessStandardVectorized() => SampleToMuLawConverter.ProcessStandardVectorized(srcBuffer, dstBuffer);
+        public void ProcessStandardVectorized() => SampleToMuLawConverter.ProcessStandardVectorized(dstBuffer, srcBuffer);
 
         [Benchmark(Baseline = true)]
-        public void ProcessAvx2() => SampleToMuLawConverter.ProcessAvx2(srcBuffer, dstBuffer);
+        public void ProcessAvx2() => SampleToMuLawConverter.ProcessAvx2(dstBuffer, srcBuffer);
     }
 }

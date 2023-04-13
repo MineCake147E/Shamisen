@@ -5,7 +5,7 @@
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
         <Authors>MineCake1.4.7</Authors>
-        <Copyright>Copyright 2021 MineCake1.4.7</Copyright>
+        <Copyright>Copyright 2022 MineCake1.4.7</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/MineCake147E/Shamisen</PackageProjectUrl>
         <RepositoryUrl>https://github.com/MineCake147E/Shamisen.git</RepositoryUrl>

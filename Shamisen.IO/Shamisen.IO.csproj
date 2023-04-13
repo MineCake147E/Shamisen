@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <Description>Core interfaces of IO features for Shamisen.</Description>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
-    <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;audio io;io</PackageTags>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library;codecs;audio io;io</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />

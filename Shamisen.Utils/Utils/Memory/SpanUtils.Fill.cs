@@ -280,7 +280,7 @@ namespace Shamisen
             nint i = 0, j = 0;
             nint olen;
             var vv128 = value.AsVector128();
-            var vv = vv128.ToVector256Unsafe().WithUpper(vv128).AsByte();
+            var vv = Vector256.Create(vv128, vv128).AsByte();
             var hlen = length >> 1;
             olen = hlen - 8 + 1;
             ref var rdi = ref Unsafe.As<Vector4, Vector256<byte>>(ref x9);
@@ -435,7 +435,7 @@ namespace Shamisen
             var ymm2 = Vector256.Create((byte)1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2);
             var xmm3 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, ushort>(ref value)).AsByte();
             xmm3 = xmm3.WithElement(2, Unsafe.Add(ref value, 2));
-            var ymm3 = xmm3.ToVector256Unsafe().WithUpper(xmm3);
+            var ymm3 = Vector256.Create(xmm3, xmm3);
             ymm0 = Avx2.Shuffle(ymm3, ymm0);
             ymm1 = Avx2.Shuffle(ymm3, ymm1);
             ymm2 = Avx2.Shuffle(ymm3, ymm2);
@@ -589,7 +589,7 @@ namespace Shamisen
             var ymm4 = Vector256.Create((byte)3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4);
             var xmm5 = Vector128.CreateScalarUnsafe(Unsafe.As<byte, uint>(ref value)).AsByte();
             xmm5 = xmm5.WithElement(4, Unsafe.Add(ref value, 4));
-            var ymm5 = xmm5.ToVector256Unsafe().WithUpper(xmm5);
+            var ymm5 = Vector256.Create(xmm5, xmm5);
             ymm0 = Avx2.Shuffle(ymm5, ymm0);
             ymm1 = Avx2.Shuffle(ymm5, ymm1);
             ymm2 = Avx2.Shuffle(ymm5, ymm2);

@@ -24,10 +24,10 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         protected abstract int BytesPerSample { get; }
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport => throw new NotImplementedException();
+        public ISkipSupport? SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport => throw new NotImplementedException();
+        public ISeekSupport? SeekSupport => null;
 
         /// <summary>
         /// Gets the remaining length of the <see cref="IAudioSource{TSample,TFormat}" /> in frames.<br />

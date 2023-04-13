@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <Description>Pipelining for Shamisen's audio processor chains.</Description>
         <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
-        <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library;codecs;audio pipeline;pipeline</PackageTags>
+        <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library;codecs;audio pipeline;pipeline</PackageTags>
     </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>

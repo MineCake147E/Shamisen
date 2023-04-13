@@ -21,7 +21,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         public void ProcessNormalStandardConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            Pcm24ToSampleConverter.ProcessNormalStandard(src, dst);
+            Pcm24ToSampleConverter.ProcessNormalStandard(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -36,7 +36,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            Pcm24ToSampleConverter.ProcessNormalAvx2(src, dst);
+            Pcm24ToSampleConverter.ProcessNormalAvx2(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -46,7 +46,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         public void ProcessReversedStandardConvertsCorrectly(int length)
         {
             PrepareArraysReversed(length, out var src, out var exp, out var dst);
-            Pcm24ToSampleConverter.ProcessReversedStandard(src, dst);
+            Pcm24ToSampleConverter.ProcessReversedStandard(dst, src);
             AssertArrayReversed(src, exp, dst);
         }
 
@@ -61,7 +61,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareArraysReversed(length, out var src, out var exp, out var dst);
-            Pcm24ToSampleConverter.ProcessReversedAvx2(src, dst);
+            Pcm24ToSampleConverter.ProcessReversedAvx2(dst, src);
             AssertArrayReversed(src, exp, dst);
         }
 

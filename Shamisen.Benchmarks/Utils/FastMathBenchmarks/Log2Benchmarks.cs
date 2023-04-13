@@ -15,6 +15,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
 {
     [SimpleJob(runtimeMoniker: RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
+    [AllCategoriesFilter("Fast", "AsNormal")]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
     public class Log2Benchmarks
     {
@@ -43,6 +44,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Standard")]
         [Benchmark(Baseline = true)]
         public void MathFLog2()
         {
@@ -57,6 +59,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Standard", "Double")]
         [Benchmark]
         public void MathLog2()
         {
@@ -71,6 +74,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Fast", "AsNormal")]
         [Benchmark]
         public void FastMathLog2AsNormal()
         {
@@ -85,6 +89,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Fast")]
         [Benchmark]
         public void FastMathLog2()
         {
@@ -99,6 +104,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Fast", "FMA", "AsNormal")]
         [Benchmark]
         public void FastMathFastLog2AsNormal()
         {
@@ -113,6 +119,7 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             }
         }
 
+        [BenchmarkCategory("Fast", "FMA")]
         [Benchmark]
         public void FastMathFastLog2()
         {
@@ -124,6 +131,36 @@ namespace Shamisen.Benchmarks.Utils.FastMathBenchmarks
             for (; i < length; i++)
             {
                 Unsafe.Add(ref x10, i) = FastMath.FastLog2(Unsafe.Add(ref x9, i));
+            }
+        }
+
+        [BenchmarkCategory("Fast", "AsNormal", "Experimental")]
+        [Benchmark]
+        public void FastMathLog2AsNormalEstrin()
+        {
+            var source = bufferSrc.AsSpan();
+            var destination = bufferDst.AsSpan();
+            ref var x9 = ref MemoryMarshal.GetReference(source);
+            ref var x10 = ref MemoryMarshal.GetReference(destination);
+            nint i = 0, length = MathI.Min(destination.Length, source.Length);
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref x10, i) = FastMath.Log2AsNormalEstrin(Unsafe.Add(ref x9, i));
+            }
+        }
+
+        [BenchmarkCategory("Fast", "AsNormal", "Experimental")]
+        [Benchmark]
+        public void FastMathLog2AsNormalCake0()
+        {
+            var source = bufferSrc.AsSpan();
+            var destination = bufferDst.AsSpan();
+            ref var x9 = ref MemoryMarshal.GetReference(source);
+            ref var x10 = ref MemoryMarshal.GetReference(destination);
+            nint i = 0, length = MathI.Min(destination.Length, source.Length);
+            for (; i < length; i++)
+            {
+                Unsafe.Add(ref x10, i) = FastMath.Log2AsNormalCake0(Unsafe.Add(ref x9, i));
             }
         }
     }

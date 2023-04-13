@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Shamisen.IO.WinRt</RootNamespace>
     <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
-    <PackageTags>audio;csharp;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;csharp library;audio io;io;windows;winappsdk;winrt;cswinrt;audiograph</PackageTags>
+    <Description>WinRt AudioGraph interface for Shamisen.</Description>
+    <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;windows;winappsdk;winrt;cswinrt;audiograph</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />

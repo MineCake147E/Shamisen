@@ -35,7 +35,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         public void BlockConvertsCorrectly()
         {
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessStandard(bb, buffer);
+            ALawToSampleConverter.ProcessStandard(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -47,7 +47,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAvx2(bb, buffer);
+            ALawToSampleConverter.ProcessAvx2(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -59,7 +59,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessSse41(bb, buffer);
+            ALawToSampleConverter.ProcessSse41(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -71,7 +71,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            ALawToSampleConverter.ProcessAdvSimd64(bb, buffer);
+            ALawToSampleConverter.ProcessAdvSimd(buffer, bb);
             AssertBlock(buffer);
         }
 

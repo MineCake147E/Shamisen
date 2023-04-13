@@ -12,7 +12,7 @@ namespace Shamisen.Conversion.Resampling.Sample
     {
         #region WrappedOdd
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedOddMonauralStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedOddMonauralStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
@@ -88,7 +88,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedOddVectorFitChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedOddVectorFitChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
@@ -193,7 +193,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedOddGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedOddGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
@@ -280,7 +280,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region WrappedEven
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedEvenMonauralStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedEvenMonauralStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
@@ -355,7 +355,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedEvenVectorFitChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedEvenVectorFitChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
@@ -458,7 +458,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedEvenGenericStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedEvenGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;

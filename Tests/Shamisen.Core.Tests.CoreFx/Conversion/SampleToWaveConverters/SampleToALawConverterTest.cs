@@ -48,7 +48,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToALawConverter.ProcessAvx2(src, dst);
+            SampleToALawConverter.ProcessAvx2(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
         [TestCase(255)]
@@ -58,7 +58,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
         public void ProcessStandardVectorizedConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToALawConverter.ProcessStandardVectorized(src, dst);
+            SampleToALawConverter.ProcessStandardVectorized(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
         private static void PrepareArraysNormal(int length, out float[] src, out byte[] exp, out byte[] dst)

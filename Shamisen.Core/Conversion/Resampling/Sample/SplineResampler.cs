@@ -29,16 +29,18 @@ namespace Shamisen.Conversion.Resampling.Sample
         private int framesReserved = 1;
         private int rearrangedCoeffsIndex = 0;
         private int rearrangedCoeffsDirection = 0;
+        private UnifiedResampleArgs cachedArgs;
 
         internal readonly unsafe struct ResampleFunc
         {
-            private readonly delegate*<UnifiedResampleArgs, Span<float>, Span<float>, Span<Vector4>, ResampleResult> method;
-            public ResampleFunc(delegate*<UnifiedResampleArgs, Span<float>, Span<float>, Span<Vector4>, ResampleResult> method)
+            private readonly delegate*<in UnifiedResampleArgs, Span<float>, Span<float>, Span<Vector4>, ResampleResult> method;
+            public ResampleFunc(delegate*<in UnifiedResampleArgs, Span<float>, Span<float>, Span<Vector4>, ResampleResult> method)
             {
                 ArgumentNullException.ThrowIfNull(method);
                 this.method = method;
             }
-            public ResampleResult Invoke(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan) => method(args, buffer, srcBuffer, cspan);
+            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            public ResampleResult Invoke(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan) => method(in args, buffer, srcBuffer, cspan);
         }
 
         /// <summary>
@@ -90,6 +92,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 ResampleStrategy.CachedWrappedEven => GetFuncCachedWrappedEven(args),
                 _ => GetFuncDirect(args),
             };
+            cachedArgs = args;
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
@@ -473,38 +476,37 @@ namespace Shamisen.Conversion.Resampling.Sample
             var head2 = head + nchannels * 2;
             nint nch = 0;
             var cholen = nchannels - 7;
+            var xmm3 = cutmullCoeffs.AsVector128();
+            var xmm0 = Sse.Shuffle(xmm3, xmm3, 0b00_00_00_00);
+            var xmm1 = Sse.Shuffle(xmm3, xmm3, 0b01_01_01_01);
+            var xmm2 = Sse.Shuffle(xmm3, xmm3, 0b10_10_10_10);
+            xmm3 = Sse.Shuffle(xmm3, xmm3, 0b11_11_11_11);
+            var ymm0 = Vector256.Create(xmm0, xmm0);
+            var ymm1 = Vector256.Create(xmm0, xmm1);
+            var ymm2 = Vector256.Create(xmm0, xmm2);
+            var ymm3 = Vector256.Create(xmm0, xmm3);
             for (; nch < cholen; nch += 8)
             {
-                var vy0 = cutmullCoeffs.AsVector128();
-                var v0 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b00_00_00_00));
-                var v2 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b10_10_10_10));
-                var v1 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b01_01_01_01));
-                var v3 = Avx2.BroadcastScalarToVector256(Sse.Shuffle(vy0, vy0, 0b11_11_11_11));
-                v0 = Avx.Multiply(v0, *(Vector256<float>*)(head + nch));
-                v2 = Avx.Multiply(v2, *(Vector256<float>*)(head2 + nch));
-                v0 = Avx.Add(v0, v2);
-                v1 = Avx.Multiply(v1, *(Vector256<float>*)(head + nchannels + nch));
-                v3 = Avx.Multiply(v3, *(Vector256<float>*)(head2 + nchannels + nch));
-                v1 = Avx.Add(v1, v3);
-                v0 = Avx.Add(v0, v1);
-                *(Vector256<float>*)(rdi + i + nch) = v0;
+                var ymm4 = Avx.Multiply(ymm0, *(Vector256<float>*)(head + nch));
+                var ymm6 = Avx.Multiply(ymm2, *(Vector256<float>*)(head2 + nch));
+                ymm4 = Avx.Add(ymm4, ymm6);
+                var ymm5 = Avx.Multiply(ymm1, *(Vector256<float>*)(head + nchannels + nch));
+                var ymm7 = Avx.Multiply(ymm3, *(Vector256<float>*)(head2 + nchannels + nch));
+                ymm5 = Avx.Add(ymm5, ymm7);
+                ymm4 = Avx.Add(ymm4, ymm5);
+                *(Vector256<float>*)(rdi + i + nch) = ymm4;
             }
             cholen = nchannels - 3;
             for (; nch < cholen; nch += 4)
             {
-                var vy0 = cutmullCoeffs.AsVector128();
-                var v0 = Sse.Shuffle(vy0, vy0, 0b00_00_00_00);
-                var v2 = Sse.Shuffle(vy0, vy0, 0b10_10_10_10);
-                var v1 = Sse.Shuffle(vy0, vy0, 0b01_01_01_01);
-                var v3 = Sse.Shuffle(vy0, vy0, 0b11_11_11_11);
-                v0 = Sse.Multiply(v0, *(Vector128<float>*)(head + nch));
-                v2 = Sse.Multiply(v2, *(Vector128<float>*)(head2 + nch));
-                v0 = Sse.Add(v0, v2);
-                v1 = Sse.Multiply(v1, *(Vector128<float>*)(head + nchannels + nch));
-                v3 = Sse.Multiply(v3, *(Vector128<float>*)(head2 + nchannels + nch));
-                v1 = Sse.Add(v1, v3);
-                v0 = Sse.Add(v0, v1);
-                *(Vector128<float>*)(rdi + i + nch) = v0;
+                var xmm4 = Sse.Multiply(ymm0.GetLower(), *(Vector128<float>*)(head + nch));
+                var xmm6 = Sse.Multiply(ymm2.GetLower(), *(Vector128<float>*)(head2 + nch));
+                xmm4 = Sse.Add(xmm4, xmm6);
+                var xmm5 = Sse.Multiply(ymm1.GetLower(), *(Vector128<float>*)(head + nchannels + nch));
+                var xmm7 = Sse.Multiply(ymm3.GetLower(), *(Vector128<float>*)(head2 + nchannels + nch));
+                xmm5 = Sse.Add(xmm5, xmm7);
+                xmm4 = Sse.Add(xmm4, xmm5);
+                *(Vector128<float>*)(rdi + i + nch) = xmm4;
             }
             for (; nch < nchannels; nch++)
             {
@@ -587,9 +589,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
         public override ReadResult Read(Span<float> buffer)
         {
+            if (isEndOfStream) return ReadResult.EndOfStream;
             var channels = Channels;
             if (buffer.Length < channels) throw new InvalidOperationException($"The length of buffer is less than {channels}!");
-            if (isEndOfStream) return ReadResult.EndOfStream;
             //Align the length of the buffer.
             buffer = buffer.SliceAlign(Format.Channels);
 
@@ -641,8 +643,8 @@ namespace Shamisen.Conversion.Resampling.Sample
             var lastInputSampleIndex = -1;
             var method = ResampleMethodHandle;
             var cspan = preCalculatedCatmullRomCoefficients.AsSpan();
-            var args = new UnifiedResampleArgs(RateMulInverse, conversionGradient, RateMul, GradientIncrement, IndexIncrement, channels, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
-            (lastInputSampleIndex, conversionGradient, rearrangedCoeffsIndex, rearrangedCoeffsDirection) = method.Invoke(args, buffer, srcBuffer, cspan);
+            var args = new UnifiedResampleArgs(in cachedArgs, conversionGradient, rearrangedCoeffsIndex, rearrangedCoeffsDirection);
+            (lastInputSampleIndex, conversionGradient, rearrangedCoeffsIndex, rearrangedCoeffsDirection) = method.Invoke(in args, buffer, srcBuffer, cspan);
             var reservingRegion = srcBuffer[(lastInputSampleIndex * channels)..];
             reservingRegion.CopyTo(srcBuffer);
             framesReserved = (int)((uint)reservingRegion.Length / ChannelsDivisor);

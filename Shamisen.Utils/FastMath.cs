@@ -697,6 +697,85 @@ namespace Shamisen
             x += z;
             return x;
         }
+
+        #region Experimental
+
+        /// <summary>
+        /// EXPERIMENTAL FUNCTION DO NOT USE FOR PRODUCTION PURPOSE<br/>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// All numbers, including <see cref="float.PositiveInfinity"/> and <see cref="float.NaN"/>, are treated as normal number, so it returns -127 for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static float Log2AsNormalEstrin(float x)
+        {
+            x = Math.Abs(x);
+            var y = MathI.AndNot(BitConverter.UInt32BitsToSingle(0x7f80_0000u), x);
+            const float One = 1.0f;
+            x = MathI.SubtractInteger(x, One);
+            y = MathI.AddInteger(One, y);
+            y -= One;
+            var ix = BitConverter.SingleToInt32Bits(x);
+            ix >>= 23;
+            x = ix;
+            var y2 = y * y;
+            var z0 = Log2C0 + y * Log2C1;
+            var z1 = Log2C2 + y * Log2C3;
+            var z2 = Log2C4 + y * Log2C5;
+            var z3 = Log2C6 + y * Log2C7;
+            var y4 = y2 * y2;
+            var y8 = y4 * y4;
+            var w = y - y2;
+            z0 += y2 * z1;
+            z2 += y2 * z3;
+            z0 += y4 * z2;
+            z0 += y8 * Log2C8;
+            z0 = z0 * w + y;
+            x += z0;
+            return x;
+        }
+
+        /// <summary>
+        /// EXPERIMENTAL FUNCTION DO NOT USE FOR PRODUCTION PURPOSE<br/>
+        /// Approximates the log base 2 of <paramref name="x"/>.<br/>
+        /// Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+        /// All numbers, including <see cref="float.PositiveInfinity"/> and <see cref="float.NaN"/>, are treated as normal number, so it returns -127 for 0.
+        /// </summary>
+        /// <param name="x">The number that specifies a power.</param>
+        /// <returns>
+        /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static float Log2AsNormalCake0(float x)
+        {
+            x = Math.Abs(x);
+            var y = MathI.AndNot(BitConverter.UInt32BitsToSingle(0x7f80_0000u), x);
+            const float One = 1.0f;
+            x = MathI.SubtractInteger(x, One);
+            y = MathI.AddInteger(One, y);
+            y -= One;
+            var ix = BitConverter.SingleToInt32Bits(x);
+            ix >>= 23;
+            x = ix;
+            var y2 = y * y;
+            var z0 = Log2C6 + y2 * Log2C8;
+            var z1 = Log2C5 + y2 * Log2C7;
+            z0 = z0 * y2 + Log2C4;
+            z1 = z1 * y2 + Log2C3;
+            z0 = z0 * y2 + Log2C2;
+            z1 = z1 * y2 + Log2C1;
+            z0 = z0 * y2 + Log2C0;
+            var w = y - y2;
+            z0 += z1 * y;
+            z0 = z0 * w + y;
+            x += z0;
+            return x;
+        }
+        #endregion
         #endregion
 
         #region Fast Logarithm

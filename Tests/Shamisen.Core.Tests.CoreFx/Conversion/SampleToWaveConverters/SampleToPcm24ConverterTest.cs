@@ -22,7 +22,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
         public void ProcessNormalStandardConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToPcm24Converter.ProcessNormalStandard(src, dst);
+            SampleToPcm24Converter.ProcessNormalStandard(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -37,7 +37,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToPcm24Converter.ProcessNormalAvx2(src, dst);
+            SampleToPcm24Converter.ProcessNormalAvx2(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 

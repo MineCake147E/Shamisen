@@ -60,32 +60,60 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
                 }
-                ProcessNormal(wrote, dest);
+                ConvertSingleToALaw(dest, wrote);
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
             return buffer.Length;
         }
 
+        /// <summary>
+        /// Converts specified <paramref name="value"/> to <see cref="AudioEncoding.Alaw"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="float"/> value to convert from.</param>
+        /// <returns>The converted <see cref="AudioEncoding.Alaw"/> value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormal(Span<float> wrote, Span<byte> dest)
+        public static byte ConvertSingleToALaw(float value)
+        {
+            var w = BitConverter.SingleToUInt32Bits(value);
+            var s = w & 0x80000000u;
+            w &= ~0x80000000u;
+            w = MathI.Min(w, 0x3f780000u);
+            var q = w < 0x3c000000u;
+            w |= s;
+            var f = q ? s | 0x3c000000u : 0u;
+            w = BitConverter.SingleToUInt32Bits(BitConverter.UInt32BitsToSingle(w) + BitConverter.UInt32BitsToSingle(f));
+            w += !q ? 0x00800000 : 0u;
+            w -= 0x3c000000u;
+            s = w & 0x80000000u;
+            w &= ~0x80000000u;
+            s >>= 24;
+            w >>= 19;
+            w |= s;
+            return (byte)(w ^ 0xd5);
+        }
+
+        /// <summary>
+        /// Converts <see cref="float"/> values to <see cref="AudioEncoding.Alaw"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="AudioEncoding.Alaw"/> values.</param>
+        /// <param name="source">The <see cref="float"/> values to convert from.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ConvertSingleToALaw(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
             {
-#if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessAvx2(wrote, dest);
+                    ProcessAvx2(destination, source);
                 }
-#endif
-                ProcessStandardVectorized(wrote, dest);
+                ProcessStandardVectorized(destination, source);
             }
         }
         #region X86
-#if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessAvx2(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             ref var dst = ref MemoryMarshal.GetReference(dest);
             ref var src = ref MemoryMarshal.GetReference(wrote);
@@ -226,10 +254,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 Unsafe.Add(ref dst, i) = xmm0.AsByte().GetElement(0);
             }
         }
-#endif
         #endregion
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessStandardVectorized(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessStandardVectorized(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var v15_nb = new Vector<uint>(0xd5d5_d5d5u).AsByte();
             var v13_ns = new Vector<uint>(0x3c00_0000u);
@@ -299,14 +326,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 v1_ns = VectorUtils.AndNot(v12_ns, v1_ns);
                 v2_ns = VectorUtils.AndNot(v12_ns, v2_ns);
                 v3_ns = VectorUtils.AndNot(v12_ns, v3_ns);
-                v4_ns = VectorUtils.ShiftRightLogical(v4_ns, 24);
-                v5_ns = VectorUtils.ShiftRightLogical(v5_ns, 24);
-                v6_ns = VectorUtils.ShiftRightLogical(v6_ns, 24);
-                v7_ns = VectorUtils.ShiftRightLogical(v7_ns, 24);
-                v0_ns = VectorUtils.ShiftRightLogical(v0_ns, 19);
-                v1_ns = VectorUtils.ShiftRightLogical(v1_ns, 19);
-                v2_ns = VectorUtils.ShiftRightLogical(v2_ns, 19);
-                v3_ns = VectorUtils.ShiftRightLogical(v3_ns, 19);
+                v4_ns = Vector.ShiftRightLogical(v4_ns, 24);
+                v5_ns = Vector.ShiftRightLogical(v5_ns, 24);
+                v6_ns = Vector.ShiftRightLogical(v6_ns, 24);
+                v7_ns = Vector.ShiftRightLogical(v7_ns, 24);
+                v0_ns = Vector.ShiftRightLogical(v0_ns, 19);
+                v1_ns = Vector.ShiftRightLogical(v1_ns, 19);
+                v2_ns = Vector.ShiftRightLogical(v2_ns, 19);
+                v3_ns = Vector.ShiftRightLogical(v3_ns, 19);
                 v0_ns = Vector.BitwiseOr(v4_ns, v0_ns);
                 v1_ns = Vector.BitwiseOr(v5_ns, v1_ns);
                 v2_ns = Vector.BitwiseOr(v6_ns, v2_ns);
@@ -322,27 +349,6 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var v = Unsafe.Add(ref src, i);
                 Unsafe.Add(ref dst, i) = ConvertSingleToALaw(v);
             }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static byte ConvertSingleToALaw(float value)
-        {
-            var w = BitConverter.SingleToUInt32Bits(value);
-            var s = w & 0x80000000u;
-            w &= ~0x80000000u;
-            w = MathI.Min(w, 0x3f780000u);
-            var q = w < 0x3c000000u;
-            w |= s;
-            var f = q ? s | 0x3c000000u : 0u;
-            w = BitConverter.SingleToUInt32Bits(BitConverter.UInt32BitsToSingle(w) + BitConverter.UInt32BitsToSingle(f));
-            w += !q ? 0x00800000 : 0u;
-            w -= 0x3c000000u;
-            s = w & 0x80000000u;
-            w &= ~0x80000000u;
-            s >>= 24;
-            w >>= 19;
-            w |= s;
-            return (byte)(w ^ 0xd5);
         }
 
         /// <summary>

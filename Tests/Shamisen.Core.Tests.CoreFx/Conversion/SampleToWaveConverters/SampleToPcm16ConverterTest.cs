@@ -71,7 +71,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
         public void ProcessNormalStandardConvertsCorrectly(int length)
         {
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToPcm16Converter.ProcessNormalStandard(src, dst);
+            SampleToPcm16Converter.ProcessNormalStandard(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -86,7 +86,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToPcm16Converter.ProcessNormalAvx2(src, dst);
+            SampleToPcm16Converter.ProcessNormalAvx2(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -101,7 +101,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysNormal(length, out var src, out var exp, out var dst);
-            SampleToPcm16Converter.ProcessNormalSse2(src, dst);
+            SampleToPcm16Converter.ProcessNormalSse2(dst, src);
             AssertArrayNormal(src, exp, dst);
         }
 
@@ -116,7 +116,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysReversed(length, out var src, out var exp, out var dst);
-            SampleToPcm16Converter.ProcessReversedAvx2(src, dst);
+            SampleToPcm16Converter.ProcessReversedAvx2(dst, src);
             AssertArrayReversed(src, exp, dst);
         }
 
@@ -131,7 +131,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 return;
             }
             PrepareArraysReversed(length, out var src, out var exp, out var dst);
-            SampleToPcm16Converter.ProcessReversedSsse3(src, dst);
+            SampleToPcm16Converter.ProcessReversedSsse3(dst, src);
             AssertArrayReversed(src, exp, dst);
         }
 

@@ -207,11 +207,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
 <#      for(int i = 0; i < item.Order - 4; i += 4){#>
                     vprev<#=(jmaxNSse41 - i) / 4#> = Ssse3.AlignRight(vprev<#=(jmaxNSse41 - i) / 4#>, vprev<#=(jmaxNSse41 - i) / 4 - 1#>, 12);
@@ -361,11 +357,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
 <#      for(int i = 0; i < maxVs; i++){#>
@@ -441,11 +433,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
 <#      for(int i = 0; i < item.Order - 2; i += 2){#>
@@ -543,11 +531,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //<#=NegativeDebugFlagDescription#>
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();

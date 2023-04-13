@@ -21,7 +21,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         public void BlockConvertsCorrectly()
         {
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessStandard(bb, buffer);
+            MuLawToSampleConverter.ProcessStandard(buffer, bb);
             AssertBlock(buffer);
         }
 
@@ -34,7 +34,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessAvx2MM256(bb, buffer);
+            MuLawToSampleConverter.ProcessAvx2MM256(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -46,7 +46,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessAvx2MM128(bb, buffer);
+            MuLawToSampleConverter.ProcessAvx2MM128(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -58,7 +58,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessSse41(bb, buffer);
+            MuLawToSampleConverter.ProcessSse41(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -70,7 +70,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessAdvSimd(bb, buffer);
+            MuLawToSampleConverter.ProcessAdvSimd(buffer, bb);
             AssertBlock(buffer);
         }
         [Test]
@@ -82,7 +82,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 return;
             }
             PrepareBlock(out var buffer, out var bb);
-            MuLawToSampleConverter.ProcessAdvSimdArm64(bb, buffer);
+            MuLawToSampleConverter.ProcessAdvSimdArm64(buffer, bb);
             AssertBlock(buffer);
         }
 

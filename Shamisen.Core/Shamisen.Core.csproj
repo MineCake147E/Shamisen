@@ -7,7 +7,7 @@
       <Description>Brand New Audio Library for .NET 7 and later. </Description>
       <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
       <PackageReadmeFile>README.md</PackageReadmeFile>
-      <PackageTags>audio;csharp;cross platform;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;dotnet standard;csharp library</PackageTags>
+      <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library</PackageTags>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">

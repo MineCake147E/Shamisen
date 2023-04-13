@@ -28,10 +28,10 @@ namespace Shamisen.Synthesis
         public TSample Offset { get; set; }
 
         /// <inheritdoc/>
-        public ISkipSupport? SkipSupport => throw new NotImplementedException();
+        public ISkipSupport? SkipSupport => null;
 
         /// <inheritdoc/>
-        public ISeekSupport? SeekSupport => throw new NotImplementedException();
+        public ISeekSupport? SeekSupport => null;
 
         /// <inheritdoc/>
         ulong? IAudioSource<TSample, TFormat>.Length => null;

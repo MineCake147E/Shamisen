@@ -15,7 +15,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     {
         #region Normal
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalSse2(Span<float> wrote, Span<short> dest)
+        internal static void ProcessNormalSse2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector128.Create(32767.0f / 32768.0f);
             var min = Vector128.Create(-1.0f);
@@ -56,7 +56,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalAvx2(Span<float> wrote, Span<short> dest)
+        internal static void ProcessNormalAvx2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector256.Create(32767.0f / 32768.0f);
             var min = Vector256.Create(-1.0f);
@@ -116,7 +116,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessReversedSsse3(Span<float> wrote, Span<short> dest)
+        internal static void ProcessReversedSsse3(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector128.Create(32767.0f / 32768.0f);
             var min = Vector128.Create(-1.0f);
@@ -161,7 +161,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessReversedAvx2(Span<float> wrote, Span<short> dest)
+        internal static void ProcessReversedAvx2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector256.Create(32767.0f);
             var min = Vector256.Create(-32768.0f);
@@ -230,7 +230,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         #endregion
 
         #region Accurate
-        private static void ProcessAccurateStereoSse41(Span<float> wrote, Span<short> dest, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
+        private static void ProcessAccurateStereoSse41(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
         {
             var max = Vector128.Create(32767.0f);
             var min = Vector128.Create(-32768.0f);
@@ -284,7 +284,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             Unsafe.As<short, float>(ref MemoryMarshal.GetReference(dsmLastOutput)) = lov.AsSingle().GetElement(0);
         }
 
-        private static void ProcessAccurateMonauralSse41(Span<float> wrote, Span<short> dest, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
+        private static void ProcessAccurateMonauralSse41(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
         {
             var max = Vector128.CreateScalar(32767.0f);
             var min = Vector128.CreateScalar(-32768.0f);
@@ -334,7 +334,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
         #endregion
         #region AccurateFused
-        private static void ProcessAccurateFusedStereoFma(Span<float> wrote, Span<short> dest, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
+        private static void ProcessAccurateFusedStereoFma(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
         {
             var max = Vector128.Create(32767.0f);
             var min = Vector128.Create(-32768.0f);
@@ -385,7 +385,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             Unsafe.As<float, double>(ref MemoryMarshal.GetReference(dsmAccumulator)) = acc.AsDouble().GetElement(0);
             Unsafe.As<short, float>(ref MemoryMarshal.GetReference(dsmLastOutput)) = lov.AsSingle().GetElement(0);
         }
-        private static void ProcessAccurateFusedMonauralFma(Span<float> wrote, Span<short> dest, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
+        private static void ProcessAccurateFusedMonauralFma(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> dsmAccumulator, Span<short> dsmLastOutput)
         {
             var max = Vector128.CreateScalar(32767.0f);
             var min = Vector128.CreateScalar(-32768.0f);

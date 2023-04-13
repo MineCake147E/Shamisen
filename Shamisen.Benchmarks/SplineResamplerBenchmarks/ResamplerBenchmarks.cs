@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -14,7 +15,7 @@ using Shamisen.Synthesis;
 
 namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
 {
-    //[DryJob(RuntimeMoniker.HostProcess)]
+    //[DryJob()]
     [SimpleJob(RuntimeMoniker.HostProcess)]
     [Config(typeof(Config))]
     [DisassemblyDiagnoser(maxDepth: int.MaxValue)]
@@ -45,16 +46,16 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
         public ConversionRatioProps ConversionRatio { get; set; }
 
         public IEnumerable<ConversionRatioProps> ValuesForConversionRatio => new ConversionRatioProps[] {
-            new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
+            //new (24000, 154320, "CachedWrappedOdd"),    //Example of CachedWrappedOdd
             new (176400, 192000, "CachedDirect"),       //UpAnyRateUnrolled, Often used(equivalent to 44100Hz → 48000Hz)
-            new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
-            new (44100, 192000, "CachedWrappedEven"),   //Example of CachedWrappedEven, Often used
+            //new (44100, 154320, "Direct"),              //Example of Direct, Might be slowest
+            //new (44100, 192000, "CachedWrappedEven"),   //Example of CachedWrappedEven, Often used
             //new (48000, 192000, "CachedDirect"),        //Quadruple Rate
             //new (64000, 192000, "CachedDirect"),        //Integer Rate
             //new (96000, 192000, "CachedDirect"),        //Double Rate
         };
 
-        [Params(1,/* 2, 3, 4, 5, 6, 7, 8, 9, 10,*/ Priority = -4)]
+        [Params(1, /*2, 3, 4, 5, 6, 7, 8, 9, 10,*/ Priority = -4)]
         public int Channels { get; set; }
         [Params(/*2047, */4095, Priority = -990)]
         public int Frames { get; set; }
@@ -83,7 +84,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
             buffer = null;
         }
 
-        [Benchmark]
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible), Benchmark]
         public void SplineResampler()
         {
             var span = buffer.AsSpan();

@@ -713,6 +713,30 @@
             Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
             </returns>
         </member>
+        <member name="M:Shamisen.FastMath.Log2AsNormalEstrin(System.Single)">
+            <summary>
+            EXPERIMENTAL FUNCTION DO NOT USE FOR PRODUCTION PURPOSE<br/>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            All numbers, including <see cref="F:System.Single.PositiveInfinity"/> and <see cref="F:System.Single.NaN"/>, are treated as normal number, so it returns -127 for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+            </returns>
+        </member>
+        <member name="M:Shamisen.FastMath.Log2AsNormalCake0(System.Single)">
+            <summary>
+            EXPERIMENTAL FUNCTION DO NOT USE FOR PRODUCTION PURPOSE<br/>
+            Approximates the log base 2 of <paramref name="x"/>.<br/>
+            Negative input will result in the log2 of negated <paramref name="x"/>.<br/>
+            All numbers, including <see cref="F:System.Single.PositiveInfinity"/> and <see cref="F:System.Single.NaN"/>, are treated as normal number, so it returns -127 for 0.
+            </summary>
+            <param name="x">The number that specifies a power.</param>
+            <returns>
+            Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
+            </returns>
+        </member>
         <member name="M:Shamisen.FastMath.FastLog2AsNormal(System.Single)">
             <summary>
             Approximates the log base 2 of <paramref name="x"/>.<br/>
@@ -830,10 +854,24 @@
         </member>
         <member name="M:Shamisen.MathI.Rectify(System.Int32)">
             <summary>
-            Rectifies the specified <paramref name="value"/>.
+            Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
             </summary>
             <param name="value">The value to rectify.</param>
             <returns></returns>
+        </member>
+        <member name="M:Shamisen.MathI.Rectify(System.Int64)">
+            <summary>
+            Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
+            </summary>
+            <param name="value">The value to rectify.</param>
+            <returns>The rectified value.</returns>
+        </member>
+        <member name="M:Shamisen.MathI.Rectify(System.IntPtr)">
+            <summary>
+            Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
+            </summary>
+            <param name="value">The value to rectify.</param>
+            <returns>The rectified value.</returns>
         </member>
         <member name="M:Shamisen.MathI.Min(Shamisen.ReadResult,Shamisen.ReadResult)">
             <summary>
@@ -2234,6 +2272,30 @@
             <param name="span">The span to multiply.</param>
             <param name="scale">The value to be multiplied.</param>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+            </summary>
+            <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+            <param name="source">The values to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+            <returns>
+            The length of <paramref name="destination"/> that actually contains result.
+            </returns>
+        </member>
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(Shamisen.NativeSpan{System.Single},Shamisen.ReadOnlyNativeSpan{System.Single},System.Single)">
+            <summary>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+            </summary>
+            <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+            <param name="source">The values to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+            <returns>
+            The length of <paramref name="destination"/> that actually contains result.
+            </returns>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Double},System.Double)">
             <summary>
             Multiplies the specified samples faster, with the given <paramref name="scale"/>.
@@ -2241,24 +2303,29 @@
             <param name="span">The span to multiply.</param>
             <param name="scale">The value to be multiplied.</param>
         </member>
-        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.Single)">
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(System.Span{System.Double},System.ReadOnlySpan{System.Double},System.Double)">
             <summary>
-            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
-            Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
             Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
             </summary>
-            <param name="destination"></param>
-            <param name="source"></param>
-            <param name="scale"></param>
+            <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+            <param name="source">The values to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+            <returns>
+            The length of <paramref name="destination"/> that actually contains result.
+            </returns>
         </member>
-        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiplyStandardVariable(System.Span{System.Double},System.ReadOnlySpan{System.Double},System.Double)">
+        <member name="M:Shamisen.Utils.AudioUtils.FastScalarMultiply(Shamisen.NativeSpan{System.Double},Shamisen.ReadOnlyNativeSpan{System.Double},System.Double)">
             <summary>
-            Vectorized path using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
+            Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="T:System.Numerics.Vector`1"/> which uses variable-sized vectors.<br/>
             Future versions of .NET may improve performance if <see cref="T:System.Numerics.Vector`1"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
             </summary>
-            <param name="destination"></param>
-            <param name="source"></param>
-            <param name="scale"></param>
+            <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+            <param name="source">The values to multiply.</param>
+            <param name="scale">The value to be multiplied.</param>
+            <returns>
+            The length of <paramref name="destination"/> that actually contains result.
+            </returns>
         </member>
         <member name="M:Shamisen.Utils.AudioUtils.FastMultiply(System.Span{System.Single},System.ReadOnlySpan{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
@@ -2380,7 +2447,7 @@
             The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
             If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
             </summary>
-            <param name="destination">The destination to write de-interleaved data.</param>
+            <param name="destination">The destination to write deinterleaved data.</param>
             <param name="source">The source.</param>
             <param name="channels">The number of channels.</param>
             <returns>The length of each channels' samples.</returns>
@@ -2770,7 +2837,7 @@
         </member>
         <member name="T:Shamisen.Utils.Memory.MutichannelSpan`1">
             <summary>
-            Represents a tuple of multiple contiguous memory regions of the same length.
+            [WIP]Represents a tuple of multiple contiguous memory regions of the same length.
             </summary>
         </member>
         <member name="T:Shamisen.Utils.UnsafeUtils">
@@ -4329,11 +4396,6 @@
             Contains some utility functions for manipulating <see cref="T:System.Numerics.Vector"/> values.
             </summary>
         </member>
-        <member name="P:Shamisen.Utils.VectorUtils.IsShiftRightHardwareAccelerated">
-            <summary>
-            Gets the value which indicates whether the <see cref="M:Shamisen.Utils.VectorUtils.ShiftRightLogical(System.Numerics.Vector{System.Int32},System.Byte)"/> could be hardware accelerated.
-            </summary>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.FastDotProduct(System.Numerics.Vector4,System.Numerics.Vector4)">
             <summary>
             Returns the dot product of two vectors.
@@ -4514,40 +4576,7 @@
             <param name="shift">The amount to shift elements left.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.ShiftLeftLogical(System.Numerics.Vector{System.Int32},System.Byte)">
-            <summary>
-            Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
-            </summary>
-            <param name="value">The values to shift right.</param>
-            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.ShiftLeftLogical(System.Numerics.Vector{System.Int32},System.Byte,System.Numerics.Vector{System.Int32})">
-            <summary>
-            Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
-            </summary>
-            <param name="value">The values to shift right.</param>
-            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-            <param name="prepared">The <see cref="T:System.Numerics.Vector`1"/> value prepared with <see cref="M:Shamisen.Utils.VectorUtils.PrepareConstantShiftLeftInt32(System.Byte)"/>.</param>
-            <returns></returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.ShiftRightLogicalVariable(System.Numerics.Vector{System.Int32},System.Numerics.Vector{System.UInt32})">
-            <summary>
-            Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
-            </summary>
-            <param name="value">The values to shift right.</param>
-            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.ShiftRightLogical(System.Numerics.Vector{System.Int32},System.Byte)">
-            <summary>
-            Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
-            </summary>
-            <param name="value">The values to shift right.</param>
-            <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Shamisen.Utils.VectorUtils.ShiftRightLogical(System.Numerics.Vector{System.UInt32},System.Byte)">
             <summary>
             Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
             </summary>
@@ -6741,6 +6770,215 @@
         </member>
         <member name="M:Shamisen.Int24.System#Numerics#INumberBase{Shamisen#Int24}#IsNegative(Shamisen.Int24)">
             <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.NativeReadResult">
+            <summary>
+            Represents a result of read operation.
+            </summary>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.EndOfStream">
+            <summary>
+            Represents the fact that the source stream is empty right now.
+            </summary>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.WaitingForSource">
+            <summary>
+            Represents the fact that the source stream is waiting for source's IO.
+            </summary>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.#ctor(System.IntPtr)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.NativeReadResult"/> struct.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.IsEndOfStream">
+            <summary>
+            Gets a value indicating whether the source has already reached the end of stream.
+            </summary>
+            <value>
+              <c>true</c> if the source has already reached the end of stream; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.HasData">
+            <summary>
+            Gets a value indicating whether the buffer has data.
+            </summary>
+            <value>
+              <c>true</c> if the buffer has data; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.HasNoData">
+            <summary>
+            Gets a value indicating whether the buffer has no data.
+            </summary>
+            <value>
+              <c>true</c> if the buffer has no data; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Shamisen.NativeReadResult.Length">
+            <summary>
+            Gets the actual length read.
+            </summary>
+            <value>
+            The actual length read.
+            </value>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Explicit(Shamisen.NativeReadResult)~System.UIntPtr">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.NativeReadResult"/> to <see cref="T:System.UIntPtr"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Explicit(Shamisen.NativeReadResult)~System.IntPtr">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Shamisen.NativeReadResult"/> to <see cref="T:System.IntPtr"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>The result of the conversion.</returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Implicit(System.IntPtr)~Shamisen.NativeReadResult">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.IntPtr"/> to <see cref="T:Shamisen.NativeReadResult"/>.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.Equals(System.Object)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="obj">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.Equals(Shamisen.NativeReadResult)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+              <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.CompareTo(Shamisen.NativeReadResult)">
+            <summary>
+            Compares this instance to a specified <see cref="T:Shamisen.NativeReadResult"/> and returns an indication of their relative values.
+            </summary>
+            <param name="other">An <see cref="T:Shamisen.NativeReadResult"/>  to compare.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Equality(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.NativeReadResult"/> objects are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.NativeReadResult"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.NativeReadResult"/> to compare.</param>
+            <returns>
+              <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Inequality(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Indicates whether the values of two specified <see cref="T:Shamisen.NativeReadResult"/> objects are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.NativeReadResult"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.NativeReadResult"/> to compare.</param>
+            <returns>
+              <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_LessThan(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.NativeReadResult"/> is less than another specified <see cref="T:Shamisen.NativeReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_LessThanOrEqual(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.NativeReadResult"/> is less than or equal to another specified <see cref="T:Shamisen.NativeReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_GreaterThan(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.NativeReadResult"/> is greater than another specified <see cref="T:Shamisen.NativeReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_GreaterThanOrEqual(Shamisen.NativeReadResult,Shamisen.NativeReadResult)">
+            <summary>
+            Returns a value indicating whether a specified <see cref="T:Shamisen.NativeReadResult"/> is greater than or equal to another specified <see cref="T:Shamisen.NativeReadResult"/>.
+            </summary>
+            <param name="left">The first value to compare.</param>
+            <param name="right">The second value to compare.</param>
+            <returns>
+            <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Addition(Shamisen.NativeReadResult,System.IntPtr)">
+            <summary>
+            Adds specified <see cref="T:Shamisen.NativeReadResult"/> value and <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="left">The first value to add.</param>
+            <param name="right">The second value to add.</param>
+            <returns>
+            The result of adding <paramref name="left"/> and <paramref name="right"/>.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Multiply(Shamisen.NativeReadResult,System.IntPtr)">
+            <summary>
+            Multiplies specified <see cref="T:Shamisen.NativeReadResult"/> value and <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.op_Division(Shamisen.NativeReadResult,System.IntPtr)">
+            <summary>
+            Divides specified <see cref="T:Shamisen.NativeReadResult"/> value with <see cref="T:System.IntPtr"/> value.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>
+            The result of the operator.
+            </returns>
+        </member>
+        <member name="M:Shamisen.NativeReadResult.ToString">
+            <summary>
+            Converts to string.
+            </summary>
+            <returns>
+            The fully qualified type name.
+            </returns>
         </member>
         <member name="T:Shamisen.OffsetSByte">
             <summary>

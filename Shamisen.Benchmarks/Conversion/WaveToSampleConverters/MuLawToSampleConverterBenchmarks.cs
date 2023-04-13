@@ -40,7 +40,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            MuLawToSampleConverter.ProcessSse41(byteSpan, span);
+            MuLawToSampleConverter.ProcessSse41(span, byteSpan);
         }
         [Benchmark]
         public void Avx2MM128()
@@ -48,7 +48,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            MuLawToSampleConverter.ProcessAvx2MM128(byteSpan, span);
+            MuLawToSampleConverter.ProcessAvx2MM128(span, byteSpan);
         }
         [Benchmark]
         public void Avx2MM256()
@@ -56,7 +56,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            MuLawToSampleConverter.ProcessAvx2MM256(byteSpan, span);
+            MuLawToSampleConverter.ProcessAvx2MM256(span, byteSpan);
         }
         [GlobalCleanup]
         public void Cleanup() => buffer = null;

@@ -8,6 +8,7 @@
       <Description>Utility features independent from Shamisen</Description>
       <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
       <PackageReadmeFile>README.md</PackageReadmeFile>
+      <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio library;csharp library</PackageTags>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">

@@ -65,32 +65,55 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                     new InvalidOperationException(
                         $"The {nameof(wrote)}'s length and {nameof(dest)}'s length are not equal! This is a bug!").Throw();
                 }
-                ProcessNormal(wrote, dest);
+                ConvertSingleToMuLaw(dest, wrote);
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
             }
             return buffer.Length;
         }
 
+        /// <summary>
+        /// Converts specified <paramref name="value"/> to <see cref="AudioEncoding.Mulaw"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="float"/> value to convert from.</param>
+        /// <returns>The converted <see cref="AudioEncoding.Mulaw"/> value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormal(Span<float> wrote, Span<byte> dest)
+        public static byte ConvertSingleToMuLaw(float value)
+        {
+            var a = Math.Abs(value);
+            var u = BitConverter.SingleToUInt32Bits(value) & 0x8000_0000u;
+            a += MuLawAbsoluteOffset;
+            u >>= 24;
+            a = FastMath.MaxUnsignedInputs(a, MuLawExponentOffset);
+            a = FastMath.MinUnsignedInputs(a, 0.96875f);
+            var q = BitConverter.SingleToUInt32Bits(a);
+            q -= 0x3b80_0000u;
+            q >>= 19;
+            q |= u;
+            return (byte)~q;
+        }
+
+        /// <summary>
+        /// Converts <see cref="float"/> values to <see cref="AudioEncoding.Mulaw"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="AudioEncoding.Mulaw"/> values.</param>
+        /// <param name="source">The <see cref="float"/> values to convert from.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ConvertSingleToMuLaw(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
             {
-#if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessAvx2(wrote, dest);
+                    ProcessAvx2(destination, source);
                 }
-#endif
-                ProcessStandardVectorized(wrote, dest);
+                ProcessStandardVectorized(destination, source);
             }
         }
         #region X86
-#if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessAvx2(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var ymm15 = Vector256.Create(SignMaskNegated);
             var ymm14 = Vector256.Create(MuLawAbsoluteOffset);
@@ -182,10 +205,9 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 Unsafe.Add(ref dst, i) = xmm0.AsByte().GetElement(0);
             }
         }
-#endif
         #endregion
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessStandardVectorized(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessStandardVectorized(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var v15_ns = new Vector<uint>(SignMaskNegated);
             var v14_ns = new Vector<float>(MuLawAbsoluteOffset);
@@ -219,18 +241,18 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 v5_ns = Vector.Subtract(v5_ns, v13_ns);
                 v6_ns = Vector.Subtract(v6_ns, v13_ns);
                 v7_ns = Vector.Subtract(v7_ns, v13_ns);
-                v0_ns = VectorUtils.ShiftRightLogical(v0_ns, 24);
-                v1_ns = VectorUtils.ShiftRightLogical(v1_ns, 24);
-                v2_ns = VectorUtils.ShiftRightLogical(v2_ns, 24);
-                v3_ns = VectorUtils.ShiftRightLogical(v3_ns, 24);
+                v0_ns = Vector.ShiftRightLogical(v0_ns, 24);
+                v1_ns = Vector.ShiftRightLogical(v1_ns, 24);
+                v2_ns = Vector.ShiftRightLogical(v2_ns, 24);
+                v3_ns = Vector.ShiftRightLogical(v3_ns, 24);
                 v4_ns = Vector.Min(v4_ns, v12_ns);
                 v5_ns = Vector.Min(v5_ns, v12_ns);
                 v6_ns = Vector.Min(v6_ns, v12_ns);
                 v7_ns = Vector.Min(v7_ns, v12_ns);
-                v4_ns = VectorUtils.ShiftRightLogical(v4_ns, 19);
-                v5_ns = VectorUtils.ShiftRightLogical(v5_ns, 19);
-                v6_ns = VectorUtils.ShiftRightLogical(v6_ns, 19);
-                v7_ns = VectorUtils.ShiftRightLogical(v7_ns, 19);
+                v4_ns = Vector.ShiftRightLogical(v4_ns, 19);
+                v5_ns = Vector.ShiftRightLogical(v5_ns, 19);
+                v6_ns = Vector.ShiftRightLogical(v6_ns, 19);
+                v7_ns = Vector.ShiftRightLogical(v7_ns, 19);
                 v4_ns = Vector.Max(v4_ns.AsInt32(), v10_ns).AsUInt32();
                 v5_ns = Vector.Max(v5_ns.AsInt32(), v10_ns).AsUInt32();
                 v6_ns = Vector.Max(v6_ns.AsInt32(), v10_ns).AsUInt32();
@@ -250,22 +272,6 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 var v = Unsafe.Add(ref src, i);
                 Unsafe.Add(ref dst, i) = ConvertSingleToMuLaw(v);
             }
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static byte ConvertSingleToMuLaw(float value)
-        {
-            var a = Math.Abs(value);
-            var u = BitConverter.SingleToUInt32Bits(value) & 0x8000_0000u;
-            a += MuLawAbsoluteOffset;
-            u >>= 24;
-            a = FastMath.MaxUnsignedInputs(a, MuLawExponentOffset);
-            a = FastMath.MinUnsignedInputs(a, 0.96875f);
-            var q = BitConverter.SingleToUInt32Bits(a);
-            q -= 0x3b80_0000u;
-            q >>= 19;
-            q |= u;
-            return (byte)~q;
         }
 
         /// <summary>

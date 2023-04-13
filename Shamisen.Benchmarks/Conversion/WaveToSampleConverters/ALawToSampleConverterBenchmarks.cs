@@ -43,7 +43,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessAvx2(byteSpan, span);
+            ALawToSampleConverter.ProcessAvx2(span, byteSpan);
         }
 
         [Benchmark]
@@ -52,7 +52,7 @@ namespace Shamisen.Benchmarks.Conversion.WaveToSampleConverters
             var span = buffer.AsSpan();
             var byteSpan = MemoryMarshal.AsBytes(span);
             byteSpan = byteSpan.Slice(byteSpan.Length - span.Length);
-            ALawToSampleConverter.ProcessSse41(byteSpan, span);
+            ALawToSampleConverter.ProcessSse41(span, byteSpan);
         }
 
         [GlobalCleanup]

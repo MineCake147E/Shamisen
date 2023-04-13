@@ -8,7 +8,8 @@
         <Nullable>enable</Nullable>
         <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>audio;csharp;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;csharp library;audio io;io;windows;wasapi</PackageTags>
+        <Description>NAudio interface for Shamisen.</Description>
+        <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;windows;wasapi</PackageTags>
         <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
     </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />

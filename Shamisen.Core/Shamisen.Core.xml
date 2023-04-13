@@ -5760,12 +5760,12 @@
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectMonauralUpAnyRateGenericSse(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs@,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
             <summary>
             For arbitrary sampling frequency ratio larger than 1
             </summary>
         </member>
-        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
+        <member name="M:Shamisen.Conversion.Resampling.Sample.SplineResampler.ResampleCachedDirectStereoQuadrupleRateX64(Shamisen.Conversion.Resampling.Sample.UnifiedResampleArgs@,System.Span{System.Single},System.Span{System.Single},System.Span{System.Numerics.Vector4})">
             <summary>
             This variant needs more than 8 xmm registers so AVX or x64 SSE is required<br/>
             It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
@@ -5849,6 +5849,20 @@
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToALawConverter.Read(System.Span{System.Byte})">
             <inheritdoc/>
         </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToALawConverter.ConvertSingleToALaw(System.Single)">
+            <summary>
+            Converts specified <paramref name="value"/> to <see cref="F:Shamisen.AudioEncoding.Alaw"/> value.
+            </summary>
+            <param name="value">The <see cref="T:System.Single"/> value to convert from.</param>
+            <returns>The converted <see cref="F:Shamisen.AudioEncoding.Alaw"/> value.</returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToALawConverter.ConvertSingleToALaw(System.Span{System.Byte},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Converts <see cref="T:System.Single"/> values to <see cref="F:Shamisen.AudioEncoding.Alaw"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="F:Shamisen.AudioEncoding.Alaw"/> values.</param>
+            <param name="source">The <see cref="T:System.Single"/> values to convert from.</param>
+        </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToALawConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -5895,7 +5909,7 @@
             Defines some options for <see cref="T:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter"/> and its close relatives.
             </summary>
         </member>
-        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.Normal">
+        <member name="F:Shamisen.Conversion.SampleToWaveConverters.SampleToLinearPcmConversionPolicy.None">
             <summary>
             The normal conversion.
             </summary>
@@ -5932,6 +5946,20 @@
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToMuLawConverter.Read(System.Span{System.Byte})">
             <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToMuLawConverter.ConvertSingleToMuLaw(System.Single)">
+            <summary>
+            Converts specified <paramref name="value"/> to <see cref="F:Shamisen.AudioEncoding.Mulaw"/> value.
+            </summary>
+            <param name="value">The <see cref="T:System.Single"/> value to convert from.</param>
+            <returns>The converted <see cref="F:Shamisen.AudioEncoding.Mulaw"/> value.</returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToMuLawConverter.ConvertSingleToMuLaw(System.Span{System.Byte},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Converts <see cref="T:System.Single"/> values to <see cref="F:Shamisen.AudioEncoding.Mulaw"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="F:Shamisen.AudioEncoding.Mulaw"/> values.</param>
+            <param name="source">The <see cref="T:System.Single"/> values to convert from.</param>
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToMuLawConverter.Dispose(System.Boolean)">
             <summary>
@@ -5996,6 +6024,14 @@
             <returns>
             The length of the data written.
             </returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.ConvertSampleToPcm16(System.Span{System.Int16},System.ReadOnlySpan{System.Single},System.Boolean)">
+            <summary>
+            Converts <see cref="T:System.Single"/> values to <see cref="F:Shamisen.AudioEncoding.Alaw"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="F:Shamisen.AudioEncoding.Alaw"/> values.</param>
+            <param name="source">The <see cref="T:System.Single"/> values to convert from.</param>
+            <param name="convertEndianness">The value which indicates whether <see cref="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.ConvertSampleToPcm16(System.Span{System.Int16},System.ReadOnlySpan{System.Single},System.Boolean)"/> should perform endianness conversion.</param>
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm16Converter.Convert(System.Single)">
             <summary>
@@ -6117,7 +6153,15 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.Convert(System.Single)">
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertFloatToInt32Clamped(System.Single)">
+            <summary>
+            Clamps the specified <paramref name="value"/> between -2147483648.0f and 2147483648.0f, and then converts to <see cref="T:System.Int32"/>.<br/>
+            Note that the value &gt;= 1.0f will be converted to <see cref="F:System.Int32.MaxValue"/> instead of 0 or 2147483520 in order to avoid overflows and quantization noises.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertSampleToPcm32(System.Single)">
             <summary>
             Clamps the specified <paramref name="srcval"/> between -1 and 1, and then converts to <see cref="T:System.Int32"/>.<br/>
             Note that the value >= 1.0f will be converted to <see cref="F:System.Int32.MaxValue"/> instead of 0 or 2147483520 in order to avoid overflows and quantization noises.
@@ -6125,13 +6169,13 @@
             <param name="srcval"></param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertScaled(System.Single)">
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertSampleToPcm32(System.Span{System.Int32},System.ReadOnlySpan{System.Single},System.Boolean)">
             <summary>
-            Clamps the specified <paramref name="srcval"/> between -2147483648.0f and 2147483648.0f, and then converts to <see cref="T:System.Int32"/>.<br/>
-            Note that the value >= 1.0f will be converted to <see cref="F:System.Int32.MaxValue"/> instead of 0 or 2147483520 in order to avoid overflows and quantization noises.
+            Converts <see cref="T:System.Single"/> values to <see cref="T:System.Int32"/> values.
             </summary>
-            <param name="srcval"></param>
-            <returns></returns>
+            <param name="destination">The place to store converted values.</param>
+            <param name="source">The original values to convert.</param>
+            <param name="convertEndianness">The value which indicates whether <see cref="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.ConvertSampleToPcm32(System.Span{System.Int32},System.ReadOnlySpan{System.Single},System.Boolean)"/> should perform endianness conversion.</param>
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm32Converter.Dispose(System.Boolean)">
             <summary>
@@ -6176,6 +6220,13 @@
             <returns>
             The length of the data written.
             </returns>
+        </member>
+        <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm8Converter.ConvertSampleToPcm8(System.Span{System.Byte},System.ReadOnlySpan{System.Single})">
+            <summary>
+            Converts <see cref="T:System.Single"/> values to <see cref="T:Shamisen.OffsetSByte"/> values.
+            </summary>
+            <param name="destination">The place to store converted values.</param>
+            <param name="source">The original values to convert.</param>
         </member>
         <member name="M:Shamisen.Conversion.SampleToWaveConverters.SampleToPcm8Converter.Convert(System.Single)">
             <summary>
@@ -6359,10 +6410,17 @@
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToSingle(System.Byte)">
             <summary>
-            Converts A-law value to <see cref="T:System.Single"/> value.<br/>
+            Converts <see cref="F:Shamisen.AudioEncoding.Alaw"/> value to <see cref="T:System.Single"/> value.<br/>
             </summary>
-            <param name="value"></param>
-            <returns></returns>
+            <param name="value">The <see cref="F:Shamisen.AudioEncoding.Alaw"/> value to decode.</param>
+            <returns>The decoded <see cref="T:System.Single"/> value.</returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToSingle(System.Span{System.Single},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Converts <see cref="F:Shamisen.AudioEncoding.Alaw"/> values to <see cref="T:System.Single"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="T:System.Single"/> values.</param>
+            <param name="source">The <see cref="F:Shamisen.AudioEncoding.Alaw"/> values to convert from.</param>
         </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.ALawToSampleConverter.ConvertALawToInt16(System.Byte)">
             <summary>
@@ -6527,6 +6585,20 @@
             The length of the data written.
             </returns>
         </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.ConvertMuLawToSingle(System.Byte)">
+            <summary>
+            Converts <see cref="F:Shamisen.AudioEncoding.Mulaw"/> value to <see cref="T:System.Single"/> value.<br/>
+            </summary>
+            <param name="value">The <see cref="F:Shamisen.AudioEncoding.Mulaw"/> value to decode.</param>
+            <returns>The decoded <see cref="T:System.Single"/> value.</returns>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.ConvertMuLawToSingle(System.Span{System.Single},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Converts <see cref="F:Shamisen.AudioEncoding.Mulaw"/> values to <see cref="T:System.Single"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="T:System.Single"/> values.</param>
+            <param name="source">The <see cref="F:Shamisen.AudioEncoding.Mulaw"/> values to convert from.</param>
+        </member>
         <member name="M:Shamisen.Conversion.WaveToSampleConverters.MuLawToSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -6614,7 +6686,14 @@
             The length of the data written.
             </returns>
         </member>
-        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.Span{System.Int16})">
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ConvertPcm16ToSample(System.Span{System.Single},System.ReadOnlySpan{System.Int16})">
+            <summary>
+            Converts 16bit <see cref="F:Shamisen.AudioEncoding.LinearPcm"/> values to <see cref="T:System.Single"/> values.
+            </summary>
+            <param name="destination">The place to store resulting <see cref="T:System.Single"/> values.</param>
+            <param name="source">The 16bit <see cref="F:Shamisen.AudioEncoding.LinearPcm"/> values to convert from.</param>
+        </member>
+        <member name="M:Shamisen.Conversion.WaveToSampleConverters.Pcm16ToSampleConverter.ProcessNormalAvx2A(System.Span{System.Single},System.ReadOnlySpan{System.Int16})">
             <summary>
             Tricky convert-and-subtract approach, witch the conversion is also done with trick.
             This one can be slightly faster than simple approach.

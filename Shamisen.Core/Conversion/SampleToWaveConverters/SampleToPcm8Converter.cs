@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using Shamisen.Utils;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -101,7 +102,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 }
                 else
                 {
-                    ProcessNormal(wrote, dest);
+                    ConvertSampleToPcm8(dest, wrote);
                 }
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
@@ -254,23 +255,28 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
         #endregion
 
+        /// <summary>
+        /// Converts <see cref="float"/> values to <see cref="OffsetSByte"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store converted values.</param>
+        /// <param name="source">The original values to convert.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void ProcessNormal(Span<float> wrote, Span<byte> dest)
+        public static void ConvertSampleToPcm8(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessNormalAvx2A(wrote, dest);
+                    ProcessNormalAvx2A(destination, source);
                 }
 #endif
-                ProcessNormalStandard(wrote, dest);
+                ProcessNormalStandard(destination, source);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalStandard(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessNormalStandard(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var mul = new Vector<uint>(0x0380_0000u);
             var sign = Vector.AsVectorSingle(new Vector<int>(int.MinValue));
@@ -325,7 +331,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 #if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalAvx2A(Span<float> wrote, Span<byte> dest)
+        internal static void ProcessNormalAvx2A(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var sign = Vector256.Create((byte)128).AsUInt32();
             var expOffset = Vector256.Create(0x0380_0000u);

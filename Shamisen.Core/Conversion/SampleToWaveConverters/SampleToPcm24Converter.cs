@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using Shamisen.Utils;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -14,6 +15,7 @@ using System.Runtime.Intrinsics.X86;
 using Shamisen.Utils.Intrinsics;
 
 using System.Security.Cryptography;
+
 using Shamisen;
 
 #endif
@@ -125,7 +127,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 }
                 else
                 {
-                    ProcessNormal(wrote, dest);
+                    ConvertSampleToPcm24(dest, wrote);
                 }
                 if (IsEndiannessConversionRequired)
                 {
@@ -137,27 +139,27 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             return buffer.Length;
         }
 
-        private static void ProcessNormal(Span<float> wrote, Span<Int24> dest)
+        private static void ConvertSampleToPcm24(Span<Int24> destination, ReadOnlySpan<float> source)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessNormalAvx2(wrote, dest);
+                    ProcessNormalAvx2(destination, source);
                     return;
                 }
 #endif
-                ProcessNormalStandard(wrote, dest);
+                ProcessNormalStandard(destination, source);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalStandard(Span<float> wrote, Span<Int24> dest)
+        internal static void ProcessNormalStandard(Span<Int24> destination, ReadOnlySpan<float> source)
         {
-            ref var rsi = ref MemoryMarshal.GetReference(wrote);
-            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(dest));
-            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(destination));
+            nint i = 0, j = 0, length = MathI.Min(destination.Length, source.Length);
             Vector4 mul = new(Multiplier);
             Vector4 max = new(8388607.0f / 8388608.0f);
             Vector4 min = new(-1.0f);
@@ -220,11 +222,11 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 #if NETCOREAPP3_1_OR_GREATER
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalAvx2(Span<float> wrote, Span<Int24> dest)
+        internal static void ProcessNormalAvx2(Span<Int24> destination, ReadOnlySpan<float> source)
         {
-            ref var rsi = ref MemoryMarshal.GetReference(wrote);
-            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(dest));
-            nint i = 0, j = 0, length = MathI.Min(dest.Length, wrote.Length);
+            ref var rsi = ref MemoryMarshal.GetReference(source);
+            ref var rdi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(destination));
+            nint i = 0, j = 0, length = MathI.Min(destination.Length, source.Length);
             var ymm15 = Vector256.Create(-1.0f);
             var ymm14 = Vector256.Create(8388607.0f / 8388608.0f);
             var ymm13 = Vector256.Create(0x0b800000);

@@ -55,17 +55,17 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         }
 
         [Benchmark]
-        public void ProcessNormalAvx2() => SampleToPcm16Converter.ProcessNormalAvx2(srcBuffer, dstBuffer);
+        public void ProcessNormalAvx2() => SampleToPcm16Converter.ProcessNormalAvx2(dstBuffer, srcBuffer);
         [Benchmark]
-        public void ProcessNormalSse2() => SampleToPcm16Converter.ProcessNormalSse2(srcBuffer, dstBuffer);
+        public void ProcessNormalSse2() => SampleToPcm16Converter.ProcessNormalSse2(dstBuffer, srcBuffer);
         [Benchmark]
-        public void ProcessNormalStandard() => SampleToPcm16Converter.ProcessNormalStandard(srcBuffer, dstBuffer);
+        public void ProcessNormalStandard() => SampleToPcm16Converter.ProcessNormalStandard(dstBuffer, srcBuffer);
         [Benchmark]
-        public void ProcessReversedAvx2() => SampleToPcm16Converter.ProcessReversedAvx2(srcBuffer, dstBuffer);
+        public void ProcessReversedAvx2() => SampleToPcm16Converter.ProcessReversedAvx2(dstBuffer, srcBuffer);
         [Benchmark]
-        public void ProcessReversedSsse3() => SampleToPcm16Converter.ProcessReversedSsse3(srcBuffer, dstBuffer);
+        public void ProcessReversedSsse3() => SampleToPcm16Converter.ProcessReversedSsse3(dstBuffer, srcBuffer);
         [Benchmark]
-        public void ProcessReversedStandard() => SampleToPcm16Converter.ProcessReversedStandard(srcBuffer, dstBuffer);
+        public void ProcessReversedStandard() => SampleToPcm16Converter.ProcessReversedStandard(dstBuffer, srcBuffer);
         [GlobalCleanup]
         public void Cleanup()
         {

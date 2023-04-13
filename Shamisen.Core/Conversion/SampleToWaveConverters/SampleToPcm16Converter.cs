@@ -134,11 +134,11 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
                 if (DoDeltaSigmaModulation)
                 {
-                    ProcessAccurate(wrote, dest);
+                    ProcessAccurate(dest, wrote);
                 }
                 else
                 {
-                    ProcessNormal(wrote, dest);
+                    ConvertSampleToPcm16(dest, wrote, IsEndiannessConversionRequired, enableIntrinsics, enabledX86Intrinsics);
                 }
                 cursor = cursor.Slice(dest.Length);
                 if (u != reader.Length) return (outBuffer.Length - cursor.Length) * sizeof(ushort);  //The Source doesn't fill whole reader so return here.
@@ -148,12 +148,12 @@ namespace Shamisen.Conversion.SampleToWaveConverters
 
         #region Accurate
 
-        private void ProcessAccurate(Span<float> wrote, Span<short> dest) =>
+        private void ProcessAccurate(Span<short> dest, ReadOnlySpan<float> wrote) =>
             //
 
-            ProcessAccurateStandard(wrote, dest);
+            ProcessAccurateStandard(dest, wrote);
 
-        private void ProcessAccurateStandard(Span<float> wrote, Span<short> dest)
+        private void ProcessAccurateStandard(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var channels = Format.Channels;
             if (dsmAccumulator.Length < channels || dsmLastOutput.Length < channels)
@@ -161,19 +161,19 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             switch (channels)
             {
                 case 1:
-                    ProcessAccurateMonaural(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    ProcessAccurateMonaural(dest, wrote, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 case 2:
-                    ProcessAccurateStereoStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    ProcessAccurateStereoStandard(dest, wrote, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 case 3:
-                    ProcessAccurate3ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    ProcessAccurate3ChannelsStandard(dest, wrote, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 case 4:
-                    ProcessAccurate4ChannelsStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span);
+                    ProcessAccurate4ChannelsStandard(dest, wrote, dsmAccumulator.Span, dsmLastOutput.Span);
                     break;
                 default:
-                    ProcessAccurateOrdinal(wrote, dest);
+                    ProcessAccurateOrdinal(dest, wrote);
                     break;
             }
             if (IsEndiannessConversionRequired)
@@ -182,7 +182,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        private static void ProcessAccurateMonaural(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        private static void ProcessAccurateMonaural(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = MemoryMarshal.GetReference(accSpan);
             var dsmPrev = (float)MemoryMarshal.GetReference(loSpan);
@@ -202,7 +202,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             MemoryMarshal.GetReference(loSpan) = (short)dsmPrev;
         }
 
-        private static void ProcessAccurateStereoStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        private static void ProcessAccurateStereoStandard(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = Unsafe.As<float, Vector2>(ref MemoryMarshal.GetReference(accSpan));
             var dsmLastOut = Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(loSpan));
@@ -225,7 +225,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             Unsafe.As<short, (short x, short y)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y);
         }
 
-        private static void ProcessAccurate3ChannelsStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        private static void ProcessAccurate3ChannelsStandard(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = Unsafe.As<float, Vector3>(ref MemoryMarshal.GetReference(accSpan));
             var dsmLastOut = Unsafe.As<short, (short x, short y, short z)>(ref MemoryMarshal.GetReference(loSpan));
@@ -248,7 +248,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             Unsafe.As<short, (short x, short y, short z)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z);
         }
 
-        private static void ProcessAccurate4ChannelsStandard(Span<float> wrote, Span<short> dest, Span<float> accSpan, Span<short> loSpan)
+        private static void ProcessAccurate4ChannelsStandard(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> accSpan, Span<short> loSpan)
         {
             var dsmAcc = Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan));
             var dsmLastOut = Unsafe.As<short, (short x, short y, short z, short w)>(ref MemoryMarshal.GetReference(loSpan));
@@ -270,7 +270,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             Unsafe.As<float, Vector4>(ref MemoryMarshal.GetReference(accSpan)) = dsmAcc;
             Unsafe.As<short, (short x, short y, short z, short w)>(ref MemoryMarshal.GetReference(loSpan)) = ((short)dsmPrev.X, (short)dsmPrev.Y, (short)dsmPrev.Z, (short)dsmPrev.W);
         }
-        private static nint ProcessAccurateDirectGenericStandard(Span<float> wrote, Span<short> dest, Span<float> dsmAcc, Span<short> dsmLast, int dsmChannelPointer)
+        private static nint ProcessAccurateDirectGenericStandard(Span<short> dest, ReadOnlySpan<float> wrote, Span<float> dsmAcc, Span<short> dsmLast, int dsmChannelPointer)
         {
             ref var acc = ref MemoryMarshal.GetReference(dsmAcc);
             ref var dlo = ref MemoryMarshal.GetReference(dsmLast);
@@ -295,63 +295,96 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
             return ch;
         }
-        private void ProcessAccurateOrdinal(Span<float> wrote, Span<short> dest) => dsmChannelPointer = (int)ProcessAccurateDirectGenericStandard(wrote, dest, dsmAccumulator.Span, dsmLastOutput.Span, dsmChannelPointer);
+        private void ProcessAccurateOrdinal(Span<short> dest, ReadOnlySpan<float> wrote) => dsmChannelPointer = (int)ProcessAccurateDirectGenericStandard(dest, wrote, dsmAccumulator.Span, dsmLastOutput.Span, dsmChannelPointer);
 
         #endregion Accurate
 
         #region Normal
 
-        private void ProcessNormal(Span<float> wrote, Span<short> dest)
+        /// <summary>
+        /// Converts <see cref="float"/> values to <see cref="AudioEncoding.Alaw"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="AudioEncoding.Alaw"/> values.</param>
+        /// <param name="source">The <see cref="float"/> values to convert from.</param>
+        /// <param name="convertEndianness">The value which indicates whether <see cref="ConvertSampleToPcm16(Span{short}, ReadOnlySpan{float}, bool)"/> should perform endianness conversion.</param>
+        public static void ConvertSampleToPcm16(Span<short> destination, ReadOnlySpan<float> source, bool convertEndianness)
         {
-            if (IsEndiannessConversionRequired)
+            if (convertEndianness)
             {
-#if NETCOREAPP3_1_OR_GREATER
+                if (Avx2.IsSupported)
+                {
+                    ProcessReversedAvx2(destination, source);
+                    return;
+                }
+                if (Ssse3.IsSupported)
+                {
+                    ProcessReversedSsse3(destination, source);
+                    return;
+                }
+                ProcessReversedStandard(destination, source);
+            }
+            else
+            {
+                if (Avx2.IsSupported)
+                {
+                    ProcessNormalAvx2(destination, source);
+                    return;
+                }
+                if (Sse2.IsSupported)
+                {
+                    ProcessNormalSse2(destination, source);
+                    return;
+                }
+                ProcessNormalStandard(destination, source);
+            }
+        }
+        private static void ConvertSampleToPcm16(Span<short> destination, ReadOnlySpan<float> source, bool convertEndianness, bool enableIntrinsics, X86Intrinsics enabledX86Intrinsics)
+        {
+            if (convertEndianness)
+            {
                 if (enableIntrinsics)
                 {
                     if (Avx2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx2))
                     {
-                        ProcessReversedAvx2(wrote, dest);
+                        ProcessReversedAvx2(destination, source);
                         return;
                     }
                     if (Ssse3.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Ssse3))
                     {
-                        ProcessReversedSsse3(wrote, dest);
+                        ProcessReversedSsse3(destination, source);
                         return;
                     }
                 }
-#endif
-                ProcessReversedStandard(wrote, dest);
+                ProcessReversedStandard(destination, source);
             }
             else
             {
-#if NETCOREAPP3_1_OR_GREATER
                 if (enableIntrinsics)
                 {
                     if (Avx2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Avx2))
                     {
-                        ProcessNormalAvx2(wrote, dest);
+                        ProcessNormalAvx2(destination, source);
                         return;
                     }
                     if (Sse2.IsSupported && enabledX86Intrinsics.HasAllFeatures(X86IntrinsicsMask.Sse2))
                     {
-                        ProcessNormalSse2(wrote, dest);
+                        ProcessNormalSse2(destination, source);
                         return;
                     }
                 }
-#endif
-                ProcessNormalStandard(wrote, dest);
+                ProcessNormalStandard(destination, source);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessReversedStandard(Span<float> wrote, Span<short> dest)
+        internal static void ProcessReversedStandard(Span<short> dest, ReadOnlySpan<float> wrote)
         {
-            ProcessNormalStandard(wrote, dest);
+            ProcessNormalStandard(dest, wrote);
             dest.ReverseEndianness();
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalStandard(Span<float> wrote, Span<short> dest)
+        internal static void ProcessNormalStandard(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = new Vector<float>(32767.0f);
             var min = new Vector<float>(-32768.0f);

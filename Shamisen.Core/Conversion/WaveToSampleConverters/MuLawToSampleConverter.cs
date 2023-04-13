@@ -99,7 +99,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </returns>
         public override ReadResult Read(Span<float> buffer)
         {
-            var internalBufferLengthRequired = CheckBuffer(buffer.Length);
+            var internalBufferLengthRequired = buffer.Length;
             var bytebuf = MemoryMarshal.AsBytes(buffer);
             //Resampling start
             var srcBuffer = bytebuf.Slice(bytebuf.Length - internalBufferLengthRequired, internalBufferLengthRequired);
@@ -111,7 +111,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 {
                     var rb = readBuffer.SliceWhile(rr.Length);
                     var wb = buffer.SliceWhile(rb.Length);
-                    Process(rb, wb);
+                    ConvertMuLawToSingle(wb, rb);
                     return wb.Length;
                 }
             }
@@ -121,53 +121,66 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
+        /// <summary>
+        /// Converts <see cref="AudioEncoding.Mulaw"/> value to <see cref="float"/> value.<br/>
+        /// </summary>
+        /// <param name="value">The <see cref="AudioEncoding.Mulaw"/> value to decode.</param>
+        /// <returns>The decoded <see cref="float"/> value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private static void Process(Span<byte> rb, Span<float> wb)
+        public static float ConvertMuLawToSingle(byte value)
+        {
+            var v = (uint)(sbyte)~value;
+            var y = (v & 0x8000_0000u) + 0x3b84_0000u;
+            var f = BitConverter.Int32BitsToSingle((int)y);
+            v <<= 19;
+            v &= 0x83f8_0000;
+            v += 0x3b84_0000;
+            return BitConverter.Int32BitsToSingle((int)v) - f;
+        }
+
+        /// <summary>
+        /// Converts <see cref="AudioEncoding.Mulaw"/> values to <see cref="float"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="float"/> values.</param>
+        /// <param name="source">The <see cref="AudioEncoding.Mulaw"/> values to convert from.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ConvertMuLawToSingle(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-#if NET5_0_OR_GREATER
                 if (AdvSimd.Arm64.IsSupported)
                 {
-                    ProcessAdvSimdArm64(rb, wb);
+                    ProcessAdvSimdArm64(destination, source);
                     return;
                 }
                 if (AdvSimd.IsSupported)
                 {
-                    ProcessAdvSimd(rb, wb);
+                    ProcessAdvSimd(destination, source);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-                if (rb.Length > 64 && Avx2.IsSupported)
+                if (Avx2.IsSupported)
                 {
-                    ProcessAvx2MM256(rb, wb);
+                    ProcessAvx2MM256(destination, source);
                     return;
                 }
-                if (rb.Length > 32 && Avx2.IsSupported)
+                if (Sse41.IsSupported)
                 {
-                    ProcessAvx2MM128(rb, wb);
+                    ProcessSse41(destination, source);
                     return;
                 }
-                if (rb.Length > 8 && Sse41.IsSupported)
-                {
-                    ProcessSse41(rb, wb);
-                    return;
-                }
-#endif
-                ProcessStandard(rb, wb);
+                ProcessStandard(destination, source);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessStandard(Span<byte> rb, Span<float> wb)
+        internal static void ProcessStandard(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i = 0;
-                ref var x9 = ref MemoryMarshal.GetReference(rb);
-                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
                 for (; i < length; i++)
                 {
                     var v = Unsafe.Add(ref x9, i);
@@ -181,7 +194,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #region Arm Intrinsics
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAdvSimd(Span<byte> rb, Span<float> wb)
+        internal static void ProcessAdvSimd(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
@@ -189,10 +202,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var v1_4s = Vector128.Create(0x8000_0000u);
                 var v2_4s = Vector128.Create(0x3b84_0000u);
                 var v3_4s = Vector128.Create(0x83f8_0000u);
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var x9 = ref MemoryMarshal.GetReference(rb);
-                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
                 //This loop is almost directly translated from ProcessSse41, and might be suboptimal on physical ARM chips.
                 var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
@@ -229,7 +242,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAdvSimdArm64(Span<byte> rb, Span<float> wb)
+        internal static void ProcessAdvSimdArm64(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
@@ -237,10 +250,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var v1_4s = Vector128.Create(0x8000_0000u);
                 var v2_4s = Vector128.Create(0x3b84_0000u);
                 var v3_4s = Vector128.Create(0x83f8_0000u);
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var x9 = ref MemoryMarshal.GetReference(rb);
-                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
                 //This loop is almost directly translated from ProcessSse41, and might be suboptimal on physical Armv8 chips.
                 var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
@@ -283,17 +296,17 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #region X86 Intrinsics
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2MM128(Span<byte> rb, Span<float> wb)
+        internal static void ProcessAvx2MM128(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
                 var xmm1 = Vector128.Create(0x8000_0000u);
                 var xmm2 = Vector128.Create(0x3b84_0000u);
                 var xmm3 = Vector128.Create(0x83f8_0000u);
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
                 var olen = length - 15;
                 for (i = 0; i < olen; i += 16)
                 {
@@ -345,17 +358,17 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2MM256(Span<byte> rb, Span<float> wb)
+        internal static void ProcessAvx2MM256(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
                 var ymm1 = Vector256.Create(0x8000_0000u);
                 var ymm2 = Vector256.Create(0x3b84_0000u);
                 var ymm3 = Vector256.Create(0x83f8_0000u);
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
                 var olen = length - 31;
                 for (i = 0; i < olen; i += 32)
                 {
@@ -419,7 +432,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessSse41(Span<byte> rb, Span<float> wb)
+        internal static void ProcessSse41(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
@@ -427,10 +440,10 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 var xmm1 = Vector128.Create(0x8000_0000u);
                 var xmm2 = Vector128.Create(0x3b84_0000u);
                 var xmm3 = Vector128.Create(0x83f8_0000u);
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
                 var olen = length - 7;
                 for (i = 0; i < olen; i += 8)
                 {
@@ -472,21 +485,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #endregion X86 Intrinsics
 
 #endif
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static float ConvertMuLawToSingle(byte value)
-        {
-            var v = (uint)(sbyte)~value;
-            var y = (v & 0x8000_0000u) + 0x3b84_0000u;
-            var f = BitConverter.Int32BitsToSingle((int)y);
-            v <<= 19;
-            v &= 0x83f8_0000;
-            v += 0x3b84_0000;
-            return BitConverter.Int32BitsToSingle((int)v) - f;
-        }
-
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        private int CheckBuffer(int sampleLengthOut) => sampleLengthOut;
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

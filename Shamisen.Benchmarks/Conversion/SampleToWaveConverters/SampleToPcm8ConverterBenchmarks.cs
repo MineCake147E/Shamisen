@@ -47,9 +47,9 @@ namespace Shamisen.Benchmarks.Conversion.SampleToWaveConverters
         }
 
         [Benchmark]
-        public void ProcessNormalAvx2() => SampleToPcm24Converter.ProcessNormalAvx2(bufferSrc, bufferDst);
+        public void ProcessNormalAvx2() => SampleToPcm24Converter.ProcessNormalAvx2(bufferDst, bufferSrc);
         [Benchmark]
-        public void ProcessNormalStandard() => SampleToPcm24Converter.ProcessNormalStandard(bufferSrc, bufferDst);
+        public void ProcessNormalStandard() => SampleToPcm24Converter.ProcessNormalStandard(bufferDst, bufferSrc);
         [GlobalCleanup]
         public void Cleanup() => bufferSrc = null;
     }

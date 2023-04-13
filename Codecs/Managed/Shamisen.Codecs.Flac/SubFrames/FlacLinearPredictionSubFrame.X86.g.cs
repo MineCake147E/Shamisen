@@ -93,11 +93,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
                 }
@@ -141,11 +137,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev0 = Ssse3.AlignRight(vprev0, yy, 8);
@@ -176,11 +168,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -229,11 +217,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
                 }
@@ -280,11 +264,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
@@ -325,11 +305,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -378,11 +354,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
                 }
@@ -429,11 +401,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 8);
@@ -465,11 +433,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -522,11 +486,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
@@ -577,11 +537,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
@@ -617,11 +573,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -676,11 +628,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
@@ -731,11 +679,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 8);
@@ -771,11 +715,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -830,11 +770,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
@@ -888,11 +824,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
@@ -938,11 +870,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1002,11 +930,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
                     vprev0 = Ssse3.AlignRight(vprev0, y, 12);
@@ -1045,11 +969,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev0 = Avx2.PermuteVar8x32(vprev0, permShift);
@@ -1104,11 +1024,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 8);
@@ -1145,11 +1061,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1208,11 +1120,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
@@ -1270,11 +1178,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
@@ -1315,11 +1219,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1380,11 +1280,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
@@ -1442,11 +1338,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 8);
@@ -1487,11 +1379,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1552,11 +1440,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
@@ -1617,11 +1501,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
@@ -1672,11 +1552,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1737,11 +1613,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
                     vprev1 = Ssse3.AlignRight(vprev1, vprev0, 12);
@@ -1802,11 +1674,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 8);
@@ -1848,11 +1716,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -1922,11 +1786,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
@@ -1973,11 +1833,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
@@ -2043,11 +1899,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
@@ -2093,11 +1945,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -2169,11 +2017,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
@@ -2220,11 +2064,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
@@ -2290,11 +2130,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 8);
@@ -2340,11 +2176,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -2416,11 +2248,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
@@ -2467,11 +2295,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
@@ -2540,11 +2364,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
@@ -2600,11 +2420,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -2676,11 +2492,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
                     vprev2 = Ssse3.AlignRight(vprev2, vprev1, 12);
@@ -2725,11 +2537,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev1 = Avx2.PermuteVar8x32(vprev1, permShift);
@@ -2798,11 +2606,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 8);
@@ -2849,11 +2653,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -2929,11 +2729,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
@@ -2983,11 +2779,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -3061,11 +2853,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
@@ -3116,11 +2904,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -3198,11 +2982,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
@@ -3252,11 +3032,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -3330,11 +3106,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev8 = Ssse3.AlignRight(vprev8, vprev7, 8);
@@ -3385,11 +3157,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -3467,11 +3235,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
@@ -3521,11 +3285,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -3602,11 +3362,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
@@ -3667,11 +3423,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -3749,11 +3501,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
                     vprev3 = Ssse3.AlignRight(vprev3, vprev2, 12);
@@ -3803,11 +3551,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -3884,11 +3628,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev9 = Ssse3.AlignRight(vprev9, vprev8, 8);
@@ -3940,11 +3680,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -4026,11 +3762,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
@@ -4083,11 +3815,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -4167,11 +3895,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
@@ -4227,11 +3951,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -4315,11 +4035,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
@@ -4372,11 +4088,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -4456,11 +4168,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev10 = Ssse3.AlignRight(vprev10, vprev9, 8);
@@ -4516,11 +4224,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -4604,11 +4308,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
@@ -4661,11 +4361,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -4748,11 +4444,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
@@ -4818,11 +4510,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -4906,11 +4594,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
                     vprev4 = Ssse3.AlignRight(vprev4, vprev3, 12);
@@ -4961,11 +4645,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev2 = Avx2.PermuteVar8x32(vprev2, permShift);
@@ -5048,11 +4728,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev11 = Ssse3.AlignRight(vprev11, vprev10, 8);
@@ -5109,11 +4785,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -5201,11 +4873,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
@@ -5261,11 +4929,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -5353,11 +5017,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
@@ -5418,11 +5078,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -5512,11 +5168,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
@@ -5572,11 +5224,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -5664,11 +5312,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev12 = Ssse3.AlignRight(vprev12, vprev11, 8);
@@ -5729,11 +5373,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -5823,11 +5463,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
@@ -5883,11 +5519,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -5978,11 +5610,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
@@ -6053,11 +5681,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -6147,11 +5771,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
                     vprev5 = Ssse3.AlignRight(vprev5, vprev4, 12);
@@ -6207,11 +5827,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -6302,11 +5918,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev13 = Ssse3.AlignRight(vprev13, vprev12, 8);
@@ -6368,11 +5980,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -6466,11 +6074,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
@@ -6529,11 +6133,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -6627,11 +6227,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
@@ -6697,11 +6293,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -6797,11 +6389,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
@@ -6860,11 +6448,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -6958,11 +6542,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev14 = Ssse3.AlignRight(vprev14, vprev13, 8);
@@ -7028,11 +6608,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -7128,11 +6704,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
@@ -7191,11 +6763,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -7292,11 +6860,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev15 = Ssse3.AlignRight(vprev15, vprev14, 8);
@@ -7372,11 +6936,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();
@@ -7472,11 +7032,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var y = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), y);
-#else
                     Unsafe.Add(ref d, i) = y.GetElement(0);
-#endif
                     y = Sse2.ShiftLeftLogical128BitLane(y, 12);
                     vprev7 = Ssse3.AlignRight(vprev7, vprev6, 12);
                     vprev6 = Ssse3.AlignRight(vprev6, vprev5, 12);
@@ -7533,11 +7089,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalarUnsafe(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightArithmetic(sum, vshift);
                     var yy = Sse2.Add(sum, res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     vprev3 = Avx2.PermuteVar8x32(vprev3, permShift);
@@ -7634,11 +7186,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     var res = Vector128.CreateScalar(Unsafe.Add(ref r, i));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     yy = Sse2.ShiftLeftLogical128BitLane(yy, 8);
                     vprev15 = Ssse3.AlignRight(vprev15, vprev14, 8);
@@ -7705,11 +7253,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                     sum = Sse2.Add(sum, Sse2.ShiftRightLogical128BitLane(sum, 8));
                     sum = Sse2.ShiftRightLogical(sum, vshift);
                     var yy = Sse2.Add(sum.AsInt32(), res);
-#if !DEBUG && NET5_0_OR_GREATER //Unsafe.AsPointer<T>(ref T) should only be used in Release mode.
-                    Sse2.StoreScalar((int*)Unsafe.AsPointer(ref Unsafe.Add(ref d, i)), yy);
-#else
                     Unsafe.Add(ref d, i) = yy.GetElement(0);
-#endif
                     i++;
                     var yu = yy.ToVector256();
                     yu = Avx2.Permute4x64(yu.AsUInt64(), 0b00_00_00_00).AsInt32();

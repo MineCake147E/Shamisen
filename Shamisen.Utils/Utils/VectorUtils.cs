@@ -22,29 +22,6 @@ namespace Shamisen.Utils
     /// </summary>
     public static partial class VectorUtils
     {
-        #region Hardware Capability
-
-        /// <summary>
-        /// Gets the value which indicates whether the <see cref="ShiftRightLogical(Vector{int}, byte)"/> could be hardware accelerated.
-        /// </summary>
-        public static bool IsShiftRightHardwareAccelerated
-        {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-            get
-            {
-                unchecked
-                {
-#if NET5_0_OR_GREATER
-                    if (AdvSimd.IsSupported) return true;
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-                    if (Sse2.IsSupported) return true;
-#endif
-                    return false;
-                }
-            }
-        }
-        #endregion
         #region FastDotProduct
         /// <summary>
         /// Returns the dot product of two vectors.
@@ -1138,7 +1115,6 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0_OR_GREATER
                 if (Vector<float>.Count == 4 && AdvSimd.IsSupported)
                 {
                     return AdvSimd.RoundToNearest(values.AsVector128()).AsVector();
@@ -1151,21 +1127,6 @@ namespace Shamisen.Utils
                 {
                     return Sse41.RoundToNearestInteger(values.AsVector128()).AsVector();
                 }
-#endif
-#if NETCOREAPP3_1
-                if (Vector<float>.Count == 8 && Avx.IsSupported)
-                {
-                    var ymm0 = Unsafe.As<Vector<float>, Vector256<float>>(ref values);
-                    ymm0 = Avx.RoundToNearestInteger(ymm0);
-                    return Unsafe.As<Vector256<float>, Vector<float>>(ref ymm0);
-                }
-                if (Vector<float>.Count == 4 && Sse41.IsSupported)
-                {
-                    var xmm0 = Unsafe.As<Vector<float>, Vector128<float>>(ref values);
-                    xmm0 = Sse41.RoundToNearestInteger(xmm0);
-                    return Unsafe.As<Vector128<float>, Vector<float>>(ref xmm0);
-                }
-#endif
                 var v = values;
                 //round hack: if we add 16777216f and subtract 16777216f, the non-integer part is rounded to the nearest even numbers.
                 var s = Vector.BitwiseAnd(sign, v);
@@ -1279,24 +1240,6 @@ namespace Shamisen.Utils
                 }
             }
         }
-        /// <summary>
-        /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
-        /// </summary>
-        /// <param name="value">The values to shift right.</param>
-        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<int> ShiftLeftLogical(Vector<int> value, byte shift) => Vector.ShiftLeft(value, shift);
-
-        /// <summary>
-        /// Shifts the <paramref name="value"/> left with <paramref name="shift"/>.
-        /// </summary>
-        /// <param name="value">The values to shift right.</param>
-        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-        /// <param name="prepared">The <see cref="Vector{T}"/> value prepared with <see cref="PrepareConstantShiftLeftInt32(byte)"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<int> ShiftLeftLogical(Vector<int> value, byte shift, Vector<int> prepared) => Vector.ShiftLeft(value, shift);
         #endregion
         #region ShiftRight
         /// <summary>
@@ -1462,22 +1405,6 @@ namespace Shamisen.Utils
             }
         }
 #endif
-        /// <summary>
-        /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
-        /// </summary>
-        /// <param name="value">The values to shift right.</param>
-        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<int> ShiftRightLogical(Vector<int> value, byte shift) => Vector.ShiftRightLogical(value, shift);
-        /// <summary>
-        /// Shifts the <paramref name="value"/> right with <paramref name="shift"/>.
-        /// </summary>
-        /// <param name="value">The values to shift right.</param>
-        /// <param name="shift">The amounts to shift <paramref name="value"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<uint> ShiftRightLogical(Vector<uint> value, byte shift) => Vector.ShiftRightLogical(value, shift);
         #endregion
         #region AddAsInt32
         /// <summary>
@@ -1605,24 +1532,12 @@ namespace Shamisen.Utils
         /// </summary>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static Vector<int> GetIndexVector()
+        public static Vector<int> GetIndexVector() => Vector<int>.Count switch
         {
-            unchecked
-            {
-#if NETCOREAPP3_1_OR_GREATER
-                switch (Vector<int>.Count)
-                {
-                    case 4:
-                        return Vector128.Create(0, 1, 2, 3).AsVector();
-                    case 8:
-                        return Vector256.Create(0, 1, 2, 3, 4, 5, 6, 7).AsVector();
-                    default:
-                        break;
-                }
-#endif
-                return GenerateIndexVectorFallback();
-            }
-        }
+            4 => Vector128.Create(0, 1, 2, 3).AsVector(),
+            8 => Vector256.Create(0, 1, 2, 3, 4, 5, 6, 7).AsVector(),
+            _ => GenerateIndexVectorFallback(),
+        };
 
         private static unsafe Vector<int> GenerateIndexVectorFallback()
         {

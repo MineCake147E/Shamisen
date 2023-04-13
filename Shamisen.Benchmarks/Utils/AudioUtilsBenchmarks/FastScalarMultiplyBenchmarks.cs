@@ -48,6 +48,6 @@ namespace Shamisen.Benchmarks.Utils.AudioUtilsBenchmarks
         public void FastScalarMultiplyStandardFixed() => AudioUtils.FastScalarMultiplyStandardFixed(bufferDst.AsSpan(), Scale);
         */
         [Benchmark]
-        public void FastScalarMultiplyStandardVariable() => AudioUtils.FastScalarMultiplyStandardVariable(bufferDst.AsSpan(), bufferDst.AsSpan(), Scale);
+        public void FastScalarMultiplyStandardVariable() => AudioUtils.FastScalarMultiply(bufferDst.AsSpan(), bufferDst.AsSpan(), Scale);
     }
 }

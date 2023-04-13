@@ -140,11 +140,11 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
                 if (IsEndiannessConversionRequired)
                 {
-                    ProcessReversed(wrote, dest);
+                    ProcessReversed(dest, wrote);
                 }
                 else
                 {
-                    ProcessNormal(wrote, dest);
+                    ProcessNormal(dest, wrote);
                 }
                 cursor = cursor.Slice(u);
                 if (u != reader.Length) return buffer.Length - cursor.Length;  //The Source doesn't fill whole reader so return here.
@@ -152,38 +152,38 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             return buffer.Length;
         }
 
-        private static void ProcessNormal(Span<Int24> wrote, Span<float> dest)
+        private static void ProcessNormal(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessNormalAvx2(wrote, dest);
+                    ProcessNormalAvx2(dest, wrote);
                     return;
                 }
 #endif
-                ProcessNormalStandard(wrote, dest);
+                ProcessNormalStandard(dest, wrote);
             }
         }
 
-        private static void ProcessReversed(Span<Int24> wrote, Span<float> dest)
+        private static void ProcessReversed(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             unchecked
             {
 #if NETCOREAPP3_1_OR_GREATER
                 if (Avx2.IsSupported)
                 {
-                    ProcessReversedAvx2(wrote, dest);
+                    ProcessReversedAvx2(dest, wrote);
                     return;
                 }
 #endif
-                ProcessReversedStandard(wrote, dest);
+                ProcessReversedStandard(dest, wrote);
             }
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalStandard(Span<Int24> wrote, Span<float> dest)
+        internal static void ProcessNormalStandard(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(wrote));
@@ -259,7 +259,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        internal static void ProcessReversedStandard(Span<Int24> wrote, Span<float> dest)
+        internal static void ProcessReversedStandard(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref MemoryMarshal.GetReference(wrote);
@@ -273,7 +273,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #region X86
 #if NETCOREAPP3_1_OR_GREATER
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessNormalAvx2(Span<Int24> wrote, Span<float> dest)
+        internal static void ProcessNormalAvx2(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(wrote));
@@ -356,7 +356,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessReversedAvx2(Span<Int24> wrote, Span<float> dest)
+        internal static void ProcessReversedAvx2(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
             ref var rsi = ref Unsafe.As<Int24, byte>(ref MemoryMarshal.GetReference(wrote));

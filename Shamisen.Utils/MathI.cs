@@ -59,7 +59,7 @@ namespace Shamisen
 
         #region Rectify
         /// <summary>
-        /// Rectifies the specified <paramref name="value"/>.
+        /// Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
         /// </summary>
         /// <param name="value">The value to rectify.</param>
         /// <returns></returns>
@@ -70,6 +70,36 @@ namespace Shamisen
         public static int Rectify(int value)
         {
             var h = value >> 31;
+            return value & ~h;
+        }
+
+        /// <summary>
+        /// Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
+        /// </summary>
+        /// <param name="value">The value to rectify.</param>
+        /// <returns>The rectified value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static long Rectify(long value)
+        {
+            var h = value >> 63;
+            return value & ~h;
+        }
+
+        /// <summary>
+        /// Returns <paramref name="value"/> if <paramref name="value"/> is positive, 0 otherwise.
+        /// </summary>
+        /// <param name="value">The value to rectify.</param>
+        /// <returns>The rectified value.</returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+#if DEBUG_MATHI_NON_USER_CODE
+        [DebuggerStepThrough]
+#endif
+        public static nint Rectify(nint value)
+        {
+            var h = value >> (8 * Unsafe.SizeOf<nint>() - 1);
             return value & ~h;
         }
         #endregion
@@ -83,7 +113,6 @@ namespace Shamisen
         /// <param name="b">The value b.</param>
         /// <returns></returns>
 #if DEBUG_MATHI_NON_USER_CODE
-
         [DebuggerStepThrough]
 #endif
         public static ReadResult Min(ReadResult a, ReadResult b) => a < b ? a : b;
@@ -91,7 +120,6 @@ namespace Shamisen
         /// <inheritdoc cref="Math.Min(long, long)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
 #if DEBUG_MATHI_NON_USER_CODE
-
         [DebuggerStepThrough]
 #endif
         public static nint Min(nint val1, nint val2)
@@ -107,7 +135,6 @@ namespace Shamisen
         /// <inheritdoc cref="Math.Min(long, long)"/>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
 #if DEBUG_MATHI_NON_USER_CODE
-
         [DebuggerStepThrough]
 #endif
         public static nuint Min(nuint val1, nuint val2)
@@ -373,7 +400,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static int AndNot(int a, int b) => (int)AndNot((uint)a, (uint)b);
+        public static int AndNot(int a, int b) => ~a & b;
 
         /// <summary>
         /// Performs a bitwise <c>and</c> operation on two specified <see cref="uint"/> values after negating <paramref name="a"/>.
@@ -386,19 +413,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static uint AndNot(uint a, uint b)
-        {
-            unchecked
-            {
-#if NETCOREAPP3_1_OR_GREATER
-                if (Bmi1.IsSupported)
-                {
-                    return Bmi1.AndNot(a, b);
-                }
-#endif
-                return ~a & b;
-            }
-        }
+        public static uint AndNot(uint a, uint b) => ~a & b;
 
         /// <summary>
         /// Performs a bitwise <c>and</c> operation on two specified <see cref="long"/> values after negating <paramref name="a"/>.
@@ -411,7 +426,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static long AndNot(long a, long b) => (long)AndNot((ulong)a, (ulong)b);
+        public static long AndNot(long a, long b) => ~a & b;
 
         /// <summary>
         /// Performs a bitwise <c>and</c> operation on two specified <see cref="ulong"/> values after negating <paramref name="a"/>.
@@ -424,19 +439,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static ulong AndNot(ulong a, ulong b)
-        {
-            unchecked
-            {
-#if NETCOREAPP3_1_OR_GREATER
-                if (Bmi1.X64.IsSupported)
-                {
-                    return Bmi1.X64.AndNot(a, b);
-                }
-#endif
-                return ~a & b;
-            }
-        }
+        public static ulong AndNot(ulong a, ulong b) => ~a & b;
 
         /// <summary>
         /// Performs a bitwise <c>and</c> operation on two specified <see cref="IntPtr"/> values after negating <paramref name="a"/>.
@@ -449,7 +452,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static nint AndNot(nint a, nint b) => (nint)AndNot((nuint)a, (nuint)b);
+        public static nint AndNot(nint a, nint b) => ~a & b;
 
         /// <summary>
         /// Performs a bitwise <c>and</c> operation on two specified <see cref="UIntPtr"/> values after negating <paramref name="a"/>.
@@ -462,26 +465,7 @@ namespace Shamisen
         [DebuggerStepThrough]
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static nuint AndNot(nuint a, nuint b)
-        {
-            unchecked
-            {
-#if NETCOREAPP3_1_OR_GREATER
-                unsafe
-                {
-                    if (Bmi1.X64.IsSupported && sizeof(nuint) == sizeof(ulong))
-                    {
-                        return (nuint)Bmi1.X64.AndNot(a, b);
-                    }
-                    if (Bmi1.IsSupported && sizeof(nuint) == sizeof(uint))
-                    {
-                        return Bmi1.AndNot((uint)a, (uint)b);
-                    }
-                }
-#endif
-                return ~a & b;
-            }
-        }
+        public static nuint AndNot(nuint a, nuint b) => ~a & b;
         #endregion
 
         #region GetShortestBitLength
@@ -842,18 +826,18 @@ namespace Shamisen
         {
             unchecked
             {
-#if NET5_0_OR_GREATER
-                if (AdvSimd.IsSupported)
+                if (Vector64.IsHardwareAccelerated)
                 {
-                    return AdvSimd.Add(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                    return Vector64.Add(Vector64.CreateScalarUnsafe(left).AsInt32(), Vector64.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
-                if (Sse2.IsSupported)
+                if (Vector128.IsHardwareAccelerated)
                 {
-                    return Sse2.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right).AsInt32()).AsSingle().GetElement(0);
+                    return Vector128.Add(Vector128.CreateScalarUnsafe(left).AsInt32(), Vector128.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
                 }
-#endif
+                if (Vector256.IsHardwareAccelerated)
+                {
+                    return Vector256.Add(Vector256.CreateScalarUnsafe(left).AsInt32(), Vector256.CreateScalarUnsafe(right)).AsSingle().GetElement(0);
+                }
                 return BitConverter.Int32BitsToSingle(BitConverter.SingleToInt32Bits(left) + right);
             }
         }

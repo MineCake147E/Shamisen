@@ -25,12 +25,12 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             for (var i = 0; i < src.Length; i++)
             {
                 var v = src[i] = (float)((i - lhalf) * rlen);
-                exp[i] = SampleToPcm32Converter.Convert(v);
+                exp[i] = SampleToPcm32Converter.ConvertSampleToPcm32(v);
             }
             var dst = new int[src.Length];
             var actual = MemoryMarshal.Cast<int, float>(dst.AsSpan());
             src.AsSpan().CopyTo(actual);
-            SampleToPcm32Converter.ProcessNormalDirectStandard(actual);
+            SampleToPcm32Converter.ProcessNormalDirectStandard(dst, src);
             NeumaierAccumulator sumdiff = default;
             for (var i = 0; i < dst.Length; i++)
             {

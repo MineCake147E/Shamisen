@@ -9,6 +9,7 @@ using Shamisen.Primitives;
 #if NET5_0_OR_GREATER
 
 using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
 
 #endif
 #if NETCOREAPP3_1_OR_GREATER
@@ -133,67 +134,6 @@ namespace Shamisen.Utils
         }
 #endif
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastAddStandardFixed(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
-        {
-            unsafe
-            {
-                nint i, length = MathI.Min(buffer.Length, MathI.Min(samplesA.Length, samplesB.Length));
-                ref var rsA = ref MemoryMarshal.GetReference(samplesA);
-                ref var rsB = ref MemoryMarshal.GetReference(samplesB);
-                ref var rD = ref MemoryMarshal.GetReference(buffer);
-                //This is a loop for Haswell, probably not optimal in Alder Lake.
-                var olen = length - 8 * 4 + 1;
-                for (i = 0; i < olen; i += 8 * 4)
-                {
-                    var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0 * 4));
-                    var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 1 * 4));
-                    var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 2 * 4));
-                    var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 3 * 4));
-                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0 * 4));
-                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 1 * 4));
-                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 2 * 4));
-                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 3 * 4));
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0 * 4)) = sA0;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 1 * 4)) = sA1;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 2 * 4)) = sA2;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 3 * 4)) = sA3;
-                    sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 4 * 4));
-                    sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 5 * 4));
-                    sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 6 * 4));
-                    sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 7 * 4));
-                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 4 * 4));
-                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 5 * 4));
-                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 6 * 4));
-                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 7 * 4));
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 4 * 4)) = sA0;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 5 * 4)) = sA1;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 6 * 4)) = sA2;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 7 * 4)) = sA3;
-                }
-                olen = length - 4 * 4 + 1;
-                for (; i < olen; i += 4 * 4)
-                {
-                    var sA0 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 0 * 4));
-                    var sA1 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 1 * 4));
-                    var sA2 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 2 * 4));
-                    var sA3 = Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsA, i + 3 * 4));
-                    sA0 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 0 * 4));
-                    sA1 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 1 * 4));
-                    sA2 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 2 * 4));
-                    sA3 += Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rsB, i + 3 * 4));
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 0 * 4)) = sA0;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 1 * 4)) = sA1;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 2 * 4)) = sA2;
-                    Unsafe.As<float, Vector4>(ref Unsafe.Add(ref rD, i + 3 * 4)) = sA3;
-                }
-                for (; i < length; i++)
-                {
-                    var sA = Unsafe.Add(ref rsA, i);
-                    Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
-                }
-            }
-        }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void FastAddStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             unsafe
@@ -264,47 +204,56 @@ namespace Shamisen.Utils
         /// <param name="span">The span to multiply.</param>
         /// <param name="scale">The value to be multiplied.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void FastScalarMultiply(this Span<float> span, float scale = default) => FastScalarMultiplyStandardVariable(span, span, scale);
-
-        /// <summary>
-        /// Multiplies the specified samples faster, with the given <paramref name="scale"/>.
-        /// </summary>
-        /// <param name="span">The span to multiply.</param>
-        /// <param name="scale">The value to be multiplied.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void FastScalarMultiply(this Span<double> span, double scale = default)
+        public static int FastScalarMultiply(this Span<float> span, float scale = default)
         {
-            if (Vector<double>.Count > span.Length)
-            {
-                ref var rdi = ref MemoryMarshal.GetReference(span);
-                nint i, length = span.Length;
-                for (i = 0; i < length; i++)
-                {
-                    var v = Unsafe.Add(ref rdi, i) * scale;
-                    Unsafe.Add(ref rdi, i) = v;
-                }
-            }
-            else
-            {
-                FastScalarMultiplyStandardVariable(span, span, scale);
-            }
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint length = span.Length;
+            return (int)FastScalarMultiply(ref rdi, ref rdi, length, scale);
         }
 
         /// <summary>
-        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
-        /// Performs better in either ARMv8, Rocket Lake or later, or pre-Sandy-Bridge x64 CPUs due to CPU clock limits.<br/>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
         /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
         /// </summary>
-        /// <param name="destination"></param>
-        /// <param name="source"></param>
-        /// <param name="scale"></param>
+        /// <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+        /// <param name="source">The values to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        /// <returns>
+        /// The length of <paramref name="destination"/> that actually contains result.
+        /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastScalarMultiplyStandardVariable(Span<float> destination, ReadOnlySpan<float> source, float scale)
+        public static int FastScalarMultiply(Span<float> destination, ReadOnlySpan<float> source, float scale)
         {
-            var scaleV = new Vector<float>(scale);
             ref var rsi = ref MemoryMarshal.GetReference(source);
             ref var rdi = ref MemoryMarshal.GetReference(destination);
-            nint i, length = MathI.Min(source.Length, destination.Length);
+            nint length = MathI.Min(source.Length, destination.Length);
+            return (int)FastScalarMultiply(ref rdi, ref rsi, length, scale);
+        }
+
+        /// <summary>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+        /// </summary>
+        /// <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+        /// <param name="source">The values to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        /// <returns>
+        /// The length of <paramref name="destination"/> that actually contains result.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        public static nint FastScalarMultiply(NativeSpan<float> destination, ReadOnlyNativeSpan<float> source, float scale)
+        {
+            ref var rsi = ref SpanUtils.GetReference(source);
+            ref var rdi = ref SpanUtils.GetReference(destination);
+            nint length = MathI.Min(source.Length, destination.Length);
+            return FastScalarMultiply(ref rdi, ref rsi, length, scale);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static nint FastScalarMultiply(ref float rdi, ref float rsi, nint length, float scale)
+        {
+            var scaleV = new Vector<float>(scale);
+            nint i;
             for (i = 0; i < length - (Vector<float>.Count * 8 - 1); i += Vector<float>.Count * 8)
             {
                 ref var r11 = ref Unsafe.Add(ref rdi, i);
@@ -340,25 +289,67 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var v = Unsafe.Add(ref rsi, i) * scaleV[0];
-                Unsafe.Add(ref rdi, i) = v;
+                Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * scaleV[0];
             }
+            return length;
         }
 
         /// <summary>
-        /// Vectorized path using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/>.
+        /// </summary>
+        /// <param name="span">The span to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int FastScalarMultiply(this Span<double> span, double scale = default)
+        {
+            ref var rdi = ref MemoryMarshal.GetReference(span);
+            nint length = span.Length;
+            return (int)FastScalarMultiply(ref rdi, ref rdi, length, scale);
+        }
+
+        /// <summary>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
         /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
         /// </summary>
-        /// <param name="destination"></param>
-        /// <param name="source"></param>
-        /// <param name="scale"></param>
+        /// <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+        /// <param name="source">The values to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        /// <returns>
+        /// The length of <paramref name="destination"/> that actually contains result.
+        /// </returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void FastScalarMultiplyStandardVariable(Span<double> destination, ReadOnlySpan<double> source, double scale)
+        public static int FastScalarMultiply(Span<double> destination, ReadOnlySpan<double> source, double scale)
         {
-            var scaleV = new Vector<double>(scale);
             ref var rsi = ref MemoryMarshal.GetReference(source);
             ref var rdi = ref MemoryMarshal.GetReference(destination);
-            nint i, length = MathI.Min(source.Length, destination.Length);
+            nint length = MathI.Min(source.Length, destination.Length);
+            return (int)FastScalarMultiply(ref rdi, ref rsi, length, scale);
+        }
+
+        /// <summary>
+        /// Multiplies the specified samples faster, with the given <paramref name="scale"/> using <see cref="Vector{T}"/> which uses variable-sized vectors.<br/>
+        /// Future versions of .NET may improve performance if <see cref="Vector{T}"/> utilizes either x64 AVX-512 or ARMv8.2-A SVE.
+        /// </summary>
+        /// <param name="destination">The place to store results of multiplying values in <paramref name="source"/> and <paramref name="scale"/>.</param>
+        /// <param name="source">The values to multiply.</param>
+        /// <param name="scale">The value to be multiplied.</param>
+        /// <returns>
+        /// The length of <paramref name="destination"/> that actually contains result.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        public static nint FastScalarMultiply(NativeSpan<double> destination, ReadOnlyNativeSpan<double> source, double scale)
+        {
+            ref var rsi = ref SpanUtils.GetReference(source);
+            ref var rdi = ref SpanUtils.GetReference(destination);
+            nint length = MathI.Min(source.Length, destination.Length);
+            return FastScalarMultiply(ref rdi, ref rsi, length, scale);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        private static nint FastScalarMultiply(ref double rdi, ref double rsi, nint length, double scale)
+        {
+            var scaleV = new Vector<double>(scale);
+            nint i;
             for (i = 0; i < length - (Vector<double>.Count * 8 - 1); i += Vector<double>.Count * 8)
             {
                 ref var r11 = ref Unsafe.Add(ref rdi, i);
@@ -394,9 +385,9 @@ namespace Shamisen.Utils
             }
             for (; i < length; i++)
             {
-                var v = Unsafe.Add(ref rsi, i) * scaleV[0];
-                Unsafe.Add(ref rdi, i) = v;
+                Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * scaleV[0];
             }
+            return length;
         }
 
         #endregion
@@ -412,19 +403,7 @@ namespace Shamisen.Utils
         /// <param name="sourceA">The values to multiply.</param>
         /// <param name="sourceB">The values to multiply.</param>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        public static void FastMultiply(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
-        {
-            var min = MathI.Rectify(MathI.Min(MathI.Min(sourceA.Length, sourceB.Length), destination.Length));
-            if (destination.Length > min)
-            {
-                destination.Slice(min).FastFill(0);
-            }
-            if (min < 1) return;
-            destination = destination.SliceWhileIfLongerThan(min);
-            sourceA = sourceA.SliceWhileIfLongerThan(min);
-            sourceB = sourceB.SliceWhileIfLongerThan(min);
-            FastMultiplyStandardVariable(destination, sourceA, sourceB);
-        }
+        public static void FastMultiply(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB) => FastMultiplyStandardVariable(destination, sourceA, sourceB);
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void FastMultiplyStandardVariable(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
@@ -1017,6 +996,7 @@ namespace Shamisen.Utils
             switch (channels)
             {
                 case < 2:   //Less than or equals to Monaural
+                    source.CopyTo(destination);
                     return;
                 case 2:
                     DuplicateMonauralToStereo(destination, source);
@@ -1149,7 +1129,7 @@ namespace Shamisen.Utils
         /// The length of <paramref name="source"/> and <paramref name="destination"/> must be the same, otherwise the minimum of both will be used.<br/>
         /// If the minimum length of <paramref name="source"/> and <paramref name="destination"/> are not a multiple of <paramref name="channels"/>, remaining data will be ignored.
         /// </summary>
-        /// <param name="destination">The destination to write de-interleaved data.</param>
+        /// <param name="destination">The destination to write deinterleaved data.</param>
         /// <param name="source">The source.</param>
         /// <param name="channels">The number of channels.</param>
         /// <returns>The length of each channels' samples.</returns>
@@ -1158,7 +1138,7 @@ namespace Shamisen.Utils
         {
             if (channels <= 0) throw new ArgumentOutOfRangeException(nameof(channels), channels, $"The {nameof(channels)} must be larger than 0!");
             var minlen = MathI.Min(source.Length, destination.Length);
-            if (channels > minlen)
+            if (channels >= minlen)
             {
                 throw new ArgumentOutOfRangeException(nameof(channels), channels,
                     $"The {nameof(channels)} must be smaller than the minimum size of both {nameof(destination)} and {nameof(source)}!");

@@ -7,7 +7,7 @@
         <Description>OpenTK OpenAL output for Shamisen.</Description>
         <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>audio;csharp;dotnet;dotnetcore;signal processing;audio player;dotnet core;audio library;csharp library;audio io;io;OpenTK;OpenAL</PackageTags>
+        <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;OpenTK;OpenAL</PackageTags>
     </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>

@@ -46,7 +46,7 @@ namespace Shamisen.Analysis
                 ref var rdi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(span));
                 nint i = 0, length = span.Length;
                 var xmm15 = Vector128<ulong>.Zero.WithElement(1, 0x8000_0000_8000_0000ul);
-                var ymm15 = xmm15.ToVector256Unsafe().WithUpper(xmm15);
+                var ymm15 = Vector256.Create(xmm15, xmm15);
                 var olen = length - 4 * Vector256<double>.Count + 1;
                 for (; i < olen; i += 4 * Vector256<double>.Count)
                 {

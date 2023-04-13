@@ -1,13 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0-android</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
-  </ItemGroup>
-
+    <PropertyGroup>
+        <TargetFramework>net7.0-android</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>Xamarin.Android AudioTrack output for Shamisen.</Description>
+        <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;Android;Xamarin;AudioTrack</PackageTags>
+    </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+    </ItemGroup>
 </Project>

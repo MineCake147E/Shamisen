@@ -428,30 +428,30 @@ namespace Shamisen
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
         internal static void ReverseEndiannessFallback(Span<int> span)
         {
-            ref var rdi = ref MemoryMarshal.GetReference(span);
+            ref var x9 = ref MemoryMarshal.GetReference(span);
             nint i = 0, length = span.Length;
             for (; i < length - 7; i += 8)
             {
-                var x0 = Unsafe.Add(ref rdi, i + 0);
-                var x1 = Unsafe.Add(ref rdi, i + 1);
-                Unsafe.Add(ref rdi, i + 0) = BinaryPrimitives.ReverseEndianness(x0);
-                Unsafe.Add(ref rdi, i + 1) = BinaryPrimitives.ReverseEndianness(x1);
-                x0 = Unsafe.Add(ref rdi, i + 2);
-                Unsafe.Add(ref rdi, i + 2) = BinaryPrimitives.ReverseEndianness(x0);
-                x0 = Unsafe.Add(ref rdi, i + 3);
-                Unsafe.Add(ref rdi, i + 3) = BinaryPrimitives.ReverseEndianness(x0);
-                x0 = Unsafe.Add(ref rdi, i + 4);
-                Unsafe.Add(ref rdi, i + 4) = BinaryPrimitives.ReverseEndianness(x0);
-                x0 = Unsafe.Add(ref rdi, i + 5);
-                Unsafe.Add(ref rdi, i + 5) = BinaryPrimitives.ReverseEndianness(x0);
-                x0 = Unsafe.Add(ref rdi, i + 6);
-                Unsafe.Add(ref rdi, i + 6) = BinaryPrimitives.ReverseEndianness(x0);
-                x0 = Unsafe.Add(ref rdi, i + 7);
-                Unsafe.Add(ref rdi, i + 7) = BinaryPrimitives.ReverseEndianness(x0);
+                var x0 = Unsafe.Add(ref x9, i + 0);
+                var x1 = Unsafe.Add(ref x9, i + 1);
+                Unsafe.Add(ref x9, i + 0) = BinaryPrimitives.ReverseEndianness(x0);
+                Unsafe.Add(ref x9, i + 1) = BinaryPrimitives.ReverseEndianness(x1);
+                x0 = Unsafe.Add(ref x9, i + 2);
+                Unsafe.Add(ref x9, i + 2) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref x9, i + 3);
+                Unsafe.Add(ref x9, i + 3) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref x9, i + 4);
+                Unsafe.Add(ref x9, i + 4) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref x9, i + 5);
+                Unsafe.Add(ref x9, i + 5) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref x9, i + 6);
+                Unsafe.Add(ref x9, i + 6) = BinaryPrimitives.ReverseEndianness(x0);
+                x0 = Unsafe.Add(ref x9, i + 7);
+                Unsafe.Add(ref x9, i + 7) = BinaryPrimitives.ReverseEndianness(x0);
             }
             for (; i < length; i++)
             {
-                Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
+                Unsafe.Add(ref x9, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref x9, i));
             }
         }
         #endregion

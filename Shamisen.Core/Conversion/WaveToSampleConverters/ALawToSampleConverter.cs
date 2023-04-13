@@ -102,15 +102,8 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 {
                     var rb = readBuffer.SliceWhile(rr.Length);
                     var wb = buffer.SliceWhile(rb.Length);
-#if NETCOREAPP3_1_OR_GREATER
-                    if (rb.Length >= 16 && Avx2.IsSupported)
-                    {
-                        ProcessAvx2(rb, wb);
-                        return wb.Length;
-                    }
-#endif
-                    ProcessStandard(rb, wb);
-                    return wb.Length;
+                    ConvertALawToSingle(wb, rb);
+                    return rr;
                 }
             }
             else
@@ -119,15 +112,63 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
+        /// <summary>
+        /// Converts <see cref="AudioEncoding.Alaw"/> value to <see cref="float"/> value.<br/>
+        /// </summary>
+        /// <param name="value">The <see cref="AudioEncoding.Alaw"/> value to decode.</param>
+        /// <returns>The decoded <see cref="float"/> value.</returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessStandard(Span<byte> rb, Span<float> wb)
+        public static float ConvertALawToSingle(byte value)
+        {
+            var q = (uint)(sbyte)(value ^ 0xd5);
+            _ = q & 0x80000000u;
+            q <<= 19;
+            q &= 0x83f80000u;
+            var e = q | 0x00040000;
+            var r = q + 0x00800000u;
+            var f = BitConverter.UInt32BitsToSingle(r) + BitConverter.UInt32BitsToSingle(e);
+            r = BitConverter.SingleToUInt32Bits(f);
+            e = q | 0x3C000000;
+            r += 0x3B800000;
+            return BitConverter.UInt32BitsToSingle(r) - BitConverter.UInt32BitsToSingle(e);
+        }
+
+        /// <summary>
+        /// Converts <see cref="AudioEncoding.Alaw"/> values to <see cref="float"/> values.
+        /// </summary>
+        /// <param name="destination">The place to store resulting <see cref="float"/> values.</param>
+        /// <param name="source">The <see cref="AudioEncoding.Alaw"/> values to convert from.</param>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static void ConvertALawToSingle(Span<float> destination, ReadOnlySpan<byte> source)
+        {
+            if (AdvSimd.IsSupported)
+            {
+                ProcessAdvSimd(destination, source);
+                return;
+            }
+            if (Avx2.IsSupported)
+            {
+                ProcessAvx2(destination, source);
+                return;
+            }
+            if (Sse41.IsSupported)
+            {
+                ProcessSse41(destination, source);
+                return;
+            }
+            ProcessStandard(destination, source);
+        }
+
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessStandard(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i = 0;
-                ref var x9 = ref MemoryMarshal.GetReference(rb);
-                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x9 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
+
                 for (; i < length; i++)
                 {
                     var v = Unsafe.Add(ref x9, i);
@@ -136,17 +177,15 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-#if NETCOREAPP3_1_OR_GREATER
-
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessAvx2(Span<byte> rb, Span<float> wb)
+        internal static void ProcessAvx2(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
                 var xmm8 = Vector128.CreateScalarUnsafe(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
                 var ymm9 = Vector256.Create(0x83F8_0000u).AsInt32();
                 var ymm2 = Vector256.Create(0x0004_0000);
@@ -242,14 +281,14 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static void ProcessSse41(Span<byte> rb, Span<float> wb)
+        internal static void ProcessSse41(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var rsi = ref MemoryMarshal.GetReference(rb);
-                ref var rdi = ref MemoryMarshal.GetReference(wb);
+                ref var rsi = ref MemoryMarshal.GetReference(source);
+                ref var rdi = ref MemoryMarshal.GetReference(destination);
                 var xmm8 = Vector128.CreateScalarUnsafe(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
                 var xmm9 = Vector128.Create(0x83F8_0000u).AsInt32();
                 var xmm2 = Vector128.Create(0x0004_0000);
@@ -292,17 +331,15 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-#endif
-#if NET5_0_OR_GREATER
-
-        internal static void ProcessAdvSimd64(Span<byte> rb, Span<float> wb)
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        internal static void ProcessAdvSimd(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
             {
-                nint length = MathI.Min(rb.Length, wb.Length);
+                nint length = MathI.Min(source.Length, destination.Length);
                 nint i;
-                ref var x11 = ref MemoryMarshal.GetReference(rb);
-                ref var x10 = ref MemoryMarshal.GetReference(wb);
+                ref var x11 = ref MemoryMarshal.GetReference(source);
+                ref var x10 = ref MemoryMarshal.GetReference(destination);
                 var v8_16b = Vector128.Create(0xd5d5_d5d5_d5d5_d5d5ul).AsInt32();
                 var v9_4s = Vector128.Create(0x83F8_0000u).AsInt32();
                 var v2_4s = Vector128.Create(0x0004_0000);
@@ -343,29 +380,6 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                     Unsafe.Add(ref x10, i) = ConvertALawToSingle(g);
                 }
             }
-        }
-
-#endif
-
-        /// <summary>
-        /// Converts A-law value to <see cref="float"/> value.<br/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
-        internal static float ConvertALawToSingle(byte value)
-        {
-            var q = (uint)(sbyte)(value ^ 0xd5);
-            _ = q & 0x80000000u;
-            q <<= 19;
-            q &= 0x83f80000u;
-            var e = q | 0x00040000;
-            var r = q + 0x00800000u;
-            var f = BitConverter.UInt32BitsToSingle(r) + BitConverter.UInt32BitsToSingle(e);
-            r = BitConverter.SingleToUInt32Bits(f);
-            e = q | 0x3C000000;
-            r += 0x3B800000;
-            return BitConverter.UInt32BitsToSingle(r) - BitConverter.UInt32BitsToSingle(e);
         }
 
         /// <summary>

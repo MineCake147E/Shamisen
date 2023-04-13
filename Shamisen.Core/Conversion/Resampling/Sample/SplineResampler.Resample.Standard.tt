@@ -130,7 +130,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedDirect<#=ch#>ChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedDirect<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         //(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
             nint isx = 0;
@@ -196,7 +196,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedOdd<#=ch#>ChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedOdd<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             int psx = args.ConversionGradient;
             int rec = args.RearrangedCoeffsIndex;
@@ -277,7 +277,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleCachedWrappedEven<#=ch#>ChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleCachedWrappedEven<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         //(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
             int psx = args.ConversionGradient;
@@ -362,7 +362,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
         [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
-        internal static ResampleResult ResampleDirect<#=ch#>ChannelsStandard(UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
+        internal static ResampleResult ResampleDirect<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
             nint psx = args.ConversionGradient;
