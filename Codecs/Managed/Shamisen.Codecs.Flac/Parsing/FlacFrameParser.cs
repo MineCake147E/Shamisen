@@ -238,6 +238,11 @@ namespace Shamisen.Codecs.Flac.Parsing
         {
             var pSampleRate = nSampleRate.sampleRate;
             var pChannels = nChannels;
+            if (nBitDepth.state != BitDepthState.Value)
+            {
+                nBitDepth.bitDepth = (uint)streamInfoBlock.BitDepth;
+                nBitDepth.state = BitDepthState.Value;
+            }
             var pBitDepth = nBitDepth.bitDepth;
             //Read sub frame
             var chCount = nChannels.GetChannels();
