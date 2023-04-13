@@ -71,7 +71,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// <param name="wastedBits">The number of wasted bits.</param>
         /// <param name="bitDepth"></param>
         public static FlacConstantSubFrame? ReadFrame(FlacBitReader bitReader, int wastedBits, byte bitDepth)
-            => !bitReader.ReadBitsUInt64(bitDepth, out var val) ? null : new FlacConstantSubFrame((int)val, wastedBits);
+            => !bitReader.ReadBitsInt64(bitDepth, out var val) ? null : new FlacConstantSubFrame((int)val, wastedBits);
 
         /// <summary>
         /// Gets the number of wasted LSBs.
@@ -90,7 +90,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// <returns>The length of the data written.</returns>
         public ReadResult Read(Span<int> buffer)
         {
-            buffer.FastFill(value << wastedBits);
+            buffer.FastFill(value);
             return buffer.Length;
         }
 

@@ -54,6 +54,9 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             int size = (int)wav.TotalLength * wav.Format.Channels;
             switch (wav.Format.BitDepth)
             {
+                case 32:
+                    Compare32(flacSource, wav, size);
+                    break;
                 case 24:
                     Compare24(flacSource, wav, size);
                     break;
@@ -63,6 +66,49 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 default:
                     break;
             }
+        }
+        #region Compare
+
+        private static void Compare32(StreamDataSource flacSource, SimpleWaveParser wav, int size)
+        {
+            var t = new Stopwatch();
+            t.Start();
+            var dataF = new PooledArray<int>(size);
+            var dataW = new PooledArray<int>(size);
+            t.Stop();
+            Console.WriteLine($"Memory preparation took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
+            var rw = wav.Read(MemoryMarshal.Cast<int, byte>(dataW.Span));
+            t.Stop();
+            Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
+            t.Restart();
+            using var flac = new FlacParser(flacSource, new FlacParserOptions(true, true, true, true, true, true));
+            var rr = flac.Read(MemoryMarshal.Cast<int, byte>(dataF.Span));
+            t.Stop();
+            double duration = (double)wav.TotalLength / wav.Format.SampleRate;
+            Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
+            Assert.AreEqual(size * sizeof(int), rr.Length);
+            Assert.AreEqual(rw.Length / 4, rr.Length / sizeof(int));
+            Debug.WriteLine("Comparing!");
+            Assert.Multiple(() =>
+            {
+                t.Restart();
+                ulong err = 0ul;
+                var sw = dataW.Span;
+                var sf = dataF.Span;
+                for (int i = 0; i < sw.Length; i++)
+                {
+                    if (sw[i] != sf[i])
+                    {
+                        Assert.AreEqual(sw[i], sf[i], $"Comparing {i}th element");
+                        err++;
+                        if (err > 128) break;
+                    }
+                }
+                t.Stop();
+                Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
+            });
+            DumpFlacMetadata(flac);
         }
 
         private static void Compare24(StreamDataSource flacSource, SimpleWaveParser wav, int size)
@@ -104,22 +150,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 t.Stop();
                 Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
             });
-            if (flac.CueSheet.HasValue)
-            {
-                DumpCueSheet(flac.CueSheet.Value);
-            }
-            if (flac.Comment.HasValue)
-            {
-                DumpComment(flac.Comment.Value);
-            }
-            if (!flac.ApplicationMetadata.IsEmpty)
-            {
-                DumpApplicationMetadata(flac.ApplicationMetadata);
-            }
-            if (!flac.Pictures.IsEmpty)
-            {
-                DumpPictures(flac.Pictures);
-            }
+            DumpFlacMetadata(flac);
         }
 
         private static void Compare16(StreamDataSource flacSource, SimpleWaveParser wav, int size)
@@ -161,6 +192,12 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 t.Stop();
                 Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
             });
+            DumpFlacMetadata(flac);
+        }
+
+        #endregion
+        private static void DumpFlacMetadata(FlacParser flac)
+        {
             if (flac.CueSheet.HasValue)
             {
                 DumpCueSheet(flac.CueSheet.Value);

@@ -1236,6 +1236,14 @@
             This is a bug!
             </exception>
         </member>
+        <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsInt64(System.Byte,System.Int64@)">
+            <summary>
+            Reads the number with specified <paramref name="bits"/>.
+            </summary>
+            <param name="bits">The bits.</param>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
         <member name="M:Shamisen.Codecs.Flac.Parsing.FlacBitReader.ReadBitsUInt64(System.Byte)">
             <summary>
             Reads the number with specified <paramref name="bits"/>.

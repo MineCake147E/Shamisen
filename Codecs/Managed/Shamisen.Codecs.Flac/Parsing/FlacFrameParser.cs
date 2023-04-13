@@ -168,6 +168,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 var nSampleRate = ParseSampleRate((byte)MathI.ExtractBitField(next16, 8, 4));
                 var nChannels = (FlacChannelAssignments)MathI.ExtractBitField(next16, 4, 4);
                 var nBitDepth = ParseBitDepth((byte)MathI.ExtractBitField(next16, 1, 3));
+
                 Unsafe.As<byte, ushort>(ref Unsafe.Add(ref rH, 2)) = BinaryExtensions.ConvertToBigEndian(next16);
                 var bytesRead = 4;
                 FlacCrc16 pCrc16 = new(0);
@@ -632,7 +633,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         internal static (uint bitDepth, BitDepthState state) ParseBitDepth(byte value)
         {
             var index = (value & 7) * 8;
-            return ((byte)(0x0018_1410_000C_0800 >> index), (BitDepthState)(byte)(0x0201010102010100 >> index));
+            return ((byte)(0x2018_1410_000C_0800 >> index), (BitDepthState)(byte)(0x0101010102010100 >> index));
         }
 
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]

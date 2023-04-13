@@ -447,6 +447,25 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Reads the number with specified <paramref name="bits"/>.
         /// </summary>
+        /// <param name="bits">The bits.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public bool ReadBitsInt64(byte bits, out long value)
+        {
+            value = 0;
+            if (bits < 1 || !ReadBitsUInt64(bits, out var h))
+            {
+                return false;
+            }
+            var gg = h;
+            gg <<= 64 - bits;
+            value = (long)gg >> (64 - bits);
+            return true;
+        }
+        /// <summary>
+        /// Reads the number with specified <paramref name="bits"/>.
+        /// </summary>
         /// <param name="bits">The bits to read. must be &lt;=64.</param>
         /// <returns></returns>
         [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
