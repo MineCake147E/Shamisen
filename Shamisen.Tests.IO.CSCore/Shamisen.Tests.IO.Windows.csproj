@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ReactiveProperty" Version="9.2.0" />
+        <PackageReference Include="ReactiveProperty" Version="9.3.0" />
     </ItemGroup>
 
     <ItemGroup>
