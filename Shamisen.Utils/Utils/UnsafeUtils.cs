@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -229,5 +230,62 @@ namespace Shamisen.Utils
                 Unsafe.Add(ref x9, ni) = Unsafe.Add(ref x8, ni);
             }
         }
+
+        #region Memory Management
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static bool ValidateAllocationRequest<T>(nint length, out nuint lengthInBytes, byte alignmentExponent = 0, ushort alignmentExponentLimit = 256)
+        {
+            bool isLengthInRange;
+            if (nuint.MaxValue == uint.MaxValue)
+            {
+                ulong h = (ulong)length * (ulong)Unsafe.SizeOf<T>();
+                lengthInBytes = (nuint)h;
+                isLengthInRange = h <= uint.MaxValue;
+            }
+            else
+            {
+                var hi = Math.BigMul((ulong)length, (ulong)Unsafe.SizeOf<T>(), out var newLength);
+                lengthInBytes = (nuint)newLength;
+                isLengthInRange = hi == 0;
+            }
+            return length > 0 && isLengthInRange && alignmentExponent <= alignmentExponentLimit;
+        }
+
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        internal static unsafe void* AllocateNativeMemoryInternal(nuint lengthInBytes, byte alignmentExponent, bool memoryPressure)
+        {
+            nuint alignment = (nuint)1 << alignmentExponent;
+            if (memoryPressure)
+            {
+                AddMemoryPressure(lengthInBytes);
+            }
+            return alignment > 1 ? NativeMemory.AlignedAlloc(lengthInBytes, alignment) : NativeMemory.Alloc(lengthInBytes);
+        }
+
+        /// <inheritdoc cref="GC.AddMemoryPressure(long)"/>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        public static void AddMemoryPressure(nuint bytesAllocated)
+        {
+            while (bytesAllocated > 0)
+            {
+                var max = nuint.Min(bytesAllocated, (nuint)nint.MaxValue);
+                GC.AddMemoryPressure((long)max);
+                bytesAllocated -= max;
+            }
+        }
+
+        /// <inheritdoc cref="GC.RemoveMemoryPressure(long)"/>
+        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        public static void RemoveMemoryPressure(nuint bytesAllocated)
+        {
+            while (bytesAllocated > 0)
+            {
+                var max = nuint.Min(bytesAllocated, (nuint)nint.MaxValue);
+                GC.RemoveMemoryPressure((long)max);
+                bytesAllocated -= max;
+            }
+        }
+        #endregion
     }
 }

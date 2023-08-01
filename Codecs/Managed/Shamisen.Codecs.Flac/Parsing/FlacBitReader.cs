@@ -829,25 +829,60 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 0:
                     value = first;
                     return true;
+                case < 5 when Bmi2.IsSupported:
+                    {
+                        var bytesToRead = locnt - 1;
+                        Span<byte> q = stackalloc byte[sizeof(uint)];
+                        q[0] = (byte)MathI.ZeroHighBits((byte)(7 - locnt), first);
+                        if (ReadBytes(q.Slice(1, bytesToRead)).Length < bytesToRead) return false;
+                        uint res = BinaryPrimitives.ReadUInt32BigEndian(q);
+                        res = Bmi2.ParallelBitExtract(res, 0x3f3f3f3fu << (8 * (4 - locnt)));
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.Slice(1, bytesToRead).CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = res;
+                        return true;
+                    }
+                case < 8 when Bmi2.X64.IsSupported:
+                    {
+                        var bytesToRead = locnt - 1;
+                        Span<byte> q = stackalloc byte[sizeof(ulong)];
+                        q[0] = (byte)MathI.ZeroHighBits((byte)(7 - locnt), first);
+                        if (ReadBytes(q.Slice(1, bytesToRead)).Length < bytesToRead) return false;
+                        ulong res = BinaryPrimitives.ReadUInt64BigEndian(q);
+                        res = Bmi2.X64.ParallelBitExtract(res, 0x3f3f3f3f_3f3f3f3ful << (8 * (8 - locnt)));
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.Slice(1, bytesToRead).CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = (uint)res;
+                        return true;
+                    }
                 case < 8:
-                    var bytesToRead = locnt - 1;
-                    var res = MathI.ZeroHighBits((byte)(7 - locnt), first) << (6 * bytesToRead);
-                    Span<byte> q = stackalloc byte[bytesToRead];
-                    if (ReadBytes(q).Length < q.Length) return false;
-                    for (var i = 0; i < q.Length; i++)
                     {
-                        res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
+                        var bytesToRead = locnt - 1;
+                        Span<byte> q = stackalloc byte[bytesToRead];
+                        if (ReadBytes(q).Length < q.Length) return false;
+                        uint res = MathI.ZeroHighBits((byte)(7 - locnt), first);
+                        res <<= 6 * bytesToRead;
+                        for (var i = 0; i < q.Length; i++)
+                        {
+                            res |= ((uint)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
+                        }
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = res;
+                        return true;
                     }
-                    if (rawData.Length - 1 >= q.Length)
-                    {
-                        q.CopyTo(rawData.Slice(1));
-                        bytesRead += q.Length;
-                    }
-                    value = res;
-                    return true;
                 default:
                     value = ~0u;
-                    return true;
+                    return false;
             }
         }
 
@@ -872,22 +907,56 @@ namespace Shamisen.Codecs.Flac.Parsing
                 case 0:
                     value = first;
                     return true;
+                case < 5 when Bmi2.IsSupported:
+                    {
+                        var bytesToRead = locnt - 1;
+                        Span<byte> q = stackalloc byte[sizeof(uint)];
+                        q[0] = (byte)MathI.ZeroHighBits((byte)(7 - locnt), first);
+                        if (ReadBytes(q.Slice(1, bytesToRead)).Length < bytesToRead) return false;
+                        uint res = BinaryPrimitives.ReadUInt32BigEndian(q);
+                        res = Bmi2.ParallelBitExtract(res, 0x3f3f3f3fu << (8 * (4 - locnt)));
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.Slice(1, bytesToRead).CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = res;
+                        return true;
+                    }
+                case < 8 when Bmi2.X64.IsSupported:
+                    {
+                        var bytesToRead = locnt - 1;
+                        Span<byte> q = stackalloc byte[sizeof(ulong)];
+                        q[0] = (byte)MathI.ZeroHighBits((byte)(7 - locnt), first);
+                        if (ReadBytes(q.Slice(1, bytesToRead)).Length < bytesToRead) return false;
+                        ulong res = BinaryPrimitives.ReadUInt64BigEndian(q);
+                        res = Bmi2.X64.ParallelBitExtract(res, 0x3f3f3f3f_3f3f3f3ful << (8 * (8 - locnt)));
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.Slice(1, bytesToRead).CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = res;
+                        return true;
+                    }
                 case < 8:
-                    var bytesToRead = locnt - 1;
-                    var res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
-                    Span<byte> q = stackalloc byte[bytesToRead];
-                    if (ReadBytes(q).Length < q.Length) return false;
-                    for (var i = 0; i < q.Length; i++)
                     {
-                        res |= ((ulong)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
+                        var bytesToRead = locnt - 1;
+                        var res = (ulong)MathI.ExtractBitField(first, 0, (byte)(7 - locnt)) << (6 * bytesToRead);
+                        Span<byte> q = stackalloc byte[bytesToRead];
+                        if (ReadBytes(q).Length < bytesToRead) return false;
+                        for (var i = 0; i < bytesToRead; i++)
+                        {
+                            res |= ((ulong)q[i] & 0x3f) << (6 * (bytesToRead - i - 1));
+                        }
+                        if (rawData.Length - 1 >= bytesToRead)
+                        {
+                            q.CopyTo(rawData.Slice(1));
+                            bytesRead += bytesToRead;
+                        }
+                        value = res;
+                        return true;
                     }
-                    if (rawData.Length - 1 >= q.Length)
-                    {
-                        q.CopyTo(rawData.Slice(1));
-                        bytesRead += q.Length;
-                    }
-                    value = res;
-                    return true;
                 default:
                     value = ~0u;
                     return true;

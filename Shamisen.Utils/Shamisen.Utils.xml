@@ -2409,6 +2409,20 @@
             <param name="rearLeft">The input buffer for rear left channel.</param>
             <param name="rearRight">The input buffer for rear right channel.</param>
         </member>
+        <member name="M:Shamisen.Utils.AudioUtils.InterleaveChannels(System.Span{System.Int32},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Interleaves the specified channel-deinterleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+            </summary>
+            <param name="destination">The destination to write interleaved data.</param>
+            <param name="source">The source.</param>
+            <param name="channelOffsets">
+            The array of index to slice the <paramref name="source"/>.<br/>
+            The <see cref="P:System.ReadOnlySpan`1.Length"/> + 1 must be equal to the number of channels.<br/>
+            </param>
+            <returns>
+            The length of the updated region of <paramref name="destination"/>.
+            </returns>
+        </member>
         <member name="M:Shamisen.Utils.AudioUtils.DuplicateMonauralToStereo(System.Span{System.Single},System.ReadOnlySpan{System.Single})">
             <summary>
             Duplicates specified monaural signal <paramref name="source"/> to the specified stereo <paramref name="destination"/>.

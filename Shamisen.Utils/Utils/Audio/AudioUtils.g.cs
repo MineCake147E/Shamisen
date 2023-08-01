@@ -27,21 +27,17 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0
                 //Arm intrinsics
                 if(Arm.IsSupported)
                 {
                     Arm.Interleave5ChannelsInt32(buffer, a0, a1, a2, a3, a4);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
                 if(X86.IsSupported)
                 {
                     X86.Interleave5ChannelsInt32(buffer, a0, a1, a2, a3, a4);
                     return;
                 }
-#endif
                 Fallback.Interleave5ChannelsInt32(buffer, a0, a1, a2, a3, a4);
             }
         }
@@ -60,21 +56,17 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0
                 //Arm intrinsics
                 if(Arm.IsSupported)
                 {
                     Arm.Interleave6ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
                 if(X86.IsSupported)
                 {
                     X86.Interleave6ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5);
                     return;
                 }
-#endif
                 Fallback.Interleave6ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5);
             }
         }
@@ -94,21 +86,17 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0
                 //Arm intrinsics
                 if(Arm.IsSupported)
                 {
                     Arm.Interleave7ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
                 if(X86.IsSupported)
                 {
                     X86.Interleave7ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6);
                     return;
                 }
-#endif
                 Fallback.Interleave7ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6);
             }
         }
@@ -129,21 +117,17 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0
                 //Arm intrinsics
                 if(Arm.IsSupported)
                 {
                     Arm.Interleave8ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6, a7);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
                 if(X86.IsSupported)
                 {
                     X86.Interleave8ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6, a7);
                     return;
                 }
-#endif
                 Fallback.Interleave8ChannelsInt32(buffer, a0, a1, a2, a3, a4, a5, a6, a7);
             }
         }

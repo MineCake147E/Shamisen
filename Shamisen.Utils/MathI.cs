@@ -2165,7 +2165,9 @@ namespace Shamisen
         ///   <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPowerOfTwo(uint i) => i != 0 && (i & (i - 1)) == 0;
+#pragma warning disable RCS1233 // Use short-circuiting operator.
+        public static bool IsPowerOfTwo(uint i) => i != 0 & (i & (i - 1)) == 0;
+#pragma warning restore RCS1233 // Use short-circuiting operator.
 
         /// <summary>
         /// Determines whether the specified <paramref name="i"/> is power of two.
@@ -2175,7 +2177,9 @@ namespace Shamisen
         ///   <c>true</c> if the specified value is power of two; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPowerOfTwo(int i) => i != 0 && (i & (i - 1)) == 0;
+#pragma warning disable RCS1233 // Use short-circuiting operator.
+        public static bool IsPowerOfTwo(int i) => i != 0 & (i & (i - 1)) == 0;
+#pragma warning restore RCS1233 // Use short-circuiting operator.
 
         #endregion IsPowerOfTwo
 

@@ -919,6 +919,66 @@ namespace Shamisen.Utils
                 Fallback.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
             }
         }
+
+        /// <summary>
+        /// Interleaves the specified channel-deinterleaved <paramref name="source"/> to <paramref name="destination"/>.<br/>
+        /// </summary>
+        /// <param name="destination">The destination to write interleaved data.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="channelOffsets">
+        /// The array of index to slice the <paramref name="source"/>.<br/>
+        /// The <see cref="ReadOnlySpan{T}.Length"/> + 1 must be equal to the number of channels.<br/>
+        /// </param>
+        /// <returns>
+        /// The length of the updated region of <paramref name="destination"/>.
+        /// </returns>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public static int InterleaveChannels(Span<int> destination, ReadOnlySpan<int> source, ReadOnlySpan<int> channelOffsets)
+        {
+            //Validation
+            if (channelOffsets.IsEmpty)
+            {
+                source.SliceWhileIfLongerThan(destination.Length).CopyTo(destination);
+                return int.Max(source.Length, destination.Length);
+            }
+            var channels = channelOffsets.Length + 1;
+            var minimumChannelLength = destination.Length / channels;
+            Span<int> channelLength = stackalloc int[channels];
+            var lastOffset = 0;
+            for (int i = 0; i < channelOffsets.Length; i++)
+            {
+                var offset = channelOffsets[i];
+                var length = offset - lastOffset;
+                if (length <= 0) return 0;
+                minimumChannelLength = MathI.Min(minimumChannelLength, length);
+                channelLength[i] = length;
+                lastOffset = offset;
+            }
+            //last one channel
+            var lastLength = destination.Length - lastOffset;
+            if (lastLength <= 0) return 0;  //This also does boundary check
+            minimumChannelLength = MathI.Min(minimumChannelLength, lastLength);
+            channelLength[^1] = lastLength;
+            switch (channelOffsets.Length)
+            {
+                case <= 0:
+                    throw new InvalidProgramException("Why is this code even running!?");
+                case 1:
+                    InterleaveStereo(destination, source.Slice(0, minimumChannelLength), source.Slice(channelOffsets[0], minimumChannelLength));
+                    break;
+                case 2:
+                    InterleaveThree(destination, source.Slice(0, minimumChannelLength), source.Slice(channelOffsets[0], minimumChannelLength)
+                        , source.Slice(channelOffsets[1], minimumChannelLength));
+                    break;
+                case 3:
+                    InterleaveQuad(destination, source.Slice(0, minimumChannelLength), source.Slice(channelOffsets[0], minimumChannelLength)
+                        , source.Slice(channelOffsets[1], minimumChannelLength), source.Slice(channelOffsets[2], minimumChannelLength));
+                    break;
+                default:
+                    break;
+            }
+            return minimumChannelLength * channels;
+        }
         #endregion
 
         #region DuplicateMonauralToChannels

@@ -383,20 +383,22 @@ namespace Shamisen.Codecs.Flac.Parsing
                 bitDepthToRead -= wasted;
             }
 
-            switch (result >> 1)
+            var v = (byte)(result >> 1);
+            var depthToRead = (byte)bitDepthToRead;
+            switch (v)
             {
                 case 0: //CONSTANT
-                    return FlacConstantSubFrame.ReadFrame(flacBitReader, wasted, (byte)bitDepthToRead);
+                    return FlacConstantSubFrame.ReadFrame(flacBitReader, wasted, depthToRead);
                 case 1: //VERBATIM
-                    return new FlacVerbatimSubFrame(flacBitReader, blockSize, wasted, (byte)bitDepthToRead);
+                    return new FlacVerbatimSubFrame(flacBitReader, blockSize, wasted, depthToRead);
                 case < 0b1000:
                     goto default;
                 case < 0b1101:  //FIXED
-                    return new FlacFixedPredictionSubFrame(flacBitReader, blockSize, wasted, (byte)bitDepthToRead, (byte)(result >> 1));
+                    return new FlacFixedPredictionSubFrame(flacBitReader, blockSize, wasted, depthToRead, v);
                 case < 0b100000:
                     goto default;
                 case <= 0b111111:   //LPC
-                    return new FlacLinearPredictionSubFrame(flacBitReader, blockSize, wasted, (byte)bitDepthToRead, (byte)(result >> 1));
+                    return new FlacLinearPredictionSubFrame(flacBitReader, blockSize, wasted, depthToRead, v);
                 default:
                     return null;
             }

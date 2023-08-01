@@ -315,11 +315,13 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             using var reader = new FlacBitReader(dc);
             Assert.Multiple(() =>
             {
+                nuint i = 0;
                 foreach (var item in data.EnumerateRunes())
                 {
                     var read = reader.ReadUtf8UInt32(out var value, default, out var br);
-                    Assert.IsTrue(read);
-                    Assert.AreEqual(item.Value, (int)value);
+                    Assert.IsTrue(read, $"Comparing {i}th element");
+                    Assert.AreEqual(item.Value, (int)value, $"Comparing {i}th element");
+                    i++;
                 }
             });
         }

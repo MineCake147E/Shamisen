@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using Shamisen.Memory;
 using Shamisen.Utils;
 
 namespace Shamisen
@@ -107,6 +108,18 @@ namespace Shamisen
             CheckArrayTypeMismatch(array);
             head = ref MemoryMarshal.GetArrayDataReference(array);
             Length = (nint)array.LongLength;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="NativeSpan{T}"/> object over the entirety of a specified <paramref name="array"/>.
+        /// </summary>
+        /// <param name="array">The array from which to create the <see cref="NativeSpan{T}"/> object.</param>
+        /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
+        /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
+        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        public NativeSpan(NativeArray<T> array)
+        {
+            this = (array?.IsEmpty == false) ? array.NativeSpan : default;
         }
 
         /// <summary>

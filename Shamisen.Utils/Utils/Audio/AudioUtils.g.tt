@@ -32,21 +32,17 @@ namespace Shamisen.Utils
         {
             unchecked
             {
-#if NET5_0
                 //Arm intrinsics
                 if(Arm.IsSupported)
                 {
                     Arm.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
                     return;
                 }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
                 if(X86.IsSupported)
                 {
                     X86.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
                     return;
                 }
-#endif
                 Fallback.Interleave<#=            channels #>ChannelsInt32(buffer, <#=            string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"a{a}"))#>);
             }
         }

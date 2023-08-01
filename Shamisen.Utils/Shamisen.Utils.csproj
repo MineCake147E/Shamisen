@@ -9,6 +9,7 @@
       <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
       <PackageReadmeFile>README.md</PackageReadmeFile>
       <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio library;csharp library</PackageTags>
+      <LangVersion>preview</LangVersion>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">
@@ -46,7 +47,7 @@
             <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
         </None>
-        <None Update="Utils\Memory\SpanUtilsTemplate.tt">
+        <None Update="Memory\SpanUtilsTemplate.tt">
           <LastGenOutput>SpanUtilsTemplate.g.cs</LastGenOutput>
           <Generator>TextTemplatingFileGenerator</Generator>
         </None>
@@ -93,7 +94,7 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
       </Compile>
-      <Compile Update="Utils\Memory\SpanUtilsTemplate.g.cs">
+      <Compile Update="Memory\SpanUtilsTemplate.g.cs">
         <DependentUpon>SpanUtilsTemplate.tt</DependentUpon>
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
