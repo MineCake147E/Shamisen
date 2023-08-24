@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net7.0-windows</TargetFrameworks>
@@ -14,7 +14,7 @@
     </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
     <ItemGroup>
-        <PackageReference Include="NAudio" Version="2.1.0" />
+        <PackageReference Include="NAudio" Version="2.2.0" />
     </ItemGroup>
 
     <ItemGroup>
