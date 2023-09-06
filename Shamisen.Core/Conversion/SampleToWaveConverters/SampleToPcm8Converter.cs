@@ -260,7 +260,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="destination">The place to store converted values.</param>
         /// <param name="source">The original values to convert.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertSampleToPcm8(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
@@ -275,7 +275,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalStandard(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var mul = new Vector<uint>(0x0380_0000u);
@@ -330,7 +330,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         #region X86
 #if NETCOREAPP3_1_OR_GREATER
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2A(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var sign = Vector256.Create((byte)128).AsUInt32();
@@ -422,7 +422,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="srcval"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static sbyte Convert(float srcval)
         {
             srcval *= 128.0f;
@@ -434,14 +434,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="srcval"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static sbyte ConvertScaled(float srcval)
         {
             srcval = Clamp(srcval);
             return ConvertScaledClamped(srcval);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float Clamp(float srcval)
         {
             srcval = FastMath.Max(srcval, -128.0f);
@@ -449,7 +449,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             return srcval;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static sbyte ConvertScaledClamped(float srcval)
         {
             srcval = FastMath.Round(srcval);

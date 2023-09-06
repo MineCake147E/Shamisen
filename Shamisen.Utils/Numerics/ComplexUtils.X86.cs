@@ -22,7 +22,7 @@ namespace Shamisen.Numerics
             internal static bool IsSupported => AudioUtils.X86.IsSupported;
             #region MultiplyAll
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllX86(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
             {
                 if (Avx.IsSupported)
@@ -37,7 +37,7 @@ namespace Shamisen.Numerics
                 }
                 Fallback.MultiplyAllFallback(destination, source, value);
             }
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllX86(Span<Complex> destination, ReadOnlySpan<Complex> source, Complex value)
             {
                 if (Avx.IsSupported)
@@ -53,7 +53,7 @@ namespace Shamisen.Numerics
                 Fallback.MultiplyAllFallback(destination, source, value);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllAvx(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
             {
                 ref var rsi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(source));
@@ -117,7 +117,7 @@ namespace Shamisen.Numerics
                     Unsafe.Add(ref rdi, i) = xmm0.AsDouble().GetElement(0);
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllAvx(Span<Complex> destination, ReadOnlySpan<Complex> source, Complex value)
             {
                 ref var rsi = ref Unsafe.As<Complex, double>(ref MemoryMarshal.GetReference(source));
@@ -183,7 +183,7 @@ namespace Shamisen.Numerics
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllSse3(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
             {
                 ref var rsi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(source));
@@ -218,7 +218,7 @@ namespace Shamisen.Numerics
                     Unsafe.Add(ref rdi, i) = xmm0.AsDouble().GetElement(0);
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllSse3(Span<Complex> destination, ReadOnlySpan<Complex> source, Complex value)
             {
                 ref var rsi = ref Unsafe.As<Complex, double>(ref MemoryMarshal.GetReference(source));
@@ -258,7 +258,7 @@ namespace Shamisen.Numerics
 
             #region ConvertRealToComplex
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ConvertRealToComplexX86(Span<ComplexF> destination, ReadOnlySpan<float> source)
             {
                 if (Avx2.IsSupported)
@@ -269,7 +269,7 @@ namespace Shamisen.Numerics
                 Fallback.ConvertRealToComplexFallback(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ConvertRealToComplexAvx2(Span<ComplexF> destination, ReadOnlySpan<float> source)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -369,7 +369,7 @@ namespace Shamisen.Numerics
             #endregion
 
             #region ExtractMagnitudeSquared
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void ExtractMagnitudeSquaredX86(Span<float> destination, ReadOnlySpan<ComplexF> source)
             {
                 if (Avx2.IsSupported)
@@ -380,7 +380,7 @@ namespace Shamisen.Numerics
                 Fallback.ExtractMagnitudeSquaredFallback(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExtractMagnitudeSquaredAvx2(Span<float> destination, ReadOnlySpan<ComplexF> source)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);

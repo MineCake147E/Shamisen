@@ -66,7 +66,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacSeekPoint ToReadableValue(FlacSeekPoint value) => !BitConverter.IsLittleEndian ? value :
             ReverseEndianness(value);
 
@@ -75,7 +75,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacSeekPoint ToWritableValue(FlacSeekPoint value) => ToReadableValue(value);
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert endianness.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacSeekPoint ReverseEndianness(FlacSeekPoint value)
             => new(
                 BinaryPrimitives.ReverseEndianness(value.firstIndex),

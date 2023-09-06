@@ -24,7 +24,7 @@ namespace Shamisen
         /// </summary>
         public nint Length
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         }
 
@@ -37,7 +37,7 @@ namespace Shamisen
         /// <inheritdoc cref="ReadOnlySpan{T}.IsEmpty"/>
         public bool IsEmpty
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Length <= 0;
         }
 
@@ -57,7 +57,7 @@ namespace Shamisen
         /// <value>An empty <see cref="ReadOnlyNativeSpan{T}"/> object.</value>
         public static ReadOnlyNativeSpan<T> Empty
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => default;
         }
 
@@ -67,7 +67,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The memory region from which to create the <see cref="ReadOnlyNativeSpan{T}"/> object.</param>
         /// <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(NativeSpan<T> span)
         {
             if (span.IsEmpty)
@@ -83,7 +83,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe ReadOnlyNativeSpan(ref T headPointer, nint length)
         {
             CheckLength(length);
@@ -96,7 +96,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe ReadOnlyNativeSpan(void* headPointer, nint length)
         {
             _ = new ReadOnlySpan<T>(headPointer, 0);
@@ -111,7 +111,7 @@ namespace Shamisen
         /// <param name="array">The array from which to create the <see cref="ReadOnlyNativeSpan{T}"/> object.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(T[]? array)
         {
             if (array is null)
@@ -130,7 +130,7 @@ namespace Shamisen
         /// <param name="array">The array from which to create the <see cref="ReadOnlyNativeSpan{T}"/> object.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(ArraySegment<T> array) : this(array.Array, array.Offset, array.Count)
         {
         }
@@ -143,7 +143,7 @@ namespace Shamisen
         /// <param name="length">The number of elements to include in the new <see cref="ReadOnlyNativeSpan{T}"/>.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(T[]? array, nint start, nint length)
         {
             if (array is null)
@@ -164,7 +164,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The memory region from which to create the <see cref="ReadOnlyNativeSpan{T}"/> object.</param>
         /// <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="ReadOnlyNativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan(ReadOnlySpan<T> span)
         {
             if (span.IsEmpty)
@@ -177,7 +177,7 @@ namespace Shamisen
 
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void CheckArrayTypeMismatch(T[]? array)
         {
             if (array is not null && !(typeof(T).IsValueType || array.GetType() == typeof(T[])))
@@ -186,7 +186,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void CheckLength(nint length)
         {
             if (length < 0) ThrowHelper.Throw(new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} must be positive!"));
@@ -195,7 +195,7 @@ namespace Shamisen
         /// <inheritdoc cref="ReadOnlySpan{T}.this[int]"/>
         public ref readonly T this[nint index]
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 //Range Check Elimination doesn't work for custom struct.
@@ -208,22 +208,22 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="ReadOnlySpan{T}.this[int]"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ref readonly T ElementAtUnchecked(nint index) => ref Unsafe.Add(ref head, index);
 
         /// <inheritdoc cref="ReadOnlySpan{T}.GetPinnableReference()"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Browsable(false)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ref T GetPinnableReference() => ref head;
 
         /// <inheritdoc cref="ReadOnlySpan{T}.Slice(int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan<T> Slice(nint start)
             => new(ref Unsafe.Add(ref head, start), Length - start);
 
         /// <inheritdoc cref="ReadOnlySpan{T}.Slice(int, int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyNativeSpan<T> Slice(nint start, nint length)
             => new(ref Unsafe.Add(ref head, start), length);
 
@@ -231,7 +231,7 @@ namespace Shamisen
         /// Copies the content of this <see cref="ReadOnlyNativeSpan{T}"/> into a <paramref name="destination"/> <see cref="NativeSpan{T}"/>.
         /// </summary>
         /// <param name="destination">The destination <see cref="NativeSpan{T}"/> object.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(NativeSpan<T> destination)
         {
             if (!TryCopyTo(this, destination)) throw new ArgumentException($"The {nameof(destination)} must be at least as long as this span!", nameof(destination));
@@ -241,21 +241,21 @@ namespace Shamisen
         /// Copies the content of this <see cref="ReadOnlyNativeSpan{T}"/> into a <paramref name="destination"/> <see cref="Span{T}"/>.
         /// </summary>
         /// <param name="destination">The destination <see cref="ReadOnlySpan{T}"/> object.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(Span<T> destination)
         {
             if (!TryCopyTo(this, destination)) throw new ArgumentException($"The {nameof(destination)} must be at least as long as this span!", nameof(destination));
         }
 
         /// <inheritdoc cref="ReadOnlySpan{T}.TryCopyTo(Span{T})"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool TryCopyTo(NativeSpan<T> destination) => TryCopyTo(this, destination);
 
         /// <inheritdoc cref="ReadOnlySpan{T}.TryCopyTo(Span{T})"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool TryCopyTo(Span<T> destination) => TryCopyTo(this, destination);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool TryCopyTo(ReadOnlyNativeSpan<T> source, NativeSpan<T> destination)
         {
             if (destination.IsEmpty || source.IsEmpty)
@@ -277,7 +277,7 @@ namespace Shamisen
             return true;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool TryCopyTo(ReadOnlyNativeSpan<T> source, Span<T> destination)
         {
             if (destination.IsEmpty || source.IsEmpty)
@@ -316,7 +316,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ReadOnlyNativeSpan<T> left, ReadOnlyNativeSpan<T> right) => left.Length == right.Length && Unsafe.AreSame(ref left.head, ref right.head);
 
         /// <summary>
@@ -327,18 +327,18 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ReadOnlyNativeSpan<T> left, ReadOnlyNativeSpan<T> right) => !(left == right);
 
         #region Equals and GetHashCode
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => false;
 
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe int GetHashCode() => HashCode.Combine((nint)Unsafe.AsPointer(ref head), Length);
         #endregion
 

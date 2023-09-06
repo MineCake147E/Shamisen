@@ -17,7 +17,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="dataSource"></param>
         /// <param name="numberOfElementsToSkip">The number of elements to skip.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void SkipWithFallback<TSample>(this IDataSource<TSample> dataSource, ulong numberOfElementsToSkip) where TSample : unmanaged
         {
             if (dataSource.ReadSupport is not { } source)
@@ -52,7 +52,7 @@ namespace Shamisen
         /// <param name="dataSource">The data source.</param>
         /// <param name="span">The span.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadResult Read<TSample>(this IDataSource<TSample> dataSource, Span<TSample> span) where TSample : unmanaged
             => dataSource.ReadSupport is { } src ? src.Read(span) : throw new NotSupportedException("Reading is not supported!");
     }

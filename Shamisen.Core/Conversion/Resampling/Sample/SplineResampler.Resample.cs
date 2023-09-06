@@ -13,11 +13,11 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region CachedDirect
 
         #region Monaural
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ResampleFunc GetFuncCachedDirectMonaural(in UnifiedResampleArgs args) =>
             GetFuncCachedDirectMonauralX86(args);
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectVectorFitChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -61,7 +61,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             return new((int)(isx / Vector<float>.Count), (int)psx, (int)nrci);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncCachedDirectMonauralStandard(in UnifiedResampleArgs args)
             => new((args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
@@ -71,7 +71,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 (0, _, _) => &ResampleCachedDirectMonauralUpAnyRateStandard,
                 _ => &ResampleCachedDirectMonauralAnyRateStandard
             });
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralAnyRateStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -104,7 +104,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -136,7 +136,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralIntegerMultipleRateStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint length = buffer.Length;
@@ -161,7 +161,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralDoubleRateStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -213,7 +213,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             return new((int)isx, (int)psx);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralQuadrupleRateStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint length = buffer.Length;
@@ -266,20 +266,20 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         #endregion
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ResampleFunc GetFuncCachedDirect2Channels(in UnifiedResampleArgs args)
             => GetFuncCachedDirect2ChannelsX86(args);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedDirect3Channels(in UnifiedResampleArgs args)
             => new(&ResampleCachedDirect3ChannelsStandard);
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedDirect4Channels(in UnifiedResampleArgs args)
             => new(&ResampleCachedDirect4ChannelsStandard);
 
         #region Generic
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ResampleFunc GetFuncCachedDirectGeneric(in UnifiedResampleArgs args)
         {
             unchecked
@@ -289,7 +289,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 #endif
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -356,7 +356,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region Direct
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleDirectMonauralStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -418,7 +418,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleDirectVectorFitStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -490,7 +490,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ResampleFunc GetFuncDirectGeneric(in UnifiedResampleArgs args)
         {
             unchecked
@@ -501,7 +501,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleDirectGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             (var channels, var x, var ram, var acc, var facc, var rmi) = (args.Channels, args.ConversionGradient, args.RateMul, args.GradientIncrement, args.IndexIncrement, args.RateMulInverse);

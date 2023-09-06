@@ -24,7 +24,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         private const int RemSampleOffset = 4;
 
         #region GetFunc
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedDirect(in UnifiedResampleArgs args)
         {
             var channels = args.Channels;
@@ -49,7 +49,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedWrappedOdd(in UnifiedResampleArgs args)
         {
             var channels = args.Channels;
@@ -75,7 +75,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedWrappedEven(in UnifiedResampleArgs args)
         {
             var channels = args.Channels;
@@ -99,7 +99,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncDirect(in UnifiedResampleArgs args)
         {
             var channels = args.Channels;
@@ -129,7 +129,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region CachedDirect
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirect<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         //(Span<float> buffer, Span<float> srcBuffer, ref Vector4 coeffPtr, ref int x, int ram, int acc, int facc, ref int rci)
         {
@@ -195,7 +195,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region CachedWrappedOdd
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedOdd<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             int psx = args.ConversionGradient;
@@ -276,7 +276,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region CachedWrappedEven
         
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedEven<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         //(Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan, int x, int ram, int acc, int facc, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
@@ -361,7 +361,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region Direct
 
 <#foreach ((var ch, var type) in channelsAndTypes) {#>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleDirect<#=ch#>ChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;

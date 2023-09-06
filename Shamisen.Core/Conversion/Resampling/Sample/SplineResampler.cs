@@ -39,7 +39,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 ArgumentNullException.ThrowIfNull(method);
                 this.method = method;
             }
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public ResampleResult Invoke(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan) => method(in args, buffer, srcBuffer, cspan);
         }
 
@@ -95,7 +95,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             cachedArgs = args;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static (ResampleStrategy, Vector4[], int rearrangedCoeffsIndex, int rearrangedCoeffsDirection) GenerateCatmullRomCoefficents(int sourceSampleRate, int destinationSampleRate, float rateMulInverse, int rateMul, int acc)
         {
             if (sourceSampleRate < destinationSampleRate)
@@ -237,7 +237,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         private static Vector4 C2 => new(-0.5f, 0.0f, 0.5f, 0.0f);
         private static Vector4 C3 => new(0.0f, 1.0f, 0.0f, 0.0f);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void GenerateCoeffs(Span<Vector4> coeffs, float rateMulInverse)
         {
             unchecked
@@ -260,7 +260,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         /// <param name="coeffs"></param>
         /// <param name="rateMulInverse"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void GenerateCoeffsSse2(Span<Vector4> coeffs, float rateMulInverse)
         {
             var xmm0 = C0.AsVector128();
@@ -339,7 +339,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         /// <param name="coeffs"></param>
         /// <param name="rateMulInverse"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void GenerateCoeffsFma128(Span<Vector4> coeffs, float rateMulInverse)
         {
             var xmm0 = C0.AsVector128();
@@ -398,7 +398,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void GenerateCoeffsStandard(Span<Vector4> coeffs, float rateMulInverse)
         {
             var c0 = C0;
@@ -425,7 +425,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region Misc
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void FastDotProductGeneric(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
         {
             unchecked
@@ -441,7 +441,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void FastDotProductGenericStandard(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
         {
             var head2 = head + nchannels * 2;
@@ -470,7 +470,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void FastDotProductGenericAvx2(nint nchannels, nint i, float* rdi, Vector4 cutmullCoeffs, float* head)
         {
             var head2 = head + nchannels * 2;
@@ -586,7 +586,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
         #endregion
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public override ReadResult Read(Span<float> buffer)
         {
             if (isEndOfStream) return ReadResult.EndOfStream;
@@ -624,7 +624,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return Process(buffer, channels, SampleLengthOut, srcBuffer, lengthReserved, readBuffer, rr);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ReadResult Process(Span<float> buffer, int channels, int sampleLengthOut, Span<float> srcBuffer, int lengthReserved, Span<float> readBuffer, ReadResult rr)
         {
             var channelsDivisor = ChannelsDivisor;

@@ -59,7 +59,7 @@ namespace Shamisen.IO
         /// </summary>
         public static FormatSupportStatus Unchecked
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => new(FormatPropertySupportStatus.Unchecked);
         }
 
@@ -68,7 +68,7 @@ namespace Shamisen.IO
         /// </summary>
         public static FormatSupportStatus NotSupported
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => new(FormatPropertySupportStatus.NotSupported);
         }
         #endregion

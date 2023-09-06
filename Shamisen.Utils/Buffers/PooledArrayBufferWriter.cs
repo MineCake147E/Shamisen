@@ -23,31 +23,46 @@ namespace Shamisen.Buffers
         private int index;
         private bool disposedValue;
 
+        /// <inheritdoc cref="ArrayBufferWriter{T}.WrittenCount"/>
         public int WrittenCount => index;
 
+        /// <inheritdoc cref="ArrayBufferWriter{T}.Capacity"/>
         public int Capacity => buffer?.Length ?? 0;
 
+        /// <inheritdoc cref="ArrayBufferWriter{T}.FreeCapacity"/>
         public int FreeCapacity => Capacity - WrittenCount;
 
+        /// <inheritdoc cref="ArrayBufferWriter{T}.WrittenSpan"/>
         public ReadOnlySpan<T> WrittenSpan => IsEmpty ? ReadOnlySpan<T>.Empty : buffer.Span.SliceWhile(index);
 
+        /// <inheritdoc cref="ArrayBufferWriter{T}.WrittenMemory"/>
         public ReadOnlyMemory<T> WrittenMemory => IsEmpty ? ReadOnlyMemory<T>.Empty : buffer.Memory.SliceWhile(index);
 
+        /// <summary>
+        /// Gets the value which indicates whether the <see cref="PooledArrayBufferWriter{T}"/> is empty or not.
+        /// </summary>
         [MemberNotNullWhen(false, nameof(buffer))]
         public bool IsEmpty => buffer is null || index < 1;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public PooledArrayBufferWriter()
         {
             buffer = null;
             index = 0;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="initialCapacity"></param>
         public PooledArrayBufferWriter(int initialCapacity)
         {
             buffer = initialCapacity > 0 ? new(initialCapacity) : null;
             index = 0;
         }
-
+        /// <inheritdoc cref="ArrayBufferWriter{T}.Advance(int)"/>
         public void Advance(int count)
         {
             if (count < 0) throw new ArgumentException(null, nameof(count));
@@ -57,6 +72,8 @@ namespace Shamisen.Buffers
             }
             index += count;
         }
+
+        /// <inheritdoc cref="ArrayBufferWriter{T}.GetMemory(int)"/>
         public Memory<T> GetMemory(int sizeHint = 0)
         {
             if (!CheckAndResizeBuffer(sizeHint))
@@ -66,6 +83,7 @@ namespace Shamisen.Buffers
             }
             return buffer.Memory.Slice(index);
         }
+        /// <inheritdoc cref="ArrayBufferWriter{T}.GetSpan(int)"/>
         public Span<T> GetSpan(int sizeHint = 0)
         {
             if (!CheckAndResizeBuffer(sizeHint))
@@ -92,15 +110,15 @@ namespace Shamisen.Buffers
 
         private void ResizeBuffer(int sizeHint)
         {
-            int capacity = Capacity;
-            int growth = MathI.Max(sizeHint, capacity);
+            var capacity = Capacity;
+            var growth = MathI.Max(sizeHint, capacity);
 
             if (capacity == 0)
             {
                 growth = (int)BitOperations.RoundUpToPowerOf2((uint)growth);
             }
 
-            int newSize = capacity + growth;
+            var newSize = capacity + growth;
             if (newSize < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(sizeHint), "Maximum allocation size exceeded!");
@@ -130,6 +148,7 @@ namespace Shamisen.Buffers
             }
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(disposing: true);

@@ -15,7 +15,7 @@ namespace Shamisen.Utils.Intrinsics
         /// </summary>
         public static bool IsSupported => Ssse3.IsSupported;
         /// <inheritdoc cref="Ssse3.AlignRight(Vector128{byte}, Vector128{byte}, byte)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector128<float> AlignRight(Vector128<float> left, Vector128<float> right, byte mask) => Ssse3.AlignRight(left.AsByte(), right.AsByte(), mask).AsSingle();
     }
 }

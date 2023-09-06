@@ -18,50 +18,50 @@ namespace Shamisen.Utils.Numerics
         private readonly Vector128<int> values;
         private int V0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.GetElement(0);
         }
 
         private int V1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.GetElement(1);
         }
 
         private int V2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.GetElement(2);
         }
 
         private int V3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.GetElement(3);
         }
 #else
         private readonly (int x, int y, int z, int w) values;
         private int V0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.x;
         }
 
         private int V1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.y;
         }
 
         private int V2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.z;
         }
 
         private int V3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => values.w;
         }
 #endif
@@ -74,7 +74,7 @@ namespace Shamisen.Utils.Numerics
         /// </summary>
         public int X
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => V0;
         }
 
@@ -83,7 +83,7 @@ namespace Shamisen.Utils.Numerics
         /// </summary>
         public int Y
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => V1;
         }
 
@@ -92,7 +92,7 @@ namespace Shamisen.Utils.Numerics
         /// </summary>
         public int Z
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => V2;
         }
         /// <summary>
@@ -100,7 +100,7 @@ namespace Shamisen.Utils.Numerics
         /// </summary>
         public int W
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => V3;
         }
         #endregion
@@ -128,7 +128,7 @@ namespace Shamisen.Utils.Numerics
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => obj is Vector4Int32 @int && Equals(@int);
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -137,7 +137,7 @@ namespace Shamisen.Utils.Numerics
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(Vector4Int32 other) => values.Equals(other.values);
         /// <summary>
         /// Returns a hash code for this instance.
@@ -145,7 +145,7 @@ namespace Shamisen.Utils.Numerics
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => HashCode.Combine(values);
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Shamisen.Utils.Numerics
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(Vector4Int32 left, Vector4Int32 right) => left.Equals(right);
         /// <summary>
         /// Indicates whether the values of two specified <see cref="Vector4Int32"/> objects are not equal.
@@ -166,7 +166,7 @@ namespace Shamisen.Utils.Numerics
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(Vector4Int32 left, Vector4Int32 right) => !(left == right);
     }
 }

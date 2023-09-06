@@ -63,7 +63,7 @@ namespace Shamisen
         /// <returns></returns>
         public ReadOnlyMemory<TSample> this[int frame]
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Memory.Slice(Format.BlockSize * frame, Format.BlockSize);
         }
 
@@ -87,7 +87,7 @@ namespace Shamisen
         /// <param name="start">The index in frames at which to begin this slice.</param>
         /// <param name="length">The desired length in frame for the slice.</param>
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyInterleavedAudioMemory<TSample, TFormat> Slice(int start, int length) => new(Format, Memory.Slice(Format.BlockSize * start, Format.BlockSize * length));
 
         /// <summary>

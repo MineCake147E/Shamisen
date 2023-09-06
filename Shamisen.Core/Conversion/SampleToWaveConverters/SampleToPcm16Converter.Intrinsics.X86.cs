@@ -14,7 +14,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
     public sealed partial class SampleToPcm16Converter
     {
         #region Normal
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalSse2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector128.Create(32767.0f / 32768.0f);
@@ -55,7 +55,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 Unsafe.Add(ref rdi, i) = (short)r8;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector256.Create(32767.0f / 32768.0f);
@@ -115,7 +115,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
                 Unsafe.Add(ref rdi, i) = (short)r8;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessReversedSsse3(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector128.Create(32767.0f / 32768.0f);
@@ -160,7 +160,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessReversedAvx2(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = Vector256.Create(32767.0f);

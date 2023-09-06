@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <RootNamespace>Shamisen.IO</RootNamespace>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>Latest</LangVersion>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     </PropertyGroup>
 

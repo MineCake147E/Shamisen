@@ -107,7 +107,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         <#//Generating 8 tables for using same algorithm as libFLAC.
     for(uint p = 0; p < 8; p++){#>
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ushort GetTable<#=p#>At(int index) => BinaryExtensions.ConvertToLittleEndian(Unsafe.Add(ref Unsafe.As<byte, ushort>(ref MemoryMarshal.GetReference(Table<#=p#>)), (byte)index));
 <#}#>
     }

@@ -35,7 +35,7 @@ namespace Shamisen.Utils
         {
 <#
     foreach(var channels in channelAssignments){#>
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Interleave<#=channels#>ChannelsInt32(Span<int> buffer, <#=string.Join(", ", Enumerable.Range(0, channels).Select(a=>$"ReadOnlySpan<int> a{a}"))#>)
             {
                 unsafe

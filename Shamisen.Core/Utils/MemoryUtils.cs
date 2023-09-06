@@ -21,7 +21,7 @@ namespace Shamisen
         /// <param name="span">The span.</param>
         /// <param name="residue">The residue part of <paramref name="span"/></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<TTo> CastSplit<TFrom, TTo>(Span<TFrom> span, out Span<TFrom> residue)
             where TFrom : struct
             where TTo : struct
@@ -40,7 +40,7 @@ namespace Shamisen
         /// <param name="span">The span.</param>
         /// <param name="residue">The residue part of <paramref name="span"/></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<TTo> CastSplit<TFrom, TTo>(ReadOnlySpan<TFrom> span, out ReadOnlySpan<TFrom> residue)
             where TFrom : struct
             where TTo : struct

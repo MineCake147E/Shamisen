@@ -418,7 +418,7 @@ namespace Shamisen.TestUtils
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void WriteResult(ErrorEvaluationResult<float> res)
         {
             Console.WriteLine($"Values Tested: {res.ValuesTested}");

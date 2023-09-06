@@ -35,7 +35,7 @@ namespace Shamisen
         /// the result might depend on CPUs.
         /// </returns>
         /// <inheritdoc cref="Math.Max(float, float)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Max(float x, float y)
         {
             unchecked
@@ -66,7 +66,7 @@ namespace Shamisen
         /// the result might depend on CPUs.
         /// </returns>
         /// <inheritdoc cref="Math.Max(double, double)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Max(double x, double y)
         {
             unchecked
@@ -100,7 +100,7 @@ namespace Shamisen
         /// the result might depend on CPUs.
         /// This one assumes both <paramref name="x"/> and <paramref name="y"/> to be positive.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float MaxUnsignedInputs(float x, float y)
         {
             unchecked
@@ -133,7 +133,7 @@ namespace Shamisen
         /// the result might depend on CPUs.
         /// </returns>
         /// <inheritdoc cref="Math.Min(float, float)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Min(float x, float y)
         {
             unchecked
@@ -164,7 +164,7 @@ namespace Shamisen
         /// the result might depend on CPUs.
         /// </returns>
         /// <inheritdoc cref="Math.Min(double, double)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Min(double x, double y)
         {
             unchecked
@@ -198,7 +198,7 @@ namespace Shamisen
         /// If <paramref name="x"/>, or <paramref name="y"/>, or both <paramref name="x"/> and <paramref name="y"/> are equal to <see cref="float.NaN"/>,
         /// the result might depend on CPUs.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float MinUnsignedInputs(float x, float y)
         {
             unchecked
@@ -234,7 +234,7 @@ namespace Shamisen
         /// <returns>The integer nearest <paramref name="x"/>. If the fractional component of <paramref name="x"/> is halfway between two
         /// integers, one of which is even and the other odd, then the even number is returned.
         /// Note that this method returns a <see cref="float"/> instead of an integral type.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Round(float x)
         {
             unchecked
@@ -257,7 +257,7 @@ namespace Shamisen
         /// <param name="y">The number to be multiplied with x.</param>
         /// <param name="z">The number to be added to the result of x multiplied by y.</param>
         /// <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastMultiplyAdd(float x, float y, float z)
         {
             unchecked
@@ -285,7 +285,7 @@ namespace Shamisen
         /// <param name="y">The number to be multiplied with x.</param>
         /// <param name="z">The number to be added to the result of x multiplied by y.</param>
         /// <returns>(<paramref name="x"/> * y) + z, sometimes rounded as one ternary operation.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double FastMultiplyAdd(double x, double y, double z)
         {
             unchecked
@@ -313,7 +313,7 @@ namespace Shamisen
         /// <param name="y">The number to be multiplied with x.</param>
         /// <param name="z">The number to be added to the result of x multiplied by y.</param>
         /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastMultiplyAddNegated(float x, float y, float z)
         {
             unchecked
@@ -341,7 +341,7 @@ namespace Shamisen
         /// <param name="y">The number to be multiplied with x.</param>
         /// <param name="z">The number to be added to the result of x multiplied by y.</param>
         /// <returns>z - (x * y), sometimes rounded as one ternary operation.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double FastMultiplyAddNegated(double x, double y, double z)
         {
             unchecked
@@ -378,7 +378,7 @@ namespace Shamisen
         /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Sin(float x)
         {
             const float MaxAngle = 1.0f;
@@ -408,7 +408,7 @@ namespace Shamisen
         /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SinPi(float x)
         {
             const float MaxAngle = 1.0f;
@@ -438,7 +438,7 @@ namespace Shamisen
         /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Cos(float x) => Sin(x + 1.5707964f);
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace Shamisen
         /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float CosPi(float x) => SinPi(x + 0.5f);
         #endregion
 
@@ -462,7 +462,7 @@ namespace Shamisen
         /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastSin(float x)
         {
             const float MaxAngle = 1.0f;
@@ -492,7 +492,7 @@ namespace Shamisen
         /// Approximation of the sine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastSinPi(float x)
         {
             const float MaxAngle = 1.0f;
@@ -522,7 +522,7 @@ namespace Shamisen
         /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastCos(float x) => FastSin(x + 1.5707964f);
 
         /// <summary>
@@ -533,7 +533,7 @@ namespace Shamisen
         /// Approximation of the cosine of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastCosPi(float x) => FastSinPi(x + 0.5f);
         #endregion
 
@@ -552,7 +552,7 @@ namespace Shamisen
         /// Approximation of the Exp2 of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Exp2(float x)
         {
             var ip = Max(MathF.Floor(x), -150.0f);
@@ -584,7 +584,7 @@ namespace Shamisen
         /// Approximation of the Exp2 of <paramref name="x"/> computed with a fourth-order polynomial optimized by lolremez.<br/>
         /// If either <see cref="float.IsNaN(float)"/> or <see cref="float.IsInfinity(float)"/> returns <see langword="true"/> for <paramref name="x"/>, this method may return <see cref="float.NaN"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastExp2(float x)
         {
             var ip = Max(MathF.Floor(x), -150.0f);
@@ -625,7 +625,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Log2AsNormal(float x)
         {
             x = Math.Abs(x);
@@ -661,7 +661,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Log2(float x)
         {
             x = Math.Abs(x);
@@ -710,7 +710,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float Log2AsNormalEstrin(float x)
         {
             x = Math.Abs(x);
@@ -749,7 +749,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float Log2AsNormalCake0(float x)
         {
             x = Math.Abs(x);
@@ -788,7 +788,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastLog2AsNormal(float x)
         {
             x = Math.Abs(x);
@@ -826,7 +826,7 @@ namespace Shamisen
         /// <returns>
         /// Approximation of the log base 2 of <paramref name="x"/> computed with a 8th-order polynomial optimized by lolremez.<br/>
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastLog2(float x)
         {
             x = Math.Abs(x);
@@ -881,7 +881,7 @@ namespace Shamisen
         /// Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
         /// </returns>
         /// <inheritdoc cref="MathF.Cbrt(float)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Cbrt(float x)
         {
             // Reference: Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
@@ -919,7 +919,7 @@ namespace Shamisen
         /// Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058
         /// </returns>
         /// <inheritdoc cref="MathF.Cbrt(float)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float FastCbrt(float x)
         {
             // Reference: Moroz, L.; Samotyy, V.; Walczyk, C.J.; Cie ́sli  ́nski, J.L. Fast Calculation of Cube and Inverse Cube Roots Using a Magic Constant and Its Implementation on Microcontrollers. Energies 2021, 14, 1058. https://doi.org/10.3390/en14041058

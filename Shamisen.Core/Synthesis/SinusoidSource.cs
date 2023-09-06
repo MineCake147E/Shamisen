@@ -108,7 +108,7 @@ namespace Shamisen.Synthesis
             return buffer.Length;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta, bool allowFma = false)
         {
             unchecked
@@ -131,7 +131,7 @@ namespace Shamisen.Synthesis
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             for (var i = 0; i < buffer.Length; i++)
@@ -144,7 +144,7 @@ namespace Shamisen.Synthesis
 
         #region X86
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockAvx2FmaMM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             var t = theta.Value;
@@ -234,7 +234,7 @@ namespace Shamisen.Synthesis
             }
             return new Fixed64(t);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             var t = theta.Value;
@@ -328,7 +328,7 @@ namespace Shamisen.Synthesis
             }
             return new Fixed64(t);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockSse41(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             var t = theta.Value;
@@ -408,7 +408,7 @@ namespace Shamisen.Synthesis
 #endif
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 AppendTheta(Fixed64 theta, Fixed64 omega) => theta + omega;
 
         /// <summary>
@@ -416,10 +416,10 @@ namespace Shamisen.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float GenerateMonauralSample(Fixed64 theta) => Sin(theta);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float Sin(Fixed64 theta)
         {
             var f = ConvertFixed64ToSingle(theta);
@@ -433,7 +433,7 @@ namespace Shamisen.Synthesis
             return u;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float ConvertFixed64ToSingle(Fixed64 theta)
         {
             var t = (int)(theta.Value >> 32);

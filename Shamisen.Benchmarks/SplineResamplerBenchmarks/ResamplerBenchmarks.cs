@@ -84,7 +84,7 @@ namespace Shamisen.Benchmarks.SplineResamplerBenchmarks
             buffer = null;
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible), Benchmark]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization), Benchmark]
         public void SplineResampler()
         {
             var span = buffer.AsSpan();

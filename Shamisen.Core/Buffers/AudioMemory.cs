@@ -74,7 +74,7 @@ namespace Shamisen
         /// <param name="start">The index in samples at which to begin this slice.</param>
         /// <param name="length">The desired length in samples for the slice.</param>
         /// <returns>A memory that consists of <paramref name="length"/> elements from the current memory starting at <paramref name="start"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public AudioMemory<TSample, TFormat> Slice(int start, int length) => new(Format, Memory.Slice(start, length));
 
         /// <summary>

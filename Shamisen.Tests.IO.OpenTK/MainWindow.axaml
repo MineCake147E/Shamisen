@@ -17,7 +17,7 @@
             </Grid>
             <Grid ColumnDefinitions="Auto, 1*,Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" HorizontalAlignment="Stretch">
                 <Label Content="Waveform: " VerticalContentAlignment="Center" VerticalAlignment="Center"/>
-                <ComboBox Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,3,3,3" SelectedItem="{Binding SelectedWaveform.Value , Mode=TwoWay}" Items="{Binding Waveforms}">
+                <ComboBox Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,3,3,3" SelectedItem="{Binding SelectedWaveform.Value , Mode=TwoWay}" ItemsSource="{Binding Waveforms}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="a:WaveformViewModel">
                             <TextBlock Text="{Binding Name}"/>
@@ -38,7 +38,7 @@
             <Grid RowDefinitions="Auto,10*">
                 <Label Grid.Row="0" Content="Device"  HorizontalContentAlignment="Left" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                 <Border Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <ListBox Items="{Binding Devices}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <ListBox ItemsSource="{Binding Devices}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Checked}" Content="{Binding Name}" />

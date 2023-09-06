@@ -66,7 +66,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
     /// </summary>
     public static class FlacUtils
     {
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static int MultiplyNoFlagsIfPossible(int a, int b)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -85,7 +85,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// <param name="blockSize">Size of the block.</param>
         /// <param name="isRice2">if set to <c>true</c> [is rice2].</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool ReadRiceEncodedResidual(Span<int> buffer, FlacBitReader bitReader, int predictorOrder, int partitionOrder, int blockSize, bool isRice2)
         {
             //Modified for C# use.
@@ -164,7 +164,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         /// </summary>
         /// <param name="span">The span.</param>
         /// <param name="shift">The shift.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ShiftLeft(Span<int> span, int shift)
         {
 #if NET5_0_OR_GREATER
@@ -178,7 +178,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             ShiftLeftSimple(shift, span);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool ShiftLeftStandard(int shift, Span<int> span)
         {
             unsafe
@@ -212,7 +212,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             return true;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ShiftLeftSimple(int shift, Span<int> span)
         {
             for (var i = 0; i < span.Length; i++)
@@ -223,7 +223,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
 #if NET5_0_OR_GREATER
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool ShiftLeftArm(Span<int> span, int shift)
         {
             if (!AdvSimd.IsSupported) return false;
@@ -290,7 +290,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
 #if NETCOREAPP3_1_OR_GREATER
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool ShiftLeftX86(Span<int> span, int shift)
         {
             if (Avx2.IsSupported)
@@ -306,7 +306,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             return false;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ShiftLeftAvx2(Span<int> span, int shift)
         {
             unsafe
@@ -368,7 +368,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ShiftLeftSse2(Span<int> span, int shift)
         {
             unsafe

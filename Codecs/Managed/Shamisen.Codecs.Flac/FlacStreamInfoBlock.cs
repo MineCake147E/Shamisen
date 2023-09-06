@@ -46,7 +46,7 @@ namespace Shamisen.Codecs.Flac
         /// <param name="field4">The 5th field which contains informations of <see cref="SampleRate"/>, <see cref="Channels"/>, <see cref="BitDepth"/>, and <see cref="TotalSamples"/>.</param>
         /// <param name="md5head">The md5 head.</param>
         /// <param name="md5tail">The md5 tail.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacStreamInfoBlock(ushort blockMinSize, ushort blockMaxSize, UInt24 frameMinSize, UInt24 frameMaxSize, ulong field4, ulong md5head, ulong md5tail)
         {
             this.blockMinSize = blockMinSize;
@@ -72,7 +72,7 @@ namespace Shamisen.Codecs.Flac
         /// <param name="totalSamples">The total samples.</param>
         /// <param name="md5Head">The MD5 head.</param>
         /// <param name="md5Tail">The MD5 tail.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacStreamInfoBlock(ushort minimumBlockSize, ushort maximumBlockSize, UInt24 minimumFrameSize, UInt24 maximumFrameSize, uint sampleRate, byte channels, byte bitDepth, ulong totalSamples, ulong md5Head, ulong md5Tail)
         {
             blockMinSize = minimumBlockSize;
@@ -102,7 +102,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ushort MinimumBlockSize
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => blockMinSize;
         }
 
@@ -114,7 +114,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ushort MaximumBlockSize
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => blockMaxSize;
         }
 
@@ -126,7 +126,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public UInt24 MinimumFrameSize
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => frameMinSize;
         }
 
@@ -138,7 +138,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public UInt24 MaximumFrameSize
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => frameMaxSize;
         }
 
@@ -150,7 +150,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public uint SampleRate
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (uint)(field4 >> 44);
         }
 
@@ -162,7 +162,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public int Channels
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)((field4 >> 41) & 0x7) + 1;
         }
 
@@ -174,7 +174,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public int BitDepth
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)((field4 >> 36) & 0b1_1111) + 1;
         }
 
@@ -186,7 +186,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public ulong TotalSamples
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => field4 & ~(~0ul << 36);
         }
 
@@ -198,7 +198,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public Memory<byte> MD5Signature
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 var h = new byte[16];
@@ -213,7 +213,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacStreamInfoBlock ToReadableValue(FlacStreamInfoBlock value)
             => !BitConverter.IsLittleEndian ? value
                 : ReverseEndianness(value);
@@ -223,7 +223,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacStreamInfoBlock ToWritableValue(FlacStreamInfoBlock value) => ToReadableValue(value);
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Shamisen.Codecs.Flac
         /// </summary>
         /// <param name="value">The value to convert endianness.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacStreamInfoBlock ReverseEndianness(FlacStreamInfoBlock value)
             => new(
                     BinaryPrimitives.ReverseEndianness(value.blockMinSize),

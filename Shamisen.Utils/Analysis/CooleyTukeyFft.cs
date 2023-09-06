@@ -134,7 +134,7 @@ namespace Shamisen.Analysis
         /// Performs Bit-Reversal permutation of the <paramref name="span"/>.
         /// </summary>
         /// <param name="span">The in/out span.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Reverse<T>(Span<T> span)
         {
             if (!MathI.IsPowerOfTwo(span.Length)) throw new ArgumentException("The length of span must be a power of 2!", nameof(span));
@@ -147,7 +147,7 @@ namespace Shamisen.Analysis
         /// <param name="mode">The mode.</param>
         /// <param name="index">The index.</param>
         /// <param name="omegas">The omegas.</param>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void CalculateCache(FftMode mode, int index, Span<Complex> omegas)
         {
             //O(n*log(n))
@@ -170,7 +170,7 @@ namespace Shamisen.Analysis
         /// <param name="mode">The mode.</param>
         /// <param name="index">The index.</param>
         /// <param name="omegas">The omegas.</param>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void CalculateCache(FftMode mode, int index, Span<ComplexF> omegas)
         {
             //O(n*log(n))
@@ -187,7 +187,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Complex GetValueToMultiply(int pos)
             => pos >= PowerRootsOfUnity.Length ? Complex.FromPolarCoordinates(1, Tau * 1.0 / (1 << pos))
          : Unsafe.Add(ref MemoryMarshal.GetReference(PowerRootsOfUnity.Span), pos);
@@ -201,7 +201,7 @@ namespace Shamisen.Analysis
 
         [SkipLocalsInit]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void Perform(Span<Complex> span, FftMode mode)
         {
             if (span.Length < 2) return;
@@ -292,7 +292,7 @@ namespace Shamisen.Analysis
         /// </summary>
         /// <param name="span">The span.</param>
         /// <param name="mode">The FFT's Mode.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void Perform(Span<ComplexF> span, FftMode mode)
         {
             if (span.Length < 2) return;
@@ -303,7 +303,7 @@ namespace Shamisen.Analysis
             PerformLarge(span, mode);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ExpandCache(Span<ComplexF> span, FftMode mode)
         {
             unchecked
@@ -319,7 +319,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void PerformSingleOperation(ref ComplexF pA, ref ComplexF pB, in ComplexF om)
         {
             unchecked
@@ -350,7 +350,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void Perform2(Span<Complex> span)
         {
             var sD = MemoryMarshal.Cast<Complex, (Complex, Complex)>(span);
@@ -364,7 +364,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void Perform2(Span<ComplexF> span)
         {
             unchecked
@@ -380,7 +380,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void Perform4(Span<ComplexF> span, FftMode mode)
         {
             unchecked
@@ -396,7 +396,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void Perform4Backward(Span<Complex> span)
         {
             var sQ = MemoryMarshal.Cast<Complex, (Complex s0, Complex s1, Complex s2, Complex s3)>(span);
@@ -414,7 +414,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void Perform4Forward(Span<Complex> span)
         {
             var sQ = MemoryMarshal.Cast<Complex, (Complex, Complex, Complex, Complex)>(span);
@@ -432,7 +432,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseInternal<T>(Span<T> span)
         {
             //O(n) permutation

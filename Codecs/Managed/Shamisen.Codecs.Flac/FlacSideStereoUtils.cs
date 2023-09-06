@@ -24,7 +24,7 @@ namespace Shamisen.Codecs.Flac
         /// or
         /// buffer must be twice as long as left!
         /// </exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DecodeAndInterleaveLeftSideStereo(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -48,7 +48,7 @@ namespace Shamisen.Codecs.Flac
         /// or
         /// buffer must be twice as long as left!
         /// </exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DecodeAndInterleaveRightSideStereo(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -72,7 +72,7 @@ namespace Shamisen.Codecs.Flac
         /// or
         /// buffer must be twice as long as left!
         /// </exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DecodeAndInterleaveMidSideStereo(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
         {
 #if NETCOREAPP3_1_OR_GREATER

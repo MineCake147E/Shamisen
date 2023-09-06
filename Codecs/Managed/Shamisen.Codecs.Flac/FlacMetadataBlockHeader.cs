@@ -28,9 +28,9 @@ namespace Shamisen.Codecs.Flac
 
         private uint Value
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.As<FlacMetadataBlockHeader, uint>(ref Unsafe.AsRef(in this));
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.As<FlacMetadataBlockHeader, uint>(ref Unsafe.AsRef(in this)) = value;
         }
 
@@ -73,7 +73,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public bool IsLastMetadataBlock
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (head & 0x80) > 0;
         }
 
@@ -85,7 +85,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public FlacMetadataBlockType MetadataBlockType
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (FlacMetadataBlockType)(head & 0x7f);
         }
 
@@ -97,7 +97,7 @@ namespace Shamisen.Codecs.Flac
         /// </value>
         public uint Size
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => BinaryExtensions.ConvertToBigEndian(Value) & 0xff_ffff;
         }
 

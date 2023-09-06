@@ -17,7 +17,7 @@ namespace Shamisen
         /// <typeparam name="TSample">The type of the sample.</typeparam>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void QuickFill<TSample>(this Span<TSample> span, TSample value)
         {
             if (span.IsEmpty) return;
@@ -87,7 +87,7 @@ namespace Shamisen
         /// <typeparam name="TSample">The type of the sample.</typeparam>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void QuickFill<TSample>(this NativeSpan<TSample> span, TSample value) => span.Fill(value);
 
         private static void CopyFill<TSample>(Span<TSample> span, TSample value)
@@ -112,7 +112,7 @@ namespace Shamisen
         #endregion QuickFill
 
         #region Standard VectorFill
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void VectorFill<T>(Span<T> dst, T value) where T : unmanaged
         {
             if (!Vector.IsHardwareAccelerated)
@@ -125,7 +125,7 @@ namespace Shamisen
             FillWithReference(value, ref rdi, length);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void VectorFill<T>(NativeSpan<T> dst, T value) where T : unmanaged
         {
             if (!Vector.IsHardwareAccelerated)
@@ -138,7 +138,7 @@ namespace Shamisen
             FillWithReference(value, ref rdi, length);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FillWithReference<T>(T value, ref T rdi, nint length) where T : unmanaged
         {
             nint i = 0;
@@ -182,7 +182,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FillWithReferencePreloaded<T>(Vector<T> vv, ref T rdi, nint length) where T : unmanaged
         {
             nint i = 0;

@@ -98,7 +98,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         }
         Write("};\r\n");
     #>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static byte GetTableAt(int index) => Unsafe.Add(ref MemoryMarshal.GetReference(Table), (byte)index);
     }
 }

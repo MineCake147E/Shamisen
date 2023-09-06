@@ -17,7 +17,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #region X86
         #region CachedDirect
         #region Monaural
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedDirectMonauralX86(in UnifiedResampleArgs args)
             => (args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
@@ -35,7 +35,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 _ => GetFuncCachedDirectMonauralStandard(args),
             };
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncCachedDirectMonauralUpAnyRateX86(in UnifiedResampleArgs args)
         {
             var ram = args.RateMul;
@@ -45,7 +45,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 : (new(&ResampleCachedDirectMonauralUpAnyRateGenericSse));
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateUnrolledSse2(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -152,7 +152,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// <summary>
         /// For arbitrary sampling frequency ratio larger than 1
         /// </summary>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralUpAnyRateGenericSse(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -190,7 +190,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralIntegerMultipleRateX86(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -218,7 +218,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralAnyRateSse3(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -256,7 +256,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             return new((int)isx, (int)psx, (int)nrci);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralDoubleRateSse41(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -333,7 +333,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             return new((int)isx, (int)psx);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectMonauralQuadrupleRateSse41(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -401,7 +401,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
         #endregion
         #region Stereo
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private unsafe ResampleFunc GetFuncCachedDirect2ChannelsX86(in UnifiedResampleArgs args)
             => (args.IndexIncrement, args.GradientIncrement, args.RateMul) switch
             {
@@ -418,7 +418,7 @@ namespace Shamisen.Conversion.Resampling.Sample
                 _ => new(&ResampleCachedDirect2ChannelsStandard),
             };
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectStereoUpAnyRateSse(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -460,7 +460,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx, (int)nrci);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectStereoIntegerRateSse(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -498,7 +498,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return new((int)isx, (int)psx);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectStereoDoubleRateSse(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -568,7 +568,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// It does not use 256bit floating-point arithmetic, making it suitable for the Haswell micro-architecture.<br/>
         /// TODO: Post-Rocket-Lake variant using 256bit floating-point arithmetic
         /// </summary>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectStereoQuadrupleRateX64(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -666,7 +666,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
             return new((int)isx, (int)psx);
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectStereoAnyRateSse(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -710,9 +710,9 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #endregion
         #region Generic
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncCachedDirectGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? (new(&ResampleCachedDirectGenericAvx2)) : (new(&ResampleCachedDirectGenericStandard));
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedDirectGenericAvx2(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint i = 0;
@@ -808,9 +808,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region CachedWrappedEven
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncCachedWrappedEvenGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? (new(&ResampleCachedWrappedEvenGenericAvx2)) : (new(&ResampleCachedWrappedEvenGenericStandard));
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedEvenGenericAvx2(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -1052,9 +1052,9 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region CachedWrappedOdd
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncCachedWrappedOddGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? new(&ResampleCachedWrappedOddGenericAvx2) : new(&ResampleCachedWrappedOddGenericStandard);
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedOddGenericAvx2(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -1290,10 +1290,10 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         #region Direct
         #region Generic
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe ResampleFunc GetFuncDirectGenericX86(in UnifiedResampleArgs args) => Avx2.IsSupported ? new(&ResampleDirectGenericAvx2) : new(&ResampleDirectGenericStandard);
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleDirectGenericAvx2(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             (var channels, var x, var ram, var acc, var facc, var rmi) = (args.Channels, args.ConversionGradient, args.RateMul, args.GradientIncrement, args.IndexIncrement, args.RateMulInverse);

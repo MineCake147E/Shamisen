@@ -150,7 +150,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="destination">The place to store resulting <see cref="float"/> values.</param>
         /// <param name="source">The 16bit <see cref="AudioEncoding.LinearPcm"/> values to convert from.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertPcm16ToSample(Span<float> destination, ReadOnlySpan<short> source)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -168,7 +168,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             ProcessNormalStandard(destination, source);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalStandard(Span<float> buffer, ReadOnlySpan<short> source)
         {
             Vector<float> mul = new(Multiplier);
@@ -216,7 +216,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
 #if NETCOREAPP3_1_OR_GREATER
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2(Span<float> buffer, ReadOnlySpan<short> source)
         {
             var mul = Vector256.Create(Multiplier);
@@ -282,7 +282,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="dest"></param>
         /// <param name="wrote"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2A(Span<float> dest, ReadOnlySpan<short> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -357,7 +357,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalSse41(Span<float> buffer, ReadOnlySpan<short> source)
         {
             var mul = Vector128.Create(Multiplier);

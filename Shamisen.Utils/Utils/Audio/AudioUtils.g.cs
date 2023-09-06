@@ -22,7 +22,7 @@ namespace Shamisen.Utils
 		/// <param name="a2">The input buffer for channel No.2.</param>
 		/// <param name="a3">The input buffer for channel No.3.</param>
 		/// <param name="a4">The input buffer for channel No.4.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Interleave5Channels(Span<int> buffer, ReadOnlySpan<int> a0, ReadOnlySpan<int> a1, ReadOnlySpan<int> a2, ReadOnlySpan<int> a3, ReadOnlySpan<int> a4)
         {
             unchecked
@@ -51,7 +51,7 @@ namespace Shamisen.Utils
 		/// <param name="a3">The input buffer for channel No.3.</param>
 		/// <param name="a4">The input buffer for channel No.4.</param>
 		/// <param name="a5">The input buffer for channel No.5.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Interleave6Channels(Span<int> buffer, ReadOnlySpan<int> a0, ReadOnlySpan<int> a1, ReadOnlySpan<int> a2, ReadOnlySpan<int> a3, ReadOnlySpan<int> a4, ReadOnlySpan<int> a5)
         {
             unchecked
@@ -81,7 +81,7 @@ namespace Shamisen.Utils
 		/// <param name="a4">The input buffer for channel No.4.</param>
 		/// <param name="a5">The input buffer for channel No.5.</param>
 		/// <param name="a6">The input buffer for channel No.6.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Interleave7Channels(Span<int> buffer, ReadOnlySpan<int> a0, ReadOnlySpan<int> a1, ReadOnlySpan<int> a2, ReadOnlySpan<int> a3, ReadOnlySpan<int> a4, ReadOnlySpan<int> a5, ReadOnlySpan<int> a6)
         {
             unchecked
@@ -112,7 +112,7 @@ namespace Shamisen.Utils
 		/// <param name="a5">The input buffer for channel No.5.</param>
 		/// <param name="a6">The input buffer for channel No.6.</param>
 		/// <param name="a7">The input buffer for channel No.7.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Interleave8Channels(Span<int> buffer, ReadOnlySpan<int> a0, ReadOnlySpan<int> a1, ReadOnlySpan<int> a2, ReadOnlySpan<int> a3, ReadOnlySpan<int> a4, ReadOnlySpan<int> a5, ReadOnlySpan<int> a6, ReadOnlySpan<int> a7)
         {
             unchecked

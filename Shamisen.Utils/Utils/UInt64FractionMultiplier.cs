@@ -42,7 +42,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="divisor">The divisor.</param>
         /// <param name="multiplier">The multiplier.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UInt64FractionMultiplier(UInt64Divisor divisor, ulong multiplier)
         {
             (var m, var d) = MathHelper.MinimizeDivisor(multiplier, divisor.Divisor);
@@ -58,7 +58,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="divisor">The divisor.</param>
         /// <param name="multiplier">The multiplier.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UInt64FractionMultiplier(ulong divisor, ulong multiplier)
         {
             (var m, var d) = MathHelper.MinimizeDivisor(multiplier, divisor);
@@ -88,13 +88,13 @@ namespace Shamisen.Utils
         }
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => obj is UInt64FractionMultiplier fraction && Equals(fraction);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(UInt64FractionMultiplier other) => Numerator == other.Numerator && divisor.Equals(other.divisor);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => HashCode.Combine(Numerator, divisor);
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The product of <paramref name="right"/> and this <see cref="UInt64FractionMultiplier"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public BigInteger BigMultiply(ulong right)
         {
             BigInteger m = Numerator;
@@ -125,7 +125,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The product of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong operator *(UInt64FractionMultiplier left, ulong right)
         {
             var m = left.Numerator;
@@ -150,7 +150,7 @@ namespace Shamisen.Utils
         /// <returns>
         ///   <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(UInt64FractionMultiplier left, UInt64FractionMultiplier right) => left.Equals(right);
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Shamisen.Utils
         /// <returns>
         ///   <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(UInt64FractionMultiplier left, UInt64FractionMultiplier right) => !(left == right);
         #endregion
 

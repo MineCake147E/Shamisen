@@ -60,7 +60,7 @@ namespace Shamisen
         /// <returns></returns>
         public TSample this[int index]
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Span[index];
         }
 
@@ -81,7 +81,7 @@ namespace Shamisen
         /// <param name="start">The index in samples at which to begin this slice.</param>
         /// <param name="length">The desired length in samples for the slice.</param>
         /// <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyAudioSpan<TSample, TFormat> Slice(int start, int length) => new(Format, Span.Slice(start, length));
 
         /// <summary>

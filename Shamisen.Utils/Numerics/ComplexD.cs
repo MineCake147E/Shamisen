@@ -35,7 +35,7 @@ namespace Shamisen
         /// </summary>
         public Complex Value
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.As<Vector128<double>, Complex>(ref Unsafe.AsRef(in vector));
         }
 
@@ -69,7 +69,7 @@ namespace Shamisen
         /// </summary>
         public Complex Value
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value;
         }
 
@@ -162,7 +162,7 @@ namespace Shamisen
         /// <returns>
         /// The sum of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexD operator +(ComplexD left, ComplexD right)
         {
             unchecked
@@ -191,7 +191,7 @@ namespace Shamisen
         /// <returns>
         /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexD operator -(ComplexD left, ComplexD right)
         {
             unchecked
@@ -220,7 +220,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">A complex number.</param>
         /// <returns>The conjugate of <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexD Conjugate(ComplexD value)
         {
             unchecked

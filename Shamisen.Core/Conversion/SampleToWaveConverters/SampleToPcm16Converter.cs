@@ -376,14 +376,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessReversedStandard(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             ProcessNormalStandard(dest, wrote);
             dest.ReverseEndianness();
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalStandard(Span<short> dest, ReadOnlySpan<float> wrote)
         {
             var max = new Vector<float>(32767.0f);
@@ -440,7 +440,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="srcval"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static short Convert(float srcval)
         {
             srcval *= Multiplier;
@@ -452,14 +452,14 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="srcval"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static short ConvertScaled(float srcval)
         {
             srcval = RoundAndClamp(srcval);
             return (short)srcval;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float RoundAndClamp(float srcval)
         {
             srcval = FastMath.Round(srcval);

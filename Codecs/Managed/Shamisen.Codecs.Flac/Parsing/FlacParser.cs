@@ -294,7 +294,7 @@ namespace Shamisen.Codecs.Flac
             return Read(bb) * sizeof(int);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static T Read<T>(IReadableDataSource<byte> source) where T : unmanaged
         {
             Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
@@ -302,7 +302,7 @@ namespace Shamisen.Codecs.Flac
             return MemoryMarshal.Read<T>(buffer);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static FlacMetadataBlockHeader ReadMetadataHeader(IReadableDataSource<byte> source)
         {
             Span<byte> buffer = stackalloc byte[4];

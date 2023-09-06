@@ -52,7 +52,7 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="UInt24"/> struct.
         /// </summary>
         /// <param name="value">The source <see cref="uint"/> value. Mask:0x00ffffff</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UInt24(uint value)
         {
             Unsafe.SkipInit(out this);
@@ -73,7 +73,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="midtail">The first 2 bytes of the value.</param>
         /// <param name="head">The last byte of the value.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UInt24(ushort midtail, byte head)
         {
             Unsafe.SkipInit(out this);
@@ -87,7 +87,7 @@ namespace Shamisen
         /// <param name="head">The head.</param>
         /// <param name="middle">The middle.</param>
         /// <param name="tail">The tail.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UInt24(byte head, byte middle, byte tail)
         {
             Unsafe.SkipInit(out this);
@@ -103,7 +103,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator uint(UInt24 value)
         {
             unchecked
@@ -132,7 +132,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static explicit operator UInt24(uint value) => new(value);
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(UInt24 left, UInt24 right) => left.Equals(right);
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left is less than right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator <(UInt24 left, UInt24 right) => (uint)left < right;
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left is greater than right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator >(UInt24 left, UInt24 right) => (uint)left > right;
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left is less than or equal to right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator <=(UInt24 left, UInt24 right) => (uint)left <= right;
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if <see cref="UInt24"/> is greater than or equal to <see cref="UInt24"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator >=(UInt24 left, UInt24 right) => (uint)left >= right;
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to reverse endianness.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 ReverseEndianness(UInt24 value) => new(value.Tail, value.Middle, value.head);
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace Shamisen.Utils
         /// <param name="dst">The reference to the destination memory region.</param>
         /// <param name="src">The reference to the source memory region.</param>
         /// <param name="length">The length in bytes to copy.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void MoveMemory(ref byte dst, ref byte src, nuint length)
         {
             //check for overlap
@@ -33,7 +33,7 @@ namespace Shamisen.Utils
             CopyFromHead(ref dst, ref src, length);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void CopyFromHead(ref byte dst, ref byte src, nuint length)
         {
             // src is inside destination: copying from head
@@ -129,7 +129,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void CopyFromTail(ref byte dst, ref byte src, nuint length)
         {
             // destination.head is inside source: copying from tail
@@ -233,7 +233,7 @@ namespace Shamisen.Utils
 
         #region Memory Management
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static bool ValidateAllocationRequest<T>(nint length, out nuint lengthInBytes, byte alignmentExponent = 0, ushort alignmentExponentLimit = 256)
         {
             bool isLengthInRange;
@@ -252,7 +252,7 @@ namespace Shamisen.Utils
             return length > 0 && isLengthInRange && alignmentExponent <= alignmentExponentLimit;
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void* AllocateNativeMemoryInternal(nuint lengthInBytes, byte alignmentExponent, bool memoryPressure)
         {
             nuint alignment = (nuint)1 << alignmentExponent;
@@ -264,7 +264,7 @@ namespace Shamisen.Utils
         }
 
         /// <inheritdoc cref="GC.AddMemoryPressure(long)"/>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void AddMemoryPressure(nuint bytesAllocated)
         {
             while (bytesAllocated > 0)
@@ -276,7 +276,7 @@ namespace Shamisen.Utils
         }
 
         /// <inheritdoc cref="GC.RemoveMemoryPressure(long)"/>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void RemoveMemoryPressure(nuint bytesAllocated)
         {
             while (bytesAllocated > 0)

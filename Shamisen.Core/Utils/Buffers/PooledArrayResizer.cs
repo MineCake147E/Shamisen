@@ -35,9 +35,9 @@ namespace Shamisen.Utils.Buffers
         public T[]? Array
 #pragma warning restore CA1819 // Properties should not return arrays
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             private set;
         }
 
@@ -46,7 +46,7 @@ namespace Shamisen.Utils.Buffers
         /// </summary>
         /// <param name="newSize">The new size.</param>
         /// <returns>The resized array.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public T[] Resize(int newSize)
         {
             if (Array is null) throw new ObjectDisposedException(nameof(PooledArrayResizer<T>));

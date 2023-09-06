@@ -24,7 +24,7 @@ namespace Shamisen.Analysis
             internal static bool IsSupported => AudioUtils.X86.IsSupported;
             #region Perform2
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Perform2X86(Span<ComplexF> span)
             {
                 if (Avx2.IsSupported)
@@ -40,7 +40,7 @@ namespace Shamisen.Analysis
                 Fallback.Perform2Fallback(span);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform2Avx2(Span<ComplexF> span)
             {
                 ref var rdi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(span));
@@ -105,7 +105,7 @@ namespace Shamisen.Analysis
                     Unsafe.As<double, Vector128<float>>(ref r8) = xmm0;
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform2Sse(Span<ComplexF> span)
             {
                 ref var rdi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(span));
@@ -143,7 +143,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region Perform4
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4X86(Span<ComplexF> span, FftMode mode)
             {
                 if (Avx2.IsSupported)
@@ -159,7 +159,7 @@ namespace Shamisen.Analysis
                 Fallback.Perform4Fallback(span, mode);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4Avx2(Span<ComplexF> span, FftMode mode)
             {
                 ref var rdi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(span));
@@ -215,7 +215,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4Sse(Span<ComplexF> span, FftMode mode)
             {
                 ref var rdi = ref Unsafe.As<ComplexF, double>(ref MemoryMarshal.GetReference(span));
@@ -257,7 +257,7 @@ namespace Shamisen.Analysis
             }
             #endregion
             #region Perform8
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Perform8X86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 if (Avx.IsSupported)
@@ -273,7 +273,7 @@ namespace Shamisen.Analysis
                 Perform8Sse(span, omegas);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform8Avx(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -343,7 +343,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform8Sse3(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -379,7 +379,7 @@ namespace Shamisen.Analysis
                     Unsafe.As<ComplexF, Vector128<float>>(ref Unsafe.Add(ref r8, 6)) = xmm5;
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform8Sse(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -423,7 +423,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region PerformLarge
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargeX86(Span<ComplexF> span, FftMode mode)
             {
                 var pool = ArrayPool<byte>.Shared;
@@ -451,7 +451,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region PerformSingleOperation
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void PerformSingleOperationX86(ref ComplexF pA, ref ComplexF pB, in ComplexF om)
             {
                 if (Avx2.IsSupported)
@@ -494,7 +494,7 @@ namespace Shamisen.Analysis
 
             #region ExpandCache
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheX86(Span<ComplexF> span, FftMode mode)
             {
                 if (Avx2.IsSupported)
@@ -516,7 +516,7 @@ namespace Shamisen.Analysis
                 Fallback.ExpandCacheFallback(span, mode);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheAvx2(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;
@@ -612,7 +612,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheAvx(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;
@@ -708,7 +708,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheSse3(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;
@@ -754,7 +754,7 @@ namespace Shamisen.Analysis
                     Unsafe.As<double, Vector128<float>>(ref r8) = xmm0;
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheSse2(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;
@@ -801,7 +801,7 @@ namespace Shamisen.Analysis
                     Unsafe.As<double, Vector128<float>>(ref r8) = xmm0;
                 }
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheSse(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;

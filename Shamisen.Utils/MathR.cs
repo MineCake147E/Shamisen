@@ -20,7 +20,7 @@ namespace Shamisen
         /// <param name="range">The range to test.</param>
         /// <param name="value">The address to test.</param>
         /// <returns>The value which indicates whether the <paramref name="value"/> is in specified <paramref name="range"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsAddressInRange<T>(NativeSpan<T> range, ref T value)
         {
             unsafe
@@ -37,7 +37,7 @@ namespace Shamisen
         /// <param name="length"></param>
         /// <param name="value">The address to test.</param>
         /// <returns>The value which indicates whether the <paramref name="value"/> is in specified region.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsAddressInRange<T>(ref T start, nuint length, ref T value)
         {
             unsafe

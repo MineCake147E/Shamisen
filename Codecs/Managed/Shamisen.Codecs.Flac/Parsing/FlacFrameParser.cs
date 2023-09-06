@@ -133,7 +133,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Finds the next frame.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static FlacFrameParser? ParseNextFrame(FlacBitReader source, FlacStreamInfoBlock streamInfoBlock)
         {
 #pragma warning disable S907 // "goto" statement should not be used
@@ -233,7 +233,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Inlining this method causes poor codegen which looks like in debug mode.
         /// </summary>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static FlacFrameParser? ParseAllSubFrames(FlacBitReader source, FlacStreamInfoBlock streamInfoBlock, uint length, (uint sampleRate, SampleRateState state) nSampleRate, FlacChannelAssignments nChannels, (uint bitDepth, BitDepthState state) nBitDepth, FlacCrc16 pCrc16, ulong? pFrameNumber, ulong? pSampleNumber)
         {
             var pSampleRate = nSampleRate.sampleRate;
@@ -344,7 +344,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void ReadSubFrames(uint length, (uint bitDepth, BitDepthState state) nBitDepth, FlacChannelAssignments pChannels, IFlacSubFrame[] pSubFrames, FlacBitReader bitReader)
         {
             for (var ch = 0; ch < pSubFrames.Length; ch++)
@@ -369,7 +369,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static IFlacSubFrame? ReadSubFrame(FlacBitReader flacBitReader, int blockSize, int bitDepthToRead)
         {
             if (!flacBitReader.ReadBitsUInt64(8, out var result)) return null;
@@ -404,7 +404,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveChannels(uint length, FlacChannelAssignments nChannels, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             switch ((nChannels, subFrames.Length))
@@ -451,7 +451,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveMidSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             using var left = new PooledArray<int>((int)length);
@@ -463,7 +463,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             FlacSideStereoUtils.DecodeAndInterleaveMidSideStereo(samples, left.Span, right.Span);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveRightSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             using var left = new PooledArray<int>((int)length);
@@ -475,7 +475,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             FlacSideStereoUtils.DecodeAndInterleaveRightSideStereo(samples, left.Span, right.Span);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveLeftSideStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             using var left = new PooledArray<int>((int)length);
@@ -487,7 +487,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             FlacSideStereoUtils.DecodeAndInterleaveLeftSideStereo(samples, left.Span, right.Span);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveSevenPointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -509,7 +509,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 , j.Slice(iLen * 6, iLen), j.Slice(iLen * 7, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveDolbySixPointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -530,7 +530,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 , j.Slice(iLen * 6, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveFivePointOne(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -549,7 +549,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen), j.Slice(iLen * 5, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveFrontFive(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -567,7 +567,7 @@ namespace Shamisen.Codecs.Flac.Parsing
                 , j.Slice(iLen * 3, iLen), j.Slice(iLen * 4, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveQuad(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -583,7 +583,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             AudioUtils.InterleaveQuad(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen), j.Slice(iLen * 3, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveFrontThree(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             var iLen = (int)length;
@@ -596,7 +596,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             AudioUtils.InterleaveThree(samples, j.Slice(0, iLen), j.Slice(iLen, iLen), j.Slice(iLen * 2, iLen));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InterleaveOrdinalStereo(uint length, Span<int> samples, IFlacSubFrame[] subFrames)
         {
             using var left = new PooledArray<int>((int)length);
@@ -613,7 +613,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadResult Read(Span<int> buffer)
         {
             if (Length == 0 || samples is null) return ReadResult.EndOfStream;
@@ -636,14 +636,14 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static (uint bitDepth, BitDepthState state) ParseBitDepth(byte value)
         {
             var index = (value & 7) * 8;
             return ((byte)(0x2018_1410_000C_0800 >> index), (BitDepthState)(byte)(0x0101010102010100 >> index));
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static (uint length, BlockSizeState state) ParseBlockSize(byte value)
             => value switch
             {
@@ -658,7 +658,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         private static ReadOnlySpan<byte> SampleRateTable => new byte[] { 136, 88, 1, 0, 16, 177, 2, 0, 0, 238, 2, 0, 64, 31, 0, 0, 128, 62, 0, 0, 34, 86, 0, 0, 192, 93, 0, 0, 0, 125, 0, 0, 68, 172, 0, 0, 128, 187, 0, 0, 0, 119, 1, 0 };
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static (uint sampleRate, SampleRateState state) ParseSampleRate(byte value)
             => (value & 0xf) switch
             {

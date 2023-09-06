@@ -126,7 +126,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="value">The <see cref="AudioEncoding.Mulaw"/> value to decode.</param>
         /// <returns>The decoded <see cref="float"/> value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float ConvertMuLawToSingle(byte value)
         {
             var v = (uint)(sbyte)~value;
@@ -143,7 +143,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="destination">The place to store resulting <see cref="float"/> values.</param>
         /// <param name="source">The <see cref="AudioEncoding.Mulaw"/> values to convert from.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertMuLawToSingle(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -172,7 +172,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessStandard(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -193,7 +193,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
         #region Arm Intrinsics
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAdvSimd(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -241,7 +241,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAdvSimdArm64(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -295,7 +295,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
 
         #region X86 Intrinsics
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2MM128(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -357,7 +357,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2MM256(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked
@@ -431,7 +431,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessSse41(Span<float> destination, ReadOnlySpan<byte> source)
         {
             unchecked

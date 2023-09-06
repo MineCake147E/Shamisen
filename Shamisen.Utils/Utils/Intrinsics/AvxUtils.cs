@@ -21,7 +21,7 @@ namespace Shamisen.Utils.Intrinsics
         public static bool IsSupported => Avx.IsSupported;
 
         /// <inheritdoc cref="Avx.BroadcastScalarToVector128(float*)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector128<float> BroadcastScalarToVector128(ref float source)
         {
             unsafe
@@ -35,7 +35,7 @@ namespace Shamisen.Utils.Intrinsics
         }
 
         /// <inheritdoc cref="Avx.Xor(Vector256{float}, Vector256{float})"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector256<float> Xor(Vector256<float> left, Vector256<float> right)
         {
             unchecked
@@ -45,7 +45,7 @@ namespace Shamisen.Utils.Intrinsics
         }
 
         /// <inheritdoc cref="Vector256{T}.Zero"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Vector256<T> GetZero<T>() where T : struct
         {
             unchecked

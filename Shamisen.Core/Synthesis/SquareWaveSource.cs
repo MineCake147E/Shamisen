@@ -94,7 +94,7 @@ namespace Shamisen.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float GenerateMonauralSample(Fixed64 theta)
         {
             var y = (int)(theta.Value >> 32) & int.MinValue;
@@ -105,7 +105,7 @@ namespace Shamisen.Synthesis
             return Unsafe.As<int, float>(ref y);
 #endif
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong GetDurationOfSameValue(UInt64Divisor omega, Fixed64 theta)
         {
             var r = omega.DivRem(0x8000_0000_0000_0000u - (ulong)theta.Value % 0x8000_0000_0000_0000u, out var q);
@@ -122,7 +122,7 @@ namespace Shamisen.Synthesis
             return buffer.Length;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -136,7 +136,7 @@ namespace Shamisen.Synthesis
 
 #if NETCOREAPP3_1_OR_GREATER
         #region X86 intrinsics
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             //TODO: AdvSimd and Sse42 variant
@@ -236,7 +236,7 @@ namespace Shamisen.Synthesis
         #endregion
 #endif
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             var t = theta.Value;

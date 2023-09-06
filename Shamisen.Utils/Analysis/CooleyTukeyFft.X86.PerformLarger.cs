@@ -22,7 +22,7 @@ namespace Shamisen.Analysis
         internal static partial class X86
         {
             #region Perform16
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Perform16X86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 if (Avx.IsSupported)
@@ -38,7 +38,7 @@ namespace Shamisen.Analysis
                 Perform16Sse(span, omegas);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform16Avx(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -121,7 +121,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform16Sse3(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -182,7 +182,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform16Sse(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -254,7 +254,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region PerformLargerOrder
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargerOrderX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 if (Avx.IsSupported)
@@ -265,7 +265,7 @@ namespace Shamisen.Analysis
                 PerformLargerOrderFallbackX86(span, omegas);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             private static void PerformLargerOrderFallbackX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 nint mHalf = omegas.Length;
@@ -297,7 +297,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargerOrderAvx(Span<ComplexF> span, ReadOnlySpan<ComplexF> omegas)
             {
                 nint mHalf = omegas.Length;

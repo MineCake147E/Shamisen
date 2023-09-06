@@ -182,7 +182,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalStandard(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -272,7 +272,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
         #region X86
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -355,7 +355,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessReversedAvx2(Span<float> dest, ReadOnlySpan<Int24> wrote)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);

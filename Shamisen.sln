@@ -106,7 +106,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.Utils.Tests", "Sha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.TestUtils", "Shamisen.TestUtils\Shamisen.TestUtils.csproj", "{94C174EC-B47A-4E03-8A37-E12E6AD72E17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shamisen.IO.Android", "Shamisen.IO.Android\Shamisen.IO.Android.csproj", "{40BE9510-583B-4070-BF43-7656370E51AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shamisen.IO.Android", "Shamisen.IO.Android\Shamisen.IO.Android.csproj", "{40BE9510-583B-4070-BF43-7656370E51AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

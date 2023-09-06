@@ -23,7 +23,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -34,7 +34,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -44,7 +44,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -55,7 +55,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -65,7 +65,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -76,7 +76,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -86,7 +86,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -97,7 +97,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -107,7 +107,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -118,7 +118,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -128,7 +128,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -139,7 +139,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -149,7 +149,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -160,7 +160,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -170,7 +170,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -181,7 +181,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -191,7 +191,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -202,7 +202,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -212,7 +212,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -223,7 +223,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -239,7 +239,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> SliceAlign<T>(this Span<T> span, int channels) => span.Slice(0, MathI.FloorStep(span.Length, channels));
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> SliceAlign<T>(this Span<T> span, UInt32Divisor channelsDivisor) => span.Slice(0, (int)channelsDivisor.Floor((uint)span.Length));
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> SliceAlign<T>(this Span<T> span, Int32Divisor channelsDivisor) => span.Slice(0, channelsDivisor.AbsFloor(span.Length));
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> SliceWhile<T>(this Span<T> span, int length) => span.Slice(0, length);
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> AlignWith<T>(this Span<T> span, Span<T> criterion) => span.Slice(0, criterion.Length);
 
 
@@ -290,7 +290,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> AlignWith<T>(this Span<T> span, Memory<T> criterion) => span.Slice(0, criterion.Length);
 
 
@@ -301,7 +301,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> AlignWith<T>(this Span<T> span, ReadOnlySpan<T> criterion) => span.Slice(0, criterion.Length);
 
 
@@ -312,7 +312,7 @@ namespace Shamisen
         /// <param name="span">The <see cref="Span{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<T> AlignWith<T>(this Span<T> span, ReadOnlyMemory<T> criterion) => span.Slice(0, criterion.Length);
 
 #endregion Extensions for Span<T>
@@ -324,7 +324,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, int channels) => memory.Slice(0, MathI.FloorStep(memory.Length, channels));
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, UInt32Divisor channelsDivisor) => memory.Slice(0, (int)channelsDivisor.Floor((uint)memory.Length));
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> SliceAlign<T>(this Memory<T> memory, Int32Divisor channelsDivisor) => memory.Slice(0, channelsDivisor.AbsFloor(memory.Length));
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> SliceWhile<T>(this Memory<T> memory, int length) => memory.Slice(0, length);
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> AlignWith<T>(this Memory<T> memory, Span<T> criterion) => memory.Slice(0, criterion.Length);
 
 
@@ -375,7 +375,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> AlignWith<T>(this Memory<T> memory, Memory<T> criterion) => memory.Slice(0, criterion.Length);
 
 
@@ -386,7 +386,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> AlignWith<T>(this Memory<T> memory, ReadOnlySpan<T> criterion) => memory.Slice(0, criterion.Length);
 
 
@@ -397,7 +397,7 @@ namespace Shamisen
         /// <param name="memory">The <see cref="Memory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Memory<T> AlignWith<T>(this Memory<T> memory, ReadOnlyMemory<T> criterion) => memory.Slice(0, criterion.Length);
 
 #endregion Extensions for Memory<T>
@@ -409,7 +409,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, int channels) => readOnlySpan.Slice(0, MathI.FloorStep(readOnlySpan.Length, channels));
 
         /// <summary>
@@ -419,7 +419,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, UInt32Divisor channelsDivisor) => readOnlySpan.Slice(0, (int)channelsDivisor.Floor((uint)readOnlySpan.Length));
 
         /// <summary>
@@ -429,7 +429,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> SliceAlign<T>(this ReadOnlySpan<T> readOnlySpan, Int32Divisor channelsDivisor) => readOnlySpan.Slice(0, channelsDivisor.AbsFloor(readOnlySpan.Length));
 
         /// <summary>
@@ -439,7 +439,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> SliceWhile<T>(this ReadOnlySpan<T> readOnlySpan, int length) => readOnlySpan.Slice(0, length);
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> AlignWith<T>(this ReadOnlySpan<T> readOnlySpan, Span<T> criterion) => readOnlySpan.Slice(0, criterion.Length);
 
 
@@ -460,7 +460,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> AlignWith<T>(this ReadOnlySpan<T> readOnlySpan, Memory<T> criterion) => readOnlySpan.Slice(0, criterion.Length);
 
 
@@ -471,7 +471,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> AlignWith<T>(this ReadOnlySpan<T> readOnlySpan, ReadOnlySpan<T> criterion) => readOnlySpan.Slice(0, criterion.Length);
 
 
@@ -482,7 +482,7 @@ namespace Shamisen
         /// <param name="readOnlySpan">The <see cref="ReadOnlySpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlySpan<T> AlignWith<T>(this ReadOnlySpan<T> readOnlySpan, ReadOnlyMemory<T> criterion) => readOnlySpan.Slice(0, criterion.Length);
 
 #endregion Extensions for ReadOnlySpan<T>
@@ -494,7 +494,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, int channels) => readOnlyMemory.Slice(0, MathI.FloorStep(readOnlyMemory.Length, channels));
 
         /// <summary>
@@ -504,7 +504,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, UInt32Divisor channelsDivisor) => readOnlyMemory.Slice(0, (int)channelsDivisor.Floor((uint)readOnlyMemory.Length));
 
         /// <summary>
@@ -514,7 +514,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> SliceAlign<T>(this ReadOnlyMemory<T> readOnlyMemory, Int32Divisor channelsDivisor) => readOnlyMemory.Slice(0, channelsDivisor.AbsFloor(readOnlyMemory.Length));
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> SliceWhile<T>(this ReadOnlyMemory<T> readOnlyMemory, int length) => readOnlyMemory.Slice(0, length);
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> AlignWith<T>(this ReadOnlyMemory<T> readOnlyMemory, Span<T> criterion) => readOnlyMemory.Slice(0, criterion.Length);
 
 
@@ -545,7 +545,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> AlignWith<T>(this ReadOnlyMemory<T> readOnlyMemory, Memory<T> criterion) => readOnlyMemory.Slice(0, criterion.Length);
 
 
@@ -556,7 +556,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> AlignWith<T>(this ReadOnlyMemory<T> readOnlyMemory, ReadOnlySpan<T> criterion) => readOnlyMemory.Slice(0, criterion.Length);
 
 
@@ -567,7 +567,7 @@ namespace Shamisen
         /// <param name="readOnlyMemory">The <see cref="ReadOnlyMemory{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ReadOnlyMemory<T> AlignWith<T>(this ReadOnlyMemory<T> readOnlyMemory, ReadOnlyMemory<T> criterion) => readOnlyMemory.Slice(0, criterion.Length);
 
 #endregion Extensions for ReadOnlyMemory<T>
@@ -579,7 +579,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> SliceWhile<T>(this NativeSpan<T> nativeSpan, nint length) => nativeSpan.Slice(0, length);
 
         /// <summary>
@@ -589,7 +589,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, Span<T> criterion) => nativeSpan.Slice(0, criterion.Length);
 
 
@@ -600,7 +600,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, Memory<T> criterion) => nativeSpan.Slice(0, criterion.Length);
 
 
@@ -611,7 +611,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, ReadOnlySpan<T> criterion) => nativeSpan.Slice(0, criterion.Length);
 
 
@@ -622,7 +622,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, ReadOnlyMemory<T> criterion) => nativeSpan.Slice(0, criterion.Length);
 
 
@@ -633,7 +633,7 @@ namespace Shamisen
         /// <param name="nativeSpan">The <see cref="NativeSpan{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeSpan<T> AlignWith<T>(this NativeSpan<T> nativeSpan, NativeSpan<T> criterion) => nativeSpan.Slice(0, criterion.Length);
 
 #endregion Extensions for NativeSpan<T>
@@ -645,7 +645,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="Memory{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this Memory<T> source, Span<T> destination) => source.Span.CopyTo(destination);
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="ReadOnlyMemory{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this ReadOnlyMemory<T> source, Span<T> destination) => source.Span.CopyTo(destination);
 
         /// <summary>
@@ -665,7 +665,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="Span{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this Span<T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
         /// <summary>
@@ -675,7 +675,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="ReadOnlySpan{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this ReadOnlySpan<T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
         /// <summary>
@@ -685,7 +685,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="NativeSpan{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this NativeSpan<T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
 #endregion CopyTo alternatives
@@ -697,7 +697,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="Memory{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this Memory<T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
 
         /// <summary>
@@ -707,7 +707,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="ReadOnlyMemory{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this ReadOnlyMemory<T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
 
         /// <summary>
@@ -717,7 +717,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="Span{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this Span<T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
         /// <summary>
@@ -727,7 +727,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="ReadOnlySpan{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this ReadOnlySpan<T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
         /// <summary>
@@ -737,7 +737,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="NativeSpan{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this NativeSpan<T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
 #endregion TryCopyTo alternatives

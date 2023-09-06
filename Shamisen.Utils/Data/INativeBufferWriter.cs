@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Data
 {
+    /// <summary>
+    /// The extended superset of <see cref="IBufferWriter{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface INativeBufferWriter<T> : IBufferWriter<T>
     {
         /// <summary>

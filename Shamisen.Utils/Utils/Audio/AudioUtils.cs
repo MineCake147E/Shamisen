@@ -38,7 +38,7 @@ namespace Shamisen.Utils
         /// <param name="samplesToAdd">The samples to add.</param>
         /// <param name="buffer">The buffer.</param>
         /// <exception cref="ArgumentException">samplesToAdd</exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void FastAdd(ReadOnlySpan<float> samplesToAdd, Span<float> buffer)
         {
 #if NET5_0_OR_GREATER
@@ -63,7 +63,7 @@ namespace Shamisen.Utils
         /// <param name="samplesB">The samples to add.</param>
         /// <param name="buffer">The destination.</param>
         /// <exception cref="ArgumentException">samplesToAdd</exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void FastAdd(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
 #if NET5_0_OR_GREATER
@@ -81,7 +81,7 @@ namespace Shamisen.Utils
             FastAddStandardVariable(buffer, samplesA, samplesB);
         }
 #if NET5_0_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastAddAdvSimd(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             nint i, length = MathI.Min(buffer.Length, MathI.Min(samplesA.Length, samplesB.Length));
@@ -106,7 +106,7 @@ namespace Shamisen.Utils
                 Unsafe.Add(ref rD, i) = sA + Unsafe.Add(ref rsB, i);
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastAddAdvSimdArm64(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             nint i, length = MathI.Min(buffer.Length, MathI.Min(samplesA.Length, samplesB.Length));
@@ -133,7 +133,7 @@ namespace Shamisen.Utils
             }
         }
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastAddStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, ReadOnlySpan<float> samplesB)
         {
             unsafe
@@ -203,7 +203,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="span">The span to multiply.</param>
         /// <param name="scale">The value to be multiplied.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int FastScalarMultiply(this Span<float> span, float scale = default)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -221,7 +221,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The length of <paramref name="destination"/> that actually contains result.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int FastScalarMultiply(Span<float> destination, ReadOnlySpan<float> source, float scale)
         {
             ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -240,7 +240,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The length of <paramref name="destination"/> that actually contains result.
         /// </returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static nint FastScalarMultiply(NativeSpan<float> destination, ReadOnlyNativeSpan<float> source, float scale)
         {
             ref var rsi = ref SpanUtils.GetReference(source);
@@ -249,7 +249,7 @@ namespace Shamisen.Utils
             return FastScalarMultiply(ref rdi, ref rsi, length, scale);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static nint FastScalarMultiply(ref float rdi, ref float rsi, nint length, float scale)
         {
             var scaleV = new Vector<float>(scale);
@@ -299,7 +299,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="span">The span to multiply.</param>
         /// <param name="scale">The value to be multiplied.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int FastScalarMultiply(this Span<double> span, double scale = default)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -317,7 +317,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The length of <paramref name="destination"/> that actually contains result.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int FastScalarMultiply(Span<double> destination, ReadOnlySpan<double> source, double scale)
         {
             ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -336,7 +336,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The length of <paramref name="destination"/> that actually contains result.
         /// </returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static nint FastScalarMultiply(NativeSpan<double> destination, ReadOnlyNativeSpan<double> source, double scale)
         {
             ref var rsi = ref SpanUtils.GetReference(source);
@@ -345,7 +345,7 @@ namespace Shamisen.Utils
             return FastScalarMultiply(ref rdi, ref rsi, length, scale);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static nint FastScalarMultiply(ref double rdi, ref double rsi, nint length, double scale)
         {
             var scaleV = new Vector<double>(scale);
@@ -402,10 +402,10 @@ namespace Shamisen.Utils
         /// <param name="destination">The place to store the product of <paramref name="sourceA"/> and <paramref name="sourceB"/>.</param>
         /// <param name="sourceA">The values to multiply.</param>
         /// <param name="sourceB">The values to multiply.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void FastMultiply(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB) => FastMultiplyStandardVariable(destination, sourceA, sourceB);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastMultiplyStandardVariable(Span<float> destination, ReadOnlySpan<float> sourceA, ReadOnlySpan<float> sourceB)
         {
             unsafe
@@ -484,7 +484,7 @@ namespace Shamisen.Utils
         /// <param name="buffer">The buffer.</param>
         /// <param name="scale">The scale to scale <paramref name="samplesToMix"/>.</param>
         /// <exception cref="ArgumentException">samplesToMix</exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void FastMix(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             var min = MathI.Min(samplesToMix.Length, buffer.Length);
@@ -498,7 +498,7 @@ namespace Shamisen.Utils
             }
             FastMixStandardFixed(samplesToMix, buffer, scale);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void FastMixStandardFixed(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             nint i = 0;
@@ -551,7 +551,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void FastMixStandardVariable(ReadOnlySpan<float> samplesToMix, Span<float> buffer, float scale)
         {
             nint i = 0;
@@ -616,7 +616,7 @@ namespace Shamisen.Utils
         /// <param name="volumeA">The volume of <paramref name="samplesA"/>.</param>
         /// <param name="samplesB">The samples b.</param>
         /// <param name="volumeB">The volume of <paramref name="samplesB"/>.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void FastMix(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             if (Vector<float>.Count > 4 && Vector.IsHardwareAccelerated)
@@ -625,7 +625,7 @@ namespace Shamisen.Utils
             }
             FastMixStandardFixed(buffer, samplesA, volumeA, samplesB, volumeB);
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastMixStandardVariable(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             unsafe
@@ -674,7 +674,7 @@ namespace Shamisen.Utils
                 }
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FastMixStandardFixed(Span<float> buffer, ReadOnlySpan<float> samplesA, float volumeA, ReadOnlySpan<float> samplesB, float volumeB)
         {
             unsafe
@@ -837,7 +837,7 @@ namespace Shamisen.Utils
         /// <param name="buffer">The output buffer.</param>
         /// <param name="left">The input buffer for left channel.</param>
         /// <param name="right">The input buffer for right channel.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InterleaveStereo(Span<float> buffer, ReadOnlySpan<float> left, ReadOnlySpan<float> right)
             => InterleaveStereo(MemoryMarshal.Cast<float, int>(buffer), MemoryMarshal.Cast<float, int>(left), MemoryMarshal.Cast<float, int>(right));
 
@@ -847,7 +847,7 @@ namespace Shamisen.Utils
         /// <param name="buffer">The output buffer.</param>
         /// <param name="left">The input buffer for left channel.</param>
         /// <param name="right">The input buffer for right channel.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InterleaveStereo(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
         {
             unchecked
@@ -874,7 +874,7 @@ namespace Shamisen.Utils
         /// <param name="left">The input buffer for left channel.</param>
         /// <param name="right">The input buffer for right channel.</param>
         /// <param name="center">The input buffer for center channel.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InterleaveThree(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
         {
             unchecked
@@ -901,7 +901,7 @@ namespace Shamisen.Utils
         /// <param name="frontRight">The input buffer for front right channel.</param>
         /// <param name="rearLeft">The input buffer for rear left channel.</param>
         /// <param name="rearRight">The input buffer for rear right channel.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InterleaveQuad(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
         {
             unchecked
@@ -932,7 +932,7 @@ namespace Shamisen.Utils
         /// <returns>
         /// The length of the updated region of <paramref name="destination"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int InterleaveChannels(Span<int> destination, ReadOnlySpan<int> source, ReadOnlySpan<int> channelOffsets)
         {
             //Validation
@@ -988,7 +988,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 2);
@@ -1007,7 +1007,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DuplicateMonauralToThree(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 3);
@@ -1026,7 +1026,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="destination">The destination.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DuplicateMonauralToQuad(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 4);
@@ -1050,7 +1050,7 @@ namespace Shamisen.Utils
         /// <param name="destination">The multi-channel destination.</param>
         /// <param name="source">The monaural source.</param>
         /// <param name="channels">The number of channels.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void DuplicateMonauralToChannels(Span<float> destination, ReadOnlySpan<float> source, int channels)
         {
             switch (channels)
@@ -1090,7 +1090,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void DuplicateMonauralToChannelsOrdinal(Span<float> destination, ReadOnlySpan<float> source, int channels)
         {
             var h = 0;
@@ -1101,7 +1101,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void DuplicateMonauralToVectorAlignedChannels(Span<float> destination, ReadOnlySpan<float> source)
         {
             var h = 0;
@@ -1113,7 +1113,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void DuplicateMonauralToLessThan16Channels(Span<float> destination, ReadOnlySpan<float> source, int channels)
         {
             var h = 0;
@@ -1134,7 +1134,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void DuplicateMonauralTo16Channels(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 16);
@@ -1150,7 +1150,7 @@ namespace Shamisen.Utils
                 Unsafe.As<float, Vector4>(ref Unsafe.Add(ref dst, h + 12)) = v4v;
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void DuplicateMonauralTo12Channels(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 12);
@@ -1166,7 +1166,7 @@ namespace Shamisen.Utils
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void DuplicateMonauralToOctaple(Span<float> destination, ReadOnlySpan<float> source)
         {
             destination = destination.SliceWhileIfLongerThan(source.Length * 8);
@@ -1193,7 +1193,7 @@ namespace Shamisen.Utils
         /// <param name="source">The source.</param>
         /// <param name="channels">The number of channels.</param>
         /// <returns>The length of each channels' samples.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int DeinterleaveToChannels(Span<float> destination, ReadOnlySpan<float> source, int channels)
         {
             if (channels <= 0) throw new ArgumentOutOfRangeException(nameof(channels), channels, $"The {nameof(channels)} must be larger than 0!");
@@ -1221,11 +1221,11 @@ namespace Shamisen.Utils
         /// <param name="source">The source.</param>
         /// <param name="channels">The number of channels.</param>
         /// <returns>The length of each channels' samples.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int DeinterleaveToChannels(Span<int> destination, ReadOnlySpan<int> source, int channels)
             => DeinterleaveToChannels(MemoryMarshal.Cast<int, float>(destination), MemoryMarshal.Cast<int, float>(source), channels);
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static int DeinterleaveToChannelsInternal(Span<float> destination, ReadOnlySpan<float> source, int channels, int minlen)
         {
             minlen -= minlen % channels;
@@ -1283,7 +1283,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="span">The values to replace NaNs with <paramref name="value"/>.</param>
         /// <param name="value">The value to replace NaNs in <paramref name="span"/> with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ReplaceNaNsWith(Span<float> span, float value)
         {
             unchecked
@@ -1304,7 +1304,7 @@ namespace Shamisen.Utils
         /// <param name="destination">The place to store value to.</param>
         /// <param name="source">The values to replace NaNs with <paramref name="value"/>.</param>
         /// <param name="value">The value to replace NaNs in <paramref name="source"/> with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ReplaceNaNsWith(Span<float> destination, ReadOnlySpan<float> source, float value)
         {
             unchecked
@@ -1327,7 +1327,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns>The maximum value in <paramref name="values"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Max(ReadOnlySpan<float> values) => Fallback.MaxFallback(values);
 
         /// <summary>
@@ -1335,7 +1335,7 @@ namespace Shamisen.Utils
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns>The minimum value in <paramref name="values"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Min(ReadOnlySpan<float> values) => Fallback.MinFallback(values);
         #endregion
 
@@ -1357,7 +1357,7 @@ namespace Shamisen.Utils
         /// The value which indicates whether the <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> can utilize Fused Multiply-Adds.<br/>
         /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the average error.
         /// </param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Log2ApproximationOrder5(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
         {
             unchecked
@@ -1388,7 +1388,7 @@ namespace Shamisen.Utils
         /// The value which indicates whether the <see cref="Log2ApproximationOrder5(Span{float}, ReadOnlySpan{float}, bool)"/> can utilize Fused Multiply-Adds.<br/>
         /// Polynomial computation using FMA yields different results than polynomial computation without FMA, but it can be faster without significantly increasing the average error.
         /// </param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Log10ApproximationOrder5(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
         {
             Log2ApproximationOrder5(destination, source, allowFma);

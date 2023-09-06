@@ -1,15 +1,17 @@
 using System;
-using Shamisen;
+using System.Collections.ObjectModel;
+using System.Text;
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+
+using Shamisen;
 using Shamisen.IO;
-using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Shamisen.Tests.IO.OpenTK
 {
-    public class MainWindow : Window
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {

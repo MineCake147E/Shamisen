@@ -55,7 +55,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Initializes a new instance of the <see cref="FlacCrc16"/> struct.
         /// </summary>
         /// <param name="state">The state.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacCrc16(ushort state)
         {
             this.State = state;
@@ -69,7 +69,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public ushort State
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         }
 
@@ -82,7 +82,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator ushort(FlacCrc16 crc16) => crc16.State;
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 operator *(FlacCrc16 left, byte right) => left.GenerateNext(right);
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 operator *(FlacCrc16 left, ulong right) => GenerateNext(left, right);
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 operator *(FlacCrc16 left, ReadOnlySpan<byte> right)
         {
             var value = left;
@@ -139,7 +139,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 operator *(FlacCrc16 left, ReadOnlySpan<ulong> right) => CalculateCrc16(left, right);
 
         private static FlacCrc16 CalculateCrc16(FlacCrc16 left, ReadOnlySpan<ulong> right)
@@ -171,7 +171,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC16.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 operator *(FlacCrc16 left, ushort right) => left * (byte)(right >> 8) * (byte)right;
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacCrc16 GenerateNext(byte value) => new((ushort)(((byte)State << 8) ^ (GetTable0At(value ^ (byte)(State >> 8)))));
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacCrc16 GenerateNext(ulong value) => GenerateNext(this, value);
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="left">The CRC16 to calculate the next value.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc16 GenerateNext(FlacCrc16 left, ulong value)
         {
             //The libFLAC code is used as a reference.
@@ -251,7 +251,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         #region Fast CRC Calculation using Pclmulqdq
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static FlacCrc16 CalculateCrc16Pclmulqdq(FlacCrc16 left, ReadOnlySpan<ulong> right)
         {
             #region License Notice
@@ -454,7 +454,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => obj is FlacCrc16 crc && Equals(crc);
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(FlacCrc16 other) => State == other.State;
 
         /// <summary>
@@ -473,7 +473,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => HashCode.Combine(State);
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(FlacCrc16 left, FlacCrc16 right) => left.Equals(right);
 
         /// <summary>
@@ -495,7 +495,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(FlacCrc16 left, FlacCrc16 right) => !(left == right);
 
         private string GetDebuggerDisplay() => $"{State}";

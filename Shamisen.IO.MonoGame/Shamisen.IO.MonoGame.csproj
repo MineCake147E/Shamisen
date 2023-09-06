@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Shamisen.IO.MonoGame</AssemblyName>
     <RootNamespace>Shamisen.IO.MonoGame</RootNamespace>
   </PropertyGroup>

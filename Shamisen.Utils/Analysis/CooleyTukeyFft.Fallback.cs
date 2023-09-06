@@ -13,7 +13,7 @@ namespace Shamisen.Analysis
     {
         internal static class Fallback
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void Perform2Fallback(Span<ComplexF> span)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(span);
@@ -58,7 +58,7 @@ namespace Shamisen.Analysis
             }
 
             #region Perform4
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4Fallback(Span<ComplexF> span, FftMode mode)
             {
                 switch (mode)
@@ -72,7 +72,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4BackwardFallback(Span<ComplexF> span)
             {
                 var sQ = MemoryMarshal.Cast<ComplexF, (ComplexF, ComplexF, ComplexF, ComplexF)>(span);
@@ -90,7 +90,7 @@ namespace Shamisen.Analysis
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void Perform4ForwardFallback(Span<ComplexF> span)
             {
                 var sQ = MemoryMarshal.Cast<ComplexF, (ComplexF, ComplexF, ComplexF, ComplexF)>(span);
@@ -110,7 +110,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region PerformSingleOperation
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void PerformSingleOperationFallback(ref ComplexF pA, ref ComplexF pB, in ComplexF om)
             {
                 var t = om * pB;
@@ -121,7 +121,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region ExpandCache
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExpandCacheFallback(Span<ComplexF> span, FftMode mode)
             {
                 var order = MathI.LogBase2((uint)span.Length) + 1;
@@ -163,7 +163,7 @@ namespace Shamisen.Analysis
             #endregion
 
             #region PerformLarge
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargeFallback(Span<ComplexF> span, FftMode mode)
             {
                 var pool = ArrayPool<byte>.Shared;

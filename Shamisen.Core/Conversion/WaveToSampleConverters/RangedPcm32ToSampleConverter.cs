@@ -74,7 +74,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float CalculateMultiplier(int effectiveBitDepth)
         {
             unchecked
@@ -87,7 +87,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessEMoreThan24Standard(Span<float> buffer, ReadOnlySpan<int> source, int effectiveBitDepth)
         {
             Vector<float> mul = new(CalculateMultiplier(effectiveBitDepth));

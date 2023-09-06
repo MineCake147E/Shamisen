@@ -31,6 +31,10 @@
         <LastGenOutput>MathITemplate.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
       </None>
+      <None Update="Memory\SpanUtilsTemplate.tt">
+        <LastGenOutput>SpanUtilsTemplate.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
       <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
         <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
         <Generator>TextTemplatingFileGenerator</Generator>
@@ -46,10 +50,6 @@
         <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
             <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
-        </None>
-        <None Update="Memory\SpanUtilsTemplate.tt">
-          <LastGenOutput>SpanUtilsTemplate.g.cs</LastGenOutput>
-          <Generator>TextTemplatingFileGenerator</Generator>
         </None>
         <None Update="Utils\Tuples\Tuples.g.tt">
           <Generator>TextTemplatingFileGenerator</Generator>
@@ -74,6 +74,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
       </Compile>
+      <Compile Update="Memory\SpanUtilsTemplate.g.cs">
+        <DependentUpon>SpanUtilsTemplate.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </Compile>
       <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
         <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
         <DesignTime>True</DesignTime>
@@ -93,11 +98,6 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Memory\SpanUtilsTemplate.g.cs">
-        <DependentUpon>SpanUtilsTemplate.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
       </Compile>
       <Compile Update="Utils\Tuples\Tuples.g.cs">
         <DesignTime>True</DesignTime>

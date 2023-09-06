@@ -48,7 +48,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
     public sealed partial class FlacLinearPredictionSubFrame
     {
 #region Order2
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder2Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -56,7 +56,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder2WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -66,7 +66,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order2
 #region Order3
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder3Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -74,7 +74,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder3WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -84,7 +84,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order3
 #region Order4
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder4Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -92,7 +92,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder4WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -102,7 +102,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order4
 #region Order5
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder5Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -110,7 +110,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder5WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -120,7 +120,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order5
 #region Order6
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder6Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -128,7 +128,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder6WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -138,7 +138,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order6
 #region Order7
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder7Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -146,7 +146,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder7WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -156,7 +156,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order7
 #region Order8
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder8Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -164,7 +164,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder8WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -174,7 +174,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order8
 #region Order9
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder9Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -182,7 +182,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder9WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -192,7 +192,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order9
 #region Order10
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder10Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -200,7 +200,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder10WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -210,7 +210,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order10
 #region Order11
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder11Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -218,7 +218,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder11WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -228,7 +228,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order11
 #region Order12
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder12Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -236,7 +236,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder12WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -246,7 +246,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order12
 #region Order13
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder13Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -254,7 +254,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder13WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -264,7 +264,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order13
 #region Order14
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder14Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -272,7 +272,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder14WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -282,7 +282,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order14
 #region Order15
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder15Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -290,7 +290,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder15WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -300,7 +300,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order15
 #region Order16
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder16Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -308,7 +308,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder16WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -318,7 +318,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order16
 #region Order17
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder17Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -326,7 +326,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder17WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -336,7 +336,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order17
 #region Order18
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder18Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -344,7 +344,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder18WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -354,7 +354,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order18
 #region Order19
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder19Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -362,7 +362,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder19WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -372,7 +372,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order19
 #region Order20
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder20Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -380,7 +380,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder20WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -390,7 +390,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order20
 #region Order21
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder21Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -398,7 +398,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder21WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -408,7 +408,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order21
 #region Order22
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder22Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -416,7 +416,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder22WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -426,7 +426,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order22
 #region Order23
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder23Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -434,7 +434,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder23WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -444,7 +444,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order23
 #region Order24
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder24Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -452,7 +452,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder24WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -462,7 +462,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order24
 #region Order25
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder25Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -470,7 +470,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder25WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -480,7 +480,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order25
 #region Order26
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder26Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -488,7 +488,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder26WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -498,7 +498,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order26
 #region Order27
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder27Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -506,7 +506,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder27WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -516,7 +516,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order27
 #region Order28
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder28Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -524,7 +524,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder28WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -534,7 +534,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order28
 #region Order29
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder29Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -542,7 +542,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder29WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -552,7 +552,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order29
 #region Order30
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder30Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -560,7 +560,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder30WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -570,7 +570,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order30
 #region Order31
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder31Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -578,7 +578,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder31WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -588,7 +588,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 #endregion Order31
 #region Order32
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder32Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -596,7 +596,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder32WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 #if NETCOREAPP3_1_OR_GREATER

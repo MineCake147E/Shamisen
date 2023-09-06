@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -8,7 +9,7 @@ using System.Runtime.Intrinsics.X86;
 
 #endif
 
-namespace System.Numerics
+namespace Shamisen.Utils.Numerics
 {
     /// <summary>
     /// Represents a vector that has 8 IEEE754-single-precision-floating-point numbers.

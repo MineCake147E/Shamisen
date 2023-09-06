@@ -25,7 +25,7 @@ namespace Shamisen.Memory
         /// </summary>
         public nint Length
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
             private set;
         }
@@ -119,7 +119,7 @@ namespace Shamisen.Memory
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Browsable(false)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable VSSpell001 // Spell Check
         public ref T GetPinnableReference() => ref Unsafe.AsRef<T>(head);
 #pragma warning restore VSSpell001 // Spell Check

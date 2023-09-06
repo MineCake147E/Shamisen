@@ -55,7 +55,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
 #region Order2
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -66,7 +66,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder2Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 2;
@@ -99,7 +99,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder2Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -115,7 +115,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder2WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 2;
@@ -144,7 +144,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder2WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 2;
@@ -179,7 +179,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order2
 #region Order3
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder3(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -190,7 +190,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder3Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 3;
@@ -223,7 +223,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder3Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -239,7 +239,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder3WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 3;
@@ -272,7 +272,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder3WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 3;
@@ -316,7 +316,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order3
 #region Order4
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder4(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -327,7 +327,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder4Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 4;
@@ -360,7 +360,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder4Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -376,7 +376,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder4WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 4;
@@ -409,7 +409,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder4WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 4;
@@ -444,7 +444,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order4
 #region Order5
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder5(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -455,7 +455,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder5Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 5;
@@ -493,7 +493,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder5Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -509,7 +509,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder5WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 5;
@@ -546,7 +546,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder5WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 5;
@@ -586,7 +586,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order5
 #region Order6
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder6(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -597,7 +597,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder6Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 6;
@@ -635,7 +635,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder6Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -651,7 +651,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder6WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 6;
@@ -688,7 +688,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder6WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 6;
@@ -728,7 +728,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order6
 #region Order7
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder7(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -739,7 +739,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder7Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 7;
@@ -777,7 +777,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder7Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -793,7 +793,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder7WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 7;
@@ -834,7 +834,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder7WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 7;
@@ -883,7 +883,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order7
 #region Order8
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder8(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -899,7 +899,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder8Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 8;
@@ -937,7 +937,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder8Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 8;
@@ -977,7 +977,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder8Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -993,7 +993,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder8WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 8;
@@ -1034,7 +1034,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder8WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 8;
@@ -1074,7 +1074,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order8
 #region Order9
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder9(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -1085,7 +1085,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder9Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 9;
@@ -1128,7 +1128,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder9Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1144,7 +1144,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder9WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 9;
@@ -1189,7 +1189,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder9WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 9;
@@ -1234,7 +1234,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order9
 #region Order10
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder10(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -1245,7 +1245,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder10Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 10;
@@ -1288,7 +1288,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder10Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1304,7 +1304,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder10WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 10;
@@ -1349,7 +1349,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder10WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 10;
@@ -1394,7 +1394,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order10
 #region Order11
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder11(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -1405,7 +1405,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder11Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 11;
@@ -1448,7 +1448,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder11Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1464,7 +1464,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder11WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 11;
@@ -1513,7 +1513,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder11WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 11;
@@ -1567,7 +1567,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order11
 #region Order12
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder12(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Sse41.IsSupported)
@@ -1578,7 +1578,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder12Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 12;
@@ -1621,7 +1621,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder12Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1637,7 +1637,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder12WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 12;
@@ -1686,7 +1686,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder12WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 12;
@@ -1731,7 +1731,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order12
 #region Order13
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder13(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1747,7 +1747,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder13Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 13;
@@ -1795,7 +1795,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder13Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 13;
@@ -1843,7 +1843,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder13Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1859,7 +1859,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder13WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 13;
@@ -1912,7 +1912,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder13WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 13;
@@ -1962,7 +1962,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order13
 #region Order14
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder14(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -1978,7 +1978,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder14Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 14;
@@ -2026,7 +2026,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder14Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 14;
@@ -2074,7 +2074,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder14Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2090,7 +2090,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder14WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 14;
@@ -2143,7 +2143,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder14WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 14;
@@ -2193,7 +2193,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order14
 #region Order15
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder15(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2209,7 +2209,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder15Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 15;
@@ -2257,7 +2257,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder15Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 15;
@@ -2305,7 +2305,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder15Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2321,7 +2321,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder15WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 15;
@@ -2378,7 +2378,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder15WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 15;
@@ -2437,7 +2437,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order15
 #region Order16
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder16(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2453,7 +2453,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder16Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 16;
@@ -2501,7 +2501,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder16Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 16;
@@ -2547,7 +2547,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder16Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2563,7 +2563,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder16WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 16;
@@ -2620,7 +2620,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder16WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 16;
@@ -2670,7 +2670,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order16
 #region Order17
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder17(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2686,7 +2686,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder17Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 17;
@@ -2739,7 +2739,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder17Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 17;
@@ -2791,7 +2791,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder17Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2807,7 +2807,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder17WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 17;
@@ -2868,7 +2868,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder17WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 17;
@@ -2923,7 +2923,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order17
 #region Order18
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder18(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -2939,7 +2939,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder18Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 18;
@@ -2992,7 +2992,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder18Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 18;
@@ -3044,7 +3044,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder18Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3060,7 +3060,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder18WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 18;
@@ -3121,7 +3121,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder18WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 18;
@@ -3176,7 +3176,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order18
 #region Order19
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder19(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3192,7 +3192,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder19Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 19;
@@ -3245,7 +3245,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder19Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 19;
@@ -3297,7 +3297,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder19Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3313,7 +3313,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder19WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 19;
@@ -3378,7 +3378,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder19WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 19;
@@ -3442,7 +3442,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order19
 #region Order20
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder20(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3458,7 +3458,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder20Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 20;
@@ -3511,7 +3511,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder20Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 20;
@@ -3563,7 +3563,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder20Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3579,7 +3579,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder20WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 20;
@@ -3644,7 +3644,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder20WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 20;
@@ -3699,7 +3699,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order20
 #region Order21
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder21(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3715,7 +3715,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder21Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 21;
@@ -3773,7 +3773,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder21Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 21;
@@ -3827,7 +3827,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder21Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3843,7 +3843,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder21WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 21;
@@ -3912,7 +3912,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder21WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 21;
@@ -3972,7 +3972,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order21
 #region Order22
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder22(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -3988,7 +3988,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder22Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 22;
@@ -4046,7 +4046,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder22Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 22;
@@ -4100,7 +4100,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder22Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4116,7 +4116,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder22WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 22;
@@ -4185,7 +4185,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder22WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 22;
@@ -4245,7 +4245,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order22
 #region Order23
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder23(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4261,7 +4261,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder23Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 23;
@@ -4319,7 +4319,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder23Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 23;
@@ -4373,7 +4373,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder23Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4389,7 +4389,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder23WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 23;
@@ -4462,7 +4462,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder23WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 23;
@@ -4531,7 +4531,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order23
 #region Order24
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder24(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4547,7 +4547,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder24Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 24;
@@ -4605,7 +4605,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder24Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 24;
@@ -4657,7 +4657,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder24Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4673,7 +4673,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder24WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 24;
@@ -4746,7 +4746,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder24WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 24;
@@ -4806,7 +4806,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order24
 #region Order25
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder25(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4822,7 +4822,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder25Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 25;
@@ -4885,7 +4885,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder25Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 25;
@@ -4943,7 +4943,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder25Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -4959,7 +4959,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder25WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 25;
@@ -5036,7 +5036,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder25WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 25;
@@ -5101,7 +5101,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order25
 #region Order26
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder26(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5117,7 +5117,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder26Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 26;
@@ -5180,7 +5180,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder26Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 26;
@@ -5238,7 +5238,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder26Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5254,7 +5254,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder26WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 26;
@@ -5331,7 +5331,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder26WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 26;
@@ -5396,7 +5396,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order26
 #region Order27
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder27(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5412,7 +5412,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder27Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 27;
@@ -5475,7 +5475,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder27Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 27;
@@ -5533,7 +5533,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder27Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5549,7 +5549,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder27WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 27;
@@ -5630,7 +5630,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder27WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 27;
@@ -5704,7 +5704,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order27
 #region Order28
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder28(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5720,7 +5720,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder28Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 28;
@@ -5783,7 +5783,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder28Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 28;
@@ -5841,7 +5841,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder28Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -5857,7 +5857,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder28WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 28;
@@ -5938,7 +5938,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder28WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 28;
@@ -6003,7 +6003,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order28
 #region Order29
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder29(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6019,7 +6019,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder29Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 29;
@@ -6087,7 +6087,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder29Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 29;
@@ -6147,7 +6147,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder29Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6163,7 +6163,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder29WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 29;
@@ -6248,7 +6248,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder29WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 29;
@@ -6318,7 +6318,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order29
 #region Order30
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder30(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6334,7 +6334,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder30Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 30;
@@ -6402,7 +6402,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder30Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 30;
@@ -6462,7 +6462,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder30Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6478,7 +6478,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder30WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 30;
@@ -6563,7 +6563,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder30WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 30;
@@ -6633,7 +6633,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order30
 #region Order31
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder31(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6649,7 +6649,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder31Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 31;
@@ -6717,7 +6717,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder31Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 31;
@@ -6777,7 +6777,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder31Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6793,7 +6793,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder31WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 31;
@@ -6882,7 +6882,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder31WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 31;
@@ -6961,7 +6961,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endregion Order31
 #region Order32
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder32(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -6977,7 +6977,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder32Sse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 32;
@@ -7045,7 +7045,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder32Avx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 32;
@@ -7103,7 +7103,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static bool RestoreSignalOrder32Wide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 if (Avx2.IsSupported)
@@ -7119,7 +7119,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 return false;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder32WideSse41(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 32;
@@ -7208,7 +7208,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 }
             }
             
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static unsafe void RestoreSignalOrder32WideAvx2(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
             {
                 const int Order = 32;

@@ -11,7 +11,7 @@ namespace Shamisen.Conversion.Resampling.Sample
     public sealed partial class SplineResampler
     {
         #region WrappedOdd
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedOddMonauralStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -87,7 +87,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedOddVectorFitChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -181,7 +181,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ResampleFunc GetFuncCachedWrappedOddGeneric(in UnifiedResampleArgs args)
         {
             unchecked
@@ -192,7 +192,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedOddGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -279,7 +279,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         #endregion
 
         #region WrappedEven
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedEvenMonauralStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -354,7 +354,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedEvenVectorFitChannelsStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;
@@ -446,7 +446,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             return ((int)isx, (int)psx, (int)rec, (int)red);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ResampleFunc GetFuncCachedWrappedEvenGeneric(in UnifiedResampleArgs args)
         {
             unchecked
@@ -457,7 +457,7 @@ namespace Shamisen.Conversion.Resampling.Sample
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static ResampleResult ResampleCachedWrappedEvenGenericStandard(in UnifiedResampleArgs args, Span<float> buffer, Span<float> srcBuffer, Span<Vector4> cspan)
         {
             nint isx = 0;

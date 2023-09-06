@@ -18,7 +18,7 @@ namespace Shamisen.Utils
         {
             internal static bool IsSupported => ArmBase.IsSupported;
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 if (AdvSimd.IsSupported)
@@ -29,7 +29,7 @@ namespace Shamisen.Utils
                 Fallback.InterleaveThreeInt32(buffer, left, right, center);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32AdvSimd(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 unsafe

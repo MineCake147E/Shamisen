@@ -9,11 +9,15 @@
         <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.4" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.4" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />
         <PackageReference Include="ReactiveProperty" Version="9.3.1" />
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.IO.OpenTK\Shamisen.IO.OpenTK.csproj" />
         <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Properties\" />
     </ItemGroup>
 </Project>

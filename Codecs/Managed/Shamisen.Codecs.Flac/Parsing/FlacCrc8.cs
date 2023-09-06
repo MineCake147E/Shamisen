@@ -75,7 +75,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator byte(FlacCrc8 crc8) => crc8.state;
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC8.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc8 operator *(FlacCrc8 left, byte right) => new(GetTableAt(left.state ^ right));
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC8.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc8 operator *(FlacCrc8 left, ushort right) => left * (byte)(right >> 8) * (byte)right;
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacCrc8 GenerateNext(byte value) => new(GetTableAt(state ^ value));
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <returns>
         /// The next value of CRC8.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static FlacCrc8 operator *(FlacCrc8 left, Span<byte> right)
         {
             var value = left;

@@ -18,7 +18,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ushort ConvertToLittleEndian(ushort systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -27,7 +27,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static short ConvertToLittleEndian(short systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -36,7 +36,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ConvertToLittleEndian(uint systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -45,7 +45,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ConvertToLittleEndian(int systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -54,7 +54,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ConvertToLittleEndian(ulong systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -63,7 +63,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static long ConvertToLittleEndian(long systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -73,7 +73,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ushort ConvertToBigEndian(ushort systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -82,7 +82,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static short ConvertToBigEndian(short systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -91,7 +91,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ConvertToBigEndian(uint systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -100,7 +100,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ConvertToBigEndian(int systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -109,7 +109,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ConvertToBigEndian(ulong systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -118,7 +118,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static long ConvertToBigEndian(long systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 

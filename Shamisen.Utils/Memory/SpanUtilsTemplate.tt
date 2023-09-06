@@ -38,7 +38,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -49,7 +49,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The span to fill.</param>
         /// <param name="value">The value to fill with.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_SPANEXT_TT_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -76,7 +76,7 @@ namespace Shamisen
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channels">The align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, int channels) => <#=nameCamel#>.Slice(0, MathI.FloorStep(<#=nameCamel#>.Length, channels));
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Shamisen
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, UInt32Divisor channelsDivisor) => <#=nameCamel#>.Slice(0, (int)channelsDivisor.Floor((uint)<#=nameCamel#>.Length));
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Shamisen
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="channelsDivisor">The divisor set to align width.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=item#><T> SliceAlign<T>(this <#=item#><T> <#=nameCamel#>, Int32Divisor channelsDivisor) => <#=nameCamel#>.Slice(0, channelsDivisor.AbsFloor(<#=nameCamel#>.Length));
 
 <#
@@ -109,7 +109,7 @@ namespace Shamisen
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="length">The length to read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=item#><T> SliceWhile<T>(this <#=item#><T> <#=nameCamel#>, <#=indexType#> length) => <#=nameCamel#>.Slice(0, length);
 <#
         foreach(var item2 in typesMemoryReadable)
@@ -126,7 +126,7 @@ namespace Shamisen
         /// <param name="<#=nameCamel#>">The <see cref="<#=item#>{T}"/> to slice.</param>
         /// <param name="criterion">The criterion.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=item#><T> AlignWith<T>(this <#=item#><T> <#=nameCamel#>, <#=item2#><T> criterion) => <#=nameCamel#>.Slice(0, criterion.Length);
 
 <#
@@ -147,7 +147,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this <#=item#><T> source, Span<T> destination) => source.Span.CopyTo(destination);
 
 <#
@@ -164,7 +164,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The destination <see cref="Memory{T}"/> object.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void CopyTo<T>(this <#=item#><T> source, Memory<T> destination) => source.CopyTo(destination.Span);
 
 <#
@@ -183,7 +183,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns><c>true</c> if the copy operation succeeded; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this <#=item#><T> source, Span<T> destination) => source.Span.TryCopyTo(destination);
 
 <#
@@ -200,7 +200,7 @@ namespace Shamisen
         /// <param name="source">The <see cref="<#=item#>{T}"/> to copy from.</param>
         /// <param name="destination">The target of the copy operation.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryCopyTo<T>(this <#=item#><T> source, Memory<T> destination) => source.TryCopyTo(destination.Span);
 
 <#

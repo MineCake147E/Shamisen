@@ -144,7 +144,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             length = blockSize;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReadResidualPart(FlacBitReader bitReader, int blockSize, int order, out int partition, Span<int> residual)
         {
             //Modified for C# use.
@@ -214,7 +214,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void RestoreSignal(ReadOnlySpan<int> residual, int order, Span<int> output)
         {
             //Refereed https://github.com/xiph/flac/blob/master/src/libFLAC/fixed.c and written for C# use.
@@ -286,7 +286,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void RestoreOneSimple(ReadOnlySpan<int> residual, Span<int> output)
         {
             switch (0)
@@ -309,7 +309,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void RestoreTwoSimple(ReadOnlySpan<int> residual, Span<int> output)
         {
             switch (0)
@@ -334,7 +334,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void RestoreThreeSimple(ReadOnlySpan<int> residual, Span<int> output)
         {
             switch (0)
@@ -360,7 +360,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void RestoreFourSimple(ReadOnlySpan<int> residual, Span<int> output)
         {
             switch (0)

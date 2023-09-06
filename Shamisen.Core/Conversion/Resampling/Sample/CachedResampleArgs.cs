@@ -23,7 +23,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         readonly Vector4Int32 values;
         public int ConversionGradient
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 return values.X;
@@ -32,7 +32,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         public int RateMul
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 return values.Y;
@@ -41,7 +41,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         public int GradientIncrement
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 return values.Z;
@@ -50,7 +50,7 @@ namespace Shamisen.Conversion.Resampling.Sample
 
         public int IndexIncrement
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 return values.W;
@@ -83,7 +83,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int ConversionGradient
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)xrci;
         }
         /// <summary>
@@ -91,7 +91,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int RearrangedCoeffsIndex
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)(xrci >> 32);
         }
         /// <summary>
@@ -99,7 +99,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int RateMul
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)ramrcd;
         }
         /// <summary>
@@ -107,7 +107,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int RearrangedCoeffsDirection
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)(ramrcd >> 32);
         }
         /// <summary>
@@ -115,7 +115,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int GradientIncrement
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)accch;
         }
         /// <summary>
@@ -123,7 +123,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int Channels
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (int)(accch >> 32);
         }
         /// <summary>
@@ -131,7 +131,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public int IndexIncrement
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => facc;
         }
         /// <summary>
@@ -139,12 +139,12 @@ namespace Shamisen.Conversion.Resampling.Sample
         /// </summary>
         public float RateMulInverse
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => rmi;
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnifiedResampleArgs(ulong xrci, ulong ramrcd, ulong accch, int facc, float rmi)
         {
             Unsafe.SkipInit(out this);
@@ -156,7 +156,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnifiedResampleArgs(float rateMulInverse, int conversionGradient, int rateMul, int gradientIncrement, int indexIncrement, int channels, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
             Unsafe.SkipInit(out this);
@@ -174,7 +174,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnifiedResampleArgs(in UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
             Unsafe.SkipInit(out this);
@@ -188,7 +188,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private UnifiedResampleArgs(Vector256<ulong> values)
         {
             Unsafe.SkipInit(out this);
@@ -196,7 +196,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UnifiedResampleArgs ChangeVariables(in UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
             var u = constants.values;
@@ -209,7 +209,7 @@ namespace Shamisen.Conversion.Resampling.Sample
         }
 
         [SkipLocalsInit]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void UpdateVariables(ref UnifiedResampleArgs constants, int conversionGradient, int rearrangedCoeffsIndex, int rearrangedCoeffsDirection)
         {
             var u = constants.values;

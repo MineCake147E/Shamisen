@@ -26,7 +26,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=friendly#> ConvertToLittleEndian(<#=friendly#> systemEndianedValue)
             => BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 
@@ -38,7 +38,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static <#=friendly#> ConvertToBigEndian(<#=friendly#> systemEndianedValue)
             => !BitConverter.IsLittleEndian ? systemEndianedValue : BinaryPrimitives.ReverseEndianness(systemEndianedValue);
 

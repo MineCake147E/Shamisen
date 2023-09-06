@@ -18,7 +18,7 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="StackOnlyActionContainer{T}"/> struct.
         /// </summary>
         /// <param name="action">The action.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public StackOnlyActionContainer(Action<T> action)
         {
             value = action;
@@ -28,7 +28,7 @@ namespace Shamisen
         /// Invokes this instance with specified parameter.
         /// </summary>
         /// <param name="parameter">The first parameter.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Invoke(T parameter) => value(parameter);
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => false;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(StackOnlyActionContainer<T> value) => value.value == this.value;
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => -1584136870 + EqualityComparer<Action<T>>.Default.GetHashCode(value);
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(StackOnlyActionContainer<T> left, StackOnlyActionContainer<T> right) => left.Equals(right);
 
         /// <summary>
@@ -79,10 +79,10 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(StackOnlyActionContainer<T> left, StackOnlyActionContainer<T> right) => !(left == right);
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private string GetDebuggerDisplay() => value.ToString() ?? "null";
     }
 }

@@ -25,7 +25,7 @@ namespace Shamisen
         /// </summary>
         public nint Length
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         }
 
@@ -38,7 +38,7 @@ namespace Shamisen
         /// <inheritdoc cref="Span{T}.IsEmpty"/>
         public bool IsEmpty
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Length <= 0;
         }
 
@@ -58,7 +58,7 @@ namespace Shamisen
         /// <value>An empty <see cref="NativeSpan{T}"/> object.</value>
         public static NativeSpan<T> Empty
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => default;
         }
 
@@ -69,7 +69,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe NativeSpan(ref T headPointer, nint length)
         {
             CheckLength(length);
@@ -82,7 +82,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="headPointer">The head pointer.</param>
         /// <param name="length">The length.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe NativeSpan(void* headPointer, nint length)
         {
             _ = new ReadOnlySpan<T>(headPointer, 0);
@@ -97,7 +97,7 @@ namespace Shamisen
         /// <param name="array">The array from which to create the <see cref="NativeSpan{T}"/> object.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan(T[]? array)
         {
             if (array is null)
@@ -116,7 +116,7 @@ namespace Shamisen
         /// <param name="array">The array from which to create the <see cref="NativeSpan{T}"/> object.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan(NativeArray<T> array)
         {
             this = (array?.IsEmpty == false) ? array.NativeSpan : default;
@@ -128,7 +128,7 @@ namespace Shamisen
         /// <param name="array">The array from which to create the <see cref="NativeSpan{T}"/> object.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan(ArraySegment<T> array) : this(array.Array, array.Offset, array.Count)
         {
         }
@@ -141,7 +141,7 @@ namespace Shamisen
         /// <param name="length">The number of elements to include in the new <see cref="NativeSpan{T}"/>.</param>
         /// <exception cref="ArrayTypeMismatchException"><typeparamref name="T"/> is a reference type, and <paramref name="array"/> is not an array of type <typeparamref name="T"/>.</exception>
         /// <remarks>If <paramref name="array"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan(T[]? array, nint start, nint length)
         {
             if (array is null)
@@ -162,7 +162,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="span">The memory region from which to create the <see cref="NativeSpan{T}"/> object.</param>
         /// <remarks>If <paramref name="span"/> is null, this constructor returns a <see langword="null"/> <see cref="NativeSpan{T}"/>.</remarks>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan(Span<T> span)
         {
             if (span.IsEmpty)
@@ -175,7 +175,7 @@ namespace Shamisen
 
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void CheckArrayTypeMismatch(T[]? array)
         {
             if (array is not null && !(typeof(T).IsValueType || array.GetType() == typeof(T[])))
@@ -184,7 +184,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void CheckLength(nint length)
         {
             if (length < 0) ThrowHelper.Throw(new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} must be positive!"));
@@ -193,7 +193,7 @@ namespace Shamisen
         /// <inheritdoc cref="Span{T}.this[int]"/>
         public ref T this[nint index]
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 //Range Check Elimination doesn't work for custom struct.
@@ -206,22 +206,22 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Span{T}.this[int]"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ref T ElementAtUnchecked(nint index) => ref Unsafe.Add(ref head, index);
 
         /// <inheritdoc cref="Span{T}.GetPinnableReference()"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Browsable(false)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ref T GetPinnableReference() => ref head;
 
         /// <inheritdoc cref="Span{T}.Slice(int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan<T> Slice(nint start)
             => new(ref Unsafe.Add(ref head, start), Length - start);
 
         /// <inheritdoc cref="Span{T}.Slice(int, int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeSpan<T> Slice(nint start, nint length)
             => new(ref Unsafe.Add(ref head, start), length);
 
@@ -231,7 +231,7 @@ namespace Shamisen
         /// Fills the elements of this span with a specified <paramref name="value"/>.
         /// </summary>
         /// <inheritdoc cref="Span{T}.Fill(T)"/>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Fill(T value)
         {
             if (IsEmpty) return;
@@ -290,7 +290,7 @@ namespace Shamisen
             SpanUtils.FillWithReferenceNBytes(ref Unsafe.As<T, byte>(ref value), (nuint)Unsafe.SizeOf<T>(), ref Unsafe.As<T, byte>(ref Head), (nuint)Length * (nuint)Unsafe.SizeOf<T>());
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private void FillShort(T value)
         {
             nint i = 0, length = Length;
@@ -316,7 +316,7 @@ namespace Shamisen
         /// <summary>
         /// Clears the contents of this <see cref="NativeSpan{T}"/> object.
         /// </summary>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Clear() => SpanUtils.FillWithReference((byte)0, ref Unsafe.As<T, byte>(ref Head), Length * Unsafe.SizeOf<T>());
         #endregion
 
@@ -324,7 +324,7 @@ namespace Shamisen
         /// Copies the content of this <see cref="NativeSpan{T}"/> into a <paramref name="destination"/> <see cref="NativeSpan{T}"/>.
         /// </summary>
         /// <param name="destination">The destination <see cref="NativeSpan{T}"/> object.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(NativeSpan<T> destination)
         {
             if (!TryCopyTo(destination)) throw new ArgumentException($"The {nameof(destination)} must be at least as long as this span!", nameof(destination));
@@ -334,7 +334,7 @@ namespace Shamisen
         /// Copies the content of this <see cref="NativeSpan{T}"/> into a <paramref name="destination"/> <see cref="Span{T}"/>.
         /// </summary>
         /// <param name="destination">The destination <see cref="Span{T}"/> object.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(Span<T> destination)
         {
             if (!TryCopyTo(destination)) throw new ArgumentException($"The {nameof(destination)} must be at least as long as this span!", nameof(destination));
@@ -344,14 +344,14 @@ namespace Shamisen
         /// Attempts to copy the current <see cref="NativeSpan{T}"/> to a destination <see cref="NativeSpan{T}"/> and returns a value that indicates whether the copy operation succeeded.
         /// </summary>
         /// <inheritdoc cref="Span{T}.TryCopyTo(Span{T})"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool TryCopyTo(NativeSpan<T> destination) => ReadOnlyNativeSpan<T>.TryCopyTo(this, destination);
 
         /// <summary>
         /// Attempts to copy the current <see cref="NativeSpan{T}"/> to a destination <see cref="Span{T}"/> and returns a value that indicates whether the copy operation succeeded.
         /// </summary>
         /// <inheritdoc cref="Span{T}.TryCopyTo(Span{T})"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool TryCopyTo(Span<T> destination) => ReadOnlyNativeSpan<T>.TryCopyTo(this, destination);
 
         /// <summary>
@@ -378,7 +378,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(NativeSpan<T> left, NativeSpan<T> right) => left.Length == right.Length && Unsafe.AreSame(ref left.head, ref right.head);
 
         /// <summary>
@@ -389,18 +389,18 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(NativeSpan<T> left, NativeSpan<T> right) => !(left == right);
 
         #region Equals and GetHashCode
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => false;
 
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe int GetHashCode() => HashCode.Combine((nint)Unsafe.AsPointer(ref head), Length);
         #endregion
 

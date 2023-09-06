@@ -72,7 +72,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="value">The <see cref="float"/> value to convert from.</param>
         /// <returns>The converted <see cref="AudioEncoding.Alaw"/> value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static byte ConvertSingleToALaw(float value)
         {
             var w = BitConverter.SingleToUInt32Bits(value);
@@ -98,7 +98,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="destination">The place to store resulting <see cref="AudioEncoding.Alaw"/> values.</param>
         /// <param name="source">The <see cref="float"/> values to convert from.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertSingleToALaw(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
@@ -112,7 +112,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             ref var dst = ref MemoryMarshal.GetReference(dest);
@@ -255,7 +255,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
         #endregion
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessStandardVectorized(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var v15_nb = new Vector<uint>(0xd5d5_d5d5u).AsByte();

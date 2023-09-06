@@ -21,7 +21,7 @@ namespace Shamisen.Utils
         /// Initializes a new instance of <see cref="ReadOnceObjectContainer{T}"/>.
         /// </summary>
         /// <param name="value">The value to store.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnceObjectContainer(T? value)
         {
             this.value = value;
@@ -33,7 +33,7 @@ namespace Shamisen.Utils
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T? Value
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 var v = value;

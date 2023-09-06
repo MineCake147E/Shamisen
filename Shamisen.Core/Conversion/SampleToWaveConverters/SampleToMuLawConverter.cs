@@ -77,7 +77,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="value">The <see cref="float"/> value to convert from.</param>
         /// <returns>The converted <see cref="AudioEncoding.Mulaw"/> value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static byte ConvertSingleToMuLaw(float value)
         {
             var a = Math.Abs(value);
@@ -98,7 +98,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="destination">The place to store resulting <see cref="AudioEncoding.Mulaw"/> values.</param>
         /// <param name="source">The <see cref="float"/> values to convert from.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertSingleToMuLaw(Span<byte> destination, ReadOnlySpan<float> source)
         {
             unchecked
@@ -112,7 +112,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         }
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var ymm15 = Vector256.Create(SignMaskNegated);
@@ -206,7 +206,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
         #endregion
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessStandardVectorized(Span<byte> dest, ReadOnlySpan<float> wrote)
         {
             var v15_ns = new Vector<uint>(SignMaskNegated);

@@ -26,7 +26,7 @@ namespace Shamisen.Codecs.Flac
 
             #region LeftSide
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
@@ -46,7 +46,7 @@ namespace Shamisen.Codecs.Flac
                 Fallback.DecodeAndInterleaveLeftSideStereoInt32(buffer, left, right);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 ref var rL = ref MemoryMarshal.GetReference(left);
@@ -136,7 +136,7 @@ namespace Shamisen.Codecs.Flac
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveLeftSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 ref var rL = ref MemoryMarshal.GetReference(left);
@@ -191,7 +191,7 @@ namespace Shamisen.Codecs.Flac
 
             #region RightSide
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveRightSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
@@ -211,7 +211,7 @@ namespace Shamisen.Codecs.Flac
                 Fallback.DecodeAndInterleaveRightSideStereoInt32(buffer, left, right);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveRightSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 ref var rL = ref MemoryMarshal.GetReference(left);
@@ -301,7 +301,7 @@ namespace Shamisen.Codecs.Flac
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveRightSideStereoInt32Sse2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 ref var rL = ref MemoryMarshal.GetReference(left);
@@ -357,7 +357,7 @@ namespace Shamisen.Codecs.Flac
 
             #region MidSide
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveMidSideStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 var min = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
@@ -372,7 +372,7 @@ namespace Shamisen.Codecs.Flac
                 Fallback.DecodeAndInterleaveMidSideStereoInt32(buffer, left, right);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DecodeAndInterleaveMidSideStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 ref var rL = ref MemoryMarshal.GetReference(left);

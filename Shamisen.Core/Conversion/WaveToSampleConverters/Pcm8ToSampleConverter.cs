@@ -129,7 +129,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             return buffer.Length;
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private static void Process(Span<byte> wrote, Span<float> dest)
         {
             unchecked
@@ -158,7 +158,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="wrote"></param>
         /// <param name="dest"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2M(Span<byte> wrote, Span<float> dest)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -236,7 +236,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         /// </summary>
         /// <param name="wrote"></param>
         /// <param name="dest"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAvx2A(Span<byte> wrote, Span<float> dest)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -311,7 +311,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessSse41(Span<byte> wrote, Span<float> dest)
         {
             ref var rdi = ref MemoryMarshal.GetReference(dest);
@@ -355,7 +355,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #endregion
         #region Armv8 Intrinsics
 #if NET5_0_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAdvSimd(Span<byte> wrote, Span<float> dest)
         {
             ref var x10 = ref MemoryMarshal.GetReference(dest);
@@ -400,7 +400,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessAdvSimdArm64(Span<byte> wrote, Span<float> dest)
         {
             ref var x10 = ref MemoryMarshal.GetReference(dest);
@@ -444,7 +444,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 #endif
         #endregion
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessStandard(Span<byte> wrote, Span<float> dest)
         {
             Vector<float> mul = new(Multiplier);

@@ -31,7 +31,7 @@ namespace Shamisen.Numerics
         /// <param name="destination">The place to store.</param>
         /// <param name="source">The multiplying values.</param>
         /// <param name="value">The multiplying constant value.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void MultiplyAll(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
         {
             unchecked
@@ -52,7 +52,7 @@ namespace Shamisen.Numerics
         /// <param name="destination">The place to store.</param>
         /// <param name="source">The multiplying values.</param>
         /// <param name="value">The multiplying constant value.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void MultiplyAll(Span<Complex> destination, ReadOnlySpan<Complex> source, Complex value)
         {
             unchecked
@@ -74,7 +74,7 @@ namespace Shamisen.Numerics
         /// </summary>
         /// <param name="destination">The destination to store converted numbers.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ConvertRealToComplex(Span<ComplexF> destination, ReadOnlySpan<float> source)
         {
             unchecked
@@ -96,7 +96,7 @@ namespace Shamisen.Numerics
         /// </summary>
         /// <param name="destination">The place to store values.</param>
         /// <param name="source">The source.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void ExtractMagnitudeSquared(Span<float> destination, ReadOnlySpan<ComplexF> source)
         {
             unchecked

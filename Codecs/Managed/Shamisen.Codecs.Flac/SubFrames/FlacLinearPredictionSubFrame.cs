@@ -196,7 +196,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
         #endregion License notice
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignal(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             //
@@ -205,7 +205,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #pragma warning restore IDE0022
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             //

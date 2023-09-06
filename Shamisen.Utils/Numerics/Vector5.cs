@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace System.Numerics
+namespace Shamisen.Utils.Numerics
 {
     /// <summary>
     /// Represents a vector that has 5 IEEE754-single-precision-floating-point numbers.

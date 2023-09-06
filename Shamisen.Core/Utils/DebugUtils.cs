@@ -16,7 +16,7 @@ namespace Shamisen
         /// Equivalent to <see cref="Console.WriteLine(string?)"/> but executed only in Debug mode.
         /// </summary>
         /// <param name="a"></param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void WriteLine(string a)
         {
             unchecked

@@ -69,7 +69,7 @@ namespace Shamisen.Synthesis
             return buffer.Length;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 GenerateMonauralBlock(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -82,7 +82,7 @@ namespace Shamisen.Synthesis
         }
 
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockAvx2MM256(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             var t = theta.Value;
@@ -202,7 +202,7 @@ namespace Shamisen.Synthesis
         }
 #endif
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 GenerateMonauralBlockStandard(Span<float> buffer, Fixed64 omega, ref Fixed64 theta)
         {
             for (var i = 0; i < buffer.Length; i++)
@@ -214,7 +214,7 @@ namespace Shamisen.Synthesis
             return theta;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Fixed64 AppendTheta(Fixed64 theta, Fixed64 omega) => theta + omega;
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Shamisen.Synthesis
         /// </summary>
         /// <param name="theta">The theta(from -pi to pi).</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float GenerateMonauralSample(Fixed64 theta)
         {
             const float Multiplier = 1.0f / 0x4000_0000;

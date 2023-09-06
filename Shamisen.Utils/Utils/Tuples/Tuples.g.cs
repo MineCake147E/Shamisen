@@ -22,9 +22,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX2<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX2<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -33,9 +33,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX2<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX2<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -44,7 +44,7 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         /// <param name="v0">The value No.0.</param>
         /// <param name="v1">The value No.1.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX2(T v0, T v1)
         {
             i0 = v0;
@@ -56,7 +56,7 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         /// <param name="v0">The output value No.0.</param>
         /// <param name="v1">The output value No.1.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1)
         {
             v0 = Item0;
@@ -70,7 +70,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T)(UnmanagedTupleX2<T> from)
             => Unsafe.As<UnmanagedTupleX2<T>, (T, T)>(ref from);
 
@@ -81,7 +81,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX2<T>((T, T) from)
             => Unsafe.As<(T, T), UnmanagedTupleX2<T>>(ref from);
     }
@@ -98,9 +98,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -109,9 +109,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -120,9 +120,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX3<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -132,7 +132,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v0">The value No.0.</param>
         /// <param name="v1">The value No.1.</param>
         /// <param name="v2">The value No.2.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX3(T v0, T v1, T v2)
         {
             i0 = v0;
@@ -146,7 +146,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v0">The output value No.0.</param>
         /// <param name="v1">The output value No.1.</param>
         /// <param name="v2">The output value No.2.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2)
         {
             v0 = Item0;
@@ -161,7 +161,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T)(UnmanagedTupleX3<T> from)
             => Unsafe.As<UnmanagedTupleX3<T>, (T, T, T)>(ref from);
 
@@ -172,7 +172,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX3<T>((T, T, T) from)
             => Unsafe.As<(T, T, T), UnmanagedTupleX3<T>>(ref from);
     }
@@ -189,9 +189,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -200,9 +200,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -211,9 +211,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -222,9 +222,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX4<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -235,7 +235,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v1">The value No.1.</param>
         /// <param name="v2">The value No.2.</param>
         /// <param name="v3">The value No.3.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX4(T v0, T v1, T v2, T v3)
         {
             i0 = v0;
@@ -251,7 +251,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v1">The output value No.1.</param>
         /// <param name="v2">The output value No.2.</param>
         /// <param name="v3">The output value No.3.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3)
         {
             v0 = Item0;
@@ -267,7 +267,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T)(UnmanagedTupleX4<T> from)
             => Unsafe.As<UnmanagedTupleX4<T>, (T, T, T, T)>(ref from);
 
@@ -278,7 +278,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX4<T>((T, T, T, T) from)
             => Unsafe.As<(T, T, T, T), UnmanagedTupleX4<T>>(ref from);
     }
@@ -295,9 +295,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -306,9 +306,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -317,9 +317,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -328,9 +328,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -339,9 +339,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX5<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -353,7 +353,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v2">The value No.2.</param>
         /// <param name="v3">The value No.3.</param>
         /// <param name="v4">The value No.4.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX5(T v0, T v1, T v2, T v3, T v4)
         {
             i0 = v0;
@@ -371,7 +371,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v2">The output value No.2.</param>
         /// <param name="v3">The output value No.3.</param>
         /// <param name="v4">The output value No.4.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4)
         {
             v0 = Item0;
@@ -388,7 +388,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T)(UnmanagedTupleX5<T> from)
             => Unsafe.As<UnmanagedTupleX5<T>, (T, T, T, T, T)>(ref from);
 
@@ -399,7 +399,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX5<T>((T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T), UnmanagedTupleX5<T>>(ref from);
     }
@@ -416,9 +416,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -427,9 +427,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -438,9 +438,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -449,9 +449,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -460,9 +460,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -471,9 +471,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX6<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -486,7 +486,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v3">The value No.3.</param>
         /// <param name="v4">The value No.4.</param>
         /// <param name="v5">The value No.5.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX6(T v0, T v1, T v2, T v3, T v4, T v5)
         {
             i0 = v0;
@@ -506,7 +506,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v3">The output value No.3.</param>
         /// <param name="v4">The output value No.4.</param>
         /// <param name="v5">The output value No.5.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5)
         {
             v0 = Item0;
@@ -524,7 +524,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T)(UnmanagedTupleX6<T> from)
             => Unsafe.As<UnmanagedTupleX6<T>, (T, T, T, T, T, T)>(ref from);
 
@@ -535,7 +535,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX6<T>((T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T), UnmanagedTupleX6<T>>(ref from);
     }
@@ -552,9 +552,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -563,9 +563,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -574,9 +574,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -585,9 +585,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -596,9 +596,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -607,9 +607,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -618,9 +618,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX7<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -634,7 +634,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v4">The value No.4.</param>
         /// <param name="v5">The value No.5.</param>
         /// <param name="v6">The value No.6.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX7(T v0, T v1, T v2, T v3, T v4, T v5, T v6)
         {
             i0 = v0;
@@ -656,7 +656,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v4">The output value No.4.</param>
         /// <param name="v5">The output value No.5.</param>
         /// <param name="v6">The output value No.6.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6)
         {
             v0 = Item0;
@@ -675,7 +675,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T)(UnmanagedTupleX7<T> from)
             => Unsafe.As<UnmanagedTupleX7<T>, (T, T, T, T, T, T, T)>(ref from);
 
@@ -686,7 +686,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX7<T>((T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T), UnmanagedTupleX7<T>>(ref from);
     }
@@ -703,9 +703,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -714,9 +714,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -725,9 +725,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -736,9 +736,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -747,9 +747,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -758,9 +758,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -769,9 +769,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -780,9 +780,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX8<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -797,7 +797,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v5">The value No.5.</param>
         /// <param name="v6">The value No.6.</param>
         /// <param name="v7">The value No.7.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX8(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7)
         {
             i0 = v0;
@@ -821,7 +821,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v5">The output value No.5.</param>
         /// <param name="v6">The output value No.6.</param>
         /// <param name="v7">The output value No.7.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7)
         {
             v0 = Item0;
@@ -841,7 +841,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T)(UnmanagedTupleX8<T> from)
             => Unsafe.As<UnmanagedTupleX8<T>, (T, T, T, T, T, T, T, T)>(ref from);
 
@@ -852,7 +852,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX8<T>((T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T), UnmanagedTupleX8<T>>(ref from);
     }
@@ -869,9 +869,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -880,9 +880,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -891,9 +891,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -902,9 +902,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -913,9 +913,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -924,9 +924,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -935,9 +935,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -946,9 +946,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -957,9 +957,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX9<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -975,7 +975,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v6">The value No.6.</param>
         /// <param name="v7">The value No.7.</param>
         /// <param name="v8">The value No.8.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX9(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8)
         {
             i0 = v0;
@@ -1001,7 +1001,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v6">The output value No.6.</param>
         /// <param name="v7">The output value No.7.</param>
         /// <param name="v8">The output value No.8.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8)
         {
             v0 = Item0;
@@ -1022,7 +1022,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T)(UnmanagedTupleX9<T> from)
             => Unsafe.As<UnmanagedTupleX9<T>, (T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -1033,7 +1033,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX9<T>((T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T), UnmanagedTupleX9<T>>(ref from);
     }
@@ -1050,9 +1050,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -1061,9 +1061,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -1072,9 +1072,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -1083,9 +1083,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -1094,9 +1094,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -1105,9 +1105,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -1116,9 +1116,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -1127,9 +1127,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -1138,9 +1138,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -1149,9 +1149,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX10<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -1168,7 +1168,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v7">The value No.7.</param>
         /// <param name="v8">The value No.8.</param>
         /// <param name="v9">The value No.9.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX10(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9)
         {
             i0 = v0;
@@ -1196,7 +1196,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v7">The output value No.7.</param>
         /// <param name="v8">The output value No.8.</param>
         /// <param name="v9">The output value No.9.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9)
         {
             v0 = Item0;
@@ -1218,7 +1218,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX10<T> from)
             => Unsafe.As<UnmanagedTupleX10<T>, (T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -1229,7 +1229,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX10<T>((T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX10<T>>(ref from);
     }
@@ -1246,9 +1246,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -1257,9 +1257,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -1268,9 +1268,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -1279,9 +1279,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -1290,9 +1290,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -1301,9 +1301,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -1312,9 +1312,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -1323,9 +1323,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -1334,9 +1334,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -1345,9 +1345,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -1356,9 +1356,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX11<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -1376,7 +1376,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v8">The value No.8.</param>
         /// <param name="v9">The value No.9.</param>
         /// <param name="v10">The value No.10.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX11(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10)
         {
             i0 = v0;
@@ -1406,7 +1406,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v8">The output value No.8.</param>
         /// <param name="v9">The output value No.9.</param>
         /// <param name="v10">The output value No.10.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10)
         {
             v0 = Item0;
@@ -1429,7 +1429,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX11<T> from)
             => Unsafe.As<UnmanagedTupleX11<T>, (T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -1440,7 +1440,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX11<T>((T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX11<T>>(ref from);
     }
@@ -1457,9 +1457,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -1468,9 +1468,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -1479,9 +1479,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -1490,9 +1490,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -1501,9 +1501,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -1512,9 +1512,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -1523,9 +1523,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -1534,9 +1534,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -1545,9 +1545,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -1556,9 +1556,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -1567,9 +1567,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -1578,9 +1578,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item11
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 11);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX12<T>, T>(ref Unsafe.AsRef(in this)), 11) = value;
         }
 
@@ -1599,7 +1599,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v9">The value No.9.</param>
         /// <param name="v10">The value No.10.</param>
         /// <param name="v11">The value No.11.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX12(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
         {
             i0 = v0;
@@ -1631,7 +1631,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v9">The output value No.9.</param>
         /// <param name="v10">The output value No.10.</param>
         /// <param name="v11">The output value No.11.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10, out T v11)
         {
             v0 = Item0;
@@ -1655,7 +1655,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX12<T> from)
             => Unsafe.As<UnmanagedTupleX12<T>, (T, T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -1666,7 +1666,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX12<T>((T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX12<T>>(ref from);
     }
@@ -1683,9 +1683,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -1694,9 +1694,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -1705,9 +1705,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -1716,9 +1716,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -1727,9 +1727,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -1738,9 +1738,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -1749,9 +1749,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -1760,9 +1760,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -1771,9 +1771,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -1782,9 +1782,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -1793,9 +1793,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -1804,9 +1804,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item11
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 11);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 11) = value;
         }
 
@@ -1815,9 +1815,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item12
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 12);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX13<T>, T>(ref Unsafe.AsRef(in this)), 12) = value;
         }
 
@@ -1837,7 +1837,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v10">The value No.10.</param>
         /// <param name="v11">The value No.11.</param>
         /// <param name="v12">The value No.12.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX13(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12)
         {
             i0 = v0;
@@ -1871,7 +1871,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v10">The output value No.10.</param>
         /// <param name="v11">The output value No.11.</param>
         /// <param name="v12">The output value No.12.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10, out T v11, out T v12)
         {
             v0 = Item0;
@@ -1896,7 +1896,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX13<T> from)
             => Unsafe.As<UnmanagedTupleX13<T>, (T, T, T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -1907,7 +1907,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX13<T>((T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX13<T>>(ref from);
     }
@@ -1924,9 +1924,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -1935,9 +1935,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -1946,9 +1946,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -1957,9 +1957,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -1968,9 +1968,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -1979,9 +1979,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -1990,9 +1990,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -2001,9 +2001,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -2012,9 +2012,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -2023,9 +2023,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -2034,9 +2034,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -2045,9 +2045,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item11
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 11);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 11) = value;
         }
 
@@ -2056,9 +2056,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item12
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 12);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 12) = value;
         }
 
@@ -2067,9 +2067,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item13
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 13);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX14<T>, T>(ref Unsafe.AsRef(in this)), 13) = value;
         }
 
@@ -2090,7 +2090,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v11">The value No.11.</param>
         /// <param name="v12">The value No.12.</param>
         /// <param name="v13">The value No.13.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX14(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12, T v13)
         {
             i0 = v0;
@@ -2126,7 +2126,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v11">The output value No.11.</param>
         /// <param name="v12">The output value No.12.</param>
         /// <param name="v13">The output value No.13.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10, out T v11, out T v12, out T v13)
         {
             v0 = Item0;
@@ -2152,7 +2152,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX14<T> from)
             => Unsafe.As<UnmanagedTupleX14<T>, (T, T, T, T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -2163,7 +2163,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX14<T>((T, T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX14<T>>(ref from);
     }
@@ -2180,9 +2180,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -2191,9 +2191,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -2202,9 +2202,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -2213,9 +2213,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -2224,9 +2224,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -2235,9 +2235,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -2246,9 +2246,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -2257,9 +2257,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -2268,9 +2268,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -2279,9 +2279,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -2290,9 +2290,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -2301,9 +2301,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item11
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 11);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 11) = value;
         }
 
@@ -2312,9 +2312,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item12
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 12);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 12) = value;
         }
 
@@ -2323,9 +2323,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item13
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 13);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 13) = value;
         }
 
@@ -2334,9 +2334,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item14
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 14);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX15<T>, T>(ref Unsafe.AsRef(in this)), 14) = value;
         }
 
@@ -2358,7 +2358,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v12">The value No.12.</param>
         /// <param name="v13">The value No.13.</param>
         /// <param name="v14">The value No.14.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX15(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12, T v13, T v14)
         {
             i0 = v0;
@@ -2396,7 +2396,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v12">The output value No.12.</param>
         /// <param name="v13">The output value No.13.</param>
         /// <param name="v14">The output value No.14.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10, out T v11, out T v12, out T v13, out T v14)
         {
             v0 = Item0;
@@ -2423,7 +2423,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX15<T> from)
             => Unsafe.As<UnmanagedTupleX15<T>, (T, T, T, T, T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -2434,7 +2434,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX15<T>((T, T, T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX15<T>>(ref from);
     }
@@ -2451,9 +2451,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item0
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 0);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 0) = value;
         }
 
@@ -2462,9 +2462,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item1
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 1);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 1) = value;
         }
 
@@ -2473,9 +2473,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item2
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 2);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 2) = value;
         }
 
@@ -2484,9 +2484,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item3
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 3);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 3) = value;
         }
 
@@ -2495,9 +2495,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item4
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 4);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 4) = value;
         }
 
@@ -2506,9 +2506,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item5
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 5);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 5) = value;
         }
 
@@ -2517,9 +2517,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item6
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 6);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 6) = value;
         }
 
@@ -2528,9 +2528,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item7
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 7);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 7) = value;
         }
 
@@ -2539,9 +2539,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item8
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 8);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 8) = value;
         }
 
@@ -2550,9 +2550,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item9
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 9);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 9) = value;
         }
 
@@ -2561,9 +2561,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item10
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 10);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 10) = value;
         }
 
@@ -2572,9 +2572,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item11
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 11);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 11) = value;
         }
 
@@ -2583,9 +2583,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item12
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 12);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 12) = value;
         }
 
@@ -2594,9 +2594,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item13
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 13);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 13) = value;
         }
 
@@ -2605,9 +2605,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item14
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 14);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 14) = value;
         }
 
@@ -2616,9 +2616,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item15
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 15);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX16<T>, T>(ref Unsafe.AsRef(in this)), 15) = value;
         }
 
@@ -2641,7 +2641,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v13">The value No.13.</param>
         /// <param name="v14">The value No.14.</param>
         /// <param name="v15">The value No.15.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX16(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12, T v13, T v14, T v15)
         {
             i0 = v0;
@@ -2681,7 +2681,7 @@ namespace Shamisen.Utils.Tuples
         /// <param name="v13">The output value No.13.</param>
         /// <param name="v14">The output value No.14.</param>
         /// <param name="v15">The output value No.15.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(out T v0, out T v1, out T v2, out T v3, out T v4, out T v5, out T v6, out T v7, out T v8, out T v9, out T v10, out T v11, out T v12, out T v13, out T v14, out T v15)
         {
             v0 = Item0;
@@ -2709,7 +2709,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T)(UnmanagedTupleX16<T> from)
             => Unsafe.As<UnmanagedTupleX16<T>, (T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T)>(ref from);
 
@@ -2720,7 +2720,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX16<T>((T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T) from)
             => Unsafe.As<(T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T), UnmanagedTupleX16<T>>(ref from);
     }

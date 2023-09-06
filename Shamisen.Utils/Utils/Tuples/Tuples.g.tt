@@ -37,9 +37,9 @@ namespace Shamisen.Utils.Tuples
         /// </summary>
         public T Item<#=i#>
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX<#=item#><T>, T>(ref Unsafe.AsRef(in this)), <#=i#>);
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => Unsafe.Add(ref Unsafe.As<UnmanagedTupleX<#=item#><T>, T>(ref Unsafe.AsRef(in this)), <#=i#>) = value;
         }
 
@@ -50,7 +50,7 @@ namespace Shamisen.Utils.Tuples
 <#        for(int i = 0; i < item; i++){#>
         /// <param name="v<#=i#>">The value No.<#=i#>.</param>
 <#        } #>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public UnmanagedTupleX<#=item#>(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T v{a}"))#>)
         {
 <#        for(int i = 0; i < item; i++){#>
@@ -64,7 +64,7 @@ namespace Shamisen.Utils.Tuples
 <#        for(int i = 0; i < item; i++){#>
         /// <param name="v<#=i#>">The output value No.<#=i#>.</param>
 <#        } #>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Deconstruct(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"out T v{a}"))#>)
         {
 <#        for(int i = 0; i < item; i++){#>
@@ -79,7 +79,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator (<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>)(UnmanagedTupleX<#=item#><T> from)
             => Unsafe.As<UnmanagedTupleX<#=item#><T>, (<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>)>(ref from);
 
@@ -90,7 +90,7 @@ namespace Shamisen.Utils.Tuples
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator UnmanagedTupleX<#=item#><T>((<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>) from)
             => Unsafe.As<(<#=string.Join(", ", Enumerable.Range(0, item).Select(a=>$"T"))#>), UnmanagedTupleX<#=item#><T>>(ref from);
     }

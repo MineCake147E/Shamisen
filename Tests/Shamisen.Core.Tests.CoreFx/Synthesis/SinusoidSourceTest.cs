@@ -111,7 +111,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             Assert.AreEqual(t1, t0);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Fixed64 GenerateMonauralBlockIeee754(Span<float> buffer, Fixed64 omega, Fixed64 theta)
         {
             for (var i = 0; i < buffer.Length; i++)

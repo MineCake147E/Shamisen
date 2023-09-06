@@ -61,7 +61,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
     {
 <#  foreach(var item in names){#>
 #region Order<#=item.Order#>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder<#=item.Order#>Intrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 <#      if(item.GenerateArm){#>
@@ -74,7 +74,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 #endif
             return false;
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe bool RestoreSignalOrder<#=item.Order#>WideIntrinsic(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
 <#      if(item.GenerateArm){#>

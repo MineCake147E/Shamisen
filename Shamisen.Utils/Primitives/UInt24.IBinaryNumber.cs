@@ -113,70 +113,70 @@ namespace Shamisen
         #region Operator Overloads
         #region Logical
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator ~(UInt24 value) => new((ushort)~value.midtail, (byte)~value.head);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator ^(UInt24 left, UInt24 right) => new((ushort)(left.midtail ^ right.midtail), (byte)(left.head ^ right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator &(UInt24 left, UInt24 right) => new((ushort)(left.midtail & right.midtail), (byte)(left.head & right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator |(UInt24 left, UInt24 right) => new((ushort)(left.midtail | right.midtail), (byte)(left.head | right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator >>>(UInt24 value, int shiftAmount) => (UInt24)((uint)value >>> shiftAmount);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator >>(UInt24 value, int shiftAmount) => (UInt24)((uint)value >> shiftAmount);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator <<(UInt24 value, int shiftAmount) => (UInt24)((uint)value << shiftAmount);
         #endregion
 
         #region Arithmetic
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator +(UInt24 value) => value;
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator -(UInt24 value) => new(~value + 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator ++(UInt24 value) => (UInt24)((uint)value + 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator --(UInt24 value) => (UInt24)((uint)value - 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator *(UInt24 left, UInt24 right) => (UInt24)(left * (uint)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator /(UInt24 left, UInt24 right) => (UInt24)(left / (uint)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator %(UInt24 left, UInt24 right) => (UInt24)(left % (uint)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator +(UInt24 left, UInt24 right) => (UInt24)(left + (uint)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 operator -(UInt24 left, UInt24 right) => (UInt24)(left - (uint)right);
         #endregion
         #endregion

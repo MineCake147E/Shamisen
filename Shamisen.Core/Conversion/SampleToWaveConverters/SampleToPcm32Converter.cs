@@ -156,7 +156,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ConvertFloatToInt32Clamped(float value)
         {
             value = FastMath.Max(value, -2147483648.0f);
@@ -174,7 +174,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
         /// </summary>
         /// <param name="srcval"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ConvertSampleToPcm32(float srcval)
         {
             srcval *= Multiplier;
@@ -211,7 +211,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalDirectAvx(Span<int> destination, ReadOnlySpan<float> source)
         {
             ref var src = ref MemoryMarshal.GetReference(source);
@@ -249,7 +249,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalDirectStandard(Span<int> destination, ReadOnlySpan<float> source)
         {
             ref var src = ref MemoryMarshal.GetReference(source);
@@ -293,7 +293,7 @@ namespace Shamisen.Conversion.SampleToWaveConverters
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalReversedAvx2(Span<int> destination, ReadOnlySpan<float> source)
         {
             ref var src = ref MemoryMarshal.GetReference(source);

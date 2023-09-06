@@ -34,7 +34,7 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <param name="step">The step.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -46,7 +46,7 @@ namespace Shamisen
         /// <param name="value">The value.</param>
         /// <param name="step">The step.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -63,7 +63,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to rectify.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -78,7 +78,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to rectify.</param>
         /// <returns>The rectified value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -93,7 +93,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to rectify.</param>
         /// <returns>The rectified value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -118,7 +118,7 @@ namespace Shamisen
         public static ReadResult Min(ReadResult a, ReadResult b) => a < b ? a : b;
 
         /// <inheritdoc cref="Math.Min(long, long)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -133,7 +133,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Min(long, long)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -148,7 +148,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Min(int, int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -164,7 +164,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Min(uint, uint)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -179,7 +179,7 @@ namespace Shamisen
             return r | q;
         }
         /// <inheritdoc cref="Math.Min(long, long)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -195,7 +195,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Min(ulong, ulong)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -211,7 +211,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Min(short, short)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -219,14 +219,14 @@ namespace Shamisen
         public static short Min(short val1, short val2) => (short)Min((uint)val1, (uint)val2);
 
         /// <inheritdoc cref="Math.Min(ushort, ushort)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
 #endif
         public static ushort Min(ushort val1, ushort val2) => (ushort)Min((uint)val1, val2);
         /// <inheritdoc cref="Math.Min(sbyte, sbyte)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -234,7 +234,7 @@ namespace Shamisen
         public static sbyte Min(sbyte val1, sbyte val2) => (sbyte)Min((uint)val1, (uint)val2);
 
         /// <inheritdoc cref="Math.Min(byte, byte)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -258,7 +258,7 @@ namespace Shamisen
         public static ReadResult Max(ReadResult a, ReadResult b) => a > b ? a : b;
 
         /// <inheritdoc cref="Math.Max(int, int)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -274,7 +274,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(uint, uint)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -290,7 +290,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(long, long)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -306,7 +306,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(ulong, ulong)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -322,7 +322,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(long, long)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -338,7 +338,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(ulong, ulong)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -354,7 +354,7 @@ namespace Shamisen
         }
 
         /// <inheritdoc cref="Math.Max(short, short)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -362,14 +362,14 @@ namespace Shamisen
         public static short Max(short val1, short val2) => (short)Max((uint)val1, (uint)val2);
 
         /// <inheritdoc cref="Math.Max(ushort, ushort)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
 #endif
         public static ushort Max(ushort val1, ushort val2) => (ushort)Max((uint)val1, val2);
         /// <inheritdoc cref="Math.Max(sbyte, sbyte)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -377,7 +377,7 @@ namespace Shamisen
         public static sbyte Max(sbyte val1, sbyte val2) => (sbyte)Max((uint)val1, (uint)val2);
 
         /// <inheritdoc cref="Math.Max(byte, byte)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
 
         [DebuggerStepThrough]
@@ -399,7 +399,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int AndNot(int a, int b) => ~a & b;
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint AndNot(uint a, uint b) => ~a & b;
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static long AndNot(long a, long b) => ~a & b;
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong AndNot(ulong a, ulong b) => ~a & b;
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static nint AndNot(nint a, nint b) => ~a & b;
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static nuint AndNot(nuint a, nuint b) => ~a & b;
         #endregion
 
@@ -501,7 +501,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong Abs(long value)
         {
             var q = value >> 63;
@@ -517,7 +517,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint Abs(int value)
         {
             var q = value >> 31;
@@ -533,7 +533,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ushort Abs(short value)
         {
             var q = value >> 15;
@@ -549,7 +549,7 @@ namespace Shamisen
 
         [DebuggerStepThrough]
 #endif
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static byte Abs(sbyte value)
         {
             var q = value >> 7;
@@ -568,7 +568,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Xor(float left, float right)
         {
             unchecked
@@ -599,7 +599,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise XOR of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Xor(double left, double right)
         {
             unchecked
@@ -630,7 +630,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float And(float left, float right)
         {
             unchecked
@@ -661,7 +661,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double And(double left, double right)
         {
             unchecked
@@ -692,7 +692,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Or(float left, float right)
         {
             unchecked
@@ -723,7 +723,7 @@ namespace Shamisen
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise OR of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double Or(double left, double right)
         {
             unchecked
@@ -754,7 +754,7 @@ namespace Shamisen
         /// <param name="left">The first value to be negated.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AndNot(float left, float right)
         {
             unchecked
@@ -786,7 +786,7 @@ namespace Shamisen
         /// <param name="left">The first value to be negated.</param>
         /// <param name="right">The second value.</param>
         /// <returns>The logical bitwise AND of negative <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AndNot(double left, double right)
         {
             unchecked
@@ -821,7 +821,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AddInteger(float left, int right)
         {
             unchecked
@@ -848,7 +848,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AddInteger(int left, float right)
         {
             unchecked
@@ -875,7 +875,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AddInteger(float left, uint right)
         {
             unchecked
@@ -902,7 +902,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AddInteger(uint left, float right)
         {
             unchecked
@@ -929,7 +929,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float AddInteger(float left, float right)
         {
             unchecked
@@ -956,7 +956,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AddInteger(double left, long right)
         {
             unchecked
@@ -983,7 +983,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AddInteger(long left, double right)
         {
             unchecked
@@ -1010,7 +1010,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AddInteger(double left, ulong right)
         {
             unchecked
@@ -1037,7 +1037,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AddInteger(ulong left, double right)
         {
             unchecked
@@ -1064,7 +1064,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer addition of <paramref name="left"/> and <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double AddInteger(double left, double right)
         {
             unchecked
@@ -1094,7 +1094,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SubtractInteger(float left, int right)
         {
             unchecked
@@ -1121,7 +1121,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SubtractInteger(int left, float right)
         {
             unchecked
@@ -1148,7 +1148,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SubtractInteger(float left, uint right)
         {
             unchecked
@@ -1175,7 +1175,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SubtractInteger(uint left, float right)
         {
             unchecked
@@ -1202,7 +1202,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SubtractInteger(float left, float right)
         {
             unchecked
@@ -1229,7 +1229,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double SubtractInteger(double left, long right)
         {
             unchecked
@@ -1256,7 +1256,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double SubtractInteger(long left, double right)
         {
             unchecked
@@ -1283,7 +1283,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second integer value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double SubtractInteger(double left, ulong right)
         {
             unchecked
@@ -1310,7 +1310,7 @@ namespace Shamisen
         /// <param name="left">The first integer value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double SubtractInteger(ulong left, double right)
         {
             unchecked
@@ -1337,7 +1337,7 @@ namespace Shamisen
         /// <param name="left">The first floating-point value.</param>
         /// <param name="right">The second floating-point value.</param>
         /// <returns>The integer subtraction of <paramref name="left"/> by the internal representation of <paramref name="right"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double SubtractInteger(double left, double right)
         {
             unchecked
@@ -1367,7 +1367,7 @@ namespace Shamisen
         /// <param name="value">The value to be shifted.</param>
         /// <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float ShiftRightArithmetic(float value, byte count)
         {
 #if NET5_0_OR_GREATER
@@ -1391,7 +1391,7 @@ namespace Shamisen
         /// <param name="value">The value to be shifted.</param>
         /// <param name="count">The constant amount of bits to perform arithmetic right shift of <paramref name="value"/>.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static double ShiftRightArithmetic(double value, byte count)
         {
 #if NET5_0_OR_GREATER
@@ -1444,7 +1444,7 @@ namespace Shamisen
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1513,7 +1513,7 @@ namespace Shamisen
         /// <param name="value">The value to divide 2^64 by.</param>
         /// <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
         /// <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ReciprocalUInt64(ulong value, out ulong remainder)
         {
             var (q, r) = Math.DivRem(~0ul, value);
@@ -1531,7 +1531,7 @@ namespace Shamisen
         /// <param name="value">The value to divide 2^64 by.</param>
         /// <param name="remainder">The remainder (2^64) % <paramref name="value"/>.</param>
         /// <returns>The quotient (2^64) / <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ReciprocalUInt64(UInt64Divisor value, out ulong remainder)
         {
             var d = value.Divisor;
@@ -1550,7 +1550,7 @@ namespace Shamisen
         /// <param name="value">The value to divide 2^32 by.</param>
         /// <param name="remainder">The remainder (2^32) % <paramref name="value"/>.</param>
         /// <returns>The quotient (2^32) / <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ReciprocalUInt32(uint value, out uint remainder)
         {
             var (q, r) = Math.DivRem(uint.MaxValue, value);
@@ -1568,7 +1568,7 @@ namespace Shamisen
         /// <param name="value">The value to divide 2^32 by.</param>
         /// <param name="remainder">The remainder (<see cref="nuint.MaxValue"/> + 1) % <paramref name="value"/>.</param>
         /// <returns>The quotient (<see cref="nuint.MaxValue"/> + 1) / <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static nuint ReciprocalUIntPtr(nuint value, out nuint remainder)
         {
             var (q, r) = Math.DivRem(nuint.MaxValue, value);
@@ -1591,7 +1591,7 @@ namespace Shamisen
         /// <param name="lo">The lower part of 128-bit numerator.</param>
         /// <param name="divisor">The divisor. Assumed to be a constant number.</param>
         /// <returns>The lower 64-bit quotient.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong BigDivConstant(ulong hi, ulong lo, ulong divisor)
         {
             var hiq = ReciprocalUInt64(divisor, out var hir);
@@ -1609,7 +1609,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1633,7 +1633,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1662,7 +1662,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1684,7 +1684,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1711,7 +1711,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1734,7 +1734,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1760,7 +1760,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1782,7 +1782,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1808,7 +1808,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1829,7 +1829,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1854,7 +1854,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1877,7 +1877,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1906,7 +1906,7 @@ namespace Shamisen
         /// <param name="start">The start from LSB.</param>
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1936,7 +1936,7 @@ namespace Shamisen
         /// <param name="start">The start from LSB.</param>
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if DEBUG_MATHI_NON_USER_CODE
         [DebuggerStepThrough]
 #endif
@@ -1967,7 +1967,7 @@ namespace Shamisen
         /// <param name="index">The index counting from LSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ZeroHighBits(int index, uint value)
         {
 #if NET5_0_OR_GREATER
@@ -2001,7 +2001,7 @@ namespace Shamisen
         /// <param name="index">The index counting from LSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ZeroHighBits(int index, ulong value)
         {
 #if NET5_0_OR_GREATER
@@ -2035,7 +2035,7 @@ namespace Shamisen
         /// <param name="index">The index counting from MSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ZeroHighBitsFromHigh(int index, uint value)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -2054,7 +2054,7 @@ namespace Shamisen
         /// <param name="index">The index counting from MSB.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ZeroHighBitsFromHigh(int index, ulong value)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -2076,7 +2076,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="condition">The condition to test.</param>
         /// <returns>1 if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ToInt32(bool condition) => Unsafe.As<bool, byte>(ref condition);
 
         /// <summary>
@@ -2085,7 +2085,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ZeroIfFalse(bool condition, uint value)
         {
             var c = condition;
@@ -2099,7 +2099,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int ZeroIfFalse(bool condition, int value) => (int)ZeroIfFalse(condition, (uint)value);
 
         /// <summary>
@@ -2108,7 +2108,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ZeroIfFalse(bool condition, ulong value)
         {
             var c = condition;
@@ -2122,7 +2122,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static long ZeroIfFalse(bool condition, long value) => (long)ZeroIfFalse(condition, (ulong)value);
 
         /// <summary>
@@ -2131,7 +2131,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static nint ZeroIfFalse(bool condition, nint value)
         {
             var c = condition;
@@ -2145,7 +2145,7 @@ namespace Shamisen
         /// <param name="condition">The condition to test.</param>
         /// <param name="value">The value to return if <paramref name="condition"/> were true.</param>
         /// <returns><paramref name="value"/> if <paramref name="condition"/> is true, otherwise 0.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static nuint ZeroIfFalse(bool condition, nuint value)
         {
             var c = condition;

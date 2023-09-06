@@ -88,7 +88,7 @@ namespace Shamisen.Optimization
         /// </value>
         public static X86Intrinsics X86Intrinsics
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         } = GetAvailableX86Intrinsics();
 
@@ -100,7 +100,7 @@ namespace Shamisen.Optimization
         /// </value>
         public static ArmIntrinsics ArmIntrinsics
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         } = GetAvailableArmIntrinsics();
 
@@ -108,7 +108,7 @@ namespace Shamisen.Optimization
         /// Gets the available X86 intrinsics.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static X86Intrinsics GetAvailableX86Intrinsics()
         {
             unchecked
@@ -161,7 +161,7 @@ namespace Shamisen.Optimization
         /// Gets the available arm intrinsics.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ArmIntrinsics GetAvailableArmIntrinsics()
         {
 #if NET5_0_OR_GREATER
@@ -207,7 +207,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAllFeatures(this X86Intrinsics value, X86IntrinsicsMask mask) => (X86IntrinsicsMask)(value & (X86Intrinsics)mask) == mask;
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAllFeatures(this X86Intrinsics value, X86Intrinsics mask) => (value & mask) == mask;
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAllFeatures(this ArmIntrinsics value, ArmIntrinsicsMask mask) => (ArmIntrinsicsMask)(value & (ArmIntrinsics)mask) == mask;
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAllFeatures(this ArmIntrinsics value, ArmIntrinsics mask) => (value & mask) == mask;
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAtLeaseOneFeature(this X86Intrinsics value, X86IntrinsicsMask mask) => (value & (X86Intrinsics)mask) > 0;
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAtLeaseOneFeature(this X86Intrinsics value, X86Intrinsics mask) => (value & mask) > 0;
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAtLeaseOneFeature(this ArmIntrinsics value, ArmIntrinsicsMask mask) => (value & (ArmIntrinsics)mask) > 0;
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace Shamisen.Optimization
         /// <returns>
         ///   <c>true</c> if the specified mask has feature; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool HasAtLeaseOneFeature(this ArmIntrinsics value, ArmIntrinsics mask) => (value & mask) > 0;
     }
 }

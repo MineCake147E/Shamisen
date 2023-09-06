@@ -13,7 +13,7 @@ namespace Shamisen.Analysis
     {
         internal static partial class Fallback
         {
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargeFallback(Span<ComplexF> span, ReadOnlySpan<ComplexF> cache)
             {
                 var omegas = cache;

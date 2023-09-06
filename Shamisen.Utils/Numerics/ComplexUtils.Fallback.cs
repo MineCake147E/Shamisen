@@ -14,7 +14,7 @@ namespace Shamisen.Numerics
         internal static class Fallback
         {
             #region MultiplyAll
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllFallback(Span<ComplexF> destination, ReadOnlySpan<ComplexF> source, ComplexF value)
             {
                 ref var x9 = ref Unsafe.As<ComplexF, Vector2>(ref MemoryMarshal.GetReference(source));
@@ -68,7 +68,7 @@ namespace Shamisen.Numerics
                     x11 = v0_2s;
                 }
             }
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void MultiplyAllFallback(Span<Complex> destination, ReadOnlySpan<Complex> source, Complex value)
             {
                 ref var x9 = ref MemoryMarshal.GetReference(source);
@@ -121,7 +121,7 @@ namespace Shamisen.Numerics
             #endregion
 
             #region ExtractMagnitudeSquared
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ExtractMagnitudeSquaredFallback(Span<float> destination, ReadOnlySpan<ComplexF> source)
             {
                 ref var x9 = ref MemoryMarshal.GetReference(source);

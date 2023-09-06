@@ -50,7 +50,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 {
     public sealed partial class FlacLinearPredictionSubFrame
     {
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             var order = coeffs.Length;
@@ -188,7 +188,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder1Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 1;
@@ -211,7 +211,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 prev0 = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder2Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 2;
@@ -234,7 +234,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder3Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 3;
@@ -259,7 +259,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder4Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 4;
@@ -286,7 +286,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder5Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 5;
@@ -315,7 +315,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder6Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 6;
@@ -346,7 +346,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder7Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 7;
@@ -379,7 +379,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder8Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 8;
@@ -414,7 +414,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder9Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 9;
@@ -443,7 +443,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder10Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 10;
@@ -473,7 +473,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder11Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 11;
@@ -504,7 +504,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder12Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 12;
@@ -536,7 +536,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder13Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 13;
@@ -569,7 +569,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder14Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 14;
@@ -603,7 +603,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder15Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 15;
@@ -638,7 +638,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder16Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 16;
@@ -674,7 +674,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder17Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 17;
@@ -711,7 +711,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder18Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 18;
@@ -749,7 +749,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder19Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 19;
@@ -788,7 +788,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder20Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 20;
@@ -828,7 +828,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder21Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 21;
@@ -869,7 +869,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder22Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 22;
@@ -911,7 +911,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder23Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 23;
@@ -954,7 +954,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder24Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 24;
@@ -998,7 +998,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder25Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 25;
@@ -1043,7 +1043,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder26Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 26;
@@ -1089,7 +1089,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder27Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 27;
@@ -1136,7 +1136,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder28Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 28;
@@ -1184,7 +1184,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder29Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 29;
@@ -1233,7 +1233,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder30Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 30;
@@ -1283,7 +1283,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder31Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 31;
@@ -1334,7 +1334,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder32Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 32;
@@ -1386,7 +1386,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalStandardWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             var order = coeffs.Length;
@@ -1524,7 +1524,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder1WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 1;
@@ -1547,7 +1547,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 prev0 = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder2WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 2;
@@ -1570,7 +1570,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder3WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 3;
@@ -1595,7 +1595,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder4WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 4;
@@ -1622,7 +1622,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder5WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 5;
@@ -1651,7 +1651,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder6WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 6;
@@ -1682,7 +1682,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder7WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 7;
@@ -1715,7 +1715,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder8WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 8;
@@ -1750,7 +1750,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder9WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 9;
@@ -1779,7 +1779,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder10WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 10;
@@ -1809,7 +1809,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder11WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 11;
@@ -1840,7 +1840,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder12WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 12;
@@ -1872,7 +1872,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder13WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 13;
@@ -1905,7 +1905,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder14WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 14;
@@ -1939,7 +1939,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder15WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 15;
@@ -1974,7 +1974,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder16WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 16;
@@ -2010,7 +2010,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder17WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 17;
@@ -2047,7 +2047,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder18WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 18;
@@ -2085,7 +2085,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder19WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 19;
@@ -2124,7 +2124,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder20WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 20;
@@ -2164,7 +2164,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder21WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 21;
@@ -2205,7 +2205,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder22WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 22;
@@ -2247,7 +2247,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder23WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 23;
@@ -2290,7 +2290,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder24WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 24;
@@ -2334,7 +2334,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder25WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 25;
@@ -2379,7 +2379,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder26WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 26;
@@ -2425,7 +2425,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder27WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 27;
@@ -2472,7 +2472,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder28WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 28;
@@ -2520,7 +2520,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder29WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 29;
@@ -2569,7 +2569,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder30WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 30;
@@ -2619,7 +2619,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder31WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 31;
@@ -2670,7 +2670,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 Unsafe.Add(ref d, i) = (int)sum;
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalOrder32WideStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = 32;

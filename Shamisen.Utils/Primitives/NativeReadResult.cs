@@ -24,7 +24,7 @@ namespace Shamisen
         /// </summary>
         public static NativeReadResult EndOfStream
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => new(nint.MinValue);
         }
 
@@ -33,7 +33,7 @@ namespace Shamisen
         /// </summary>
         public static NativeReadResult WaitingForSource
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => new(0);
         }
 
@@ -41,7 +41,7 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="NativeReadResult"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativeReadResult(nint value)
         {
             this.value = value;
@@ -55,7 +55,7 @@ namespace Shamisen
         /// </value>
         public bool IsEndOfStream
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value == nint.MinValue;
         }
 
@@ -67,7 +67,7 @@ namespace Shamisen
         /// </value>
         public bool HasData
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value > 0;
         }
 
@@ -79,7 +79,7 @@ namespace Shamisen
         /// </value>
         public bool HasNoData
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value <= 0;
         }
 
@@ -91,7 +91,7 @@ namespace Shamisen
         /// </value>
         public nint Length
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => MathI.Rectify(value);
         }
 
@@ -102,7 +102,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static explicit operator nuint(NativeReadResult value) => (nuint)value.Length;
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static explicit operator nint(NativeReadResult value) => value.Length;
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator NativeReadResult(nint value) => new(value);
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => obj is NativeReadResult result && Equals(result);
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(NativeReadResult other) => value == other.value;
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => value.GetHashCode();
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="other">An <see cref="NativeReadResult"/>  to compare.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public int CompareTo(NativeReadResult other) => value.CompareTo(other.value);
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(NativeReadResult left, NativeReadResult right) => left.Equals(right);
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(NativeReadResult left, NativeReadResult right) => !(left == right);
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator <(NativeReadResult left, NativeReadResult right) => left.value < right.value;
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator <=(NativeReadResult left, NativeReadResult right) => left.value <= right.value;
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator >(NativeReadResult left, NativeReadResult right) => left.value > right.value;
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Shamisen
         /// <returns>
         /// <c>true</c> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator >=(NativeReadResult left, NativeReadResult right) => left.value >= right.value;
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace Shamisen
         /// <returns>
         /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeReadResult operator +(NativeReadResult left, nint right) => new(left.Length + right);
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeReadResult operator *(NativeReadResult left, nint right) => left.HasData ? left.Length * right : left;
 
         /// <summary>
@@ -256,10 +256,10 @@ namespace Shamisen
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static NativeReadResult operator /(NativeReadResult left, nint right) => left.HasData ? left.Length / right : left;
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private string GetDebuggerDisplay() => $"{nameof(Length)}: {Length}, {nameof(IsEndOfStream)}: {IsEndOfStream}, {nameof(HasData)}: {HasData}";
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace Shamisen
         /// <returns>
         /// The fully qualified type name.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override string? ToString() => GetDebuggerDisplay();
     }
 }

@@ -126,7 +126,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 
         #region ProcessNormal
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormal(Span<float> buffer)
         {
 #if NETCOREAPP3_1_OR_GREATER
@@ -149,7 +149,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
             ProcessNormalStandard(buffer);
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalStandard(Span<float> buffer)
         {
             Vector<float> mul = new(Multiplier);
@@ -191,7 +191,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         }
 #if NETCOREAPP3_1_OR_GREATER
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2(Span<float> buffer)
         {
             var mul = Vector256.Create(Multiplier);
@@ -239,7 +239,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 Unsafe.Add(ref rdi, i) = Unsafe.As<float, int>(ref Unsafe.Add(ref rdi, i)) * mul.GetElement(0);
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalAvx2ExtremeUnroll(Span<float> buffer)
         {
             var mul = Vector256.Create(Multiplier);
@@ -368,7 +368,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
                 Unsafe.Add(ref rdi, i) = Unsafe.As<float, int>(ref Unsafe.Add(ref rdi, i)) * mul.GetElement(0);
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ProcessNormalSse2(Span<float> buffer)
         {
             var mul = Vector128.Create(Multiplier);
@@ -435,7 +435,7 @@ namespace Shamisen.Conversion.WaveToSampleConverters
         #endregion
 
         #region ProcessReversed
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void ProcessReversed(Span<float> buffer)
         {
 #if NETCOREAPP3_1_OR_GREATER

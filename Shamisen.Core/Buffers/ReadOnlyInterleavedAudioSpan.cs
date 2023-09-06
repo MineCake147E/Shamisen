@@ -67,7 +67,7 @@ namespace Shamisen.Buffers
         /// <returns></returns>
         public ReadOnlySpan<TSample> this[int frame]
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Span.Slice(Format.BlockSize * frame, Format.BlockSize);
         }
 
@@ -91,7 +91,7 @@ namespace Shamisen.Buffers
         /// <param name="start">The index in frames at which to begin this slice.</param>
         /// <param name="length">The desired length in frame for the slice.</param>
         /// <returns>A span that consists of <paramref name="length"/> elements from the current span starting at <paramref name="start"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadOnlyInterleavedAudioSpan<TSample, TFormat> Slice(int start, int length)
             => new(Format, Span.Slice(Format.BlockSize * start, Format.BlockSize * length));
 

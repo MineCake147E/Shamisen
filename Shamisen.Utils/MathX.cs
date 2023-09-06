@@ -133,7 +133,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float SinF(Fixed64 value)
 #endif
         {
@@ -154,7 +154,7 @@ namespace Shamisen
         internal const float C1 = -5.1677083f;
         internal const float C0 = 3.1415926f;
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static float SinFInternal64(long value)
         {
             unchecked
@@ -165,7 +165,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static float SinFInternalF32(float x)
         {
             unchecked

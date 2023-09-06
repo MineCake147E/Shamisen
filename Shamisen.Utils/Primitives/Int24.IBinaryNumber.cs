@@ -28,7 +28,7 @@ namespace Shamisen
         /// <inheritdoc/>
         public static Int24 Zero => (Int24)0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 Abs(Int24 value)
         {
             var j = value.head;
@@ -37,139 +37,139 @@ namespace Shamisen
             return new(sign ^ (res + sign));
         }
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsCanonical(Int24 value) => true;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsComplexNumber(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsEvenInteger(Int24 value) => ((int)value & 1) == 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsFinite(Int24 value) => true;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsImaginaryNumber(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsInfinity(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsInteger(Int24 value) => true;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsNaN(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsNegativeInfinity(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsNormal(Int24 value) => value != 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsOddInteger(Int24 value) => ((int)value & 1) != 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsPositive(Int24 value) => (value.head & 0x80) == 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsPositiveInfinity(Int24 value) => false;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsPow2(Int24 value) => MathI.IsPowerOfTwo(value);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsRealNumber(Int24 value) => true;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsSubnormal(Int24 value) => value == 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsZero(Int24 value) => value == 0;
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 Log2(Int24 value) => (Int24)MathI.LogBase2(checked((uint)(int)value));
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 MaxMagnitude(Int24 x, Int24 y) => (Int24)int.MaxMagnitude(x, y);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 MaxMagnitudeNumber(Int24 x, Int24 y) => MaxMagnitude(x, y);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 MinMagnitude(Int24 x, Int24 y) => (Int24)int.MinMagnitude(x, y);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 MinMagnitudeNumber(Int24 x, Int24 y) => MinMagnitude(x, y);
 
         #region Operator Overloads
         #region Logical
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator ~(Int24 value) => new((ushort)~value.midtail, (byte)~value.head);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator ^(Int24 left, Int24 right) => new((ushort)(left.midtail ^ right.midtail), (byte)(left.head ^ right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator &(Int24 left, Int24 right) => new((ushort)(left.midtail & right.midtail), (byte)(left.head & right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator |(Int24 left, Int24 right) => new((ushort)(left.midtail | right.midtail), (byte)(left.head | right.head));
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator >>>(Int24 value, int shiftAmount) => (Int24)((int)value >>> shiftAmount);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator <<(Int24 value, int shiftAmount) => (Int24)((int)value << shiftAmount);
 
         #endregion
 
         #region Arithmetic
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator +(Int24 value) => value;
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator -(Int24 value) => new(~value + 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator ++(Int24 value) => (Int24)((int)value + 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator --(Int24 value) => (Int24)((int)value - 1);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator *(Int24 left, Int24 right) => (Int24)(left * (int)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator /(Int24 left, Int24 right) => (Int24)(left / (int)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator %(Int24 left, Int24 right) => (Int24)(left % (int)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator +(Int24 left, Int24 right) => (Int24)(left + (int)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator -(Int24 left, Int24 right) => (Int24)(left - (int)right);
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 operator >>(Int24 value, int shiftAmount) => (Int24)((int)value >> shiftAmount);
         #endregion
         #endregion
@@ -183,10 +183,10 @@ namespace Shamisen
         /// <inheritdoc/>
         public static Int24 Parse(string s, IFormatProvider? provider) => (Int24)int.Parse(s, provider);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 PopCount(Int24 value) => (Int24)MathI.PopCount((uint)(int)value);
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 TrailingZeroCount(Int24 value) => (Int24)MathI.TrailingZeroCount((uint)(int)value);
 
         /// <inheritdoc/>
@@ -229,7 +229,7 @@ namespace Shamisen
         public int CompareTo(object? obj) => obj is Int24 value ? value.CompareTo(obj) : 0;
 
         /// <inheritdoc/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public int GetByteCount() => 3;
 
         /// <inheritdoc/>

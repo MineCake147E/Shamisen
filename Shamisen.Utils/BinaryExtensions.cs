@@ -64,7 +64,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 ConvertToLittleEndian(Int24 systemEndianedValue) => BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is BIG-ENDIAN, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 ConvertToLittleEndian(UInt24 systemEndianedValue) => BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
 
         #endregion ConvertToLittleEndian
@@ -84,7 +84,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int24 ConvertToBigEndian(Int24 systemEndianedValue) => !BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static UInt24 ConvertToBigEndian(UInt24 systemEndianedValue) => !BitConverter.IsLittleEndian ? systemEndianedValue : ReverseEndianness(systemEndianedValue);
 
         #endregion ConvertToBigEndian
@@ -105,7 +105,7 @@ namespace Shamisen
         /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
         /// <returns><c>true</c> if the span is large enough to contain a <see cref="double"/>; otherwise, <c>false</c>.</returns>
         /// <seealso cref="BinaryPrimitives.TryReadDoubleLittleEndian(ReadOnlySpan{byte}, out double)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryReadDoubleLittleEndian(ReadOnlySpan<byte> source, out double value)
             => BinaryPrimitives.TryReadDoubleLittleEndian(source, out value);
 
@@ -117,7 +117,7 @@ namespace Shamisen
         /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as Big endian.</param>
         /// <returns><c>true</c> if the span is large enough to contain a <see cref="double"/>; otherwise, <c>false</c>.</returns>
         /// <seealso cref="BinaryPrimitives.TryReadDoubleLittleEndian(ReadOnlySpan{byte}, out double)"/>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryReadDoubleBigEndian(ReadOnlySpan<byte> source, out double value)
             => BinaryPrimitives.TryReadDoubleBigEndian(source, out value);
 
@@ -127,7 +127,7 @@ namespace Shamisen
         /// <param name="source">The read-only span of bytes to read.</param>
         /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as little endian.</param>
         /// <returns><c>true</c> if the span is large enough to contain a <see cref="float"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryReadSingleLittleEndian(ReadOnlySpan<byte> source, out float value)
             => BinaryPrimitives.TryReadSingleLittleEndian(source, out value);
 
@@ -137,7 +137,7 @@ namespace Shamisen
         /// <param name="source">The read-only span of bytes to read.</param>
         /// <param name="value">When this method returns, contains the value read out of the read-only span of bytes, as big endian.</param>
         /// <returns><c>true</c> if the span is large enough to contain a <see cref="float"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool TryReadSingleBigEndian(ReadOnlySpan<byte> source, out float value)
             => BinaryPrimitives.TryReadSingleBigEndian(source, out value);
 
@@ -146,7 +146,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted single-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static int SingleToInt32Bits(float value) => BitConverter.SingleToInt32Bits(value);
@@ -156,7 +156,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static float Int32BitsToSingle(int value) => BitConverter.Int32BitsToSingle(value);
@@ -166,7 +166,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The single-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted single-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static uint SingleToUInt32Bits(float value) => BitConverter.SingleToUInt32Bits(value);
@@ -176,7 +176,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A single-precision floating-point value that represents the converted unsigned integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static float UInt32BitsToSingle(uint value) => BitConverter.UInt32BitsToSingle(value);
@@ -186,7 +186,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The double-precision floating-point value to convert.</param>
         /// <returns>An integer representing the converted double-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static long DoubleToInt64Bits(double value) => BitConverter.DoubleToInt64Bits(value);
@@ -196,7 +196,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The integer to convert.</param>
         /// <returns>A double-precision floating-point value that represents the converted integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static double Int64BitsToDouble(long value) => BitConverter.Int64BitsToDouble(value);
@@ -206,7 +206,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The double-precision floating-point value to convert.</param>
         /// <returns>An unsigned integer representing the converted double-precision floating-point value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static ulong DoubleToUInt64Bits(double value) => BitConverter.DoubleToUInt64Bits(value);
@@ -216,7 +216,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The unsigned integer to convert.</param>
         /// <returns>A double-precision floating-point value that represents the converted unsigned integer.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use BitConverter's one instead!")]
         [DebuggerStepThrough]
         public static double UInt64BitsToDouble(ulong value) => BitConverter.UInt64BitsToDouble(value);

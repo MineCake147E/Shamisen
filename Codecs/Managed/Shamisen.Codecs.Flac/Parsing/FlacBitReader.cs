@@ -109,9 +109,9 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public FlacCrc16 Crc16
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => crc16;
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set
             {
                 crc16 = value;
@@ -144,7 +144,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public bool IsByteAligned
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (consumedBits & 7) == 0;
         }
 
@@ -156,7 +156,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public int RemainingUnalignedBits
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => 8 - (consumedBits & 7);
         }
 
@@ -172,19 +172,19 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </value>
         public int UnconsumedInputBits
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => (words - consumedWords) * BitsPerWord + bytesOfIncompleteWord * 8 - consumedBits;
         }
 
         private Span<ulong> AvailableSpan
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => FullSpan.SliceWhile(words);
         }
 
         private ulong[] Buffer
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => buffer ?? throw new ObjectDisposedException(nameof(FlacBitReader));
         }
 
@@ -192,7 +192,7 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         private Span<ulong> FullSpan
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => Buffer;
         }
 
@@ -201,7 +201,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="crc16">The CRC16.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public FlacBitReader(IReadableDataSource<byte>? source, FlacCrc16 crc16 = default)
         {
             this.source = source;
@@ -213,7 +213,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Clears this <see cref="FlacBitReader"/>.
         /// </summary>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             words = bytesOfIncompleteWord = 0;
@@ -225,7 +225,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public ReadResult ReadAlignedLarge(Span<byte> buffer)
         {
             var bhead = buffer;
@@ -258,7 +258,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>The length of the data written.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public ReadResult ReadBytes(Span<byte> buffer)
         {
             ref var bhead = ref MemoryMarshal.GetReference(buffer);
@@ -301,7 +301,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="bits">The bits to read. must be &lt;=32.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use out parameterized one instead!")]
         public int? ReadBitsInt32(byte bits) => !ReadBitsInt32(bits, out var i) ? null : i;
 
@@ -311,7 +311,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadBitsInt32(byte bits, out int value)
         {
             value = 0;
@@ -331,7 +331,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits to read. must be &lt;=32.</param>
         /// <returns></returns>
         [Obsolete("Use ReadBitsUInt32(byte, out int) instead!")]
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public uint? ReadBitsUInt32(byte bits) => ReadBitsUInt32(bits, out var value) ? value : null;
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <exception cref="FlacException">
         /// This is a bug!
         /// </exception>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadBitsUInt32(byte bits, out uint value)
         {
             var buf = AvailableSpan;
@@ -450,7 +450,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadBitsInt64(byte bits, out long value)
         {
             value = 0;
@@ -468,7 +468,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="bits">The bits to read. must be &lt;=64.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use out parameterized one instead!")]
         public ulong? ReadBitsUInt64(byte bits) => ReadBitsUInt64(bits, out var value) ? value : null;
 
@@ -478,7 +478,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="bits">The bits to read. must be &lt;=64.</param>
         /// <param name="value">The value read.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadBitsUInt64(byte bits, out ulong value)
         {
             var buf = AvailableSpan;
@@ -578,7 +578,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadByte(out byte data) => Read8Bits(out data);
 
         /// <summary>
@@ -586,7 +586,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="parameter">The Rice parameter.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public int? ReadRiceCode(int parameter)
         {
             //As of the libFLAC's code, the Rice coding used in FLAC is:
@@ -610,7 +610,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="span">The span to write the data to.</param>
         /// <param name="parameter">The Rice parameter.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadRiceCodes(Span<int> span, int parameter)
         {
             unsafe
@@ -744,14 +744,14 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Reads the <see cref="uint"/> value in little-endian.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public uint? ReadUInt32LittleEndian() => !ReadBitsUInt32(32, out var v) ? null : BinaryPrimitives.ReverseEndianness(v);
 
         /// <summary>
         /// Reads the unary code without sign bit.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadUnaryUnsigned(out uint value)
         {
             int i;
@@ -815,7 +815,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="rawData"></param>
         /// <param name="bytesRead"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public bool ReadUtf8UInt32(out uint value, Span<byte> rawData, out int bytesRead)
         {
             value = 0;
@@ -893,7 +893,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <param name="rawData"></param>
         /// <param name="bytesRead"></param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public bool ReadUtf8UInt64(out ulong value, Span<byte> rawData, out int bytesRead)
         {
             value = 0;
@@ -967,7 +967,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// Reads the zero padding.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool ReadZeroPadding()
         {
             if (!IsByteAligned)
@@ -982,7 +982,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="bits">The bits.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool SkipBitsWithoutCrc(uint bits)
         {
             if (bits > 0)
@@ -1010,7 +1010,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// <summary>
         /// Updates the CRC16.
         /// </summary>
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void UpdateCrc16()
         {
             UpdateCrcByBlock();
@@ -1024,7 +1024,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         internal bool ReadFromSource()
         {
             var q = FullSpan;
@@ -1068,7 +1068,7 @@ namespace Shamisen.Codecs.Flac.Parsing
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal bool SkipByteBlockWithoutCrc(uint values)
         {
             if (!IsByteAligned) throw new FlacException("This is a bug!", this);
@@ -1098,7 +1098,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             return true;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal void UpdateCrcByBlock()
         {
             var q = FullSpan;
@@ -1113,7 +1113,7 @@ namespace Shamisen.Codecs.Flac.Parsing
             crcOffset = 0;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal void UpdateCrcByWord(ulong word)
         {
             var crc = crc16;
@@ -1129,11 +1129,11 @@ namespace Shamisen.Codecs.Flac.Parsing
 
         #region ReadNBits
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [Obsolete("Use out parameterized one instead!")]
         private uint? Read8Bits() => !Read8Bits(out var r) ? null : r;
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private bool Read8Bits(out byte value)
         {
             var buf = AvailableSpan;

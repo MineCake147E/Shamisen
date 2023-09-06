@@ -36,7 +36,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int TrailingZeroCount(uint value)
         {
             unchecked
@@ -59,7 +59,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int TrailingZeroCount(ulong value)
         {
             unchecked
@@ -76,7 +76,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int LogBase2(uint value)
         {
             unchecked
@@ -100,7 +100,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int LogBase2(ulong value)
         {
             unchecked
@@ -117,7 +117,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int LeadingZeroCount(uint value)
         {
             unchecked
@@ -137,7 +137,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static int LeadingZeroCount(ulong value)
         {
             unchecked
@@ -187,7 +187,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ExtractHighestSetBit(uint value)
         {
             unchecked
@@ -206,7 +206,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ExtractHighestSetBit(ulong value)
         {
             unchecked
@@ -229,7 +229,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to reverse bit order.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ReverseBitOrder(uint value)
         {
             //Reference: https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel and its Clang 12.0 codegen on x86-64
@@ -244,7 +244,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The value to reverse bit order.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ReverseBitOrder(ulong value)
         {
             value = ((value & 0x5555_5555_5555_5555) * 2) + ((value >> 1) & 0x5555_5555_5555_5555);
@@ -262,7 +262,7 @@ namespace Shamisen
         /// <param name="start">The start from LSB.</param>
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint ExtractBitField(uint value, byte start, byte length)
             => MathI.ZeroHighBits(length, value >> start);
 
@@ -273,7 +273,7 @@ namespace Shamisen
         /// <param name="start">The start from LSB.</param>
         /// <param name="length">The length in bits.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ExtractBitField(ulong value, byte start, byte length)
              => MathI.ZeroHighBits(length, value >> start);
         #endregion
@@ -285,7 +285,7 @@ namespace Shamisen
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static (ulong low, ulong high) BigMul(ulong x, ulong y)
         {
             ulong a0 = (uint)x;

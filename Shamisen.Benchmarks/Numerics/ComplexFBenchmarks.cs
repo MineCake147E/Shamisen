@@ -42,7 +42,7 @@ namespace Shamisen.Benchmarks.Numerics
             z = new ComplexF[Frames];
             v = new Vector2[Frames];
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Ctor()
         {
@@ -57,7 +57,7 @@ namespace Shamisen.Benchmarks.Numerics
             }
         }
 
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Multiply()
         {
@@ -73,7 +73,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * Unsafe.Add(ref r8, i);
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Add()
         {
@@ -89,7 +89,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) + Unsafe.Add(ref r8, i);
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Subtract()
         {
@@ -105,7 +105,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) - Unsafe.Add(ref r8, i);
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void MultiplyConstant()
         {
@@ -120,7 +120,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) * vy;
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void AddConstant()
         {
@@ -135,7 +135,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) + vy;
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void SubtractConstant()
         {
@@ -150,7 +150,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = Unsafe.Add(ref rsi, i) - vy;
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Conjugate()
         {
@@ -164,7 +164,7 @@ namespace Shamisen.Benchmarks.Numerics
                 Unsafe.Add(ref rdi, i) = ComplexF.Conjugate(Unsafe.Add(ref rsi, i));
             }
         }
-        [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [Benchmark]
         public void Negate()
         {

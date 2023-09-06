@@ -16,7 +16,7 @@ namespace Shamisen.Analysis
         {
             internal static bool IsSupported => CooleyTukeyFft.X86.IsSupported;
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void PerformLargeX86(Span<ComplexF> span, ReadOnlySpan<ComplexF> cache)
             {
                 var length = span.Length;

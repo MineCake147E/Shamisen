@@ -82,7 +82,7 @@ namespace Shamisen.Analysis
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void Perform(Span<ComplexF> span, FftMode mode, PooledArray<ComplexF>? cache)
         {
             if (span.Length < 2) return;

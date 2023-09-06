@@ -25,7 +25,7 @@ namespace Shamisen.Utils
 
             #region Stereo
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (Avx.IsSupported)
@@ -41,7 +41,7 @@ namespace Shamisen.Utils
                 Fallback.InterleaveStereoInt32(buffer, left, right);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (left.Length < Vector256<int>.Count)
@@ -100,7 +100,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoInt32Avx(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (left.Length < Vector256<int>.Count)
@@ -183,7 +183,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoInt32Sse(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 if (left.Length < Vector128<int>.Count)
@@ -224,7 +224,7 @@ namespace Shamisen.Utils
 
             #region Three
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 if (Avx2.IsSupported)
@@ -240,7 +240,7 @@ namespace Shamisen.Utils
                 Fallback.InterleaveThreeInt32(buffer, left, right, center);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32Avx2(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 unsafe
@@ -383,7 +383,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32Sse41(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 unsafe
@@ -479,7 +479,7 @@ namespace Shamisen.Utils
 
             #region Quad
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveQuadInt32(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
             {
                 if (Avx2.IsSupported)
@@ -490,7 +490,7 @@ namespace Shamisen.Utils
                 Fallback.InterleaveQuadInt32(buffer, frontLeft, frontRight, rearLeft, rearRight);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveQuadInt32Avx2(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
             {
                 unsafe
@@ -692,7 +692,7 @@ namespace Shamisen.Utils
 
             #region Stereo
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
             {
                 if (Avx2.IsSupported)
@@ -713,7 +713,7 @@ namespace Shamisen.Utils
                 Fallback.DuplicateMonauralToStereo(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralToStereoAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -753,7 +753,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralToStereoAvx(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -781,7 +781,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralToStereoSse(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -813,7 +813,7 @@ namespace Shamisen.Utils
 
             #region Three
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo3Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
                 if (Avx2.IsSupported)
@@ -829,7 +829,7 @@ namespace Shamisen.Utils
                 Fallback.DuplicateMonauralTo3Channels(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo3ChannelsAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -921,7 +921,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo3ChannelsSse2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -986,7 +986,7 @@ namespace Shamisen.Utils
 
             #region Quad
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo4Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
                 if (Avx2.IsSupported)
@@ -1002,7 +1002,7 @@ namespace Shamisen.Utils
                 Fallback.DuplicateMonauralTo4Channels(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo4ChannelsAvx2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 unsafe
@@ -1035,7 +1035,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo4ChannelsSse2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 unsafe
@@ -1070,7 +1070,7 @@ namespace Shamisen.Utils
 
             #region Deinterleave
             #region Stereo
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DeinterleaveStereoSingleX86(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
                 if (Avx2.IsSupported)
@@ -1085,7 +1085,7 @@ namespace Shamisen.Utils
                 }
                 Fallback.DeinterleaveStereoSingleFallback(buffer, left, right);
             }
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DeinterleaveStereoSingleAvx2(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
                 if (Avx2.IsSupported)
@@ -1159,7 +1159,7 @@ namespace Shamisen.Utils
                     }
                 }
             }
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DeinterleaveStereoSingleSse(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
                 if (Sse.IsSupported)
@@ -1196,7 +1196,7 @@ namespace Shamisen.Utils
             #endregion
 
             #region Channels
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static int DeinterleaveChannelsSingleX86(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
             {
                 if (Avx2.IsSupported && chlen >= Vector256<float>.Count * 8)
@@ -1206,7 +1206,7 @@ namespace Shamisen.Utils
                 return Fallback.DeinterleaveChannelsSingleFallback(destination, source, channels, chlen);
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static int DeinterleaveChannelsSingleAvx2(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
             {
                 unsafe
@@ -1310,7 +1310,7 @@ namespace Shamisen.Utils
             #endregion
 
             #region Floating-Point Utils
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void ReplaceNaNsWithX86(Span<float> destination, ReadOnlySpan<float> source, float value)
             {
                 if (Avx2.IsSupported)
@@ -1325,7 +1325,7 @@ namespace Shamisen.Utils
                 }
                 Fallback.ReplaceNaNsWithFallback(destination, source, value);
             }
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ReplaceNaNsWithAvx(Span<float> destination, ReadOnlySpan<float> source, float value)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -1401,7 +1401,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ReplaceNaNsWithAvx2(Span<float> destination, ReadOnlySpan<float> source, float value)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -1484,7 +1484,7 @@ namespace Shamisen.Utils
 
             #region Log2
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void FastLog2Order5X86(Span<float> destination, ReadOnlySpan<float> source, bool allowFma = true)
             {
                 if (allowFma && Avx2.IsSupported && Fma.IsSupported)
@@ -1505,7 +1505,7 @@ namespace Shamisen.Utils
                 Fallback.FastLog2Order5Fallback(destination, source);
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void FastLog2Order5FAvx2Fma(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -1642,7 +1642,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void FastLog2Order5Avx2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -1758,7 +1758,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void FastLog2Order5Sse2(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);

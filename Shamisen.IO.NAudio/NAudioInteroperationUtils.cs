@@ -69,7 +69,7 @@ namespace Shamisen.IO
         /// </summary>
         /// <param name="sourceFlow">The <see cref="NAudio.CoreAudioApi.DataFlow"/> to convert.</param>
         /// <returns>The converted <see cref="DataFlow"/> value.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static DataFlow AsShamisenDataFlow(this NDataFlow sourceFlow) => sourceFlow switch
         {
             NDataFlow.Render => DataFlow.Render,

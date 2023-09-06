@@ -11,7 +11,7 @@ namespace Shamisen.Utils
         {
             #region Interleave
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right)
             {
                 unsafe
@@ -47,7 +47,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveStereoSingle(Span<float> buffer, ReadOnlySpan<float> left, ReadOnlySpan<float> right)
             {
                 unsafe
@@ -83,7 +83,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveThreeInt32(Span<int> buffer, ReadOnlySpan<int> left, ReadOnlySpan<int> right, ReadOnlySpan<int> center)
             {
                 unsafe
@@ -127,7 +127,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void InterleaveQuadInt32(Span<int> buffer, ReadOnlySpan<int> frontLeft, ReadOnlySpan<int> frontRight, ReadOnlySpan<int> rearLeft, ReadOnlySpan<int> rearRight)
             {
                 unsafe
@@ -182,7 +182,7 @@ namespace Shamisen.Utils
             #region DuplicateMonauralToChannels
             #region Stereo
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralToStereo(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -207,7 +207,7 @@ namespace Shamisen.Utils
 
             #region Three
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo3Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var src = ref MemoryMarshal.GetReference(source);
@@ -245,7 +245,7 @@ namespace Shamisen.Utils
             #endregion
 
             #region Quad
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DuplicateMonauralTo4Channels(Span<float> destination, ReadOnlySpan<float> source)
             {
                 ref var x0 = ref MemoryMarshal.GetReference(source);
@@ -273,7 +273,7 @@ namespace Shamisen.Utils
 
             #endregion
             #region Deinterleave
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static void DeinterleaveStereoSingleFallback(ReadOnlySpan<float> buffer, Span<float> left, Span<float> right)
             {
                 nint i, length = MathI.Min(MathI.Min(left.Length, right.Length), buffer.Length / 2);
@@ -301,7 +301,7 @@ namespace Shamisen.Utils
                 }
             }
 
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             internal static int DeinterleaveChannelsSingleFallback(Span<float> destination, ReadOnlySpan<float> source, int channels, int chlen)
             {
                 ref var rsi = ref MemoryMarshal.GetReference(source);
@@ -321,7 +321,7 @@ namespace Shamisen.Utils
             #endregion
 
             #region Floating-Point Utils
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static void ReplaceNaNsWithFallback(Span<float> destination, ReadOnlySpan<float> source, float value)
             {
                 ref var x9 = ref MemoryMarshal.GetReference(source);
@@ -404,7 +404,7 @@ namespace Shamisen.Utils
             #endregion
 
             #region Statistics
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static float MaxFallback(ReadOnlySpan<float> values)
             {
                 nint i = 0, length = values.Length;
@@ -456,7 +456,7 @@ namespace Shamisen.Utils
                 return s0;
             }
 
-            [MethodImpl(OptimizationUtils.AggressiveOptimizationIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveOptimization)]
             internal static float MinFallback(ReadOnlySpan<float> values)
             {
                 nint i = 0, length = values.Length;

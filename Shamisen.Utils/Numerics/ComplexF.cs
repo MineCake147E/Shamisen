@@ -48,14 +48,14 @@ namespace Shamisen
         /// <inheritdoc cref="Complex.Real"/>
         public float Real
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value.X;
         }
 
         /// <inheritdoc cref="Complex.Imaginary"/>
         public float Imaginary
         {
-            [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => value.Y;
         }
 
@@ -64,7 +64,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="real">The real part.</param>
         /// <param name="imaginary">The imaginary part.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if NET5_0_OR_GREATER
         [SkipLocalsInit]
 #endif
@@ -76,7 +76,7 @@ namespace Shamisen
         /// Initializes a new instance of the <see cref="ComplexF"/> struct.
         /// </summary>
         /// <param name="value">The value vector X=Real, Y=Imaginary.</param>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if NET5_0_OR_GREATER
         [SkipLocalsInit]
 #endif
@@ -85,7 +85,7 @@ namespace Shamisen
             this.value = value;
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if NET5_0_OR_GREATER
         [SkipLocalsInit]
 #endif
@@ -96,7 +96,7 @@ namespace Shamisen
         }
 
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if NET5_0_OR_GREATER
         [SkipLocalsInit]
 #endif
@@ -116,7 +116,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the <see cref="Real"/> and <see cref="Imaginary"/> components of the value parameter multiplied by -1.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF operator -(in ComplexF value) => AsComplexF(-value.value);
 
         #endregion Unary Arithmetics
@@ -131,7 +131,7 @@ namespace Shamisen
         /// <returns>
         /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF operator -(in ComplexF left, in ComplexF right) => new(left.value - right.value);
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Shamisen
         /// <returns>
         /// The sum of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF operator +(in ComplexF left, in ComplexF right) => new(left.value + right.value);
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Shamisen
         /// <returns>
         /// The product of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #if NET5_0_OR_GREATER
         [SkipLocalsInit]
 #endif
@@ -201,7 +201,7 @@ namespace Shamisen
         /// <returns>
         /// The product of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF operator *(in ComplexF left, float right) => AsComplexF(left.value * right);
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Shamisen
         /// <returns>
         /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF operator /(in ComplexF left, in ComplexF right)
         {
             var div = 1.0f / right.value.LengthSquared();
@@ -268,7 +268,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the value of complex1 is the same as the value of complex2; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ComplexF complex1, ComplexF complex2) => complex1.value == complex2.value;
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if complex1 and complex2 are not equal; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ComplexF complex1, ComplexF complex2) => !(complex1 == complex2);
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Shamisen
         /// <returns>
         ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object? obj) => obj is ComplexF complex && value.Equals(complex.value);
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Shamisen
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode() => -1584136870 + value.GetHashCode();
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Shamisen
         /// <returns>
         /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(ComplexF other) => this == other;
 
         #endregion Equality
@@ -336,7 +336,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator Complex(ComplexF value) => new(value.Real, value.Imaginary);
 
         /// <summary>
@@ -346,7 +346,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator ComplexF(float value) => new(value, 0);
 
         #endregion Implicit Conversions
@@ -360,7 +360,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static explicit operator ComplexF(in Complex value)
         {
             unchecked
@@ -394,7 +394,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">A complex number.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float Abs(ComplexF value) => value.value.Length();
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">A complex number.</param>
         /// <returns>The conjugate of <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Conjugate(ComplexF value)
         {
             unchecked
@@ -421,7 +421,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">A complex number.</param>
         /// <returns>The reciprocal of <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Reciprocal(ComplexF value) => One / value;
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace Shamisen
         /// <returns>
         /// The sum of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Add(ComplexF left, ComplexF right) => left + right;
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace Shamisen
         /// <returns>
         /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Subtract(ComplexF left, ComplexF right) => left - right;
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace Shamisen
         /// <returns>
         /// The product of <paramref name="left"/> and <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Multiply(ComplexF left, ComplexF right) => left * right;
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace Shamisen
         /// <returns>
         /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Divide(ComplexF left, ComplexF right) => left / right;
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace Shamisen
         /// <returns>
         /// The result of the <see cref="Real"/> and <see cref="Imaginary"/> components of the value parameter multiplied by -1.
         /// </returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Negate(ComplexF value) => -value;
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace Shamisen
         /// <param name="magnitude">The magnitude, which is the distance from the origin (the intersection of the x-axis and the y-axis) to the number.</param>
         /// <param name="phase">The phase, which is the angle from the line to the horizontal axis, measured in radians.</param>
         /// <returns>A complex number.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF FromPolarCoordinates(double magnitude, double phase) => (ComplexF)Complex.FromPolarCoordinates(magnitude, phase);
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace Shamisen
         /// <param name="magnitude">The magnitude, which is the distance from the origin (the intersection of the x-axis and the y-axis) to the number.</param>
         /// <param name="phase">The phase, which is the angle from the line to the horizontal axis, measured in radians.</param>
         /// <returns>A complex number.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF FromPolarCoordinates(float magnitude, float phase) => (ComplexF)Complex.FromPolarCoordinates(magnitude, phase);
 
         /// <summary>
@@ -501,13 +501,13 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">A complex number.</param>
         /// <returns>The square root of <paramref name="value"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ComplexF Sqrt(ComplexF value) => (ComplexF)Complex.Sqrt(value);
 
         #endregion Functions
         #region Conversion
 #if NETCOREAPP3_1_OR_GREATER
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static Vector128<float> AsVector128(in ComplexF value) => value.value.AsVector128Unsafe();
 #endif
 #if NETCOREAPP3_1_OR_GREATER
@@ -516,7 +516,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The vector to reinterpret.</param>
         /// <returns><paramref name="value"/> reinterpreted as a new <see cref="Vector4"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static ComplexF AsComplexF(in Vector128<float> value) => new(value);
 #endif
         /// <summary>
@@ -524,7 +524,7 @@ namespace Shamisen
         /// </summary>
         /// <param name="value">The vector to reinterpret.</param>
         /// <returns><paramref name="value"/> reinterpreted as a new <see cref="ComplexF"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static ComplexF AsComplexF(in Vector2 value) => new(value);
 
         private string GetDebuggerDisplay() => $"<{Real:R}, {Imaginary:R}>";

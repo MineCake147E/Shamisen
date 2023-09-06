@@ -66,7 +66,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
 {
     public sealed partial class FlacLinearPredictionSubFrame
     {
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             var order = coeffs.Length;
@@ -86,7 +86,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
 <#    foreach(var item in names){#>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = <#=            item.Order#>;
@@ -145,7 +145,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
             }
         }
 <#    } #>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void RestoreSignalStandardWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             var order = coeffs.Length;
@@ -165,7 +165,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         }
 
 <#    foreach(var item in names){#>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             const int Order = <#=            item.Order#>;

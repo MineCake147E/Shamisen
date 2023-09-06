@@ -65,7 +65,7 @@ namespace Shamisen.Codecs.Flac.Metadata
         /// </summary>
         /// <param name="systemEndianedValue">The value in system endian.</param>
         /// <returns>The endian-reversed value if the system is little-endian, otherwise, <paramref name="systemEndianedValue"/>.</returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static CueSheetTrackIndex ConvertToBigEndian(CueSheetTrackIndex systemEndianedValue)
             => new(BinaryExtensions.ConvertToBigEndian(systemEndianedValue.offset), systemEndianedValue.index, BinaryExtensions.ConvertToBigEndian(systemEndianedValue.reserved));
 
@@ -74,7 +74,7 @@ namespace Shamisen.Codecs.Flac.Metadata
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static CueSheetTrackIndex ReadFrom(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length < Unsafe.SizeOf<CueSheetTrackIndex>())
@@ -88,7 +88,7 @@ namespace Shamisen.Codecs.Flac.Metadata
         /// </summary>
         /// <param name="dataSource">The data source.</param>
         /// <returns></returns>
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static CueSheetTrackIndex ReadFrom(IReadableDataSource<byte> dataSource)
         {
             Span<byte> a = stackalloc byte[12];

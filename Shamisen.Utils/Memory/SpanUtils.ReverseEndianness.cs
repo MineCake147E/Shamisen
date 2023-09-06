@@ -21,7 +21,7 @@ namespace Shamisen
 
         #region ARMv8
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimd(Span<ulong> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -41,7 +41,7 @@ namespace Shamisen
                 Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimdArm64(Span<ulong> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -99,7 +99,7 @@ namespace Shamisen
 
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAvx2(Span<ulong> span)
         {
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
@@ -150,7 +150,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessSsse3(Span<ulong> span)
         {
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
@@ -200,7 +200,7 @@ namespace Shamisen
         }
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessFallback(Span<ulong> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -230,7 +230,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessSimple(Span<ulong> span)
         {
             for (var i = 0; i < span.Length; i++)
@@ -244,7 +244,7 @@ namespace Shamisen
         #region 32-bits-wide
         #region ARMv8
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimd(Span<int> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -264,7 +264,7 @@ namespace Shamisen
                 Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimdArm64(Span<int> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -322,7 +322,7 @@ namespace Shamisen
 
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAvx2(Span<int> span)
         {
             var mask256 = Vector256.Create(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12, 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12).AsByte();
@@ -372,7 +372,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessSsse3(Span<int> span)
         {
             //The Internal number gets deconstructed in little-endian so the values are written in BIG-ENDIAN.
@@ -425,7 +425,7 @@ namespace Shamisen
 
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessFallback(Span<int> span)
         {
             ref var x9 = ref MemoryMarshal.GetReference(span);
@@ -462,7 +462,7 @@ namespace Shamisen
 
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessSsse3(Span<Int24> span)
         {
             var mask0 = Vector128.Create(2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 15).AsByte();
@@ -498,7 +498,7 @@ namespace Shamisen
         }
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessFallback(Span<Int24> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -533,7 +533,7 @@ namespace Shamisen
 
         #region ARMv8
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimd(Span<short> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -553,7 +553,7 @@ namespace Shamisen
                 Unsafe.Add(ref rdi, i) = BinaryPrimitives.ReverseEndianness(Unsafe.Add(ref rdi, i));
             }
         }
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAdvSimdArm64(Span<short> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
@@ -611,7 +611,7 @@ namespace Shamisen
 
         #region X86
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessAvx2(Span<short> span)
         {
             var mask256 = Vector256.Create(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14).AsByte();
@@ -661,7 +661,7 @@ namespace Shamisen
             }
         }
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessSsse3(Span<short> span)
         {
             var mask = Vector128.Create(1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14).AsByte();
@@ -713,7 +713,7 @@ namespace Shamisen
 
         #endregion
 
-        [MethodImpl(OptimizationUtils.InlineAndOptimizeIfPossible)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void ReverseEndiannessFallback(Span<short> span)
         {
             ref var rdi = ref MemoryMarshal.GetReference(span);
