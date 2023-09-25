@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.230913002" />
-    <PackageReference Include="ReactiveProperty" Version="9.3.1" />
+    <PackageReference Include="ReactiveProperty" Version="9.3.2" />
     <PackageReference Include="ReactiveUI" Version="19.4.1" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
