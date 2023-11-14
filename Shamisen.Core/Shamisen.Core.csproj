@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
       <TargetFrameworks>net7.0</TargetFrameworks>
@@ -37,7 +37,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
-        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
+        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Codecs\Waveform\Formats\ALaw\" />
