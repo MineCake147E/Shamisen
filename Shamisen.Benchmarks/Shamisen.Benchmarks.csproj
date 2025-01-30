@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PropertyGroup Condition="'$(TargetFramework)' == '$(ShamisenCurrentTargetFramework)'">
         <!--<EnablePreviewFeatures>true</EnablePreviewFeatures>-->
     </PropertyGroup>
     <PropertyGroup>

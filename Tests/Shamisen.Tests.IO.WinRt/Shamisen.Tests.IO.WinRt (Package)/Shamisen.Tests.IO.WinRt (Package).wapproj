@@ -38,7 +38,7 @@
     <ProjectGuid>3952f3f0-1361-4d25-ba28-aa2d6e3627bd</ProjectGuid>
     <TargetPlatformVersion>10.0.20348.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
-    <AssetTargetFallback>net5.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
+    <AssetTargetFallback>net9.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\Shamisen.Tests.IO.WinRt\Shamisen.Tests.IO.WinRt.csproj</EntryPointProjectUniqueName>

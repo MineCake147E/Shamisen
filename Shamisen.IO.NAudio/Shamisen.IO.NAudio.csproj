@@ -4,7 +4,6 @@
         <TargetFrameworks>$(ShamisenCurrentTargetFramework)-windows</TargetFrameworks>
         <RootNamespace>Shamisen.IO</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
