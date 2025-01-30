@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(ShamisenCurrentTargetFramework)</TargetFramework>
         <RootNamespace>Shamisen.IO</RootNamespace>
         <LangVersion>Latest</LangVersion>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     </PropertyGroup>
+  <Import Project="../TargetFrameworks.targets" />
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

@@ -17,7 +17,7 @@ namespace Shamisen.Memory
     /// </summary>
     /// <typeparam name="T">The type of items in the <see cref="NativeArray{T}"/>.</typeparam>
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe sealed class NativeArray<T> : IDisposable
+    public sealed unsafe class NativeArray<T> : IDisposable
     {
         private void* head;
         /// <summary>
@@ -117,6 +117,7 @@ namespace Shamisen.Memory
             Length = length;
         }
 
+        /// <inheritdoc cref="Span{T}.GetPinnableReference"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Browsable(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

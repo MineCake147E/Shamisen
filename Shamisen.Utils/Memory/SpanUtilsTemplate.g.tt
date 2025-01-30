@@ -1,9 +1,9 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ output extension=".g.cs" #>
+<#@ output extension=".cs" #>
 <#    var typesVectorable = new string[]{"float","double","byte","ushort","uint","ulong","sbyte","short","int","long"};#>
 <#    var typesFastFillInQuickFill = new string[]{"float","double"};#>
 <#    var typesMemoryReadable = new string[]{"Span","Memory","ReadOnlySpan","ReadOnlyMemory","NativeSpan"};#>

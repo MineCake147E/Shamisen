@@ -25,4 +25,29 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile></DocumentationFile>
     </PropertyGroup>
+  <ItemGroup>
+    <TextTemplate Include="./**/*.tt" />
+    <Compile Update="@(TextTemplate->'%(RelativeDir)%(Filename).cs')">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>%(Filename).tt</DependentUpon>
+    </Compile>
+    <None Include="@(TextTemplate)">
+      <LastGenOutput>%(Filename).cs</LastGenOutput>
+    </None>
+    <UpToDateCheckBuilt Include="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" Original="@(TextTemplate)" />
+  </ItemGroup>
+  <Target Name="TextTemplateTransform" BeforeTargets="BeforeBuild" Inputs="@(TextTemplate)" Outputs="@(TextTemplate->'%(RelativeDir)%(Filename).cs')">
+    <ItemGroup>
+      <T4GFirstBuild Include="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" />
+      <T4Generated Include="@(T4GFirstBuild->'%(Identity)')" Condition="!Exists('%(FullPath)')" />
+      <Compile Include="@(T4GFirstBuild->'%(Identity)')" Condition="!Exists('%(FullPath)')">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>%(Filename).tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet t4 -p:Configuration='$(Configuration)' %(TextTemplate.Identity)" />
+  </Target>
+  <Target Name="TextTemplateClean" AfterTargets="Clean">
+    <Delete Files="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" />
+  </Target>
 </Project>

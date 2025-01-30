@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0</TargetFrameworks>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
         <RootNamespace>Shamisen.IO</RootNamespace>
         <Nullable>enable</Nullable>
         <Description>OpenTK OpenAL output for Shamisen.</Description>

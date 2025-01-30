@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>$(ShamisenCurrentTargetFramework)-windows</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <Import Project="../TargetFrameworks.targets" />
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />

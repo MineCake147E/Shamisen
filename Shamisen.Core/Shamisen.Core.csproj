@@ -1,16 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-      <TargetFrameworks>net7.0</TargetFrameworks>
-      <RootNamespace>Shamisen</RootNamespace>
-      <SonarQubeTestProject>False</SonarQubeTestProject>
-      <Description>Brand New Audio Library for .NET 7 and later. </Description>
-      <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
-      <PackageReadmeFile>README.md</PackageReadmeFile>
-      <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library</PackageTags>
+    <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+    <RootNamespace>Shamisen</RootNamespace>
+    <SonarQubeTestProject>False</SonarQubeTestProject>
+    <Description>Brand New Audio Library for modern .NET. </Description>
+    <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library</PackageTags>
   </PropertyGroup>
-    <Import Project="../Shamisen.Core.targets" />
-    <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">
+  <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' != '$(ShamisenCurrentTargetFramework)'">
         <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     </PropertyGroup>
     <ItemGroup>
@@ -36,10 +35,11 @@
       <Compile Remove="Data\SynchronizedDataReader.cs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
-        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
+        <PackageReference Include="System.Threading.Channels" Version="9.0.1" />
+        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.1" />
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Codecs\Waveform\Composing\" />
       <Folder Include="Codecs\Waveform\Formats\ALaw\" />
       <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
       <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
@@ -53,11 +53,9 @@
         <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
     </ItemGroup>
     <ItemGroup>
-      <None Include="Codecs\Waveform\Composing\BinaryContent.g.cs">
-        <DependentUpon>BinaryContent.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </None>
+      <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
+    </ItemGroup>
+  <!--<ItemGroup>
       <None Include="Codecs\Waveform\InfoSubChunkId.g.cs">
         <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
         <DesignTime>True</DesignTime>
@@ -183,5 +181,5 @@
     </ItemGroup>
     <ItemGroup>
       <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-    </ItemGroup>
+    </ItemGroup>-->
 </Project>

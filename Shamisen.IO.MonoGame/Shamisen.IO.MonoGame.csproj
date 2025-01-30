@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>$(ShamisenCurrentTargetFramework)</TargetFramework>
     <AssemblyName>Shamisen.IO.MonoGame</AssemblyName>
     <RootNamespace>Shamisen.IO.MonoGame</RootNamespace>
   </PropertyGroup>
+  <Import Project="../TargetFrameworks.targets" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>Shamisen.IO.MonoGame.xml</DocumentationFile>

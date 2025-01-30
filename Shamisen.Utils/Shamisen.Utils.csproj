@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net7.0</TargetFrameworks>
+      <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
       <RootNamespace>Shamisen</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,102 +12,14 @@
       <LangVersion>preview</LangVersion>
   </PropertyGroup>
     <Import Project="../Shamisen.Core.targets" />
-    <PropertyGroup Condition="'$(TargetFramework)' != 'net7.0'">
+    <PropertyGroup Condition="'$(TargetFramework)' != '$(ShamisenCurrentTargetFramework)'">
         <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="DivideSharp" Version="0.0.5" />
+        <PackageReference Include="DivideSharp" Version="0.0.6" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="True" PackagePath="\" />
         <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Update="BinaryExtensions.g.tt">
-        <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="MathITemplate.tt">
-        <LastGenOutput>MathITemplate.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Memory\SpanUtilsTemplate.tt">
-        <LastGenOutput>SpanUtilsTemplate.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Audio\AudioUtils.Fallback.g.tt">
-        <LastGenOutput>AudioUtils.Fallback.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Audio\AudioUtils.g.tt">
-        <LastGenOutput>AudioUtils.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-      <None Update="Utils\Audio\AudioUtils.Intrinsics.g.tt">
-        <LastGenOutput>AudioUtils.Intrinsics.g.cs</LastGenOutput>
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
-        <None Update="Utils\Intrinsics\AdvSimdUtils.g.tt">
-            <LastGenOutput>AdvSimdUtils.g.cs</LastGenOutput>
-            <Generator>TextTemplatingFileGenerator</Generator>
-        </None>
-        <None Update="Utils\Tuples\Tuples.g.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>Tuples.g.cs</LastGenOutput>
-        </None>
-        <None Update="Utils\VectorUtils.g.tt">
-          <LastGenOutput>VectorUtils.g.cs</LastGenOutput>
-          <Generator>TextTemplatingFileGenerator</Generator>
-        </None>
-    </ItemGroup>
-    <ItemGroup>
-      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Update="BinaryExtensions.g.cs">
-        <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="MathITemplate.cs">
-        <DependentUpon>MathITemplate.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Memory\SpanUtilsTemplate.g.cs">
-        <DependentUpon>SpanUtilsTemplate.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.Fallback.g.cs">
-        <DependentUpon>AudioUtils.Fallback.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.g.cs">
-        <DependentUpon>AudioUtils.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Utils\Audio\AudioUtils.Intrinsics.g.cs">
-        <DependentUpon>AudioUtils.Intrinsics.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Utils\Intrinsics\AdvSimdUtils.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AdvSimdUtils.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\Tuples\Tuples.g.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Tuples.g.tt</DependentUpon>
-      </Compile>
-      <Compile Update="Utils\VectorUtils.g.cs">
-        <DependentUpon>VectorUtils.g.tt</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
     </ItemGroup>
 </Project>

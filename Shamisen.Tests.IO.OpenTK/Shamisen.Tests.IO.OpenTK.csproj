@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(ShamisenCurrentTargetFramework)</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+  <Import Project="../TargetFrameworks.targets" />
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.0.4" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />

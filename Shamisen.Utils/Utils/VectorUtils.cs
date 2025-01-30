@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
@@ -1570,7 +1570,7 @@ namespace Shamisen.Utils
         }
         #endregion
         #region AsVector128Unsafe
-#if NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER && !NET9_0_OR_GREATER
         /// <summary>
         /// Reinterprets a <see cref="Vector2"/> as a new <see cref="Vector128{T}"/>.
         /// </summary>

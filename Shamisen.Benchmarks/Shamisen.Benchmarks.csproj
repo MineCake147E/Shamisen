@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0</TargetFrameworks>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
         <!--<EnablePreviewFeatures>true</EnablePreviewFeatures>-->
@@ -18,7 +18,7 @@
       <EmbeddedResource Include="TestSounds\PinkNoise_24bit_Lv8.flac" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.7" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
         <PackageReference Include="CSCore" Version="1.2.1.2" />
     </ItemGroup>
 

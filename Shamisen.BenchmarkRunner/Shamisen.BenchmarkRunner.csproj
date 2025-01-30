@@ -2,14 +2,13 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net7.0</TargetFrameworks>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
         <AssemblyName>Shamisen.Benchmarks.Running</AssemblyName>
         <RootNamespace>Shamisen.Benchmarks.Running</RootNamespace>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
-
     <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.7" />
+      <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shamisen.Benchmarks\Shamisen.Benchmarks.csproj" />

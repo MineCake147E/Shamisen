@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Shamisen-NuGetIcon.svg = Shamisen-NuGetIcon.svg
 		Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md = Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md
 		Shamisen.Core.targets = Shamisen.Core.targets
+		TargetFrameworks.targets = TargetFrameworks.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{27F90A55-94F9-4FFE-977C-C1A66C3D1E02}"
