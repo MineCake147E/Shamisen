@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -15,15 +15,15 @@ namespace Shamisen.Conversion.ChannelConverters
     /// <summary>
     /// Converts monaural audio to stereo.
     /// </summary>
-    public sealed class MonauralToStrereoSampleConverter : IAudioFilter<float, SampleFormat>, ISampleSource
+    public sealed class MonauralToStereoSampleConverter : IAudioFilter<float, SampleFormat>, ISampleSource
     {
         private bool disposedValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MonauralToStrereoSampleConverter"/> class.
+        /// Initializes a new instance of the <see cref="MonauralToStereoSampleConverter"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public MonauralToStrereoSampleConverter(IReadableAudioSource<float, SampleFormat>? source)
+        public MonauralToStereoSampleConverter(IReadableAudioSource<float, SampleFormat>? source)
         {
             ArgumentNullException.ThrowIfNull(source);
             Source = source;
@@ -55,7 +55,7 @@ namespace Shamisen.Conversion.ChannelConverters
         /// <inheritdoc/>
         public ReadResult Read(Span<float> buffer)
         {
-            if (Source is null) throw new ObjectDisposedException(nameof(MonauralToStrereoSampleConverter));
+            if (Source is null) throw new ObjectDisposedException(nameof(MonauralToStereoSampleConverter));
             buffer = buffer.SliceAlign(2);
             var length = buffer.Length / 2;
             var readBuffer = buffer.SliceFromEnd(length);

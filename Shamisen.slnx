@@ -1,0 +1,92 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Benchmarks/">
+    <Project Path="Shamisen.BenchmarkRunner/Shamisen.BenchmarkRunner.csproj">
+      <Build Solution="Debug|ARM" Project="false" />
+      <Build Solution="Debug|ARM64" Project="false" />
+      <Build Solution="Debug|x64" Project="false" />
+      <Build Solution="Debug|x86" Project="false" />
+    </Project>
+    <Project Path="Shamisen.Benchmarks/Shamisen.Benchmarks.csproj">
+      <Build Solution="Debug|ARM" Project="false" />
+      <Build Solution="Debug|ARM64" Project="false" />
+      <Build Solution="Debug|x64" Project="false" />
+      <Build Solution="Debug|x86" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Codecs/" />
+  <Folder Name="/Codecs/Managed/">
+    <Project Path="Codecs/Managed/Shamisen.Codecs.Flac/Shamisen.Codecs.Flac.csproj" />
+  </Folder>
+  <Folder Name="/Codecs/Native/">
+    <Project Path="Codecs/Shamisen.Codecs.Native.FLAC/Shamisen.Codecs.Native.FLAC.csproj" />
+  </Folder>
+  <Folder Name="/CodeGeneration/" />
+  <Folder Name="/IO/" />
+  <Folder Name="/IO/Managed/">
+    <Project Path="Shamisen.IO.Android/Shamisen.IO.Android.csproj" />
+    <Project Path="Shamisen.IO.AudioGraph/Shamisen.IO.WinRt.csproj" />
+    <Project Path="Shamisen.IO.CSCore/Shamisen.IO.CSCore.csproj" />
+    <Project Path="Shamisen.IO.MonoGame/Shamisen.IO.MonoGame.csproj" />
+    <Project Path="Shamisen.IO.NAudio/Shamisen.IO.NAudio.csproj" />
+    <Project Path="Shamisen.IO.OpenTK/Shamisen.IO.OpenTK.csproj" />
+    <Project Path="Shamisen.IO.Silk.NET.OpenAL/Shamisen.IO.Silk.NET.OpenAL.csproj" />
+  </Folder>
+  <Folder Name="/IO/Native/" />
+  <Folder Name="/IO/Native/Android/">
+    <Project Path="Shamisen.IO.Oboe/Shamisen.IO.Oboe.csproj" />
+  </Folder>
+  <Folder Name="/IO/Native/Windows/">
+    <Project Path="Shamisen.IO.WindowsCoreAudio/Shamisen.IO.WindowsCoreAudio.csproj" />
+  </Folder>
+  <Folder Name="/IO/Old/" />
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE.md" />
+    <File Path="README.md" />
+    <File Path="Shamisen-Logo.svg" />
+    <File Path="Shamisen-NuGetIcon.svg" />
+    <File Path="Shamisen.Benchmarks.ResamplerBenchmarks-report-github.md" />
+    <File Path="Shamisen.Core.targets" />
+    <File Path="TargetFrameworks.targets" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Shamisen.TestUtils/Shamisen.TestUtils.csproj" />
+    <Project Path="Shamisen.Utils.Tests/Shamisen.Utils.Tests.csproj" />
+    <Project Path="Tests/Shamisen.Core.Tests.CoreFx/Shamisen.Core.Tests.CoreFx.csproj" />
+  </Folder>
+  <Folder Name="/Tests/IO/">
+    <Project Path="Shamisen.Tests.IO.CSCore/Shamisen.Tests.IO.Windows.csproj" />
+    <Project Path="Shamisen.Tests.IO.NAudio/Shamisen.Tests.IO.NAudio.csproj" />
+    <Project Path="Shamisen.Tests.IO.OpenTK/Shamisen.Tests.IO.OpenTK.csproj" />
+    <Project Path="Tests/Shamisen.Tests.IO.WinRt/Shamisen.Tests.IO.WinRt (Package)/Shamisen.Tests.IO.WinRt (Package).wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="x64" />
+      <Platform Solution="*|ARM64" Project="arm64" />
+      <Deploy />
+    </Project>
+    <Project Path="Tests/Shamisen.Tests.IO.WinRt/Shamisen.Tests.IO.WinRt/Shamisen.Tests.IO.WinRt.csproj">
+      <Platform Solution="*|Any CPU" Project="x64" />
+      <Platform Solution="*|ARM" Project="x64" />
+      <Platform Solution="*|ARM64" Project="arm64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+    </Project>
+  </Folder>
+  <Folder Name="/Tests/Platforms/" />
+  <Folder Name="/Tests/Platforms/Android/" />
+  <Project Path="Shamisen.Core/Shamisen.Core.csproj" />
+  <Project Path="Shamisen.IO/Shamisen.IO.csproj" />
+  <Project Path="Shamisen.Pipeline/Shamisen.Pipeline.csproj" />
+  <Project Path="Shamisen.Utils/Shamisen.Utils.csproj" />
+  <Project Path="Shamisen/Shamisen.csproj" />
+</Solution>

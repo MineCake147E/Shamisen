@@ -9,7 +9,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
@@ -61,7 +61,7 @@
     <NoWarn>;2008</NoWarn>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-  </PropertyGroup>
+  </PropertyGroup>-->
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
@@ -84,9 +84,6 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Shamisen.UWP\Shamisen.IO.UWP.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Shamisen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

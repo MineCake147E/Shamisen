@@ -1,4 +1,4 @@
-﻿namespace Shamisen.Formats
+namespace Shamisen.Formats
 {
     /// <summary>
     /// Defines known PCM sample encoding types.
@@ -19,11 +19,11 @@
         /// <summary>
         /// A-law PCM from ITU-T Recommendation G.711.
         /// </summary>
-        Alaw = 0x0006,
+        ALaw = 0x0006,
 
         /// <summary>
         /// μ-law PCM from ITU-T Recommendation G.711.
         /// </summary>
-        Mulaw = 0x0007,
+        MuLaw = 0x0007,
     }
 }
