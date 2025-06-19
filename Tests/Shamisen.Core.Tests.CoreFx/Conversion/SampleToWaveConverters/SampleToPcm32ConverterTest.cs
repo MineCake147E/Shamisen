@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -43,7 +43,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / src.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
     }
 }

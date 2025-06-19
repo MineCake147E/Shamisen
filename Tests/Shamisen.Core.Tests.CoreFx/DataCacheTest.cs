@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,11 +24,11 @@ namespace Shamisen.Core.Tests.CoreFx
                                            BinaryPrimitives.WriteUInt64LittleEndian(testData, 8238509049889332737ul);
                                            var dc = new DataCache<byte>();
                                            dc.Write(testData);
-                                           Assert.AreEqual(testData.Length, dc.BytesWritten, nameof(dc.BytesWritten));
+                                           Assert.That(dc.BytesWritten, Is.EqualTo(testData.Length), nameof(dc.BytesWritten));
                                            Span<byte> testRead = stackalloc byte[sizeof(ulong)];
                                            var h = dc.Read(testRead);
-                                           Assert.AreEqual(testRead.Length, h.Length, nameof(h));
-                                           Assert.AreEqual(8238509049889332737ul, BinaryPrimitives.ReadUInt64LittleEndian(testRead));
+                                           Assert.That(h.Length, Is.EqualTo(testRead.Length), nameof(h));
+                                           Assert.That(BinaryPrimitives.ReadUInt64LittleEndian(testRead), Is.EqualTo(8238509049889332737ul));
                                        });
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -29,7 +29,7 @@ namespace Shamisen.Core.Tests.CoreFx
 
         private static IEnumerable<int> NumbersOfBuffers => new int[] { 64 };
 
-        private static IEnumerable<TimeSpan> Timeouts => new double[] { 10000 }.Select(a => TimeSpan.FromMilliseconds(a));
+        private static IEnumerable<TimeSpan> Timeouts => new double[] { 10000 }.Select(TimeSpan.FromMilliseconds);
 
         public static IEnumerable<TestCaseData> TestCases
             => Sizes.SelectMany(a => NumbersOfBuffers.SelectMany(b => Timeouts.Select(c => new TestCaseData(a, b, c))));
@@ -68,7 +68,7 @@ namespace Shamisen.Core.Tests.CoreFx
                     ns.ReadAll(gn.Span.SliceWhile(len));
                     for (var j = 0; j < vgn.Length; j++)
                     {
-                        Assert.AreEqual(vgn[j], vgb[j], $"On the {i}th try, {j}th element: The elements aren't the same");
+                        Assert.That(vgb[j], Is.EqualTo(vgn[j]), $"On the {i}th try, {j}th element: The elements aren't the same");
                     }
                     var hn = gn;
                     gn = pn;

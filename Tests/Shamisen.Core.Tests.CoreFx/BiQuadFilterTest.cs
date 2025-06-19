@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -178,7 +178,7 @@ namespace Shamisen.Core.Tests.CoreFx
             Console.WriteLine($"Total difference: {sumdiff}");
             var avgDiff = sumdiff / bufferMono.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
 
         [TestCaseSource(nameof(BiQuadLPFChannelConsistencyTestCaseSource))]
@@ -229,7 +229,7 @@ namespace Shamisen.Core.Tests.CoreFx
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / bufferNoIntrinsics.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, -1f / short.MinValue);
+            Assert.That(avgDiff, Is.LessThan(-1f / short.MinValue));
         }
 
         [TestCase(1, (X86Intrinsics)X86IntrinsicsMask.Sse42)]

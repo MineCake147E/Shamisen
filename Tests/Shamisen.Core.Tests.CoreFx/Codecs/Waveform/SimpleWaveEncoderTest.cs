@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -80,14 +80,14 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
             ms.Seek(0, SeekOrigin.Begin);
             var ssource = new StreamDataSource(ms);
             var h = new SimpleWaveParser(new SimpleChunkParserFactory(), ssource);
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
-                Assert.AreEqual(channels, h.Format.Channels, "Channels differs!");
-                Assert.AreEqual(sampleRate, h.Format.SampleRate, "SampleRate differs!");
-                Assert.AreEqual(encoding, h.Format.Encoding, "Encoding differs!");
-                Assert.AreEqual(16, h.Format.BitDepth, "BitDepth differs!");
-                Assert.AreEqual(length, h.TotalLength, "Length differs!");
-            });
+                Assert.That(h.Format.Channels, Is.EqualTo(channels), "Channels differs!");
+                Assert.That(h.Format.SampleRate, Is.EqualTo(sampleRate), "SampleRate differs!");
+                Assert.That(h.Format.Encoding, Is.EqualTo(encoding), "Encoding differs!");
+                Assert.That(h.Format.BitDepth, Is.EqualTo(16), "BitDepth differs!");
+                Assert.That(h.TotalLength, Is.EqualTo(length), "Length differs!");
+            }
         }
     }
 }

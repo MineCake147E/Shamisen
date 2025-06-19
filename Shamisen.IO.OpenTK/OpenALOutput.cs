@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -227,7 +227,7 @@ namespace Shamisen.IO
                     {
                         AL.GetSource(src, ALGetSourcei.BuffersProcessed, out bp); CheckErrors();
                         _ = FillBuffer(bp);
-                        var alState = ConvertState(AL.GetSourceState(src));
+                        var alState = ConvertState((ALSourceState)AL.GetSource(src, ALGetSourcei.SourceState));
                         if (PlaybackState == PlaybackState.Playing && alState == PlaybackState.Stopped)
                         {
                             AL.SourcePlay(src); CheckErrors();

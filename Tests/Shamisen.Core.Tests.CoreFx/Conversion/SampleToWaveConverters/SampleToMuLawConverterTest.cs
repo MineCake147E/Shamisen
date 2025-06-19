@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
@@ -27,7 +27,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
                 var e = MuLawToSampleConverter.ConvertMuLawToSingle(u); //There are two zeros in μ-law.
                 var b = SampleToMuLawConverter.ConvertSingleToMuLaw(e); //0x7f(-0.0f) is converted to 0xff(0.0f)
                 var q = MuLawToSampleConverter.ConvertMuLawToSingle(b); //so 0xff is now 0.0f which is basically the same as -0.0f.
-                Assert.AreEqual(e, q);
+                Assert.That(q, Is.EqualTo(e));
             }
         }
 
@@ -96,7 +96,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / src.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
     }
 }

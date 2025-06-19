@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace Shamisen.Data
 {
-    public interface IStreamDataSink<T> : IDisposable, IBufferWriter where T : unmanaged
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IStreamDataSink<T> : IDisposable, IBufferWriter<T> where T : unmanaged
     {
 
     }

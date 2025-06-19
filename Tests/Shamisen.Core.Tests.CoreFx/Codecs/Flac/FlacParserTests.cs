@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -21,15 +21,17 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
     [TestFixture]
     public class FlacParserTests
     {
+        private static readonly string[] SourceArray = ["./Samples", "./Songs"];
+
         public static IEnumerable<FileInfo> FlacParserParsesCorrectlyTestCaseGenerator()
-            => new[] { "./Samples", "./Songs" }.Where(a => Directory.Exists(a)).SelectMany(a => Directory.EnumerateFiles(a, "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true }))
+            => SourceArray.Where(Directory.Exists).SelectMany(a => Directory.EnumerateFiles(a, "*.zip", new EnumerationOptions() { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true }))
             .Select(a => new FileInfo(a)).Where(a => a.Exists);
 
         [TestCaseSource(nameof(FlacParserParsesCorrectlyTestCaseGenerator))]
         [NonParallelizable]
         public void FlacParserParsesCorrectly(FileInfo path)
         {
-            Assert.IsTrue(path.Exists);
+            Assert.That(path.Exists);
             using var y = path.OpenRead();
             using var archive = new ZipArchive(y, ZipArchiveMode.Read);
             var flacFile = archive.Entries.First(a => a.Name.EndsWith(".flac"));
@@ -87,10 +89,10 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             t.Stop();
             double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.AreEqual(size * sizeof(int), rr.Length);
-            Assert.AreEqual(rw.Length / 4, rr.Length / sizeof(int));
+            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
+            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / 4));
             Debug.WriteLine("Comparing!");
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 t.Restart();
                 ulong err = 0ul;
@@ -100,14 +102,14 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 {
                     if (sw[i] != sf[i])
                     {
-                        Assert.AreEqual(sw[i], sf[i], $"Comparing {i}th element");
+                        Assert.That(sf[i], Is.EqualTo(sw[i]), $"Comparing {i}th element");
                         err++;
                         if (err > 128) break;
                     }
                 }
                 t.Stop();
                 Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            });
+            }
             DumpFlacMetadata(flac);
         }
 
@@ -129,10 +131,10 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             t.Stop();
             double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.AreEqual(size * sizeof(int), rr.Length);
-            Assert.AreEqual(rw.Length / 3, rr.Length / sizeof(int));
+            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
+            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / 3));
             Debug.WriteLine("Comparing!");
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 t.Restart();
                 ulong err = 0ul;
@@ -142,14 +144,14 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 {
                     if (sw[i] != (int)(Int24)sf[i])
                     {
-                        Assert.AreEqual((int)sw[i], (int)(Int24)sf[i], $"Comparing {i}th element");
+                        Assert.That((int)(Int24)sf[i], Is.EqualTo((int)sw[i]), $"Comparing {i}th element");
                         err++;
                         if (err > 128) break;
                     }
                 }
                 t.Stop();
                 Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            });
+            }
             DumpFlacMetadata(flac);
         }
 
@@ -167,14 +169,14 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             t.Stop();
             double duration = (double)wav.TotalLength / wav.Format.SampleRate;
             Console.WriteLine($"FLAC Decoding took {t.Elapsed.TotalSeconds}[s]\n(around {duration / t.Elapsed.TotalSeconds} times faster than real time)");
-            Assert.AreEqual(size * sizeof(int), rr.Length);
+            Assert.That(rr.Length, Is.EqualTo(size * sizeof(int)));
             t.Restart();
             var rw = wav.Read(MemoryMarshal.Cast<short, byte>(dataW.Span));
             t.Stop();
             Console.WriteLine($"WAVE Decoding took {t.Elapsed.TotalSeconds}[s]");
-            Assert.AreEqual(rw.Length / sizeof(short), rr.Length / sizeof(int));
+            Assert.That(rr.Length / sizeof(int), Is.EqualTo(rw.Length / sizeof(short)));
             Debug.WriteLine("Comparing!");
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 t.Restart();
                 ulong err = 0ul;
@@ -184,14 +186,14 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
                 {
                     if (sw[i] != (short)sf[i])
                     {
-                        Assert.AreEqual(sw[i], (short)sf[i], $"Comparing {i}th element");
+                        Assert.That((short)sf[i], Is.EqualTo(sw[i]), $"Comparing {i}th element");
                         err++;
                         if (err > 128) break;
                     }
                 }
                 t.Stop();
                 Console.WriteLine($"Comparison took {t.Elapsed.TotalSeconds}[s]");
-            });
+            }
             DumpFlacMetadata(flac);
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Analysis;
+using Shamisen.Core.Tests.CoreFx.TestUtils;
 
 namespace Shamisen.Core.Tests.CoreFx.Analysis
 {
@@ -40,8 +40,11 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
             {
                 for (var i = 0; i < array.Length; i++)
                 {
-                    Assert.AreEqual(copy[i].Real, array[i].Real, -1.0 / int.MinValue);
-                    Assert.AreEqual(copy[i].Imaginary, array[i].Imaginary, -1.0 / int.MinValue);
+                    using (Assert.EnterMultipleScope())
+                    {
+                        Assert.That(array[i].Real, Is.EqualTo(copy[i].Real).Within(-1.0 / int.MinValue));
+                        Assert.That(array[i].Imaginary, Is.EqualTo(copy[i].Imaginary).Within(-1.0 / int.MinValue));
+                    }
                 }
             }
             catch (Exception)
@@ -83,8 +86,11 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
             {
                 for (var i = 0; i < array.Length; i++)
                 {
-                    Assert.AreEqual(copy[i].Real, array[i].Real, -1.0 / short.MinValue);
-                    Assert.AreEqual(copy[i].Imaginary, array[i].Imaginary, -1.0 / short.MinValue);
+                    using (Assert.EnterMultipleScope())
+                    {
+                        Assert.That(array[i].Real, Is.EqualTo(copy[i].Real).Within(-1.0 / short.MinValue));
+                        Assert.That(array[i].Imaginary, Is.EqualTo(copy[i].Imaginary).Within(-1.0 / short.MinValue));
+                    }
                 }
             }
             catch (Exception)
@@ -188,29 +194,30 @@ namespace Shamisen.Core.Tests.CoreFx.Analysis
         [TestCase(11)]
         public void FFTCacheDumpDouble(int index = 5)
         {
-            Span<Complex> span = stackalloc Complex[1 << index - 1];
-            CooleyTukeyFft.CalculateCache(FftMode.Forward, index, span);
-            Span<ComplexF> spanF = stackalloc ComplexF[span.Length];
-            CooleyTukeyFft.CalculateCache(FftMode.Forward, index, spanF);
-            try
+            using (Assert.EnterMultipleScope())
             {
-                for (var i = 0; i < span.Length; i++)
+                Span<Complex> span = stackalloc Complex[1 << index - 1];
+                CooleyTukeyFft.CalculateCache(FftMode.Forward, index, span);
+                Span<ComplexF> spanF = stackalloc ComplexF[span.Length];
+                CooleyTukeyFft.CalculateCache(FftMode.Forward, index, spanF);
+                try
                 {
-                    Assert.AreEqual(spanF[i].Real, span[i].Real, -1.0 / short.MinValue);
-                    Assert.AreEqual(spanF[i].Imaginary, span[i].Imaginary, -1.0 / short.MinValue);
+                    for (var i = 0; i < span.Length; i++)
+                    {
+                        Assert.That(span[i].Real, Is.EqualTo(spanF[i].Real).Within(-1.0 / short.MinValue));
+                        Assert.That(span[i].Imaginary, Is.EqualTo(spanF[i].Imaginary).Within(-1.0 / short.MinValue));
+                    }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Expected,Actual");
+                    for (var i = 0; i < span.Length; i++)
+                    {
+                        Console.WriteLine($"{spanF[i]}, {span[i]}");
+                    }
+                    throw;
                 }
             }
-            catch (Exception)
-            {
-                Console.WriteLine("Expected,Actual");
-                for (var i = 0; i < span.Length; i++)
-                {
-                    Console.WriteLine($"{spanF[i]}, {span[i]}");
-                }
-                throw;
-            }
-
-            Assert.Pass();
         }
 
         [TestCase(3, FftMode.Forward)]

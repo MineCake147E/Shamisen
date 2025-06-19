@@ -343,5 +343,8 @@ healthchecksdb
 # Custom ignorable directories
 /Old Codes
 
-# The files in Songs doesn't get published to GitHun, so add your favorite songs to test!
+# The files in Songs doesn't get published to GitHub, so add your favorite songs to test!
 **/Songs/
+
+# Currently, C# extension somehow generates its own .sln files despite the Shamisen use .slnx, so we exclude it
+*.sln

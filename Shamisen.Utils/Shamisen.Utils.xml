@@ -6737,13 +6737,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Utils.VectorUtils.AsVector128Unsafe(System.Numerics.Vector2)">
-            <summary>
-            Reinterprets a <see cref="T:System.Numerics.Vector2"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.
-            </summary>
-            <param name="value">The vector to reinterpret.</param>
-            <returns><paramref name="value"/> reinterpreted as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.</returns>
-        </member>
         <member name="M:Shamisen.Utils.VectorUtils.AsVector128(Shamisen.ComplexF@)">
             <summary>
             Reinterprets a <see cref="T:Shamisen.ComplexF"/> as a new <see cref="T:System.Runtime.Intrinsics.Vector128`1"/>.

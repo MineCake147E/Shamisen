@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 double d = spanI[i] * M - spanF[i];
                 na += d * d;
             }
-            Assert.AreEqual(0.0, na.Sum);
+            Assert.That(na.Sum, Is.EqualTo(0.0));
         }
         private static void CheckResultReversed(Span<int> spanI, Span<float> spanF)
         {
@@ -39,7 +39,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 double d = BinaryPrimitives.ReverseEndianness(spanI[i]) * M - spanF[i];
                 na += d * d;
             }
-            Assert.AreEqual(0.0, na.Sum);
+            Assert.That(na.Sum, Is.EqualTo(0.0));
         }
 
         private static void PrepareArrays(int frames, out Span<int> spanI, out Span<float> spanF)
@@ -49,7 +49,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
             RandomNumberGenerator.Fill(input);
             spanI = MemoryMarshal.Cast<byte, int>(input.AsSpan());
             spanF = MemoryMarshal.Cast<byte, float>(output.AsSpan());
-            Assert.AreEqual(spanI.Length, spanF.Length, "Length doesn't match! This is a bug!");
+            Assert.That(spanF.Length, Is.EqualTo(spanI.Length), "Length doesn't match! This is a bug!");
             spanI.CopyTo(MemoryMarshal.Cast<float, int>(spanF));
         }
 

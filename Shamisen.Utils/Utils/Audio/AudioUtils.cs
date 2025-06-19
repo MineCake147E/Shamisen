@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -1243,7 +1243,7 @@ namespace Shamisen.Utils
                     DeinterleaveStereoSingle(source, destination, destination.Slice(chlen));
                     return chlen;
                 default:
-                    if (source.Length > channels) return 0;
+                    if (source.Length < channels) return 0;
 #if NETCOREAPP3_1_OR_GREATER
                     if (X86.IsSupported)
                     {

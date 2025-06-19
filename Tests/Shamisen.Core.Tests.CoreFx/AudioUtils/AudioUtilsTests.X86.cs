@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -227,7 +227,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                     AudioUtils.Offset(span, span, src.Length);
                 }
                 Console.WriteLine($"Maximum Error: {maxError}");
-                Assert.AreEqual(0.0, maxError, 1.5E-5);
+                Assert.That(maxError, Is.EqualTo(0.0).Within(1.5E-5));
             }
 
             [Test]
@@ -253,7 +253,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                     AudioUtils.Offset(span, span, src.Length);
                 }
                 Console.WriteLine($"Maximum Error: {maxError}");
-                Assert.AreEqual(0.0, maxError, 1.5E-5);
+                Assert.That(maxError, Is.EqualTo(0.0).Within(1.5E-5));
             }
             [Test]
             public void FastLog2Order5Sse2CalculatesAccurately()
@@ -278,7 +278,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                     AudioUtils.Offset(span, span, src.Length);
                 }
                 Console.WriteLine($"Maximum Error: {maxError}");
-                Assert.AreEqual(0.0, maxError, 1.5E-5);
+                Assert.That(maxError, Is.EqualTo(0.0).Within(1.5E-5));
             }
             #endregion
             #endregion

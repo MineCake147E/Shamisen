@@ -47,10 +47,13 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FastEnum" Version="2.0.5" />
-        <PackageReference Include="nunit" Version="4.3.2" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-        <PackageReference Include="ReportGenerator" Version="5.4.3" />
+        <PackageReference Include="NUnit.Analyzers" Version="4.9.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NUnit3TestAdapter" Version="5.1.0-alpha.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="ReportGenerator" Version="5.4.8" />
     </ItemGroup>
 
     <ItemGroup>

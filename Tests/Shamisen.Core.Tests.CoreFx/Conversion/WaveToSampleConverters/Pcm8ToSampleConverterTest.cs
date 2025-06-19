@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -87,7 +87,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
                     long cnt = 0;
                     for (var i = 0; i < buffer.Length; i++)
@@ -95,7 +95,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                         var s = Hash(i);
                         float expected = s - 128;
                         var actual = buffer[i] * 128.0f;
-                        Assert.AreEqual(expected, actual, $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
+                        Assert.That(actual, Is.EqualTo(expected), $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
                         if (expected != actual)
                         {
                             if (cnt++ > 128)
@@ -105,7 +105,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                             }
                         }
                     }
-                });
+                }
             }
         }
         private static void PrepareBlock(out float[] buffer, out byte[] bb)

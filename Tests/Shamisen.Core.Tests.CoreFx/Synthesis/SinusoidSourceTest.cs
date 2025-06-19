@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 //using CSCodec.Filters.Transformation;
@@ -65,7 +65,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             var t0 = SinusoidSource.GenerateMonauralBlockAvx2FmaMM256(dst, omega, Fixed64.Zero);
             var t1 = GenerateMonauralBlockIeee754(exp, omega, Fixed64.Zero);
             TestHelper.AssertArrays(exp, dst, 1.0f / 32768);
-            Assert.AreEqual(t1, t0);
+            Assert.That(t0, Is.EqualTo(t1));
         }
 
         [TestCase(8192)]
@@ -81,7 +81,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             var t0 = SinusoidSource.GenerateMonauralBlockAvx2MM256(dst, omega, Fixed64.Zero);
             var t1 = SinusoidSource.GenerateMonauralBlockStandard(exp, omega, Fixed64.Zero);
             TestHelper.AssertArrays(exp, dst, 1.0f / 32768);
-            Assert.AreEqual(t1, t0);
+            Assert.That(t0, Is.EqualTo(t1));
         }
 
         [TestCase(8192)]
@@ -97,7 +97,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             var t0 = SinusoidSource.GenerateMonauralBlockSse41(dst, omega, Fixed64.Zero);
             var t1 = SinusoidSource.GenerateMonauralBlockStandard(exp, omega, Fixed64.Zero);
             TestHelper.AssertArrays(exp, dst, 1.0f / 32768);
-            Assert.AreEqual(t1, t0);
+            Assert.That(t0, Is.EqualTo(t1));
         }
 
         [TestCase(8192)]
@@ -108,7 +108,7 @@ namespace Shamisen.Core.Tests.CoreFx.Synthesis
             var t0 = SinusoidSource.GenerateMonauralBlockStandard(dst, omega, Fixed64.Zero);
             var t1 = GenerateMonauralBlockIeee754(exp, omega, Fixed64.Zero);
             TestHelper.AssertArrays(exp, dst, 1.0f / 32768);
-            Assert.AreEqual(t1, t0);
+            Assert.That(t0, Is.EqualTo(t1));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

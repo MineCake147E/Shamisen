@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,27 +45,27 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
                 ms.Write(testData);
                 ms.Seek(0, SeekOrigin.Begin);
                 RiffChunkReader riffReader = null;
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
                     Assert.DoesNotThrow(() => riffReader = new RiffChunkReader(ms));
-                    Assert.NotNull(riffReader);
-                    Assert.AreEqual((uint)RiffSubChunkId.Wave, riffReader.ReadUInt32LittleEndian());
+                    Assert.That(riffReader, Is.Not.Null);
+                    Assert.That(riffReader.ReadUInt32LittleEndian(), Is.EqualTo((uint)RiffSubChunkId.Wave));
                     IChunkReader fmt = null;
                     Assert.DoesNotThrow(() => fmt = riffReader.ReadSubChunk());
-                    Assert.NotNull(fmt);
-                    Assert.AreEqual((ushort)AudioEncoding.LinearPcm, fmt.ReadUInt16LittleEndian());
-                    Assert.AreEqual(1, fmt.ReadUInt16LittleEndian());
-                    Assert.AreEqual(192000, fmt.ReadUInt32LittleEndian());
-                    Assert.AreEqual(768000, fmt.ReadUInt32LittleEndian());
-                    Assert.AreEqual(4, fmt.ReadUInt16LittleEndian());
-                    Assert.AreEqual(16, fmt.ReadUInt16LittleEndian());
-                    Assert.AreEqual(ReadResult.EndOfStream, fmt.TryReadByte(out _));
+                    Assert.That(fmt, Is.Not.Null);
+                    Assert.That(fmt.ReadUInt16LittleEndian(), Is.EqualTo((ushort)AudioEncoding.LinearPcm));
+                    Assert.That(fmt.ReadUInt16LittleEndian(), Is.EqualTo(1));
+                    Assert.That(fmt.ReadUInt32LittleEndian(), Is.EqualTo(192000));
+                    Assert.That(fmt.ReadUInt32LittleEndian(), Is.EqualTo(768000));
+                    Assert.That(fmt.ReadUInt16LittleEndian(), Is.EqualTo(4));
+                    Assert.That(fmt.ReadUInt16LittleEndian(), Is.EqualTo(16));
+                    Assert.That(fmt.TryReadByte(out _), Is.EqualTo(ReadResult.EndOfStream));
                     Assert.DoesNotThrow(() => fmt.Dispose());
                     IChunkReader data = null;
                     Assert.DoesNotThrow(() => data = riffReader.ReadSubChunk());
-                    Assert.NotNull(data);
-                    Assert.AreEqual(128 - 44, data.RemainingBytes);
-                });
+                    Assert.That(data, Is.Not.Null);
+                    Assert.That(data.RemainingBytes, Is.EqualTo(128 - 44));
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -92,7 +92,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 if (b[i] != i)
                     q.Add((i, b[i]));
             }
-            Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
+            Assert.That(q, Is.Empty, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
         internal static void PrepareDuplicate(int size, int channels, out int[] a, out int[] b)
         {
@@ -168,7 +168,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                     }
                 }
             }
-            Assert.IsEmpty(q, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
+            Assert.That(q, Is.Empty, string.Join(", ", q.Select(a => $"({a.expected}, {a.actual})")));
         }
 
         internal static void PrepareDeinterleave(int size, int channels, out int[] src, out int[] dst)
@@ -183,6 +183,23 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
                 {
                     Unsafe.Add(ref rdi, i * channels) = j + (int)i;
                 }
+            }
+        }
+        #endregion
+
+        #region Deinterleave
+
+        [TestCaseSource(nameof(ChannelsTestCaseGenerator))]
+        public void DeinterleaveChannelsWorksCorrectly(int channels)
+        {
+            const int Size = 1023;
+            PrepareDeinterleave(Size, channels, out var sA, out var dA);
+            var src = MemoryMarshal.Cast<int, float>(sA.AsSpan());
+            var dst = MemoryMarshal.Cast<int, float>(dA.AsSpan());
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(AudioUtils.DeinterleaveToChannels(dst, src, channels), Is.EqualTo(Size));
+                AssertArrayForInterleave(dA);
             }
         }
         #endregion
@@ -218,7 +235,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             TestHelper.GenerateRandomRealNumbers(src);
             var max = src.Max();
             var fmax = AudioUtils.Max(src);
-            Assert.AreEqual(max, fmax);
+            Assert.That(fmax, Is.EqualTo(max));
         }
 
         [TestCase(2047)]
@@ -228,7 +245,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             TestHelper.GenerateRandomRealNumbers(src);
             var min = src.Min();
             var fmin = AudioUtils.Min(src);
-            Assert.AreEqual(min, fmin);
+            Assert.That(fmin, Is.EqualTo(min));
         }
         #endregion
 

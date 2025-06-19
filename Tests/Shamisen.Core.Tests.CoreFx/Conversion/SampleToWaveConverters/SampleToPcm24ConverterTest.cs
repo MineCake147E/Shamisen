@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +56,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / src.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
         private static void AssertArrayReversed(float[] src, Int24[] exp, Int24[] dst)
         {
@@ -73,7 +73,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / src.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
 
         private static void PrepareArraysNormal(int length, out float[] src, out Int24[] exp, out Int24[] dst)

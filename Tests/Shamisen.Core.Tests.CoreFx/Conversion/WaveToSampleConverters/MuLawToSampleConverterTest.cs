@@ -1,4 +1,4 @@
-﻿
+
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
@@ -16,7 +16,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)(-73 << 2)))]
         [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)(8031 << 2)))]
         public void ConvertsCorrectly(byte value, short expected)
-            => Assert.AreEqual(expected, (short)(MuLawToSampleConverter.ConvertMuLawToSingle(value) * 32768.0f));
+            => Assert.That((short)(MuLawToSampleConverter.ConvertMuLawToSingle(value) * 32768.0f), Is.EqualTo(expected));
         [Test]
         public void BlockConvertsCorrectly()
         {
@@ -90,7 +90,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
                     long cnt = 0;
                     for (var i = 0; i < buffer.Length; i++)
@@ -98,7 +98,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                         var s = Hash(i);
                         var expected = MuLawToSampleConverter.ConvertMuLawToSingle(s) * 8192.0f;
                         var actual = buffer[i] * 8192.0f;
-                        Assert.AreEqual(expected, actual, $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
+                        Assert.That(actual, Is.EqualTo(expected), $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
                         if (expected != actual)
                         {
                             if (cnt++ > 128)
@@ -108,7 +108,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                             }
                         }
                     }
-                });
+                }
             }
         }
 

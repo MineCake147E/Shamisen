@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 using DynamicData;
 
-using Reactive.Bindings;
+//using Reactive.Bindings;
 
 using ReactiveUI;
 
@@ -55,16 +55,16 @@ namespace Shamisen.Tests.IO.OpenTK
 
         public MainWindowViewModel()
         {
-            Initialize = ReactiveCommand.Create(InitializeInternal);
-            Play = ReactiveCommand.Create(PlayInternal);
-            Stop = ReactiveCommand.Create(StopInternal);
-            Pause = ReactiveCommand.Create(PauseInternal);
-            Resume = ReactiveCommand.Create(ResumeInternal);
             var sinusoid = new WaveformViewModel("Sinusoid", a => new SinusoidSource(a));
             var square = new WaveformViewModel("Square", a => new SquareWaveSource(a));
             var sawtooth = new WaveformViewModel("Sawtooth", a => new SawtoothWaveSource(a));
             var triangle = new WaveformViewModel("Triangle", a => new TriangleWaveSource(a));
             SelectedWaveform = new(sinusoid);
+            Initialize = ReactiveCommand.Create(InitializeInternal);
+            Play = ReactiveCommand.Create(PlayInternal);
+            Stop = ReactiveCommand.Create(StopInternal);
+            Pause = ReactiveCommand.Create(PauseInternal);
+            Resume = ReactiveCommand.Create(ResumeInternal);
             Waveforms.Add(sinusoid);
             Waveforms.Add(square);
             Waveforms.Add(sawtooth);
@@ -85,6 +85,7 @@ namespace Shamisen.Tests.IO.OpenTK
             });
             _ = SelectedWaveform.Subscribe(a =>
             {
+                if (a is null) return;
                 for (var i = 0; i < waveformSources.Count; i++)
                 {
                     var q = waveformSources[i];
@@ -137,7 +138,7 @@ namespace Shamisen.Tests.IO.OpenTK
                     throw new InvalidProgramException("");
                 }
                 var t = result.SoundDevice;
-                var source = SelectedWaveform.Value.GenerateFunc(new SampleFormat(1, SampleRate));
+                var source = SelectedWaveform.Value?.GenerateFunc(new SampleFormat(1, SampleRate));
                 if (source is not ISampleSource ss) throw new InvalidProgramException("");
                 source.Frequency = Frequency.Value;
                 var socket = new AudioSocket<float, SampleFormat>(ss.Format);

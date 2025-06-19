@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,7 +37,7 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Flac
             stdCrc *= u.AsSpan();
             optCrc = FlacCrc16.CalculateCrc16Pclmulqdq(optCrc, u.AsSpan());
             Console.WriteLine($"Expected: {stdCrc.State:X4}, Actual: {optCrc.State:X4}");
-            Assert.AreEqual(stdCrc.State, optCrc.State);
+            Assert.That(optCrc.State, Is.EqualTo(stdCrc.State));
         }
     }
 }

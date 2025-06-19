@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,15 +33,15 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
             var ms = GetDataFromResource("Test.wav");
             using (var parser = new SimpleWaveParser(new SimpleChunkParserFactory(), ms))
             {
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
-                    Assert.AreEqual(AudioEncoding.LinearPcm, parser.Format.Encoding);
-                    Assert.AreEqual(24, parser.Format.BitDepth);
-                    Assert.AreEqual(192000, parser.Format.SampleRate);
-                    Assert.AreEqual(1, parser.Format.Channels);
-                    Assert.AreEqual(3, parser.Format.SampleSize);
-                    Assert.AreEqual(576000, parser.DataSize);
-                });
+                    Assert.That(parser.Format.Encoding, Is.EqualTo(AudioEncoding.LinearPcm));
+                    Assert.That(parser.Format.BitDepth, Is.EqualTo(24));
+                    Assert.That(parser.Format.SampleRate, Is.EqualTo(192000));
+                    Assert.That(parser.Format.Channels, Is.EqualTo(1));
+                    Assert.That(parser.Format.SampleSize, Is.EqualTo(3));
+                    Assert.That(parser.DataSize, Is.EqualTo(576000));
+                }
             }
         }
 
@@ -52,15 +52,15 @@ namespace Shamisen.Core.Tests.CoreFx.Codecs.Waveform
             {
                 using (var parser = new SimpleWaveParser(new SimpleChunkParserFactory(), ms))
                 {
-                    Assert.Multiple(() =>
+                    using (Assert.EnterMultipleScope())
                     {
-                        Assert.AreEqual(AudioEncoding.Extensible, parser.Format.Encoding);
-                        Assert.AreEqual(16, parser.Format.BitDepth);
-                        Assert.AreEqual(192000, parser.Format.SampleRate);
-                        Assert.AreEqual(1, parser.Format.Channels);
-                        Assert.AreEqual(2, parser.Format.SampleSize);
-                        Assert.AreEqual(384000, parser.DataSize);
-                    });
+                        Assert.That(parser.Format.Encoding, Is.EqualTo(AudioEncoding.Extensible));
+                        Assert.That(parser.Format.BitDepth, Is.EqualTo(16));
+                        Assert.That(parser.Format.SampleRate, Is.EqualTo(192000));
+                        Assert.That(parser.Format.Channels, Is.EqualTo(1));
+                        Assert.That(parser.Format.SampleSize, Is.EqualTo(2));
+                        Assert.That(parser.DataSize, Is.EqualTo(384000));
+                    }
                 }
             }
         }

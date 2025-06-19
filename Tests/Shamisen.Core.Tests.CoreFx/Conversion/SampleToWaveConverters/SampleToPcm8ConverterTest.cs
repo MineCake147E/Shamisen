@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
@@ -61,7 +61,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / src.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.Less(avgDiff, 1f - MathF.BitDecrement(1f));
+            Assert.That(avgDiff, Is.LessThan(1f - MathF.BitDecrement(1f)));
         }
 
         private static void PrepareArrays(int length, out float[] src, out byte[] exp, out byte[] dst)

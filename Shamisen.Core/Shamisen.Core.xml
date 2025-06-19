@@ -5366,48 +5366,48 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter">
+        <member name="T:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter">
             <summary>
             Converts monaural audio to stereo.
             </summary>
         </member>
-        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat})">
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.#ctor(Shamisen.IReadableAudioSource{System.Single,Shamisen.SampleFormat})">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter"/> class.
+            Initializes a new instance of the <see cref="T:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter"/> class.
             </summary>
             <param name="source">The source.</param>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Source">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Source">
             <inheritdoc cref="P:Shamisen.Conversion.IAudioConverter`4.Source"/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Format">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Format">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Length">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Length">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.TotalLength">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.TotalLength">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Position">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Position">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SkipSupport">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.SkipSupport">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.SeekSupport">
+        <member name="P:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.SeekSupport">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Read(System.Span{System.Single})">
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Read(System.Span{System.Single})">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Dispose(System.Boolean)">
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Dispose(System.Boolean)">
             <summary>
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
-        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStrereoSampleConverter.Dispose">
+        <member name="M:Shamisen.Conversion.ChannelConverters.MonauralToStereoSampleConverter.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
@@ -8237,6 +8237,12 @@
         <member name="M:Shamisen.Data.DummyDataSource`1.Dispose">
             <inheritdoc/>
         </member>
+        <member name="T:Shamisen.Data.IStreamDataSink`1">
+            <summary>
+            TODO
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
         <member name="T:Shamisen.Data.OffsetSeekableDataSink`1">
             <summary>
             Writes some data with specified offset.
@@ -9026,19 +9032,19 @@
             </summary>
             <param name="step">The number of frames to step back.</param>
         </member>
-        <member name="T:Shamisen.Data.WaypointRweindingDataSource`1">
+        <member name="T:Shamisen.Data.WaypointRewindingDataSource`1">
             <summary>
             Rewinds the data source to the previously-specified way-point if needed.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.#ctor(Shamisen.IReadableDataSource{`0})">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.#ctor(Shamisen.IReadableDataSource{`0})">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.Data.WaypointRweindingDataSource`1"/> class.
+            Initializes a new instance of the <see cref="T:Shamisen.Data.WaypointRewindingDataSource`1"/> class.
             </summary>
             <param name="source">The source.</param>
             <exception cref="T:System.ArgumentNullException">source</exception>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.Length">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.Length">
             <summary>
             Gets the remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
@@ -9047,7 +9053,7 @@
             The remaining length of the <see cref="T:Shamisen.IDataSource`1"/> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.TotalLength">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.TotalLength">
             <summary>
             Gets the total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> continues infinitely.
@@ -9056,7 +9062,7 @@
             The total length of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.Position">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.Position">
             <summary>
             Gets the position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.<br/>
             The <c>null</c> means that the <see cref="T:Shamisen.IDataSource`1"/> doesn't support this property.
@@ -9065,7 +9071,7 @@
             The position of the <see cref="T:Shamisen.IDataSource`1" /> in number of <typeparamref name="TSample"/>.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.SkipSupport">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.SkipSupport">
             <summary>
             Gets the skip support of the <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
@@ -9073,7 +9079,7 @@
             The skip support.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.SeekSupport">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.SeekSupport">
             <summary>
             Gets the seek support of the <see cref="T:Shamisen.IDataSource`1"/>.
             </summary>
@@ -9081,42 +9087,42 @@
             The seek support.
             </value>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.ReadSupport">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.ReadSupport">
             <summary>
             Gets the read support of the <see cref="T:Shamisen.IDataSource`1" />.
             </summary>
         </member>
-        <member name="P:Shamisen.Data.WaypointRweindingDataSource`1.AsyncReadSupport">
+        <member name="P:Shamisen.Data.WaypointRewindingDataSource`1.AsyncReadSupport">
             <summary>
             Gets the asynchronous read support of the <see cref="T:Shamisen.IDataSource`1" />.
             </summary>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.Pin">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Pin">
             <summary>
             Pins a way-point to this instance.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.UnPin">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.UnPin">
             <summary>
             Unpins a way-point to this instance.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.Rewind">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Rewind">
             <summary>
             Rewinds this instance to the way-point.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.Read(System.Span{`0})">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Read(System.Span{`0})">
             <summary>
             Reads the data to the specified buffer.
             </summary>
             <param name="buffer">The buffer.</param>
             <returns>The length of the data written.</returns>
         </member>
-        <member name="M:Shamisen.Data.WaypointRweindingDataSource`1.Dispose">
+        <member name="M:Shamisen.Data.WaypointRewindingDataSource`1.Dispose">
             <summary>
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
@@ -10940,12 +10946,12 @@
             IEEE 754 Single Precision Floating-Point Number
             </summary>
         </member>
-        <member name="F:Shamisen.Formats.PcmAudioEncoding.Alaw">
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.ALaw">
             <summary>
             A-law PCM from ITU-T Recommendation G.711.
             </summary>
         </member>
-        <member name="F:Shamisen.Formats.PcmAudioEncoding.Mulaw">
+        <member name="F:Shamisen.Formats.PcmAudioEncoding.MuLaw">
             <summary>
             μ-law PCM from ITU-T Recommendation G.711.
             </summary>

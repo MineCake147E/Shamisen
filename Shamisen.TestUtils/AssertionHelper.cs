@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -19,14 +19,14 @@ namespace Shamisen.TestUtils
 
         public static void AreEqual<T>(ReadOnlySpan<T> expected, ReadOnlySpan<T> actual)
         {
-            Assert.AreEqual(expected.Length, actual.Length);
+            Assert.That(actual.Length, Is.EqualTo(expected.Length));
             if (AreEqual(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(expected)), ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(actual)),
                 checked((nuint)expected.Length * (nuint)Unsafe.SizeOf<T>())))
             {
                 Assert.Pass();
                 return;
             }
-            Assert.AreEqual(expected.ToArray(), actual.ToArray());
+            Assert.That(actual.ToArray(), Is.EqualTo(expected.ToArray()));
         }
 
         private static bool AreEqual(ref byte expected, ref byte actual, nuint length)

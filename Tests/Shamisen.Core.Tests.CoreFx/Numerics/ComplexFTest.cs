@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,31 +31,31 @@ namespace Shamisen.Core.Tests.CoreFx.Numerics
         public void CorrectlyAdds(ComplexF a, ComplexF b)
         {
             var c = a + b;
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
-                Assert.AreEqual(a.Real + b.Real, c.Real);
-                Assert.AreEqual(a.Imaginary + b.Imaginary, c.Imaginary);
-            });
+                Assert.That(c.Real, Is.EqualTo(a.Real + b.Real));
+                Assert.That(c.Imaginary, Is.EqualTo(a.Imaginary + b.Imaginary));
+            }
         }
         [TestCaseSource(nameof(BinaryTestCaseSource))]
         public void CorrectlySubtracts(ComplexF a, ComplexF b)
         {
             var c = a - b;
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
-                Assert.AreEqual(a.Real - b.Real, c.Real);
-                Assert.AreEqual(a.Imaginary - b.Imaginary, c.Imaginary);
-            });
+                Assert.That(c.Real, Is.EqualTo(a.Real - b.Real));
+                Assert.That(c.Imaginary, Is.EqualTo(a.Imaginary - b.Imaginary));
+            }
         }
         [TestCaseSource(nameof(BinaryTestCaseSource))]
         public void CorrectlyMultiplies(ComplexF a, ComplexF b)
         {
             var c = a * b;
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
-                Assert.AreEqual(a.Real * b.Real - a.Imaginary * b.Imaginary, c.Real);
-                Assert.AreEqual(a.Real * b.Imaginary + a.Imaginary * b.Real, c.Imaginary);
-            });
+                Assert.That(c.Real, Is.EqualTo(a.Real * b.Real - a.Imaginary * b.Imaginary));
+                Assert.That(c.Imaginary, Is.EqualTo(a.Real * b.Imaginary + a.Imaginary * b.Real));
+            }
         }
         #endregion
     }

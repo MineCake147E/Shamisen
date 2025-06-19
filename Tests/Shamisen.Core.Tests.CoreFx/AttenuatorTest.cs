@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
@@ -28,7 +28,7 @@ namespace Shamisen.Core.Tests.CoreFx
             };
             float[] buffer = new float[Channels * 1024];
             att.Read(buffer);
-            Assert.AreEqual(0.5f, buffer[Channels]);
+            Assert.That(buffer[Channels], Is.EqualTo(0.5f));
             att.Dispose();
         }
     }

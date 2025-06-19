@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 
@@ -16,19 +16,19 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)0b0_000000_1_1010_1_000))]
         [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)-0b1_1111_1_000000_000))]
         public void ConvertsCorrectly(byte value, short expected)
-            => Assert.AreEqual(expected, ALawToSampleConverter.ConvertALawToInt16(value));
+            => Assert.That(ALawToSampleConverter.ConvertALawToInt16(value), Is.EqualTo(expected));
 
         [TestCase((byte)(0b1_001_1010 ^ Mask), unchecked((short)0b0_000000_1_1010_1_000))]
         [TestCase((byte)(0b0_111_1111 ^ Mask), unchecked((short)-0b1_1111_1_000000_000))]
         public void SingleVariantConvertsCorrectly(byte value, short expected)
-            => Assert.AreEqual(expected, (short)(ALawToSampleConverter.ConvertALawToSingle(value) * 32768.0f));
+            => Assert.That((short)(ALawToSampleConverter.ConvertALawToSingle(value) * 32768.0f), Is.EqualTo(expected));
         [Test]
         public void SingleVariantConsistency()
             => Assert.Multiple(() =>
             {
                 for (var i = 0; i < byte.MaxValue + 1; i++)
                 {
-                    Assert.AreEqual((float)ALawToSampleConverter.ConvertALawToInt16((byte)i), ALawToSampleConverter.ConvertALawToSingle((byte)i) * 32768.0f);
+                    Assert.That(ALawToSampleConverter.ConvertALawToSingle((byte)i) * 32768.0f, Is.EqualTo((float)ALawToSampleConverter.ConvertALawToInt16((byte)i)));
                 }
             });
         [Test]
@@ -79,7 +79,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
         {
             unchecked
             {
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
                     long cnt = 0;
                     for (var i = 0; i < buffer.Length; i++)
@@ -87,7 +87,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                         var s = Hash(i);
                         var expected = ALawToSampleConverter.ConvertALawToSingle(s) * 8192.0f;
                         var actual = buffer[i] * 8192.0f;
-                        Assert.AreEqual(expected, actual, $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
+                        Assert.That(actual, Is.EqualTo(expected), $"Comparing {i}th element, Conversion from {s ^ 0xd5:X2}:");
                         if (expected != actual)
                         {
                             if (cnt++ > 128)
@@ -97,7 +97,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                             }
                         }
                     }
-                });
+                }
             }
         }
 

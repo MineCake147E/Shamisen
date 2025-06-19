@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 //using CSCodec.Filters.Transformation;
@@ -81,7 +81,7 @@ namespace Shamisen.Core.Tests.CoreFx
                     var d = sstd[i] - scmp[i];
                     sumd += d.LengthSquared();
                 }
-                Assert.AreEqual(0.0, sumd.Sum, 1.0 / (1u << 24));
+                Assert.That(sumd.Sum, Is.EqualTo(0.0).Within(1.0 / (1u << 24)));
                 Console.WriteLine($"Difference: {sumd.Sum}");
             }
             else
@@ -111,7 +111,7 @@ namespace Shamisen.Core.Tests.CoreFx
                     var d = sstd[i] - scmp[i];
                     sumd += d.LengthSquared();
                 }
-                Assert.AreEqual(0.0, sumd.Sum, 1.0 / (1u << 24));
+                Assert.That(sumd.Sum, Is.EqualTo(0.0).Within(1.0 / (1u << 24)));
                 Console.WriteLine($"Difference: {sumd.Sum}");
             }
             else
@@ -191,7 +191,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
                 dc.Write(bufferStereo);
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
-                Assert.AreEqual(0.0, avgDiff);
+                Assert.That(avgDiff, Is.EqualTo(0.0));
             }
             _ = filterNoIntrinsics.Read(bufferNoIntrinsics);
             _ = filterIntrinsics.Read(bufferIntrinsics);
@@ -214,7 +214,7 @@ namespace Shamisen.Core.Tests.CoreFx
                 using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
                 dc.Write(bufferStereo);
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
-                Assert.AreEqual(0.0, avgDiff2);
+                Assert.That(avgDiff2, Is.EqualTo(0.0));
             }
         }
         #endregion
@@ -256,8 +256,12 @@ namespace Shamisen.Core.Tests.CoreFx
                 TestHelper.DumpSamples(dcMono, $"CheckChannelConsistencyExpectedDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
                 TestHelper.DumpSamples(dcMulti, $"CheckChannelConsistencyActualDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
             }
-            Assert.AreEqual(0f, avgDiff);
-            Assert.AreEqual(0f, avgDiff2);
+
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(avgDiff, Is.EqualTo(0f));
+                Assert.That(avgDiff2, Is.EqualTo(0f));
+            }
         }
 
         private static double WriteDifference(int length, NeumaierAccumulator sumdiff)

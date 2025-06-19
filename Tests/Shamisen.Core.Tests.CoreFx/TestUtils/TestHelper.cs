@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
@@ -36,7 +36,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             var t = Task.Run(action, tsFail.Token);
             t.ConfigureAwait(false);
             tsFail.CancelAfter(timeout);
-            Assert.DoesNotThrow(() => t.Wait(), $"Timeout({timeout}) exceeded.");
+            Assert.DoesNotThrow(t.Wait, $"Timeout({timeout}) exceeded.");
         }
 
         public static DataCache<byte> GetDataCacheFromResource(string name)
@@ -169,7 +169,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
         public static void AssertArrays(ReadOnlySpan<ComplexF> exp, ReadOnlySpan<ComplexF> dst)
         {
             NeumaierAccumulator sumdiff = default;
-            Assert.AreEqual(exp.Length, dst.Length);
+            Assert.That(dst.Length, Is.EqualTo(exp.Length));
             for (var i = 0; i < dst.Length; i++)
             {
                 Complex opt = dst[i];
@@ -185,12 +185,12 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / dst.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.AreEqual(0.0, sumdiff.Sum);
+            Assert.That(sumdiff.Sum, Is.EqualTo(0.0));
         }
         public static void AssertArrays(ReadOnlySpan<Complex> exp, ReadOnlySpan<Complex> dst)
         {
             NeumaierAccumulator sumdiff = default;
-            Assert.AreEqual(exp.Length, dst.Length);
+            Assert.That(dst.Length, Is.EqualTo(exp.Length));
             for (var i = 0; i < dst.Length; i++)
             {
                 var opt = dst[i];
@@ -206,13 +206,13 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             var avgDiff = sumdiff.Sum / dst.Length;
             Console.WriteLine($"Average difference: {avgDiff}");
-            Assert.AreEqual(0.0, sumdiff.Sum);
+            Assert.That(sumdiff.Sum, Is.EqualTo(0.0));
         }
         public static void AssertArrays(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
         {
             delta = Math.Abs(delta);
             NeumaierAccumulator sumdiff = default;
-            Assert.AreEqual(exp.Length, dst.Length);
+            Assert.That(dst.Length, Is.EqualTo(exp.Length));
             var maxdiff = 0.0;
             for (var i = 0; i < dst.Length; i++)
             {
@@ -231,12 +231,12 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
             Console.WriteLine($"Total difference: {sumdiff.Sum}");
             Console.WriteLine($"Average difference: {avgDiff}");
             Console.WriteLine($"Maximum difference: {maxdiff}");
-            Assert.AreEqual(0.0, maxdiff, delta);
+            Assert.That(maxdiff, Is.EqualTo(0.0).Within(delta));
         }
 
         public static void AssertArraysRelative(ReadOnlySpan<float> exp, ReadOnlySpan<float> dst, double delta = 0.0)
         {
-            Assert.AreEqual(exp.Length, dst.Length);
+            Assert.That(dst.Length, Is.EqualTo(exp.Length));
             var maxdiff = 0.0;
             for (var i = 0; i < dst.Length; i++)
             {
@@ -252,7 +252,7 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
                 maxdiff = Math.Max(maxdiff, adiff);
             }
             Console.WriteLine($"Maximum Relative Difference: {maxdiff}");
-            Assert.AreEqual(0, maxdiff, delta);
+            Assert.That(maxdiff, Is.EqualTo(0).Within(delta));
         }
 
         public static void AreEqual<T>(Span<T> expected, Span<T> actual) => AreEqual((ReadOnlySpan<T>)expected, (ReadOnlySpan<T>)actual);
@@ -261,14 +261,14 @@ namespace Shamisen.Core.Tests.CoreFx.TestUtils
 
         public static void AreEqual<T>(ReadOnlySpan<T> expected, ReadOnlySpan<T> actual)
         {
-            Assert.AreEqual(expected.Length, actual.Length);
+            Assert.That(actual.Length, Is.EqualTo(expected.Length));
             if (AreEqual(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(expected)), ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(actual)),
                 checked((nuint)expected.Length * (nuint)Unsafe.SizeOf<T>())))
             {
                 Assert.Pass();
                 return;
             }
-            Assert.AreEqual(expected.ToArray(), actual.ToArray());
+            Assert.That(actual.ToArray(), Is.EqualTo(expected.ToArray()));
         }
 
         private static bool AreEqual(ref byte expected, ref byte actual, nuint length)
