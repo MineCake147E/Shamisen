@@ -1,9 +1,6 @@
 # Contributing [Shamisen](https://github.com/MineCake147E/Shamisen/)
 
 ## Issues
-- The Issues should be described in English or Japanese.
-  - When an issue is written in Japanese, the owner can translate it in order to discuss in English.
-  - When an issue is written in another language, the owner **MUST** close it as invalid one.
 ### Found Bugs
 - Write some minimal representation code first.
 - Create a new Issue with [Bug Report](https://github.com/MineCake147E/Shamisen/issues/new?assignees=&labels=&template=bug_report.md&title=) Template
