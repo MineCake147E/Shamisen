@@ -52,6 +52,16 @@
         <member name="P:Shamisen.IO.WinRt.AudioGraphOutput.Source">
             <inheritdoc/>
         </member>
+        <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.CreateLowestLatencyAudioGraphOutputAsync(Shamisen.IWaveSource,Windows.Media.Render.AudioRenderCategory)">
+            <summary>
+            Creates the audio graph output.<br/>
+            IMPORTANT: Only 32-bit IEEEFloat format is supported!
+            </summary>
+            <param name="source">The source.</param>
+            <param name="category">The <see cref="T:Windows.Media.Render.AudioRenderCategory"/>.</param>
+            <returns></returns>
+            <exception cref="T:System.Exception">AudioGraph creation error</exception>
+        </member>
         <member name="M:Shamisen.IO.WinRt.AudioGraphOutput.CreateAudioGraphOutputAsync(Shamisen.IWaveSource,Windows.Media.Render.AudioRenderCategory)">
             <summary>
             Creates the audio graph output.<br/>

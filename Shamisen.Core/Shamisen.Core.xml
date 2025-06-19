@@ -13027,6 +13027,48 @@
             Contains <see cref="T:System.Math"/>-like functions for <see cref="T:System.Numerics.Vector`1"/> and its close relatives.
             </summary>
         </member>
+        <member name="T:Shamisen.Utils.Pointer`1">
+            <summary>
+            Wraps the <typeparamref name="T"/>* pointer.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Shamisen.Utils.Pointer`1.#ctor(`0*)">
+            <summary>
+            Wraps the <typeparamref name="T"/>* pointer.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Shamisen.Utils.Pointer`1.Raw">
+            <summary>
+            Gets the raw pointer to the <typeparamref name="T"/> type.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Pointer`1.op_Implicit(`0*)~Shamisen.Utils.Pointer{`0}">
+            <summary>
+            Performs an implicit conversion from <typeparamref name="T"/>* to <see cref="T:Shamisen.Utils.Pointer`1"/>.
+            </summary>
+            <param name="value">The value to convert.</param>
+        </member>
+        <member name="M:Shamisen.Utils.Pointer`1.op_Implicit(Shamisen.Utils.Pointer{`0})~`0*">
+            <summary>
+            Performs an implicit conversion from <see cref="T:Shamisen.Utils.Pointer`1"/> to <typeparamref name="T"/>*.
+            </summary>
+            <param name="value">The value to convert.</param>
+        </member>
+        <member name="T:Shamisen.Utils.Pointer">
+            <summary>
+            Utility class for creating <see cref="T:Shamisen.Utils.Pointer`1"/> instances.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Utils.Pointer.Create``1(``0*)">
+            <summary>
+            Wraps the <typeparamref name="T"/>* pointer value.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
         <member name="T:Shamisen.Utils.ReadOnceObjectContainer`1">
             <summary>
             Prevents the stored <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> from being read after the <see cref="P:Shamisen.Utils.ReadOnceObjectContainer`1.Value"/> has been read for the first time.

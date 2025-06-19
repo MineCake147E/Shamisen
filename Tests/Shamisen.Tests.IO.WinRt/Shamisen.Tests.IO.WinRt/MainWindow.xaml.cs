@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,11 +49,12 @@ namespace Shamisen.Tests.IO.WinRt
 
         private async void Window_ActivatedAsync(object sender, WindowActivatedEventArgs args)
         {
-            var source = new SinusoidSource(new(2, 192000))
+            var source = new SquareWaveSource(new(2, 192000))
             {
-                Frequency = 436.0
+                Frequency = 0,
+                Theta = Fixed64.Epsilon
             };
-            output = await AudioGraphOutput.CreateAudioGraphOutputAsync(new SampleToFloat32Converter(source), AudioRenderCategory.GameMedia);
+            output = await AudioGraphOutput.CreateLowestLatencyAudioGraphOutputAsync(new SampleToFloat32Converter(source), AudioRenderCategory.GameEffects);
             var prop = new AudioGraphSettings(AudioRenderCategory.Media)
             {
                 EncodingProperties = new()
