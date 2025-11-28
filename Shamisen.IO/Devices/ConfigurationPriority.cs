@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +14,10 @@ namespace Shamisen.IO.Devices
     /// </summary>
     public enum ConfigurationPropertyPriority
     {
+        /// <summary>
+        /// The value is not set.
+        /// </summary>
+        Unset,
         /// <summary>
         /// If the value is set, the initializer should set the property exactly to the specified value, but can ignore the setting if it's impossible to obey.
         /// </summary>

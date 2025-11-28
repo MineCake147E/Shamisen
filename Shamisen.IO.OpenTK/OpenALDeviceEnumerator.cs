@@ -1,53 +1,64 @@
-﻿using OpenTK.Audio.OpenAL;
+using OpenTK.Audio.OpenAL;
+using OpenTK.Audio.OpenAL.ALC;
 
-namespace Shamisen.IO
+using StringName = OpenTK.Audio.OpenAL.ALC.StringName;
+
+namespace Shamisen.IO.OpenTK.OpenAL
 {
     /// <summary>
     /// Enumerates the AL devices.
     /// </summary>
-    public sealed class OpenALDeviceEnumerator : IAudioOutputDeviceEnumerator<OpenALDevice, OpenALOutput, OpenALOutputConfiguration, OpenALOutputConfigurationBuilder>
+    public sealed class OpenALCDeviceEnumerator : IAudioOutputDeviceEnumerator<OpenALOutputDevice, OpenALOutput, OpenALOutputConfiguration, OpenALOutputConfigurationBuilder>
     {
         /// <summary>
         /// The instance
         /// </summary>
-        public static readonly OpenALDeviceEnumerator Instance = new(false);
+        public static readonly OpenALCDeviceEnumerator Instance = new(false);
 
-        private OpenALDeviceEnumerator(bool q)
+        private OpenALCDeviceEnumerator(bool q)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenALDeviceEnumerator"/> class.<br/>
+        /// Initializes a new instance of the <see cref="OpenALCDeviceEnumerator"/> class.<br/>
         /// Obsolete: Use <see cref="Instance"/> instead.
         /// </summary>
         [Obsolete("Use Instance instead.")]
-        public OpenALDeviceEnumerator()
+        public OpenALCDeviceEnumerator()
         {
         }
 
         /// <inheritdoc/>
-        public IEnumerable<OpenALDevice> EnumerateDevices()
+        public IEnumerable<OpenALOutputDevice> EnumerateDevices()
         {
             var flag = false;
-            if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATE_ALL_EXT"))
+            var list = new List<string>();
+            if (ALC.IsExtensionPresent(ALCDevice.Null, "ALC_ENUMERATE_ALL_EXT"))
             {
                 flag |= true;
-                foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier))
+                unsafe
                 {
-                    yield return new OpenALDevice(item);
+                    OpenALUtils.FromALStringList(ALC.GetString_(ALCDevice.Null, StringName.AllDevicesSpecifier), list);
                 }
             }
-            if (ALC.IsExtensionPresent(ALDevice.Null, "ALC_ENUMERATION_EXT"))
+            if (ALC.IsExtensionPresent(ALCDevice.Null, "ALC_ENUMERATION_EXT"))
             {
                 flag |= true;
-                foreach (var item in ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier))
+                unsafe
                 {
-                    yield return new OpenALDevice(item);
+                    OpenALUtils.FromALStringList(ALC.GetString_(ALCDevice.Null, StringName.DeviceSpecifier), list);
+                }
+            }
+            foreach (var item in list)
+            {
+                if (OpenALOutputDevice.TryCreateDevice(item, out var device))
+                {
+                    yield return device;
                 }
             }
             if (!flag) throw new NotSupportedException($"Device Enumeration is not supported on this device!");
         }
         /// <inheritdoc/>
-        public IAsyncEnumerable<OpenALDevice> EnumerateDevicesAsync() => (IAsyncEnumerable<OpenALDevice>)EnumerateDevices();
+        public IAsyncEnumerable<OpenALOutputDevice> EnumerateDevicesAsync() => (IAsyncEnumerable<OpenALOutputDevice>)EnumerateDevices();
     }
 }

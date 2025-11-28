@@ -11,7 +11,6 @@
     <UseWinUI>true</UseWinUI>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
-  <Import Project="..\..\..\TargetFrameworks.targets" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231008000" />

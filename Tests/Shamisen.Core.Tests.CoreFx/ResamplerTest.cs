@@ -2,7 +2,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 //using CSCodec.Filters.Transformation;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -12,12 +11,9 @@ using FastEnumUtility;
 
 using NUnit.Framework;
 
-using Shamisen.Codecs.Waveform.Composing;
 using Shamisen.Conversion.Resampling.Sample;
-using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Core.Tests.CoreFx.TestUtils;
 using Shamisen.Data;
-using Shamisen.Filters;
 using Shamisen.Filters.Buffering;
 using Shamisen.Optimization;
 using Shamisen.Synthesis;
@@ -187,7 +183,7 @@ namespace Shamisen.Core.Tests.CoreFx
             {
                 float[] bufferStereo = new float[bufferNoIntrinsics.Length * 2];
                 //Even channels contain bufferNoIntrinsics, and odd channels contain bufferIntrinsics
-                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics), MemoryMarshal.Cast<float, int>(bufferIntrinsics));
+                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo.AsSpan()), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics.AsSpan()), MemoryMarshal.Cast<float, int>(bufferIntrinsics.AsSpan()));
                 using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
                 dc.Write(bufferStereo);
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");
@@ -210,7 +206,7 @@ namespace Shamisen.Core.Tests.CoreFx
             {
                 float[] bufferStereo = new float[bufferNoIntrinsics.Length * 2];
                 //Even channels contain bufferNoIntrinsics, and odd channels contain bufferIntrinsics
-                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics), MemoryMarshal.Cast<float, int>(bufferIntrinsics));
+                AudioUtils.InterleaveStereo(MemoryMarshal.Cast<float, int>(bufferStereo.AsSpan()), MemoryMarshal.Cast<float, int>(bufferNoIntrinsics.AsSpan()), MemoryMarshal.Cast<float, int>(bufferIntrinsics.AsSpan()));
                 using var dc = new AudioCache<float, SampleFormat>(new SampleFormat(filterNoIntrinsics.Format.Channels * 2, filterNoIntrinsics.Format.SampleRate));
                 dc.Write(bufferStereo);
                 TestHelper.DumpSamples(dc, $"CheckIntrinsicsConsistencyDifferenceDump_{channels}ch_{sourceSampleRate}to{destinationSampleRate}_{x86Intrinsics}_{armIntrinsics}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_fffffff}");

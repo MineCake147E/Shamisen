@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
-        <RootNamespace>Shamisen.IO</RootNamespace>
+        <RootNamespace>Shamisen.IO.OpenTK.OpenAL</RootNamespace>
         <Nullable>enable</Nullable>
         <Description>OpenTK OpenAL output for Shamisen.</Description>
         <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
@@ -27,7 +27,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTK" Version="5.0.0-pre.10" />
+        <PackageReference Include="OpenTK" Version="5.0.0-pre.15" />
     </ItemGroup>
 
     <ItemGroup>

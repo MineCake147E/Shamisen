@@ -1,4 +1,4 @@
-﻿#define DEBUG_MATHI_NON_USER_CODE
+#define DEBUG_MATHI_NON_USER_CODE
 
 using System;
 using System.Runtime.CompilerServices;
@@ -266,7 +266,7 @@ namespace Shamisen
         public static int Max(int val1, int val2)
         {
             var g = val1 < val2;
-            int y = Unsafe.As<bool, byte>(ref g);
+            int y = Unsafe.BitCast<bool, byte>(g);
             y = -y;
             var r = y & val2;
             var q = AndNot(y, val1);
@@ -2166,7 +2166,9 @@ namespace Shamisen
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #pragma warning disable RCS1233 // Use short-circuiting operator.
+#pragma warning disable S2178 // Short-circuit logic should be used in boolean contexts
         public static bool IsPowerOfTwo(uint i) => i != 0 & (i & (i - 1)) == 0;
+#pragma warning restore S2178 // Short-circuit logic should be used in boolean contexts
 #pragma warning restore RCS1233 // Use short-circuiting operator.
 
         /// <summary>
@@ -2178,7 +2180,9 @@ namespace Shamisen
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #pragma warning disable RCS1233 // Use short-circuiting operator.
+#pragma warning disable S2178 // Short-circuit logic should be used in boolean contexts
         public static bool IsPowerOfTwo(int i) => i != 0 & (i & (i - 1)) == 0;
+#pragma warning restore S2178 // Short-circuit logic should be used in boolean contexts
 #pragma warning restore RCS1233 // Use short-circuiting operator.
 
         #endregion IsPowerOfTwo

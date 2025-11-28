@@ -1,15 +1,18 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ output extension=".cs" #>
+﻿<#@ template debug="false" hostspecific="false" language="C#"#>
+<#@ assembly name="System.Core"#>
+<#@ import namespace="System.Linq"#>
+<#@ import namespace="System.Text"#>
+<#@ import namespace="System.Collections.Generic"#>
+<#@ output extension=".cs"#>
 <#
     var c = Enumerable.Range(1, 32);
     var intrinsicsArmed = Enumerable.Range(2, 31).ToHashSet();
     var intrinsicsArmedWide = Enumerable.Range(2, 31).ToHashSet();
-    var enregisterPrevious = new HashSet<int>(){1};
-    var enregisterCoeffs = new HashSet<int>(){1, 2, 3, 4, 5, 6, 7, 8};
+    List<string> intrinsicsNames = ["X86"];
+    var enregisterPrevious = new HashSet<int>()
+    {1};
+    var enregisterCoeffs = new HashSet<int>()
+    {1, 2, 3, 4, 5, 6, 7, 8};
     var names = c.Select(f=>(Order: f, intrinsicsArmed:intrinsicsArmed.Contains(f), enregisterPrevious: enregisterPrevious.Contains(f), intrinsicsArmedWide: intrinsicsArmedWide.Contains(f),
     enregisterCoeffs: enregisterCoeffs.Contains(f)));
     const string Suffix = "Standard";
@@ -67,149 +70,213 @@ namespace Shamisen.Codecs.Flac.SubFrames
     public sealed partial class FlacLinearPredictionSubFrame
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignalDefault(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+<#  foreach (var item in intrinsicsNames)
+    {#>
+            if (<#=item#>.IsSupported)
+            {
+                <#=item#>.RestoreSignal(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
+                return;
+            }   
+<#  }#>
+            RestoreSignalStandard(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
+        }
+        
+        // Benchmark purpose only
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static unsafe void RestoreSignalDefaultWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+            if (coeffs.Length < 2)
+            {
+                RestoreSignal64<#=Suffix#>Order1(shiftsNeeded, residual, coeffs, output);
+                return;
+            }
+<#  foreach (var item in intrinsicsNames)
+    {#>
+            if (<#=item#>.IsSupported)
+            {
+                <#=item#>.RestoreSignalWide(shiftsNeeded, residual, coeffs, output);
+                return;
+            }
+<#  }#>
+            RestoreSignal64Standard(shiftsNeeded, residual, coeffs, output);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static unsafe void RestoreSignalStandard(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+            if (accumulatorBitsRequired <= Unsafe.SizeOf<nint>() * 8)
+            {
+                RestoreSignalNativeStandard(shiftsNeeded, residual, coeffs, output);
+            }
+            else
+            {
+                RestoreSignal64Standard(shiftsNeeded, residual, coeffs, output);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static unsafe void RestoreSignalNativeStandard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             var order = coeffs.Length;
             switch (order)
             {
-<#    foreach(var item in names){#>
-                case <#=            item.Order#>:
-<#        if(item.intrinsicsArmed){ #>
-                    if(<#=                $"RestoreSignalOrder{item.Order}Intrinsic"#>(shiftsNeeded, residual, coeffs, output)) return;
-<#        } #>
-                    <#=            $"RestoreSignalOrder{item.Order}{Suffix}"#>(shiftsNeeded, residual, coeffs, output);
+<#  foreach (var item in names)
+    {#>
+                case <#=item.Order#>:
+                    <#=$"RestoreSignalNative{Suffix}Order{item.Order}"#>(shiftsNeeded, residual, coeffs, output);
                     return;
-<#    }#>
+<#  }#>
                 default:
                     throw new FlacException("Invalid FLAC stream!");
             }
         }
 
-<#    foreach(var item in names){#>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal64Standard(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
-            const int Order = <#=            item.Order#>;
-            if(coeffs.Length < Order) return;
-            _ = coeffs[Order - 1];
-<#        if(item.enregisterPrevious){
-            for(int i = 0; i < item.Order; i++){
-                Write($"\t\t\tvar prev{i} = output[{i}];\r\n");
+            var order = coeffs.Length;
+            switch (order)
+            {
+<#  foreach (var item in names)
+    {#>
+                case <#=item.Order#>:
+                    <#=$"RestoreSignal64{Suffix}Order{item.Order}"#>(shiftsNeeded, residual, coeffs, output);
+                    return;
+<#  }#>
+                default:
+                    throw new FlacException("Invalid FLAC stream!");
             }
         }
-        if(item.enregisterCoeffs){
-            for(int i = 0; i < item.Order; i++){
-                Write($"\t\t\tvar coeff{i} = coeffs[{i}];\r\n");
+
+<#  foreach (var item in names)
+    {#>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static unsafe void <#=$"RestoreSignalNative{Suffix}Order{item.Order}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        {
+            const int Order = <#=item.Order#>;
+            if (coeffs.Length < Order) return;
+            _ = coeffs[Order - 1];
+<#      if (item.enregisterPrevious)
+        {
+            for (int i = 0; i < item.Order; i++)
+            {#>
+            nint prev<#=i#> = output[<#=i#>];
+<#
+            }
+        }
+        if (item.enregisterCoeffs)
+        {
+            for (int i = 0; i < item.Order; i++)
+            {#>
+            nint coeff<#=i#> = coeffs[<#=i#>];
+<#
             }
         }
         else
         {#>
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-<#        }
+<#      }
 #>
-            int sum;
+            nint sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
             ref var r = ref MemoryMarshal.GetReference(residual);
-            for(int i = 0; i < dataLength; i++)
+            for (int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-<#        if(item.enregisterPrevious){
-            for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - i - 1};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
-            }
-            Write($"\t\t\t\tsum += coeff0 * prev{item.Order - 1};\r\n");
-        }
-        else if(item.enregisterCoeffs)
+<#      if (item.enregisterPrevious)
         {
-            for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += coeff{i} * Unsafe.Add(ref o, i + {item.Order - 1 - i});\r\n");
-            }
-            Write($"\t\t\t\tsum += coeff0 * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
+            for (int i = item.Order - 1; i > 0; i--)
+            {#>
+                sum += coeff<#=i#> * prev<#=item.Order - i - 1#>;
+                prev<#=item.Order - i - 1#> = prev<#=item.Order - i#>;
+<#          }#>
+                sum += coeff0 * prev<#=item.Order - 1#>;
+<#      }
+        else if (item.enregisterCoeffs)
+        {
+            for (int i = item.Order - 1; i >= 0; i--)
+            {#>
+                sum += coeff<#=i#> * Unsafe.Add(ref o, i + <#=item.Order - i - 1#>);
+<#          }
         }
         else
         {
-            for(int i = item.Order - 1; i > 0; i--){
-                Write($"\t\t\t\tsum += Unsafe.Add(ref c, {i}) * Unsafe.Add(ref o, i + {item.Order - i - 1});\r\n");
-            }
-            Write($"\t\t\t\tsum += c * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
+            for (int i = item.Order - 1; i >= 0; i--)
+            {#>
+                sum += (nint)Unsafe.Add(ref c, <#=i#>) * Unsafe.Add(ref o, i + <#=item.Order - i - 1#>);
+<#          }
         }
 #>
                 sum >>= shiftsNeeded;
                 sum += Unsafe.Add(ref r, i);
-                Unsafe.Add(ref d, i) = sum;
-<#        if(item.enregisterPrevious){#>
-                prev<#=                item.Order - 1 #> = sum;
-<#        }#>
+                Unsafe.Add(ref d, i) = (int)sum;
+<#      if (item.enregisterPrevious)
+        {#>
+                prev<#=item.Order - 1#> = sum;
+<#      }#>
             }
         }
-<#    } #>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignalStandardWide(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
-        {
-            var order = coeffs.Length;
-            switch (order)
-            {
-<#    foreach(var item in names){#>
-                case <#=            item.Order#>:
-<#        if(item.intrinsicsArmedWide){ #>
-                    if(<#=                $"RestoreSignalOrder{item.Order}WideIntrinsic"#>(shiftsNeeded, residual, coeffs, output)) return;
-<#        } #>
-                    <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(shiftsNeeded, residual, coeffs, output);
-                    return;
-<#    }#>
-                default:
-                    throw new FlacException("Invalid FLAC stream!");
-            }
-        }
+<#  }#>
 
-<#    foreach(var item in names){#>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void <#=            $"RestoreSignalOrder{item.Order}Wide{Suffix}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+<#  foreach (var item in names)
+    {#>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static unsafe void <#=$"RestoreSignal64{Suffix}Order{item.Order}"#>(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
-            const int Order = <#=            item.Order#>;
-            if(coeffs.Length < Order) return;
+            const int Order = <#=item.Order#>;
+            if (coeffs.Length < Order) return;
             _ = coeffs[Order - 1];
-<#        if(item.enregisterPrevious){
-            for(int i = 0; i < item.Order; i++){
+<#      if (item.enregisterPrevious)
+        {
+            for (int i = 0; i < item.Order; i++)
+            {
                 Write($"\t\t\tvar prev{i} = output[{i}];\r\n");
             }
         }
-        if(item.enregisterCoeffs){
-            for(int i = 0; i < item.Order; i++){
+        if (item.enregisterCoeffs)
+        {
+            for (int i = 0; i < item.Order; i++)
+            {
                 Write($"\t\t\tlong coeff{i} = coeffs[{i}];\r\n");
             }
         }
         else
         {#>
             ref var c = ref MemoryMarshal.GetReference(coeffs);
-<#        }
+<#      }
 #>
             long sum;
             ref var o = ref MemoryMarshal.GetReference(output);
             ref var d = ref Unsafe.Add(ref o, Order);
             int dataLength = output.Length - Order;
             ref var r = ref MemoryMarshal.GetReference(residual);
-            for(int i = 0; i < dataLength; i++)
+            for (int i = 0; i < dataLength; i++)
             {
                 sum = 0;
-<#        if(item.enregisterPrevious){
-            for(int i = item.Order - 1; i > 0; i--){
+<#      if (item.enregisterPrevious)
+        {
+            for (int i = item.Order - 1; i > 0; i--)
+            {
                 Write($"\t\t\t\tsum += coeff{i} * prev{item.Order - i - 1};\r\n\t\t\t\tprev{item.Order - 1 - i} = prev{item.Order - i};\r\n");
             }
             Write($"\t\t\t\tsum += coeff0 * prev{item.Order - 1};\r\n");
         }
-        else if(item.enregisterCoeffs)
+        else if (item.enregisterCoeffs)
         {
-            for(int i = item.Order - 1; i > 0; i--){
+            for (int i = item.Order - 1; i > 0; i--)
+            {
                 Write($"\t\t\t\tsum += coeff{i} * Unsafe.Add(ref o, i + {item.Order - 1 - i});\r\n");
             }
             Write($"\t\t\t\tsum += coeff0 * Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
         }
         else
         {
-            for(int i = item.Order - 1; i > 0; i--){
+            for (int i = item.Order - 1; i > 0; i--)
+            {
                 Write($"\t\t\t\tsum += Unsafe.Add(ref c, {i}) * (long)Unsafe.Add(ref o, i + {item.Order - i - 1});\r\n");
             }
             Write($"\t\t\t\tsum += c * (long)Unsafe.Add(ref o, i + {item.Order - 1});\r\n");
@@ -218,11 +285,12 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 sum >>= shiftsNeeded;
                 sum += Unsafe.Add(ref r, i);
                 Unsafe.Add(ref d, i) = (int)sum;
-<#        if(item.enregisterPrevious){#>
-                prev<#=                item.Order - 1 #> = (int)sum;
-<#        }#>
+<#      if (item.enregisterPrevious)
+        {#>
+                prev<#=item.Order - 1#> = (int)sum;
+<#      }#>
             }
         }
-<#    } #>
+<#  }#>
     }
 }

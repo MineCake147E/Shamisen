@@ -19,6 +19,7 @@ using Shamisen.Filters;
 using Shamisen.Filters.Mixing;
 using Shamisen.IO;
 using Shamisen.IO.Devices;
+using Shamisen.IO.OpenTK.OpenAL;
 using Shamisen.Synthesis;
 
 using ReactiveCommand = ReactiveUI.ReactiveCommand;

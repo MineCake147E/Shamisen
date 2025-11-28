@@ -1,15 +1,23 @@
 using System;
+using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 using OpenTK.Audio.OpenAL;
+using OpenTK.Audio.OpenAL.ALC;
 
-namespace Shamisen.IO
+using ALCContextAttribute = OpenTK.Audio.OpenAL.ALC.ContextAttribute;
+using ALAll = OpenTK.Audio.OpenAL.All;
+using ALErrorCode = OpenTK.Audio.OpenAL.ErrorCode;
+using ALStringName = OpenTK.Audio.OpenAL.StringName;
+
+namespace Shamisen.IO.OpenTK.OpenAL
 {
     /// <summary>
-    /// Provides an <see cref="AL"/> output.
+    /// Provides a simple <see cref="AL"/> output.
     /// </summary>
     public sealed partial class OpenALOutput : ISoundOut
     {
@@ -28,14 +36,16 @@ namespace Shamisen.IO
         private CancellationTokenSource? cancellationTokenSource;
         private bool bufferCreationNeeded = true;
         private byte[]? inbuf;
-        private ALFormat format;
-        private ALContext contextHandle;
+        private Format format;
+        private ALCContext contextHandle;
         private bool disposedValue = false;
         private ManualResetEventSlim fillFlag = new(false);
         private Task? fillTask;
-        private ALDevice device;
+        private ALCDevice device;
         private IWaveFormat? sourceFormat;
         private volatile bool running = false;
+        private Dictionary<string, bool> ExtensionCache { get; } = new();
+
         private IWaveSource? Source { get; set; }
 
         /// <summary>
@@ -78,37 +88,36 @@ namespace Shamisen.IO
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="latency">The latency.</param>
-        public OpenALOutput(OpenALDevice device, TimeSpan latency) : this(device.Name, latency) { }
+        public OpenALOutput(OpenALOutputDevice device, TimeSpan latency) : this(device.Name, latency) { }
 
         private OpenALOutput(string name, TimeSpan latency)
         {
             device = ALC.OpenDevice(name);
+            if (device == ALCDevice.Null) throw new ArgumentException($"The device {name} is not found!", nameof(name));
             unsafe
             {
                 contextHandle = ALC.CreateContext(device, (int*)null);
             }
-            ALC.GetInteger(device, AlcGetInteger.AttributesSize, 1, out var asize);
-            var attr = new int[asize];
-            ALC.GetInteger(device, AlcGetInteger.AllAttributes, asize, attr);
-            var sAttr = MemoryMarshal.Cast<int, (AlcContextAttributes Key, int Value)>(attr.AsSpan());
-            var sampleRate = int.MinValue;
-            foreach (var (Key, Value) in sAttr)
+            int sampleRate = -1;
+            var sAttr = OpenALContextManager.GetContextAttributes(device);
+            foreach (var entry in sAttr)
             {
-                switch (Key)
+                switch (entry.Key)
                 {
-                    case AlcContextAttributes.Frequency:
-                        sampleRate = MathI.Max(sampleRate, Value);
+                    case ALCContextAttribute.Frequency:
+                        sampleRate = MathI.Max(sampleRate, entry.Value);
                         break;
                     default:
                         continue;
                 }
                 break;
             }
+            sAttr.Clear();
             if (sampleRate < 0) throw new ArgumentException($"The device {name} is not supported!", nameof(name));
             Console.WriteLine($"SampleRate:{sampleRate}");
             Latency = latency * ReciprocalNumberOfBuffers;
             Latency = Latency.TotalMilliseconds < MinLengthInMilliseconds ? TimeSpan.FromMilliseconds(MinLengthInMilliseconds) : Latency;
-            bufferPointers = AL.GenBuffers(NumberOfBuffers); CheckErrors();
+            bufferPointers = [];
 #if DEBUG
             var version = AL.Get(ALGetString.Version); CheckErrors();
             var vendor = AL.Get(ALGetString.Vendor); CheckErrors();
@@ -133,17 +142,25 @@ namespace Shamisen.IO
             PlaybackState = PlaybackState.Stopped;
         }
 
-        private static ALFormat GetALFormat(IWaveFormat wf)
+        private bool IsExtensionPresent(string name)
+        {
+            if (ExtensionCache.TryGetValue(name, out var val)) return val;
+            var res = AL.IsExtensionPresent(name);
+            ExtensionCache[name] = res;
+            return res;
+        }
+
+        private Format GetALFormat(IWaveFormat wf)
             => (wf.Channels, wf.Encoding, wf.BitDepth) switch
             {
-                (1, AudioEncoding.LinearPcm, 8) => ALFormat.Mono8,
-                (1, AudioEncoding.LinearPcm, 16) => ALFormat.Mono16,
-                (2, AudioEncoding.LinearPcm, 8) => ALFormat.Stereo8,
-                (2, AudioEncoding.LinearPcm, 16) => ALFormat.Stereo16,
-                (1, AudioEncoding.IeeeFloat, 32) when AL.IsExtensionPresent("AL_FORMAT_MONO_FLOAT32") => ALFormat.MonoFloat32Ext,
-                (1, AudioEncoding.IeeeFloat, 64) when AL.IsExtensionPresent("AL_FORMAT_MONO_DOUBLE_EXT") => ALFormat.MonoDoubleExt,
-                (2, AudioEncoding.IeeeFloat, 32) when AL.IsExtensionPresent("AL_FORMAT_STEREO_FLOAT32") => ALFormat.StereoFloat32Ext,
-                (2, AudioEncoding.IeeeFloat, 64) when AL.IsExtensionPresent("AL_FORMAT_STEREO_DOUBLE_EXT") => ALFormat.StereoDoubleExt,
+                (1, AudioEncoding.LinearPcm, 8) => Format.FormatMono8,
+                (1, AudioEncoding.LinearPcm, 16) => Format.FormatMono16,
+                (2, AudioEncoding.LinearPcm, 8) => Format.FormatStereo8,
+                (2, AudioEncoding.LinearPcm, 16) => Format.FormatStereo16,
+                (1, AudioEncoding.IeeeFloat, 32) when IsExtensionPresent("AL_FORMAT_MONO_FLOAT32") => Format.FormatMonoFloat32,
+                (1, AudioEncoding.IeeeFloat, 64) when IsExtensionPresent("AL_FORMAT_MONO_DOUBLE_EXT") => Format.FormatMonoDoubleExt,
+                (2, AudioEncoding.IeeeFloat, 32) when IsExtensionPresent("AL_FORMAT_STEREO_FLOAT32") => Format.FormatStereoFloat32,
+                (2, AudioEncoding.IeeeFloat, 64) when IsExtensionPresent("AL_FORMAT_STEREO_DOUBLE_EXT") => Format.FormatStereoDoubleExt,
                 _ => throw new ArgumentException($"The format '{wf}' is not supported."),
             };
 
@@ -151,22 +168,20 @@ namespace Shamisen.IO
         private void CheckErrors()
         {
             var error = AL.GetError();
-            if (error != ALError.NoError)
-            {
-                throw new InvalidOperationException($"{nameof(OpenALOutput)} detected an error occurred on OpenAL:" + AL.GetErrorString(error));
-            }
+            if (error != ALErrorCode.NoError)
+                throw new InvalidOperationException($"{nameof(OpenALOutput)} detected an error occurred on OpenAL:" + AL.GetString((ALStringName)error));
         }
 
-        private static PlaybackState ConvertState(ALSourceState aLSourceState)
+        private static PlaybackState ConvertState(SourceState aLSourceState)
             => aLSourceState switch
             {
-                ALSourceState.Initial => PlaybackState.Playing,
+                SourceState.Initial => PlaybackState.Playing,
 
-                ALSourceState.Playing => PlaybackState.Playing,
+                SourceState.Playing => PlaybackState.Playing,
 
-                ALSourceState.Paused => PlaybackState.Paused,
+                SourceState.Paused => PlaybackState.Paused,
 
-                ALSourceState.Stopped => PlaybackState.Stopped,
+                SourceState.Stopped => PlaybackState.Stopped,
 
                 _ => PlaybackState.Stopped,
             };
@@ -178,32 +193,36 @@ namespace Shamisen.IO
             {
                 try
                 {
-                    if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers); CheckErrors(); }
+                    if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers.Length, bufferPointers); CheckErrors(); }
+                    if (bufferPointers is null || bufferPointers.Length < NumberOfBuffers)
+                    {
+                        bufferPointers = new int[NumberOfBuffers];
+                    }
                     if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
-                    bufferPointers = AL.GenBuffers(NumberOfBuffers); CheckErrors();
+                    AL.GenBuffers(bufferPointers.Length, bufferPointers); CheckErrors();
                     src = AL.GenSource(); CheckErrors();
                     var sf = sourceFormat ?? throw new NullReferenceException();
 
                     inbuf = new byte[sf.GetBufferSizeRequired(Latency)];
-                    format = OpenALDevice.ConvertToALFormat(sf);
+                    format = sf.ConvertToFormat();
                     foreach (var item in bufferPointers)
                     {
                         var cnt = Source.Read(inbuf.AsSpan());
-                        AL.BufferData<byte>(item, format, inbuf.AsSpan(0, cnt.Length), sf.SampleRate); CheckErrors();
-                    }
-                    if (AL.IsExtensionPresent("AL_SOFT_direct_channels_remix"))
-                    {
-                        AL.Source(src, (ALSourcei)0x1033, 2); CheckErrors();
-                    }
-                    else if (AL.IsExtensionPresent("AL_DIRECT_CHANNELS_SOFT"))
-                    {
-                        AL.Source(src, (ALSourcei)0x1033, 1); CheckErrors();
+                        AL.BufferData<byte>(item, format, inbuf.AsSpan(0, cnt.Length), cnt.Length, sf.SampleRate); CheckErrors();
                     }
 
-                    AL.Source(src, ALSourceb.SourceRelative, true); CheckErrors();
-                    AL.SourceQueueBuffers(src, NumberOfBuffers, bufferPointers); CheckErrors();
-                    AL.Source(src, ALSourcef.Gain, 1); CheckErrors();
-                    AL.Source(src, ALSource3f.Position, 0, 0, 0); CheckErrors();
+                    if (IsExtensionPresent("AL_SOFT_direct_channels_remix"))
+                    {
+                        AL.Sourcei(src, SourcePNameI.DirectChannelsSoft, 2); CheckErrors();
+                    }
+                    else if (IsExtensionPresent("AL_DIRECT_CHANNELS_SOFT"))
+                    {
+                        AL.Sourcei(src, SourcePNameI.DirectChannelsSoft, 1); CheckErrors();
+                    }
+                    AL.Sourcei(src, (SourcePNameI)(int)SourcePNameB.SourceRelative, (int)ALAll.True); CheckErrors();
+                    AL.SourceQueueBuffers(src, bufferPointers.Length, MemoryMarshal.Cast<int, uint>(bufferPointers)); CheckErrors();
+                    AL.Sourcef(src, SourcePNameF.Gain, 1); CheckErrors();
+                    AL.Source3f(src, SourcePName3F.Position, 0, 0, 0); CheckErrors();
                     AL.SourcePlay(src); CheckErrors();
                     PlaybackState = PlaybackState.Playing;
                 }
@@ -225,9 +244,9 @@ namespace Shamisen.IO
                     token.ThrowIfCancellationRequested();
                     using (_ = await OpenALContextManager.WaitForContextAsync(contextHandle))
                     {
-                        AL.GetSource(src, ALGetSourcei.BuffersProcessed, out bp); CheckErrors();
-                        _ = FillBuffer(bp);
-                        var alState = ConvertState((ALSourceState)AL.GetSource(src, ALGetSourcei.SourceState));
+                        AL.GetSourcei(src, SourceGetPNameI.BuffersProcessed, out bp); CheckErrors();
+                        _ = FillBuffer(bp, inbuf);
+                        var alState = ConvertState((SourceState)AL.GetSourcei(src, SourceGetPNameI.SourceState));
                         if (PlaybackState == PlaybackState.Playing && alState == PlaybackState.Stopped)
                         {
                             AL.SourcePlay(src); CheckErrors();
@@ -248,15 +267,16 @@ namespace Shamisen.IO
             }
         }
 
-        private int FillBuffer(int bp)
+        private int FillBuffer(int bp, Span<byte> span)
         {
             if (Source is null || sourceFormat is null) throw new Exception("");
             while (bp > 0)
             {
-                var buffer = AL.SourceUnqueueBuffer(src); CheckErrors();
-                AL.GetBuffer(buffer, ALGetBufferi.Size, out var size);
+                var buffer = 0;
+                AL.SourceUnqueueBuffers(src, 1, ref buffer); CheckErrors();
+                AL.GetBufferi(buffer, BufferGetPNameI.Size, out var size);
                 CheckErrors();
-                AL.GetBuffer(buffer, ALGetBufferi.Bits, out var bits);
+                AL.GetBufferi(buffer, BufferGetPNameI.Bits, out var bits);
                 CheckErrors();
                 if (bits == 0)
                 {
@@ -266,10 +286,10 @@ namespace Shamisen.IO
                 {
                     if (size > 0)
                     {
-                        var cnt = Source.Read(inbuf.AsSpan().Slice(0, size));
-                        AL.BufferData<byte>(buffer, format, inbuf.AsSpan(0, cnt.Length), sourceFormat.SampleRate); CheckErrors();
+                        var cnt = Source.Read(span);
+                        AL.BufferData<byte>(buffer, format, span.Slice(0, cnt.Length), cnt.Length, sourceFormat.SampleRate); CheckErrors();
                     }
-                    AL.SourceQueueBuffer(src, buffer); CheckErrors();
+                    AL.SourceQueueBuffers(src, 1, ref Unsafe.As<int, uint>(ref buffer)); CheckErrors();
                 }
                 bp--;
             }
@@ -284,7 +304,7 @@ namespace Shamisen.IO
         /// </summary>
         public void Pause()
         {
-            if (PlaybackState != PlaybackState.Playing) throw new InvalidOperationException("Cannot pause without playing!");
+            if (PlaybackState != PlaybackState.Playing) return;
             PlaybackState = PlaybackState.Paused;
             _ = Task.Run(async () => await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
                 {
@@ -302,27 +322,26 @@ namespace Shamisen.IO
         /// </exception>
         public void Play()
         {
-            if (PlaybackState == PlaybackState.Playing) return;
-            if (PlaybackState == PlaybackState.Paused)
+            switch (PlaybackState)
             {
-                Resume();
-            }
-            else
-            {
-                if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException("Cannot start playback without stopping or initializing!");
-                _ = Task.Run(async () =>
-                {
-                    running = true;
-                    await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
-                    {
-                        if (AL.IsSource(src)) AL.SourcePlay(src);
-                        PlaybackState = PlaybackState.Playing;
-                        fillFlag.Set();
-                        if (cancellationTokenSource is null) throw new InvalidOperationException();
-                        fillTask ??= Task.Run(async () => await FillBufferAsync(cancellationTokenSource.Token), cancellationTokenSource.Token);
-                        fillTask.ConfigureAwait(false);
-                    });
-                }).ConfigureAwait(false);
+                case PlaybackState.Playing:
+                    return;
+                case PlaybackState.Paused:
+                    Resume();
+                    break;
+                default:
+                    if (PlaybackState != PlaybackState.Stopped) throw new InvalidOperationException("Cannot start playback without stopping or initializing!");
+                    _ = Task.Run(async () => await OpenALContextManager.RunWithContextAsync(contextHandle, () =>
+                        {
+                            running = true;
+                            if (AL.IsSource(src)) AL.SourcePlay(src);
+                            PlaybackState = PlaybackState.Playing;
+                            fillFlag.Set();
+                            if (cancellationTokenSource is null) throw new InvalidOperationException();
+                            fillTask ??= Task.Run(async () => await FillBufferAsync(cancellationTokenSource.Token), cancellationTokenSource.Token);
+                            fillTask.ConfigureAwait(false);
+                        })).ConfigureAwait(false);
+                    break;
             }
         }
 
@@ -385,15 +404,11 @@ namespace Shamisen.IO
                     fillTask?.Dispose();
                 }
                 if (disposing)
-                {
                     Source?.Dispose();
-                }
 
-                if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers); CheckErrors(); }
+                if (bufferPointers != null) { AL.DeleteBuffers(bufferPointers.Length, bufferPointers); CheckErrors(); }
                 if (AL.IsSource(src)) { AL.DeleteSource(src); CheckErrors(); }
-                _ = ALC.CloseDevice(device);
                 ALC.DestroyContext(contextHandle);
-
                 disposedValue = true;
             }
         }

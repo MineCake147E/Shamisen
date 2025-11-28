@@ -7101,122 +7101,6 @@
             Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             </summary>
         </member>
-        <member name="T:Shamisen.IO.DataFlow">
-            <summary>
-            Represents a flow kind of audio data.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.None">
-            <summary>
-            Invalid.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.Render">
-            <summary>
-            Output.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.DataFlow.Capture">
-            <summary>
-            Input.
-            </summary>
-        </member>
-        <member name="T:Shamisen.IO.IPlaybackController">
-            <summary>
-            Defines a base infrastructure of playback controller.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Play">
-            <summary>
-            Starts the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Pause">
-            <summary>
-            Pauses the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Resume">
-            <summary>
-            Resumes the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IPlaybackController.Stop">
-            <summary>
-            Stops the audio playback.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IPlaybackController.PlaybackState">
-            <summary>
-            Gets the state of the playback.
-            </summary>
-            <value>
-            The state of the playback.
-            </value>
-        </member>
-        <member name="T:Shamisen.IO.IRecordingController">
-            <summary>
-            Defines a base infrastructure of a sound recording controller.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IRecordingController.Start">
-            <summary>
-            Starts recording.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.IRecordingController.Stop">
-            <summary>
-            Stops recording.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.IRecordingController.RecordingState">
-            <summary>
-            Gets the state of the recording.
-            </summary>
-            <value>
-            The state of the recording.
-            </value>
-        </member>
-        <member name="T:Shamisen.IO.PlaybackState">
-            <summary>
-            Represents a state of playback.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.NotInitialized">
-            <summary>
-            The output is not initialized
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Stopped">
-            <summary>
-            The playback is stopped.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Playing">
-            <summary>
-            The playback is running.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.PlaybackState.Paused">
-            <summary>
-            The playback is paused.
-            </summary>
-        </member>
-        <member name="T:Shamisen.IO.RecordingState">
-            <summary>
-            Represents a state of recording.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.RecordingState.Stopped">
-            <summary>
-            The recording is stopped.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.RecordingState.Recording">
-            <summary>
-            The recording is in progress.
-            </summary>
-        </member>
         <member name="T:Shamisen.IAudioSink`2">
             <summary>
             Defines a base infrastructure for writing audio data.
@@ -9914,6 +9798,81 @@
             The sources.
             </value>
         </member>
+        <member name="T:Shamisen.Filters.IMultipleSourceAudioTarget`3">
+            <summary>
+            Defines a base infrastructure of an audio source receiver that supports multiple audio sources.
+            Implementations might be something like mixers, spatial renderers, etc.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.TryAddSource(`0)">
+            <summary>
+            Tries to add a source.
+            It fails to add the source when the source's format is incompatible with the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>, or the source is already added.
+            </summary>
+            <param name="source">The source to add.</param>
+            <returns><see langword="true"/> if the source is successfully added to the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.TryAddSourceRange(System.ReadOnlySpan{`0})">
+            <summary>
+            Tries to add multiple sources at once.
+            It aborts adding sources when it encounters a source that cannot be added.
+            </summary>
+            <param name="sources">The sources to add.</param>
+            <returns>The number of sources that are successfully added to the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.TryAddSourceRange``1(``0)">
+            <summary>
+            Tries to add multiple sources at once.
+            </summary>
+            <param name="sources">The sources to add.</param>
+            <returns>The number of sources that are successfully added to the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.Contains(`0)">
+            <summary>
+            Determines whether an element is in the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>.
+            </summary>
+            <param name="source">The <typeparamref name="TSource"/> to locate in the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>.
+            The value can be <see langword="null"/> for reference types.</param>
+            <returns><see langword="true"/> if <paramref name="source"/> is found in the <see cref="T:Shamisen.Filters.IMultipleSourceAudioTarget`3"/>; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.TrimFinishedSources">
+            <summary>
+            Trims finished sources. All finished sources will be disposed.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.EjectFinishedSources``1(``0)">
+            <summary>
+            Transfers finished sources to the given <see cref="T:System.Buffers.IBufferWriter`1"/>. Finished sources will not be disposed.
+            </summary>
+            <typeparam name="TBufferWriter">The type of <see cref="T:System.Buffers.IBufferWriter`1"/> that accepts the ejected <typeparamref name="TSource"/>.</typeparam>
+            <param name="bufferWriter">The <see cref="T:System.Buffers.IBufferWriter`1"/> that accepts the ejected <typeparamref name="TSource"/>.</param>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.EjectFinishedSources``1(``0@)">
+            <summary>
+            Transfers finished sources to the given <see cref="T:System.Buffers.IBufferWriter`1"/>. Finished sources will not be disposed.
+            </summary>
+            <typeparam name="TBufferWriter">The type of <see cref="T:System.Buffers.IBufferWriter`1"/> that accepts the ejected <typeparamref name="TSource"/>.</typeparam>
+            <param name="bufferWriter">The reference to the <see cref="T:System.Buffers.IBufferWriter`1"/> that accepts the ejected <typeparamref name="TSource"/>.</param>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.EjectFinishedSources(System.Span{`0})">
+            <summary>
+            Transfers finished sources to the given destination span. Finished sources will not be disposed.
+            </summary>
+            <param name="destination">The destination <see cref="T:System.Span`1"/>.</param>
+            <returns>The number of <typeparamref name="TSource"/> that are transferred.</returns>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.EjectFinishedSources(System.Collections.Generic.List{`0})">
+            <summary>
+            Transfers finished sources to the given destination list. Finished sources will not be disposed.
+            </summary>
+            <param name="destination">The destination <see cref="T:System.Collections.Generic.List`1"/>.</param>
+        </member>
+        <member name="M:Shamisen.Filters.IMultipleSourceAudioTarget`3.EjectFinishedSources">
+            <summary>
+            Ejects finished sources. Finished sources will not be disposed.
+            </summary>
+            <returns>The ejected finished sources.</returns>
+        </member>
         <member name="T:Shamisen.Filters.IPlaylistSource`2">
             <summary>
             Defines a base infrastructure of a playlist source.
@@ -12051,6 +12010,147 @@
             <param name="instance">The instance of <typeparamref name="T"/>.</param>
             <param name="isDisposed">if set to <c>true</c> it throws.</param>
             <exception cref="T:System.ObjectDisposedException">This instance of <typeparamref name="T"/> is disposed!</exception>
+        </member>
+        <member name="T:Shamisen.IO.DataFlow">
+            <summary>
+            Represents a flow kind of audio data.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.None">
+            <summary>
+            Invalid.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Render">
+            <summary>
+            Output.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.DataFlow.Capture">
+            <summary>
+            Input.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.IAsyncPlaybackController">
+            <summary>
+            Defines a base infrastructure of playback controller.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAsyncPlaybackController.PlayAsync">
+            <summary>
+            Starts the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAsyncPlaybackController.PauseAsync">
+            <summary>
+            Pauses the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAsyncPlaybackController.ResumeAsync">
+            <summary>
+            Resumes the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IAsyncPlaybackController.StopAsync">
+            <summary>
+            Stops the audio playback.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.IPlaybackController">
+            <summary>
+            Defines a base infrastructure of playback controller.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Play">
+            <summary>
+            Starts the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Pause">
+            <summary>
+            Pauses the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Resume">
+            <summary>
+            Resumes the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IPlaybackController.Stop">
+            <summary>
+            Stops the audio playback.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IPlaybackController.PlaybackState">
+            <summary>
+            Gets the state of the playback.
+            </summary>
+            <value>
+            The state of the playback.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.IRecordingController">
+            <summary>
+            Defines a base infrastructure of a sound recording controller.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IRecordingController.Start">
+            <summary>
+            Starts recording.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.IRecordingController.Stop">
+            <summary>
+            Stops recording.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.IRecordingController.RecordingState">
+            <summary>
+            Gets the state of the recording.
+            </summary>
+            <value>
+            The state of the recording.
+            </value>
+        </member>
+        <member name="T:Shamisen.IO.PlaybackState">
+            <summary>
+            Represents a state of playback.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.NotInitialized">
+            <summary>
+            The output is not initialized
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Stopped">
+            <summary>
+            The playback is stopped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Playing">
+            <summary>
+            The playback is running.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.PlaybackState.Paused">
+            <summary>
+            The playback is paused.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.RecordingState">
+            <summary>
+            Represents a state of recording.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Stopped">
+            <summary>
+            The recording is stopped.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.RecordingState.Recording">
+            <summary>
+            The recording is in progress.
+            </summary>
         </member>
         <member name="T:Shamisen.Mathematics.Fraction32">
             <summary>

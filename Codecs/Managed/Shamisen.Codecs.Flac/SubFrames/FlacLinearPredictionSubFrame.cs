@@ -34,13 +34,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using Shamisen.Codecs.Flac.Parsing;
 using Shamisen.Data;
@@ -118,8 +112,10 @@ namespace Shamisen.Codecs.Flac.SubFrames
 
             WastedBits = wastedBits;
             order = (subFrameType & 0x1f) + 1;
-            using var residual = new PooledArray<int>(blockSize - order);
-            Span<int> warmup = stackalloc int[order];
+            data = new(blockSize);
+            var dataSpan = data.Span;
+            var warmup = dataSpan.Slice(0, order);
+            var residualSpan = dataSpan.Slice(order);
             for (var i = 0; i < warmup.Length; i++)
             {
                 warmup[i] = bitReader.ReadBitsInt32(bitsPerSample, out var v2) ? v2 : throw new FlacException("Invalid FLAC Stream!", bitReader);
@@ -139,21 +135,12 @@ namespace Shamisen.Codecs.Flac.SubFrames
                 coeffs[i] = value;
             }
             //Read residual
-            var residualSpan = residual.Span;
             FlacFixedPredictionSubFrame.ReadResidualPart(bitReader, blockSize, order, out partition, residualSpan);
             //Restore signal
-            data = new(blockSize);
-            warmup.CopyTo(data.Span);
-            if (bitsPerSample + quantizedPrecision + MathI.LogBase2((uint)order) <= 32)
-            {
-                RestoreSignal(shiftsNeeded, residualSpan, coeffs, data.Span);
-            }
-            else
-            {
-                RestoreSignalWide(shiftsNeeded, residualSpan, coeffs, data.Span);
-            }
+            var accumulatorBitsRequired = bitsPerSample + quantizedPrecision + MathI.LogBase2((uint)order);
+            RestoreSignal(shiftsNeeded, accumulatorBitsRequired, residualSpan, coeffs, dataSpan);
             if (wastedBits > 0)
-                FlacUtils.ShiftLeft(data.Span, wastedBits);
+                FlacUtils.ShiftLeft(dataSpan, wastedBits);
         }
 
         #region RestoreSignal
@@ -197,11 +184,11 @@ namespace Shamisen.Codecs.Flac.SubFrames
         #endregion License notice
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static unsafe void RestoreSignal(int shiftsNeeded, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
+        internal static unsafe void RestoreSignal(int shiftsNeeded, int accumulatorBitsRequired, ReadOnlySpan<int> residual, ReadOnlySpan<int> coeffs, Span<int> output)
         {
             //
 #pragma warning disable IDE0022
-            RestoreSignalStandard(shiftsNeeded, residual, coeffs, output);
+            RestoreSignalDefault(shiftsNeeded, accumulatorBitsRequired, residual, coeffs, output);
 #pragma warning restore IDE0022
         }
 
@@ -210,7 +197,7 @@ namespace Shamisen.Codecs.Flac.SubFrames
         {
             //
 #pragma warning disable IDE0022
-            RestoreSignalStandardWide(shiftsNeeded, residual, coeffs, output);
+            RestoreSignalDefaultWide(shiftsNeeded, residual, coeffs, output);
 #pragma warning restore IDE0022
         }
 

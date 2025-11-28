@@ -49,7 +49,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             public void DuplicateMonauralToStereoWorksCorrectly(int size)
             {
                 PrepareDuplicate(size, 2, out var a, out var b);
-                var bf = MemoryMarshal.Cast<int, float>(b);
+                var bf = MemoryMarshal.Cast<int, float>(b.AsSpan());
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralToStereo(bf, af);
                 AssertArrayForDuplicate(b, 2);
@@ -59,7 +59,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             public void DuplicateMonauralTo3ChannelsWorksCorrectly(int size)
             {
                 PrepareDuplicate(size, 3, out var a, out var b);
-                var bf = MemoryMarshal.Cast<int, float>(b);
+                var bf = MemoryMarshal.Cast<int, float>(b.AsSpan());
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralTo3Channels(bf, af);
                 AssertArrayForDuplicate(b, 3);
@@ -69,7 +69,7 @@ namespace Shamisen.Core.Tests.CoreFx.AudioUtilsTest
             public void DuplicateMonauralTo4ChannelsWorksCorrectly(int size)
             {
                 PrepareDuplicate(size, 4, out var a, out var b);
-                var bf = MemoryMarshal.Cast<int, float>(b);
+                var bf = MemoryMarshal.Cast<int, float>(b.AsSpan());
                 var af = MemoryMarshal.Cast<int, float>(a);
                 AudioUtils.Fallback.DuplicateMonauralTo4Channels(bf, af);
                 AssertArrayForDuplicate(b, 4);

@@ -4,19 +4,42 @@
         <name>Shamisen.IO.OpenTK</name>
     </assembly>
     <members>
-        <member name="T:Shamisen.IO.OpenALContextManager">
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.AlcContextAttributeKeyValuePair">
             <summary>
-            Manages <see cref="T:OpenTK.Audio.OpenAL.ALContext"/> and <see cref="M:OpenTK.Audio.OpenAL.ALC.MakeContextCurrent(OpenTK.Audio.OpenAL.ALContext)"/>.
+            Stores a key-value pair for context attributes.
             </summary>
         </member>
-        <member name="M:Shamisen.IO.OpenALContextManager.WaitForContextAsync(OpenTK.Audio.OpenAL.ALContext)">
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.AlcContextAttributeKeyValuePair.Key">
+            <summary>
+            The key for this context attribute.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.AlcContextAttributeKeyValuePair.Value">
+            <summary>
+            The value for this context attribute.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.CurrentContextHandle">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.CurrentContextHandle.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager">
+            <summary>
+            Manages <see cref="T:OpenTK.Audio.OpenAL.ALCContext"/> and <see cref="M:OpenTK.Audio.OpenAL.ALC.ALC.MakeContextCurrent(OpenTK.Audio.OpenAL.ALCContext)"/>.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.WaitForContextAsync(OpenTK.Audio.OpenAL.ALCContext)">
             <summary>
             Waits for setting context asynchronously.
             </summary>
             <param name="context">The context to activate.</param>
             <returns></returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALContextManager.RunWithContextAsync(OpenTK.Audio.OpenAL.ALContext,System.Action)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.RunWithContextAsync(OpenTK.Audio.OpenAL.ALCContext,System.Action)">
             <summary>
             Runs <paramref name="action"/> with setting context asynchronously.
             </summary>
@@ -24,62 +47,251 @@
             <param name="action">The action to run.</param>
             <returns></returns>
         </member>
-        <member name="T:Shamisen.IO.OpenALDevice">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.GetDeviceAttributeCount(OpenTK.Audio.OpenAL.ALCDevice)">
+            <summary>
+            Queries the number of context attributes of the specified <paramref name="device"/>.
+            </summary>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.GetContextAttributes``1(OpenTK.Audio.OpenAL.ALCDevice,``0@)">
+            <summary>
+            Gets all context attributes of the specified <paramref name="device"/>.
+            </summary>
+            <param name="device"></param>
+            <param name="outputValues"></param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.GetContextAttributes``1(OpenTK.Audio.OpenAL.ALCDevice,``0)">
+            <summary>
+            Gets all context attributes of the specified <paramref name="device"/>.
+            </summary>
+            <param name="device"></param>
+            <param name="outputValues"></param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.GetContextAttributes(OpenTK.Audio.OpenAL.ALCDevice,System.Collections.Generic.List{Shamisen.IO.OpenTK.OpenAL.AlcContextAttributeKeyValuePair})">
+            <summary>
+            Gets all context attributes of the specified <paramref name="device"/>.
+            </summary>
+            <param name="device"></param>
+            <param name="outputValues"></param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALContextManager.GetContextAttributes(OpenTK.Audio.OpenAL.ALCDevice)">
+            <summary>
+            Gets all context attributes of the specified <paramref name="device"/>.
+            </summary>
+            <param name="device"></param>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator">
+            <summary>
+            Enumerates the AL devices.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator.Instance">
+            <summary>
+            The instance
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator"/> class.<br/>
+            Obsolete: Use <see cref="F:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator.Instance"/> instead.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator.EnumerateDevices">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALCDeviceEnumerator.EnumerateDevicesAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALException">
+            <summary>
+            Represents errors that occur during OpenAL operation.
+            </summary>
+            <seealso cref="T:System.Exception" />
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALException"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="inner">The inner.</param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutput">
+            <summary>
+            Provides an <see cref="T:OpenTK.Audio.OpenAL.AL"/> output.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Latency">
+            <summary>
+            Gets the value which indicates how long does the <see cref="T:OpenTK.Audio.OpenAL.AL"/> takes while delivering the audio data to the hardware.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.PlaybackState">
+            <summary>
+            Gets the state of the playback.
+            </summary>
+            <value>
+            The state of the playback.
+            </value>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutput"/> class.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.#ctor(System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutput"/> class with the specified <paramref name="latency"/>.
+            </summary>
+            <param name="latency">
+            The value which indicates how long can <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutput"/> take between buffering and actual audio output.
+            </param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.#ctor(Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice,System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutput"/> class.
+            </summary>
+            <param name="device">The device.</param>
+            <param name="latency">The latency.</param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Initialize(Shamisen.IWaveSource)">
+            <summary>
+            Initializes the <see cref="T:Shamisen.IO.ISoundOut"/> for playing a <paramref name="source"/>.
+            </summary>
+            <param name="source">The source to play.</param>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Pause">
+            <summary>
+            Pauses the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Play">
+            <summary>
+            Starts the audio playback.
+            Use <see cref="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Resume"/> instead while the playback is <see cref="F:Shamisen.IO.PlaybackState.Paused"/>.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+            Cannot start playback without stopping or initializing!
+            </exception>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Resume">
+            <summary>
+            Resumes the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Stop">
+            <summary>
+            Stops the audio playback.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutput.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration.#ctor">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration.#ctor(System.Nullable{Shamisen.IO.Devices.ConfigurationProperty{System.TimeSpan}})">
+             <summary>
+            
+             </summary>
+             <param name="latency"></param>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration.Latency">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration.Exclusivity">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfigurationBuilder">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfigurationBuilder.Latency">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfigurationBuilder.Exclusivity">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfigurationBuilder.GenerateConfiguration">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice">
             <summary>
             Represents a device for OpenAL.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.OpenALDevice.DataFlow">
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.DataFlow">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.IO.OpenALDevice.Name">
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.Name">
             <summary>
-            Gets the name of this <see cref="T:Shamisen.IO.OpenALDevice"/>.
+            Gets the name of this <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/>.
             </summary>
         </member>
-        <member name="P:Shamisen.IO.OpenALDevice.PreferredFormat">
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.PreferredFormat">
             <inheritdoc/>
         </member>
-        <member name="P:Shamisen.IO.OpenALDevice.PreferredConfiguration">
+        <member name="P:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.PreferredConfiguration">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.#ctor(System.String)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.op_Inequality(Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice,Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice)">
             <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALDevice"/> class.
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> objects are not equal.
             </summary>
-            <param name="name">The name.</param>
-            <exception cref="T:System.ArgumentNullException">name</exception>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDevice.op_Inequality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
-            <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are not equal.
-            </summary>
-            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <param name="right">The second  <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
+            <param name="left">The first <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> to compare.</param>
+            <param name="right">The second  <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> to compare.</param>
             <returns>
               <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.op_Equality(Shamisen.IO.OpenALDevice,Shamisen.IO.OpenALDevice)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.op_Equality(Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice,Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice)">
             <summary>
-            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenALDevice"/> objects are equal.
+            Indicates whether the values of two specified <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> objects are equal.
             </summary>
-            <param name="left">The first <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
-            <param name="right">The second <see cref="T:Shamisen.IO.OpenALDevice"/> to compare.</param>
+            <param name="left">The first <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice"/> to compare.</param>
             <returns>
               <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.CheckSupportStatus(Shamisen.IWaveFormat)">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.OpenALOutputConfiguration)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.CheckSupportStatus(Shamisen.IWaveFormat,Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration)">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.CreateSoundOut(Shamisen.IO.OpenALOutputConfiguration)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.CreateSoundOut(Shamisen.IO.OpenTK.OpenAL.OpenALOutputConfiguration)">
             <inheritdoc/>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.Equals(System.Object)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.Equals(System.Object)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -88,7 +300,7 @@
               <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.Equals(Shamisen.IO.OpenALDevice)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.Equals(Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -97,7 +309,7 @@
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.Equals(Shamisen.IO.IAudioDevice)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.Equals(Shamisen.IO.IAudioDevice)">
             <summary>
             Indicates whether the current object is equal to another object of the same type.
             </summary>
@@ -106,7 +318,7 @@
               <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.GetHashCode">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.GetHashCode">
             <summary>
             Returns a hash code for this instance.
             </summary>
@@ -114,173 +326,11 @@
             A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
             </returns>
         </member>
-        <member name="M:Shamisen.IO.OpenALDevice.ConvertToALFormat(Shamisen.IWaveFormat)">
+        <member name="M:Shamisen.IO.OpenTK.OpenAL.OpenALOutputDevice.ConvertToFormat(Shamisen.IWaveFormat)">
             <summary>
-            Indicates whether the audio output device supports a particular stream format.
+            Converts the specified <see cref="T:Shamisen.IWaveFormat"/> to <see cref="T:OpenTK.Audio.OpenAL.Format"/>.
             </summary>
-            <param name="format">The format to judge the availability.</param>
-        </member>
-        <member name="T:Shamisen.IO.OpenALDeviceEnumerator">
-            <summary>
-            Enumerates the AL devices.
-            </summary>
-        </member>
-        <member name="F:Shamisen.IO.OpenALDeviceEnumerator.Instance">
-            <summary>
-            The instance
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALDeviceEnumerator"/> class.<br/>
-            Obsolete: Use <see cref="F:Shamisen.IO.OpenALDeviceEnumerator.Instance"/> instead.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevices">
-            <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.IO.OpenALDeviceEnumerator.EnumerateDevicesAsync">
-            <inheritdoc/>
-        </member>
-        <member name="T:Shamisen.IO.OpenALException">
-            <summary>
-            Represents errors that occur during OpenAL operation.
-            </summary>
-            <seealso cref="T:System.Exception" />
-        </member>
-        <member name="M:Shamisen.IO.OpenALException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALException"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALException"/> class.
-            </summary>
-            <param name="message">The message that describes the error.</param>
-        </member>
-        <member name="M:Shamisen.IO.OpenALException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALException"/> class.
-            </summary>
-            <param name="message">The message.</param>
-            <param name="inner">The inner.</param>
-        </member>
-        <member name="M:Shamisen.IO.OpenALException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALException"/> class.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual information about the source or destination.</param>
-        </member>
-        <member name="T:Shamisen.IO.OpenALOutput">
-            <summary>
-            Provides an <see cref="T:OpenTK.Audio.OpenAL.AL"/> output.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutput.Latency">
-            <summary>
-            Gets the value which indicates how long does the <see cref="T:OpenTK.Audio.OpenAL.AL"/> takes while delivering the audio data to the hardware.
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutput.PlaybackState">
-            <summary>
-            Gets the state of the playback.
-            </summary>
-            <value>
-            The state of the playback.
-            </value>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALOutput"/> class.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.#ctor(System.TimeSpan)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALOutput"/> class with the specified <paramref name="latency"/>.
-            </summary>
-            <param name="latency">
-            The value which indicates how long can <see cref="T:Shamisen.IO.OpenALOutput"/> take between buffering and actual audio output.
-            </param>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.#ctor(Shamisen.IO.OpenALDevice,System.TimeSpan)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Shamisen.IO.OpenALOutput"/> class.
-            </summary>
-            <param name="device">The device.</param>
-            <param name="latency">The latency.</param>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Initialize(Shamisen.IWaveSource)">
-            <summary>
-            Initializes the <see cref="T:Shamisen.IO.ISoundOut"/> for playing a <paramref name="source"/>.
-            </summary>
-            <param name="source">The source to play.</param>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Pause">
-            <summary>
-            Pauses the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Play">
-            <summary>
-            Starts the audio playback.
-            Use <see cref="M:Shamisen.IO.OpenALOutput.Resume"/> instead while the playback is <see cref="F:Shamisen.IO.PlaybackState.Paused"/>.
-            </summary>
-            <exception cref="T:System.InvalidOperationException">
-            Cannot start playback without stopping or initializing!
-            </exception>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Resume">
-            <summary>
-            Resumes the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Stop">
-            <summary>
-            Stops the audio playback.
-            </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutput.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="T:Shamisen.IO.OpenALOutputConfiguration">
-             <summary>
-            
-             </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor">
-             <summary>
-            
-             </summary>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutputConfiguration.#ctor(System.Nullable{Shamisen.IO.Devices.ConfigurationProperty{System.TimeSpan}})">
-             <summary>
-            
-             </summary>
-             <param name="latency"></param>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutputConfiguration.Latency">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutputConfiguration.Exclusivity">
-            <inheritdoc/>
-        </member>
-        <member name="T:Shamisen.IO.OpenALOutputConfigurationBuilder">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutputConfigurationBuilder.Latency">
-            <inheritdoc/>
-        </member>
-        <member name="P:Shamisen.IO.OpenALOutputConfigurationBuilder.Exclusivity">
-            <inheritdoc/>
-        </member>
-        <member name="M:Shamisen.IO.OpenALOutputConfigurationBuilder.GenerateConfiguration">
-            <inheritdoc/>
+            <param name="format">The format to convert.</param>
         </member>
     </members>
 </doc>

@@ -10,6 +10,7 @@
         <PlatformTarget>AnyCPU</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <DebugSymbols>true</DebugSymbols>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
       <None Remove="TestSounds\PinkNoise_24bit_Lv8.flac" />
@@ -18,11 +19,12 @@
       <EmbeddedResource Include="TestSounds\PinkNoise_24bit_Lv8.flac" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.6" />
         <PackageReference Include="CSCore" Version="1.2.1.2" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
         <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
     </ItemGroup>
 </Project>

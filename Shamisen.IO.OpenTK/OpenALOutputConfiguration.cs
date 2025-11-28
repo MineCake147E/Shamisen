@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Shamisen.IO.Devices;
 
-namespace Shamisen.IO
+namespace Shamisen.IO.OpenTK.OpenAL
 {
     /// <summary>
     ///

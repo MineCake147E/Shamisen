@@ -1,14 +1,19 @@
-﻿using System;
+using System;
 
-namespace Shamisen.IO
+using OpenTK.Audio.OpenAL.ALC;
+
+namespace Shamisen.IO.OpenTK.OpenAL
 {
     /// <summary>
     /// Represents errors that occur during OpenAL operation.
     /// </summary>
     /// <seealso cref="Exception" />
-    [Serializable]
     public class OpenALException : Exception
     {
+        /// <summary>
+        /// The error code.
+        /// </summary>
+        public ErrorCode ErrorCode { get; init; }
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenALException"/> class.
         /// </summary>
@@ -26,14 +31,34 @@ namespace Shamisen.IO
         /// <param name="message">The message.</param>
         /// <param name="inner">The inner.</param>
         public OpenALException(string message, Exception inner) : base(message, inner) { }
+    }
+
+    /// <summary>
+    /// Represents errors that occur during OpenAL operation.
+    /// </summary>
+    /// <seealso cref="Exception" />
+    public class OpenALContextException : Exception
+    {
+        /// <summary>
+        /// The error code.
+        /// </summary>
+        public ErrorCode ErrorCode { get; init; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenALContextException"/> class.
+        /// </summary>
+        public OpenALContextException() { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenALException"/> class.
+        /// Initializes a new instance of the <see cref="OpenALContextException"/> class.
         /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext"></see> that contains contextual information about the source or destination.</param>
-        protected OpenALException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        /// <param name="message">The message that describes the error.</param>
+        public OpenALContextException(string message) : base(message) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenALContextException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="inner">The inner.</param>
+        public OpenALContextException(string message, Exception inner) : base(message, inner) { }
     }
 }

@@ -1,0 +1,95 @@
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Numerics" #>
+<#
+    const string SuffixStandard = "Standard";
+    static int Log2(int a){
+        uint v = (uint)a;
+        int u = 0;
+        while(v > 0){
+            v >>= 1;
+            u++;
+        }
+        return u;
+    }
+
+    static IEnumerable<string> GenerateStandardVariableWriteCalls(string requiredMultiplyBits, string requiredAccumulatorBits, int order)
+    {
+        yield return $"if (RuntimeFeature.IsDynamicCodeCompiled && {requiredMultiplyBits} <= Unsafe.SizeOf<nint>() * 8 && {requiredAccumulatorBits} <= Unsafe.SizeOf<nint>() * 8)";
+        yield return $"{{";
+        yield return $"    RestoreSignalNativeStandardOrder{order}(shiftsNeeded, residual, coeffs, output);";
+        yield return $"}}";
+        yield return "else";
+        yield return $"{{";
+        yield return $"    RestoreSignal64StandardOrder{order}(shiftsNeeded, residual, coeffs, output);";
+        yield return $"}}";
+    }
+
+    var StandardVariatntInfo = new FlacLinearPredictionVariantInfo(0xffff_0000_0000_0000ul, $"NativeStandard") { WriteDispatchFunc = GenerateStandardVariableWriteCalls};
+#>
+
+<#+
+    public readonly record struct FlacLinearPredictionVariantInfo(ulong VariantId, string Name)
+    {
+        public Func<string, string, int, IEnumerable<string>>? WriteDispatchFunc { get; init; }
+        public bool IsVariable => (VariantId >> VariantIdAccumulatorShift) == ushort.MaxValue;
+        public byte MultiplyBitsRequired => (byte)((VariantId & VariantIdMultiplierBits) >> VariantIdMultiplierShift);
+        public byte AccumulatorBitsRequired => (byte)((VariantId & VariantIdAccumulatorBits) >> VariantIdAccumulatorShift);
+        public IEnumerable<string> WriteCall(string requiredMultiplyBits, string requiredAccumulatorBits, int order)
+        {
+            if (IsVariable && WriteDispatchFunc is not null)
+            {
+                return WriteDispatchFunc(requiredMultiplyBits, requiredAccumulatorBits, order);
+            }
+            else
+            {
+                return DefaultWriteCall(order, Name);
+            }
+
+            static IEnumerable<string> DefaultWriteCall(int order, string name)
+            {
+                yield return $"RestoreSignal{name}Order{order}(shiftsNeeded, residual, coeffs, output);";
+            }
+        }
+
+        #region VariantId Bit Masks and Shifts
+        public const int VariantIdMultiplierShift = 56;
+        public const int VariantIdAccumulatorShift = 48;
+        public const int VariantIdArchitectureShift = 32;
+        public const ulong VariantIdMultiplierBits = 0xff00_0000_0000_0000ul;
+        public const ulong VariantIdAccumulatorBits = 0x00ff_0000_0000_0000ul;
+        public const ulong VariantIdArchitectureBits = 0x0000_ffff_0000_0000ul;
+        public const ulong VariantIdCustomBits = 0x0000_0000_ffff_fffful;
+
+        public const ulong VariantIdArchStandard = 0x0000_0000_0000_0000ul;
+        public const ulong VariantIdArchX86 = 0x0000_0001_0000_0000ul;
+        public const ulong VariantIdArchX64 = 0x0000_0003_0000_0000ul;
+
+        public const ulong VariantIdX86SupportedInstructions = 0x0000_0000_ffff_0000ul;
+        public const ulong VariantIdSse = 0x0000_0000_8001_0000ul;
+        public const ulong VariantIdSse2 = 0x0000_0000_8003_0000ul;
+        public const ulong VariantIdSse3 = 0x0000_0000_8007_0000ul;
+        public const ulong VariantIdSsse3 = 0x0000_0000_800f_0000ul;
+        public const ulong VariantIdSse41 = 0x0000_0000_801f_0000ul;
+        public const ulong VariantIdSse42 = 0x0000_0000_803f_0000ul;
+        public const ulong VariantIdAvx = 0x0000_0000_c000_0000ul;
+        public const ulong VariantIdAvx2 = 0x0000_0000_d000_0000ul;
+        public const ulong VariantIdAvx512FVL = 0x0000_0000_e000_0000ul;
+        public const ulong VariantIdAvx512DQBW = 0x0000_0000_e001_0000ul;
+        public const ulong VariantIdAvx512Ifma = 0x0000_0000_e002_0000ul;
+        public const ulong VariantIdAvx512Vbmi = 0x0000_0000_e004_0000ul;
+        public const ulong VariantIdAvx512Vnni = 0x0000_0000_e008_0000ul;
+        public const ulong VariantIdAvx512Vbmi2 = 0x0000_0000_e010_0000ul;
+        public const ulong VariantIdAvx512Bitalg = 0x0000_0000_e020_0000ul;
+        public const ulong VariantIdAvx512Pclmulqdq = 0x0000_0000_e040_0000ul;
+        public const ulong VariantIdAvx512Gfni = 0x0000_0000_e080_0000ul;
+        public const ulong VariantIdAvx512Vaes = 0x0000_0000_e100_0000ul;
+        public const ulong VariantIdAvx512FP16 = 0x0000_0000_e200_0000ul;
+        public const ulong VariantIdAvx10 = 0x0000_0000_f000_0000ul;
+        public const ulong VariantIdAvx10Versions = 0x0000_0000_0fff_0000ul;
+
+        #endregion
+    }
+#>

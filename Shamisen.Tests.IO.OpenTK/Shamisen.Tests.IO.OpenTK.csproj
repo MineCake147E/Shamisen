@@ -4,7 +4,6 @@
         <TargetFramework>$(ShamisenCurrentTargetFramework)</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-  <Import Project="../TargetFrameworks.targets" />
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.2.5" />
         <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />

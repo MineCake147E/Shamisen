@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,5 +21,10 @@ namespace Shamisen.IO
         /// The name of this audio device.
         /// </value>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the data flow of this audio device.
+        /// </summary>
+        DataFlow DataFlow => DataFlow.None;
     }
 }

@@ -62,6 +62,11 @@
             For <see cref="P:Shamisen.IAudioFormat`1.Channels"/>, the device should be rendering each channels as close as it's originally intended as a result of initialization.
             </summary>
         </member>
+        <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.Unset">
+            <summary>
+            The value is not set.
+            </summary>
+        </member>
         <member name="F:Shamisen.IO.Devices.ConfigurationPropertyPriority.Optional">
             <summary>
             If the value is set, the initializer should set the property exactly to the specified value, but can ignore the setting if it's impossible to obey.
@@ -207,6 +212,11 @@
             <value>
             The name of this audio device.
             </value>
+        </member>
+        <member name="P:Shamisen.IO.IAudioDevice.DataFlow">
+            <summary>
+            Gets the data flow of this audio device.
+            </summary>
         </member>
         <member name="T:Shamisen.IO.IAudioDeviceConfiguration">
             <summary>
@@ -518,6 +528,386 @@
             Initializes a new instance of the <see cref="T:Shamisen.IO.RecordingStoppedEventArgs"/> class.
             </summary>
             <param name="exception">The exception.</param>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.ISpatializedAudioSource">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.Spatialize">
+            <summary>
+            Gets the value indicating whether the audio source should be spatialized or not.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.IsRelative">
+            <summary>
+            Gets the value indicating whether the position is relative to the listener or absolute in the world space.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.ReferenceDistance">
+            <summary>
+            Gets the distance at witch the listener would experience the reference gain, in meters.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.RollOffFactor">
+            <summary>
+            Gets the value which controls how the audio source attenuates with distance.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.UpdatedTemporalPropertiesMask">
+            <summary>
+            Gets the mask indicating which temporal properties have been updated at the time of the last <see cref="M:Shamisen.IReadSupport`1.Read(System.Span{`0})"/> call.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatializedAudioSource.TemporalProperties">
+            <summary>
+            Gets the temporal properties of the audio source at the time of the last <see cref="M:Shamisen.IReadSupport`1.Read(System.Span{`0})"/> call.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.ISpatialSoundListener">
+            <summary>
+            Provides a way to represent a spatial sound listener.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatialSoundListener.Position">
+            <summary>
+            Gets the current position of the audio source in meters.<br/>
+            Positive X values are to the right of the listener and negative X values are to the left.<br/>
+            Positive Y values are above the listener and negative Y values are below.<br/>
+            Positive Z values are behind of the listener and negative Z values are in front.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatialSoundListener.Gain">
+            <summary>
+            Gets the current reference gain (volume) of the audio source.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatialSoundListener.Velocity">
+            <summary>
+            Gets the current velocity of the audio source in meters per second.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply Doppler effect.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.<br/>
+            Positive X values are to the right of the listener and negative X values are to the left.<br/>
+            Positive Y values are above the listener and negative Y values are below.<br/>
+            Positive Z values are behind of the listener and negative Z values are in front.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatialSoundListener.Orientation">
+            <summary>
+            Gets the current orientation of the listener.<br/>
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.ISpatialSoundOut`4">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.ISpatialSoundOut`4.Listener">
+            <summary>
+            Gets or sets the listener of this spatial sound output.
+            </summary>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.SimpleMutableSpatialSoundListener">
+            <summary>
+            Represents a simple mutable implementation of <see cref="T:Shamisen.IO.Spatial.ISpatialSoundListener"/>.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SimpleMutableSpatialSoundListener.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SimpleMutableSpatialSoundListener.Gain">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SimpleMutableSpatialSoundListener.Velocity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SimpleMutableSpatialSoundListener.Orientation">
+            <inheritdoc/>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties">
+            <summary>
+            Represents the temporal properties of a spatial audio source.<br/>
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Position">
+            <summary>
+            Gets the current position of the audio source in meters.<br/>
+            Positive X values are to the right of the listener and negative X values are to the left.<br/>
+            Positive Y values are above the listener and negative Y values are below.<br/>
+            Positive Z values are behind of the listener and negative Z values are in front.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Gain">
+            <summary>
+            Gets the current reference gain (volume) of the audio source.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Velocity">
+            <summary>
+            Gets the current velocity of the audio source in meters per second.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply Doppler effect.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.<br/>
+            Positive X values are to the right of the listener and negative X values are to the left.<br/>
+            Positive Y values are above the listener and negative Y values are below.<br/>
+            Positive Z values are behind of the listener and negative Z values are in front.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Pitch">
+            <summary>
+            Gets the current playback speed multiplier of the audio source.<br/>
+            Binding Implementations that have no native support for this value should emulate the effect themselves.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Direction">
+            <summary>
+            Gets the current direction of the audio source in meters.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply directional audio effects.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.<br/>
+            Positive X values are to the right of the listener and negative X values are to the left.<br/>
+            Positive Y values are above the listener and negative Y values are below.<br/>
+            Positive Z values are behind of the listener and negative Z values are in front.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeOuterGain">
+            <summary>
+            Gets the current gain outside of the sound cone of the audio source.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply directional audio effects.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeInnerAngle">
+            <summary>
+            Gets the current inside angle of the sound cone of the audio source, in degrees.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply directional audio effects.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.
+            </summary>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeOuterAngle">
+            <summary>
+            Gets the current outside angle of the sound cone of the audio source, in degrees.<br/>
+            Some implementations, like OpenAL bindings, may use this value to apply directional audio effects.<br/>
+            Binding Implementations that have no native support for this value may ignore this value.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.DefaultGain">
+            <summary>
+            The default gain value.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.DefaultPitch">
+            <summary>
+            The default pitch value.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.DefaultConeAngle">
+            <summary>
+            The default value for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeInnerAngle"/> and <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeOuterAngle"/> properties.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.#ctor(System.Numerics.Vector3,System.Single,System.Numerics.Vector3,System.Single,System.Numerics.Vector3,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.
+            <paramref name="coneInnerAngle"/>
+            </summary>
+            <param name="position">The current position of the audio source.</param>
+            <param name="gain">The current gain of the audio source.</param>
+            <param name="velocity">The current velocity of the audio source.</param>
+            <param name="pitch">The current pitch of the audio source.</param>
+            <param name="direction">The current direction of the audio source.</param>
+            <param name="coneOuterGain">The current gain outside of the sound cone of the audio source.</param>
+            <param name="coneInnerAngle">The current inside angle of the sound cone of the audio source.</param>
+            <param name="coneOuterAngle">The current outside angle of the sound cone of the audio source.</param>
+        </member>
+        <member name="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Default">
+            <summary>
+            The default temporal properties of a spatial audio source.
+            </summary>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.FromPosition(System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> from position only, with other properties set to their default values.
+            </summary>
+            <param name="position">The current position of the audio source.</param>
+            <returns>The created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.FromPositionAndGain(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> from position and gain, with other properties set to their default values.
+            </summary>
+            <param name="position">The current position of the audio source.</param>
+            <param name="gain">The current gain of the audio source.</param>
+            <returns>The created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithPosition(System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified position, keeping other properties unchanged.
+            </summary>
+            <param name="position">The new position of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithGain(System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified gain, keeping other properties unchanged.
+            </summary>
+            <param name="gain">The new gain of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithPositionAndGain(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified position and gain, keeping other properties unchanged.
+            </summary>
+            <param name="position">The new position of the audio source.</param>
+            <param name="gain">The new gain of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithPositionAndGain(System.Numerics.Vector4)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified position and gain, keeping other properties unchanged.
+            </summary>
+            <param name="positionAndGain">The new position(XYZ) and gain(W) of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithVelocity(System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified velocity, keeping other properties unchanged.
+            </summary>
+            <param name="velocity">The new velocity of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithPitch(System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified pitch, keeping other properties unchanged.
+            </summary>
+            <param name="pitch">The new pitch of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithVelocityAndPitch(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified velocity and pitch, keeping other properties unchanged.
+            </summary>
+            <param name="velocity">The new velocity of the audio source.</param>
+            <param name="pitch">The new pitch of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithVelocityAndPitch(System.Numerics.Vector4)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified velocity and pitch, keeping other properties unchanged.
+            </summary>
+            <param name="velocityAndPitch">The new velocity(XYZ) and pitch(W) of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithDirection(System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified direction, keeping other properties unchanged.
+            </summary>
+            <param name="direction">The new direction of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithOuterGain(System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified outer gain, keeping other properties unchanged.
+            </summary>
+            <param name="coneOuterGain">The new gain outside of the sound cone of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithDirectionAndOuterGain(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified direction and outer gain, keeping other properties unchanged.
+            </summary>
+            <param name="direction">The new direction of the audio source.</param>
+            <param name="coneOuterGain">The new gain outside of the sound cone of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.WithDirectionAndOuterGain(System.Numerics.Vector4)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> with the specified direction and outer gain, keeping other properties unchanged.
+            </summary>
+            <param name="directionAndOuterGain">The new direction(XYZ) and gain(W) outside of the sound cone of the audio source.</param>
+            <returns>The newly created <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Equals(Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.op_Equality(Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties,Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties)">
+            <summary>
+            Determines whether two <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instances are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instance to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instance to compare.</param>
+            <returns><see langword="true"/> if the two instances are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.op_Inequality(Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties,Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties)">
+            <summary>
+            Determines whether two <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instances are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instance to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instance to compare.</param>
+            <returns><see langword="true"/> if the two instances are not equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Compare(Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties@,Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties@)">
+            <summary>
+            Compares two <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/> instances and returns the masks of the properties that have been updated.
+            </summary>
+            <param name="old">The reference to the old value of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</param>
+            <param name="value">The reference to the new value of <see cref="T:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties"/>.</param>
+            <returns>The masks of the properties that have been updated.</returns>
+        </member>
+        <member name="T:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks">
+            <summary>
+            Represents the masks for updated temporal properties of a spatial audio source.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.None">
+            <summary>
+            No properties are updated.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.Position">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Position"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.Gain">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Gain"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.Velocity">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Velocity"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.Pitch">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Pitch"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.Direction">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.Direction"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.ConeInnerAngle">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeInnerAngle"/> property.
+            </summary>
+        </member>
+        <member name="F:Shamisen.IO.Spatial.TemporalPropertiesUpdatedMasks.ConeOuterAngle">
+            <summary>
+            The mask for <see cref="P:Shamisen.IO.Spatial.SpatialAudioSourceTemporalProperties.ConeOuterAngle"/> property.
+            </summary>
         </member>
     </members>
 </doc>

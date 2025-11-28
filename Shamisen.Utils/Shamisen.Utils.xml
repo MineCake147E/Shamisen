@@ -905,6 +905,118 @@
             <param name="b">The b.</param>
             <returns></returns>
         </member>
+        <member name="T:Shamisen.Mathematics.OrientationVectorPair">
+            <summary>
+            Represents the orientation of a listener in 3D space.
+            </summary>
+        </member>
+        <member name="P:Shamisen.Mathematics.OrientationVectorPair.Forward">
+            <summary>
+            Gets the forward direction of the listener.<br/>
+            </summary>
+        </member>
+        <member name="P:Shamisen.Mathematics.OrientationVectorPair.Up">
+            <summary>
+            Gets the upper direction of the listener.<br/>
+            </summary>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.#ctor(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/>.
+            </summary>
+            <param name="forward">The forward direction vector of the listener.</param>
+            <param name="up">The upper direction vector of the listener.</param>
+        </member>
+        <member name="P:Shamisen.Mathematics.OrientationVectorPair.Default">
+            <summary>
+            The default listener orientation, facing towards negative Z and with positive Y as up direction.
+            </summary>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.CreateFromPreNormalized(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> from pre-normalized direction vectors.
+            </summary>
+            <param name="forward">The forward direction vector of the listener.</param>
+            <param name="up">The upper direction vector of the listener.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.CreateFromDirection(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> from direction vectors.
+            </summary>
+            <param name="forward">The forward direction vector of the listener.</param>
+            <param name="up">The upper direction vector of the listener.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.CreateFromQuaternion(System.Numerics.Quaternion)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> from a quaternion representing the listener's orientation.
+            </summary>
+            <param name="quaternion">The quaternion representing the listener's orientation.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.CreateFromRotationMatrix(System.Numerics.Matrix4x4)">
+            <summary>
+            Creates a new instance of <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> from a rotation matrix representing the listener's orientation.
+            </summary>
+            <param name="matrix">The rotation matrix representing the listener's orientation.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.Transform(Shamisen.Mathematics.OrientationVectorPair,System.Numerics.Quaternion)">
+            <summary>
+            Transforms the given <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> by the specified quaternion.
+            </summary>
+            <param name="orientation">The original orientation.</param>
+            <param name="quaternion">The quaternion representing the desired rotation.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.Transform(Shamisen.Mathematics.OrientationVectorPair,System.Numerics.Matrix4x4)">
+            <summary>
+            Transforms the given <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> by the specified matrix.
+            </summary>
+            <param name="orientation">The original orientation.</param>
+            <param name="matrix">The matrix representing the desired rotation.</param>
+            <returns>The newly created orientation.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.ToMatrix(Shamisen.Mathematics.OrientationVectorPair)">
+            <summary>
+            Converts the given <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> to a rotation matrix.
+            </summary>
+            <param name="orientation">The original orientation.</param>
+            <returns>The view matrix.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.ToMatrixLeftHanded(Shamisen.Mathematics.OrientationVectorPair)">
+            <summary>
+            Converts the given <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> to a rotation matrix.
+            </summary>
+            <param name="orientation">The original orientation.</param>
+            <returns>The view matrix.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.Equals(Shamisen.Mathematics.OrientationVectorPair)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.op_Equality(Shamisen.Mathematics.OrientationVectorPair,Shamisen.Mathematics.OrientationVectorPair)">
+            <summary>
+            Determines whether two <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instances are equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instance to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instance to compare.</param>
+            <returns><see langword="true"/> if the two instances are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Shamisen.Mathematics.OrientationVectorPair.op_Inequality(Shamisen.Mathematics.OrientationVectorPair,Shamisen.Mathematics.OrientationVectorPair)">
+            <summary>
+            Determines whether two <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instances are not equal.
+            </summary>
+            <param name="left">The first <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instance to compare.</param>
+            <param name="right">The second <see cref="T:Shamisen.Mathematics.OrientationVectorPair"/> instance to compare.</param>
+            <returns><see langword="true"/> if the two instances are not equal; otherwise, <see langword="false"/>.</returns>
+        </member>
         <member name="T:Shamisen.MathI">
             <summary>
             Provides constants and static methods for bitwise, arithmetic, and other common mathematical functions.

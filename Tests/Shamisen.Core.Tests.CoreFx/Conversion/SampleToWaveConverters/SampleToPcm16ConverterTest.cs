@@ -1,21 +1,14 @@
 using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Diagnostics;
 //using CSCodec.Filters.Transformation;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
-using System.Text;
 
 using NUnit.Framework;
 
-using Shamisen.Conversion.Resampling.Sample;
 using Shamisen.Conversion.SampleToWaveConverters;
 using Shamisen.Core.Tests.CoreFx.TestUtils;
-using Shamisen.Filters;
 using Shamisen.Optimization;
-using Shamisen.Synthesis;
 using Shamisen.TestUtils;
 
 namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
@@ -36,8 +29,8 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.SampleToWaveConverters
             var bufferNoIntrinsics = new short[255 * channels];
             var bufferIntrinsics = new short[bufferNoIntrinsics.Length];
 
-            filterNoIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferNoIntrinsics));
-            filterIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferIntrinsics));
+            filterNoIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferNoIntrinsics.AsSpan()));
+            filterIntrinsics.Read(MemoryMarshal.Cast<short, byte>(bufferIntrinsics.AsSpan()));
             NeumaierAccumulator sumdiff = default;
             for (var i = 0; i < bufferNoIntrinsics.Length; i++)
             {

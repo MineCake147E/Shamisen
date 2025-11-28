@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
 
@@ -76,7 +73,7 @@ namespace Shamisen.Core.Tests.CoreFx.Conversion.WaveToSampleConverters
                 exp[i] = w * divf;
             }
             dst = new float[src.Length];
-            src.AsSpan().CopyTo(MemoryMarshal.Cast<float, int>(dst));
+            src.AsSpan().CopyTo(MemoryMarshal.Cast<float, int>(dst.AsSpan()));
         }
         private static void AssertArrayNormal(int[] src, float[] exp, float[] dst)
         {
